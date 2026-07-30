@@ -1,0 +1,12 @@
+{
+  "name": "@pick-a-book/web",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "web",
+    "tags": [
+      "type:app",
+      "scope:web"
+    ]
+  }
+}
