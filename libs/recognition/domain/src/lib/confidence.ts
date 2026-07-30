@@ -1,19 +1,19 @@
 /**
- * Confiance associee a une detection, dans [0, 1].
+ * The confidence attached to a detection, in [0, 1].
  *
- * L'ADR 0005 exige que le port expose une confiance par livre detecte, pour que
- * l'orchestration puisse ecarter ou signaler les detections faibles. Elle n'est pas
- * calibree : c'est une auto-evaluation du modele, a traiter comme telle.
+ * ADR 0005 requires the port to expose a confidence per detected book, so that
+ * orchestration can drop or flag weak detections. It is not calibrated: it is the
+ * model's own self-assessment, and should be treated as such.
  */
 export class Confidence {
   private constructor(readonly value: number) {}
 
   static of(raw: number): Confidence {
     if (!Number.isFinite(raw)) {
-      throw new Error(`Confidence : valeur non numerique (${raw})`);
+      throw new Error(`Confidence: not a number (${raw})`);
     }
     if (raw < 0 || raw > 1) {
-      throw new Error(`Confidence : valeur hors de [0, 1] (${raw})`);
+      throw new Error(`Confidence: value outside [0, 1] (${raw})`);
     }
 
     return new Confidence(raw);

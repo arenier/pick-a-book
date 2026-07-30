@@ -1,10 +1,10 @@
 import styles from './app.module.css';
 
 /**
- * Coquille du frontend.
+ * Frontend shell.
  *
- * Le decoupage en feature-slices (ADR 0002) commencera avec la premiere fonctionnalite
- * reelle — televerser une photo d'etagere. Rien a extraire tant qu'il n'y a rien dedans.
+ * The split into feature slices (ADR 0002) starts with the first real feature — uploading a
+ * shelf photo. Nothing to extract as long as there is nothing inside.
  */
 export function App() {
   return (

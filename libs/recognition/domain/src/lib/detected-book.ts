@@ -3,11 +3,11 @@ import { BookTitle } from './book-title.js';
 import { Confidence } from './confidence.js';
 
 /**
- * Un couple (auteur, titre) lu sur une photo d'etagere, avec sa confiance.
+ * An (author, title) pair read off a shelf photo, with its confidence.
  *
- * C'est le contrat de sortie du contexte de reconnaissance (ADR 0005). Rien n'y est
- * reconcilie : un `DetectedBook` peut parfaitement designer une oeuvre qui n'existe pas.
- * Le filet anti-hallucination est la reconciliation bibliographique, en aval.
+ * This is the output contract of the recognition context (ADR 0005). Nothing here is
+ * reconciled: a `DetectedBook` may perfectly well name a work that does not exist. The
+ * safety net against hallucination is bibliographic reconciliation, downstream.
  */
 export class DetectedBook {
   private constructor(

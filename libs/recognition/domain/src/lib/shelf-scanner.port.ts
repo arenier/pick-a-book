@@ -2,31 +2,30 @@ import type { DetectedBook } from './detected-book.js';
 import type { ShelfPhoto } from './shelf-photo.js';
 
 /**
- * Port de sortie du contexte de reconnaissance (ADR 0005).
+ * Outbound port of the recognition context (ADR 0005).
  *
- * Le MVP l'implemente par un VLM seul (solution B). Le passage a la solution C
- * — OCR injecte dans le prompt, rejet des tokens absents du texte OCR — se fait en
- * substituant un adaptateur composite : domaine, application et frontend sont
- * indifferents au choix.
+ * The MVP implements it with a VLM alone (option B). Moving to option C — OCR injected
+ * into the prompt, tokens absent from the OCR text rejected — is a matter of swapping in
+ * a composite adapter: domain, application and frontend are indifferent to the choice.
  *
- * L'implementation leve `ShelfScanFailed` si la source est indisponible ou repond
- * hors contrat. Une photo sans livre lisible n'est pas une erreur : c'est un tableau vide.
+ * The implementation throws `ShelfScanFailed` when the source is unavailable or answers
+ * off-contract. A photo with no readable book is not an error: it is an empty array.
  */
 export interface ShelfScannerPort {
   scan(photo: ShelfPhoto): Promise<DetectedBook[]>;
 }
 
 /**
- * Jeton d'injection du port.
+ * Injection token for the port.
  *
- * Une chaine, pas un decorateur : le domaine ne depend d'aucun conteneur d'injection.
- * C'est la composition root de `apps/api` qui s'en sert pour lier le port a un adaptateur.
+ * A string, not a decorator: the domain depends on no injection container. It is the
+ * composition root of `apps/api` that uses it to bind the port to an adapter.
  */
 export const SHELF_SCANNER_PORT = 'ShelfScannerPort';
 
 export class ShelfScanFailed extends Error {
   constructor(reason: string, options?: { cause?: unknown }) {
-    super(`Echec du scan d'etagere : ${reason}`, options);
+    super(`Shelf scan failed: ${reason}`, options);
     this.name = 'ShelfScanFailed';
   }
 }

@@ -4,11 +4,11 @@ import type { DetectedBook, ShelfScannerPort } from '@pick-a-book/recognition-do
 import type { DetectedBookDto, ScanShelfCommand, ScanShelfResult } from './scan-shelf.dto.js';
 
 /**
- * Lit une photo d'etagere et rend les couples (auteur, titre) detectes.
+ * Reads a shelf photo and returns the detected (author, title) pairs.
  *
- * Ne parle qu'au port (ADR 0002) : ni HTTP, ni fournisseur de VLM, ni bucket ici.
- * Ne filtre pas les detections faibles — la confiance est remontee telle quelle, et
- * c'est a l'orchestration de decider quoi en faire (ADR 0005).
+ * Talks to the port only (ADR 0002): no HTTP, no VLM provider, no bucket here. Does not
+ * filter weak detections — confidence is passed through as is, and it is up to
+ * orchestration to decide what to do with it (ADR 0005).
  */
 export class ScanShelfUseCase {
   constructor(private readonly shelfScanner: ShelfScannerPort) {}

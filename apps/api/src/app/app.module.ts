@@ -5,10 +5,10 @@ import { HealthController } from '../health/health.controller';
 import { RecognitionModule } from '../recognition/recognition.module';
 
 /**
- * Module racine. Il assemble ; il ne porte aucune regle metier (ADR 0003).
+ * Root module. It assembles; it carries no business rule (ADR 0003).
  *
- * La configuration est validee avant la construction du module et injectee telle quelle :
- * aucun provider ne relit `process.env`.
+ * Configuration is validated before the module is built and injected as is: no provider
+ * reads `process.env` again.
  */
 @Module({})
 export class AppModule {

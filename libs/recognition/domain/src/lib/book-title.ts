@@ -1,7 +1,7 @@
 /**
- * Titre tel que lu sur la tranche, avant toute reconciliation.
+ * A title as read off a book spine, before any reconciliation.
  *
- * Value object : valide a la construction (ADR 0002).
+ * Value object: validated on construction (ADR 0002).
  */
 export class BookTitle {
   private constructor(readonly value: string) {}
@@ -10,10 +10,10 @@ export class BookTitle {
     const trimmed = raw.trim().replace(/\s+/g, ' ');
 
     if (trimmed.length === 0) {
-      throw new Error('BookTitle : le titre lu ne peut pas etre vide');
+      throw new Error('BookTitle: the title read cannot be empty');
     }
     if (trimmed.length > 500) {
-      throw new Error(`BookTitle : titre trop long (${trimmed.length} caracteres, 500 au plus)`);
+      throw new Error(`BookTitle: title too long (${trimmed.length} characters, 500 at most)`);
     }
 
     return new BookTitle(trimmed);

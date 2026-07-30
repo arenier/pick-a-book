@@ -5,50 +5,50 @@ import { DetectedBook } from './detected-book.js';
 import { ShelfPhoto } from './shelf-photo.js';
 
 describe('Author', () => {
-  it('normalise les espaces', () => {
+  it('normalises whitespace', () => {
     expect(Author.of('  Marguerite   Duras ').value).toBe('Marguerite Duras');
   });
 
-  it('refuse un nom vide', () => {
-    expect(() => Author.of('   ')).toThrow(/vide/);
+  it('rejects an empty name', () => {
+    expect(() => Author.of('   ')).toThrow(/empty/);
   });
 });
 
 describe('BookTitle', () => {
-  it('refuse un titre vide', () => {
-    expect(() => BookTitle.of('')).toThrow(/vide/);
+  it('rejects an empty title', () => {
+    expect(() => BookTitle.of('')).toThrow(/empty/);
   });
 
-  it('refuse un titre demesure', () => {
-    expect(() => BookTitle.of('a'.repeat(501))).toThrow(/trop long/);
+  it('rejects an oversized title', () => {
+    expect(() => BookTitle.of('a'.repeat(501))).toThrow(/too long/);
   });
 });
 
 describe('Confidence', () => {
-  it.each([-0.1, 1.1, Number.NaN])('refuse %p', (value) => {
+  it.each([-0.1, 1.1, Number.NaN])('rejects %p', (value) => {
     expect(() => Confidence.of(value)).toThrow();
   });
 
-  it('compare a un seuil', () => {
+  it('compares against a threshold', () => {
     expect(Confidence.of(0.8).isAtLeast(Confidence.of(0.7))).toBe(true);
     expect(Confidence.of(0.6).isAtLeast(Confidence.of(0.7))).toBe(false);
   });
 });
 
 describe('ShelfPhoto', () => {
-  it('refuse une image vide', () => {
-    expect(() => ShelfPhoto.of(new Uint8Array(0), 'image/jpeg')).toThrow(/vide/);
+  it('rejects an empty image', () => {
+    expect(() => ShelfPhoto.of(new Uint8Array(0), 'image/jpeg')).toThrow(/empty/);
   });
 
-  it('refuse un type de media inconnu', () => {
+  it('rejects an unknown media type', () => {
     expect(() => ShelfPhoto.of(new Uint8Array([1, 2, 3]), 'application/pdf')).toThrow(
-      /non supporte/,
+      /unsupported media type/,
     );
   });
 });
 
 describe('DetectedBook', () => {
-  it('expose sa confiance pour le filtrage en aval', () => {
+  it('exposes its confidence for downstream filtering', () => {
     const book = DetectedBook.of(
       Author.of('Georges Perec'),
       BookTitle.of('La Vie mode d emploi'),

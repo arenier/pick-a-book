@@ -1,8 +1,8 @@
 /**
- * `Result` rend l'echec explicite dans la signature plutot que par exception.
+ * `Result` makes failure explicit in the signature rather than through exceptions.
  *
- * Lib partagee au sens de l'ADR 0002 : technique et generique, sans metier dedans,
- * donc importable par n'importe quel contexte sans creer de couplage entre eux.
+ * A shared lib in the sense of ADR 0002: technical and generic, with no business rule
+ * inside, hence importable by any context without coupling contexts to one another.
  */
 export type Result<T, E> = Ok<T> | Err<E>;
 
@@ -32,12 +32,12 @@ export function isErr<T, E>(result: Result<T, E>): result is Err<E> {
   return !result.ok;
 }
 
-/** Extrait la valeur, ou leve si le resultat est un echec. A n'utiliser qu'aux frontieres. */
+/** Extracts the value, or throws if the result is a failure. Use at boundaries only. */
 export function unwrap<T, E>(result: Result<T, E>): T {
   if (result.ok) {
     return result.value;
   }
-  throw new Error(`Tentative de lecture d'un Result en echec : ${String(result.error)}`);
+  throw new Error(`Attempted to read a failed Result: ${String(result.error)}`);
 }
 
 export function map<T, U, E>(result: Result<T, E>, fn: (value: T) => U): Result<U, E> {

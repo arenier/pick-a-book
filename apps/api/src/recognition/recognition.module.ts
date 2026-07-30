@@ -4,14 +4,14 @@ import { SHELF_SCANNER_PORT, type ShelfScannerPort } from '@pick-a-book/recognit
 import { StubShelfScannerAdapter } from '@pick-a-book/recognition-infrastructure';
 
 /**
- * Composition root du contexte de reconnaissance.
+ * Composition root of the recognition context.
  *
- * C'est le seul endroit du repo qui a le droit de connaitre `recognition-infrastructure`
- * (ADR 0002) : le port est lie ici a son adaptateur, et le use case ne voit que le port.
- * Substituer l'adaptateur VLM au bouchon (ADR 0005) est un changement d'une ligne, ici.
+ * This is the only place in the repo allowed to know `recognition-infrastructure`
+ * (ADR 0002): the port is bound to its adapter here, and the use case only ever sees the
+ * port. Swapping the stub for the VLM adapter (ADR 0005) is a one-line change, right here.
  *
- * Aucun endpoint HTTP n'est expose pour l'instant : le parcours de scan viendra avec le
- * contexte de reconciliation et son use case d'orchestration (ADR 0003).
+ * No HTTP endpoint is exposed yet: the scan journey will come with the reconciliation
+ * context and its orchestrating use case (ADR 0003).
  */
 @Module({
   providers: [

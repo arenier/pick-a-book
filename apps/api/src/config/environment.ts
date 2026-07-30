@@ -1,13 +1,13 @@
 /**
- * Validation de la configuration au demarrage.
+ * Configuration validation at startup.
  *
- * Le principe : une variable requise manquante fait echouer le demarrage tout de suite,
- * avec la liste complete de ce qui manque — plutot qu'une erreur obscure a la premiere
- * requete qui touche le bucket ou la base.
+ * The principle: a missing required variable fails the boot immediately, with the full list
+ * of what is missing — rather than an obscure error on the first request that touches the
+ * bucket or the database.
  *
- * Ecrit a la main plutot qu'avec une bibliotheque de schema : quelques variables, aucune
- * dependance de plus, et le message d'erreur est le notre. Le jour ou la configuration
- * grossit, un schema se justifiera.
+ * Hand-written rather than backed by a schema library: a handful of variables, no extra
+ * dependency, and the error message is ours. The day the configuration grows, a schema will
+ * earn its keep.
  */
 
 export type NodeEnvironment = 'development' | 'test' | 'production';
@@ -16,25 +16,23 @@ export interface Environment {
   readonly nodeEnv: NodeEnvironment;
   readonly port: number;
   /**
-   * Chemin du fichier SQLite sur le bucket monte (ADR 0006).
-   * Le domaine l'ignore : seul `infrastructure` s'en sert.
+   * Path to the SQLite file on the mounted bucket (ADR 0006).
+   * The domain knows nothing about it: only `infrastructure` uses it.
    */
   readonly databasePath: string;
-  /** Bucket des photos d'etagere (ADR 0004). */
+  /** Bucket holding the shelf photos (ADR 0004). */
   readonly storageBucket: string;
   /**
-   * Point d'entree d'un emulateur de stockage objet, en developpement local
-   * (`fake-gcs-server` du docker-compose). Absent en production.
+   * Endpoint of an object storage emulator, for local development (`fake-gcs-server` from
+   * the docker-compose stack). Absent in production.
    */
   readonly storageEmulatorHost: string | undefined;
   /**
-   * Cle du fournisseur de VLM (ADR 0005). Optionnelle tant que l'adaptateur actif est le
-   * bouchon ; requise le jour ou l'adaptateur reel est branche.
+   * VLM provider key (ADR 0005). Optional as long as the active adapter is the stub;
+   * required the day the real adapter is wired in.
    */
   readonly shelfScannerApiKey: string | undefined;
 }
-
-const REQUIRED = ['DATABASE_PATH', 'STORAGE_BUCKET'] as const;
 
 const NODE_ENVIRONMENTS: readonly NodeEnvironment[] = ['development', 'test', 'production'];
 
@@ -42,10 +40,10 @@ export class InvalidEnvironment extends Error {
   constructor(problems: readonly string[]) {
     super(
       [
-        'Configuration invalide, demarrage interrompu :',
+        'Invalid configuration, startup aborted:',
         ...problems.map((problem) => `  - ${problem}`),
         '',
-        'Voir .env.example pour la liste des variables et leur role.',
+        'See .env.example for the list of variables and what they are for.',
       ].join('\n'),
     );
     this.name = 'InvalidEnvironment';
@@ -55,21 +53,23 @@ export class InvalidEnvironment extends Error {
 export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Environment {
   const problems: string[] = [];
 
-  for (const name of REQUIRED) {
-    if (!isPresent(source[name])) {
-      problems.push(`${name} est requise et n'est pas definie`);
-    }
-  }
+  // Every value is read through a narrowing helper rather than asserted with `as` at the
+  // end: the placeholders below never escape, since a non-empty `problems` throws first.
+  const databasePath = required(source, 'DATABASE_PATH', problems);
+  const storageBucket = required(source, 'STORAGE_BUCKET', problems);
 
+  let nodeEnv: NodeEnvironment = 'development';
   const rawNodeEnv = source.NODE_ENV ?? 'development';
-  if (!isNodeEnvironment(rawNodeEnv)) {
-    problems.push(`NODE_ENV vaut "${rawNodeEnv}" — attendu ${NODE_ENVIRONMENTS.join(', ')}`);
+  if (isNodeEnvironment(rawNodeEnv)) {
+    nodeEnv = rawNodeEnv;
+  } else {
+    problems.push(`NODE_ENV is "${rawNodeEnv}" — expected one of ${NODE_ENVIRONMENTS.join(', ')}`);
   }
 
   const rawPort = source.PORT ?? '3000';
   const port = Number(rawPort);
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
-    problems.push(`PORT vaut "${rawPort}" — attendu un entier entre 1 et 65535`);
+    problems.push(`PORT is "${rawPort}" — expected an integer between 1 and 65535`);
   }
 
   if (problems.length > 0) {
@@ -77,13 +77,23 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
   }
 
   return {
-    nodeEnv: rawNodeEnv as NodeEnvironment,
+    nodeEnv,
     port,
-    databasePath: source.DATABASE_PATH as string,
-    storageBucket: source.STORAGE_BUCKET as string,
+    databasePath,
+    storageBucket,
     storageEmulatorHost: optional(source.STORAGE_EMULATOR_HOST),
     shelfScannerApiKey: optional(source.SHELF_SCANNER_API_KEY),
   };
+}
+
+function required(source: NodeJS.ProcessEnv, name: string, problems: string[]): string {
+  const value = source[name];
+  if (isPresent(value)) {
+    return value;
+  }
+
+  problems.push(`${name} is required and is not set`);
+  return '';
 }
 
 function isPresent(value: string | undefined): value is string {
@@ -95,8 +105,8 @@ function optional(value: string | undefined): string | undefined {
 }
 
 function isNodeEnvironment(value: string): value is NodeEnvironment {
-  return (NODE_ENVIRONMENTS as readonly string[]).includes(value);
+  return NODE_ENVIRONMENTS.some((candidate) => candidate === value);
 }
 
-/** Jeton d'injection de la configuration validee. */
+/** Injection token for the validated configuration. */
 export const ENVIRONMENT = 'Environment';

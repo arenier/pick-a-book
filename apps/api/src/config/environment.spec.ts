@@ -6,7 +6,7 @@ const complete = {
 } satisfies NodeJS.ProcessEnv;
 
 describe('loadEnvironment', () => {
-  it('applique les valeurs par defaut', () => {
+  it('applies the default values', () => {
     const env = loadEnvironment({ ...complete });
 
     expect(env.nodeEnv).toBe('development');
@@ -14,24 +14,24 @@ describe('loadEnvironment', () => {
     expect(env.shelfScannerApiKey).toBeUndefined();
   });
 
-  it('echoue si une variable requise manque', () => {
+  it('fails when a required variable is missing', () => {
     expect(() => loadEnvironment({ STORAGE_BUCKET: 'photos' })).toThrow(InvalidEnvironment);
   });
 
-  it('liste toutes les variables manquantes en une fois', () => {
+  it('lists every missing variable at once', () => {
     expect(() => loadEnvironment({})).toThrow(/DATABASE_PATH[\s\S]*STORAGE_BUCKET/);
   });
 
-  it('traite une variable vide comme absente', () => {
+  it('treats an empty variable as absent', () => {
     expect(() => loadEnvironment({ ...complete, DATABASE_PATH: '   ' })).toThrow(/DATABASE_PATH/);
   });
 
-  it('refuse un PORT hors bornes', () => {
+  it('rejects a PORT outside its bounds', () => {
     expect(() => loadEnvironment({ ...complete, PORT: '70000' })).toThrow(/PORT/);
-    expect(() => loadEnvironment({ ...complete, PORT: 'huit-mille' })).toThrow(/PORT/);
+    expect(() => loadEnvironment({ ...complete, PORT: 'eight-thousand' })).toThrow(/PORT/);
   });
 
-  it('refuse un NODE_ENV inconnu', () => {
+  it('rejects an unknown NODE_ENV', () => {
     expect(() => loadEnvironment({ ...complete, NODE_ENV: 'staging' })).toThrow(/NODE_ENV/);
   });
 });

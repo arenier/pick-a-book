@@ -3,13 +3,13 @@ import { render, screen } from '@testing-library/react';
 import App from './app';
 
 describe('App', () => {
-  it('se rend sans erreur', () => {
+  it('renders without error', () => {
     const { baseElement } = render(<App />);
 
     expect(baseElement).toBeTruthy();
   });
 
-  it('affiche le nom du produit', () => {
+  it('displays the product name', () => {
     render(<App />);
 
     expect(screen.getByRole('heading', { name: 'pick-a-book' })).toBeTruthy();

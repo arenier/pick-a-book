@@ -8,14 +8,14 @@ import {
 } from '@pick-a-book/recognition-domain';
 
 /**
- * Adaptateur bouchon : rend un jeu de detections fixe, sans appeler quoi que ce soit.
+ * Stub adapter: returns a fixed set of detections, calling nothing at all.
  *
- * Il tient la place de l'adaptateur VLM retenu par l'ADR 0005 (solution B), qui n'est pas
- * l'objet de ce scaffolding. Sa raison d'etre est de rendre la chaine hexagonale executable
- * de bout en bout : le port existe, la composition root le lie, le use case tourne.
+ * It stands in for the VLM adapter chosen in ADR 0005 (option B), which is out of scope for
+ * this scaffolding. Its point is to make the hexagonal chain runnable end to end: the port
+ * exists, the composition root binds it, the use case runs.
  *
- * Il permet aussi de developper le frontend sans cle d'API ni facturation, et sert de
- * reference au futur adaptateur sur reponses enregistrees (tests deterministes, ADR 0005).
+ * It also allows working on the frontend without an API key or a bill, and serves as the
+ * reference for the future recorded-response adapter (deterministic tests, ADR 0005).
  */
 export class StubShelfScannerAdapter implements ShelfScannerPort {
   private static readonly SAMPLE: ReadonlyArray<[string, string, number]> = [

@@ -15,43 +15,43 @@ export default [
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {
-      // ADR 0002 — les frontieres hexagonales sont appliquees ici, pas seulement documentees.
-      // Trois dimensions de tags, independantes :
-      //   type:*    la couche          (domain, application, infrastructure, shared, app)
-      //   context:* le bounded context (recognition, none pour les libs partagees)
-      //   scope:*   le cote deploye    (api, web, shared)
+      // ADR 0002 — the hexagonal boundaries are enforced here, not merely documented.
+      // Three independent tag dimensions:
+      //   type:*    the layer          (domain, application, infrastructure, shared, app)
+      //   context:* the bounded context (recognition, none for shared libs)
+      //   scope:*   the deployed side  (api, web, shared)
       '@nx/enforce-module-boundaries': [
         'error',
         {
           enforceBuildableLibDependency: true,
           allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
           depConstraints: [
-            // -- Couches ------------------------------------------------------
+            // -- Layers -------------------------------------------------------
             {
-              // Le domaine ne depend de rien : ni framework, ni ORM, ni HTTP.
-              // La liste blanche d'imports externes vaut interdiction de tout le reste.
+              // The domain depends on nothing: no framework, no ORM, no HTTP.
+              // The allow-list of external imports forbids everything else.
               sourceTag: 'type:domain',
               onlyDependOnLibsWithTags: ['type:shared'],
               allowedExternalImports: ['tslib'],
             },
             {
-              // L'application depend du domaine seul et ne parle qu'aux ports.
+              // The application depends on the domain alone and talks to ports only.
               sourceTag: 'type:application',
               onlyDependOnLibsWithTags: ['type:domain', 'type:shared'],
               allowedExternalImports: ['tslib'],
             },
             {
-              // L'infrastructure implemente les ports ; elle ne connait pas l'application.
+              // Infrastructure implements the ports; it does not know the application.
               sourceTag: 'type:infrastructure',
               onlyDependOnLibsWithTags: ['type:domain', 'type:shared'],
             },
             {
-              // Une lib partagee ne depend que d'autres libs partagees.
+              // A shared lib depends on other shared libs only.
               sourceTag: 'type:shared',
               onlyDependOnLibsWithTags: ['type:shared'],
             },
             {
-              // Seule une app (composition root) a le droit de connaitre l'infrastructure.
+              // Only an app (composition root) may know about infrastructure.
               sourceTag: 'type:app',
               onlyDependOnLibsWithTags: [
                 'type:domain',
@@ -62,13 +62,13 @@ export default [
             },
             // -- Bounded contexts ---------------------------------------------
             {
-              // Un contexte n'importe jamais un autre contexte : le croisement se fait
-              // dans l'orchestrateur de apps/api (ADR 0003), sur des DTO de frontiere.
+              // A context never imports another context: the crossing happens in the
+              // orchestrator of apps/api (ADR 0003), on boundary DTOs.
               sourceTag: 'context:recognition',
               onlyDependOnLibsWithTags: ['context:recognition', 'context:none'],
             },
             {
-              // context:none = libs/shared/* : importables par tous, n'importent aucun contexte.
+              // context:none = libs/shared/*: importable by all, importing no context.
               sourceTag: 'context:none',
               onlyDependOnLibsWithTags: ['context:none'],
             },
@@ -102,8 +102,8 @@ export default [
       '**/*.mjs',
     ],
     rules: {
-      // Un parametre prefixe par `_` est intentionnellement inutilise : signature imposee
-      // par une interface, adaptateur bouchon qui ignore son entree, etc.
+      // A parameter prefixed with `_` is intentionally unused: signature imposed by an
+      // interface, stub adapter ignoring its input, and so on.
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -112,6 +112,11 @@ export default [
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+      // A type assertion silences the compiler without proving anything. Where a type has
+      // to be pinned down, `satisfies` checks the value against it and keeps inference;
+      // where the type is genuinely unknown at compile time, a type guard is the answer.
+      // `as const` is unaffected — it narrows a literal, it does not assert.
+      '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'never' }],
     },
   },
 ];

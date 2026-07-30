@@ -1,9 +1,9 @@
 /**
- * Nom d'auteur tel que lu sur la tranche.
+ * An author name as read off a book spine.
  *
- * Value object : valide a la construction, jamais une chaine nue dans le domaine
- * (ADR 0002). Ce n'est pas un auteur du referentiel bibliographique — la
- * reconciliation est en aval et appartient a un autre contexte.
+ * Value object: validated on construction, never a bare string inside the domain
+ * (ADR 0002). This is not an author from the bibliographic reference — reconciliation
+ * happens downstream and belongs to another context.
  */
 export class Author {
   private constructor(readonly value: string) {}
@@ -12,10 +12,10 @@ export class Author {
     const trimmed = raw.trim().replace(/\s+/g, ' ');
 
     if (trimmed.length === 0) {
-      throw new Error('Author : le nom lu ne peut pas etre vide');
+      throw new Error('Author: the name read cannot be empty');
     }
     if (trimmed.length > 200) {
-      throw new Error(`Author : nom trop long (${trimmed.length} caracteres, 200 au plus)`);
+      throw new Error(`Author: name too long (${trimmed.length} characters, 200 at most)`);
     }
 
     return new Author(trimmed);

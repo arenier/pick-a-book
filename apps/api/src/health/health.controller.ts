@@ -1,11 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
 
 /**
- * Point de sante consomme par Cloud Run (ADR 0004) et par le healthcheck du docker-compose.
+ * Health endpoint consumed by Cloud Run (ADR 0004) and by the docker-compose healthcheck.
  *
- * Deliberement pauvre : il dit que le processus repond, rien de plus. Y brancher une
- * verification du bucket ou de la base rendrait le demarrage a froid — assume par le
- * scale-to-zero — plus lent et plus fragile.
+ * Deliberately thin: it says the process answers, nothing more. Wiring a bucket or database
+ * check into it would make the cold start — accepted as part of scale-to-zero — slower and
+ * more brittle.
  */
 @Controller('health')
 export class HealthController {

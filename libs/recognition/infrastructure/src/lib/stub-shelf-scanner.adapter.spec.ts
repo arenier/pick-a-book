@@ -5,7 +5,7 @@ import { StubShelfScannerAdapter } from './stub-shelf-scanner.adapter.js';
 describe('StubShelfScannerAdapter', () => {
   const photo = ShelfPhoto.of(new Uint8Array([1, 2, 3]), 'image/jpeg');
 
-  it('honore le contrat du port', async () => {
+  it('honours the port contract', async () => {
     const books = await new StubShelfScannerAdapter().scan(photo);
 
     expect(books.length).toBeGreaterThan(0);
@@ -17,7 +17,7 @@ describe('StubShelfScannerAdapter', () => {
     }
   });
 
-  it('inclut une detection faible, pour que le filtrage en aval soit exercable', async () => {
+  it('includes a weak detection, so downstream filtering can be exercised', async () => {
     const books = await new StubShelfScannerAdapter().scan(photo);
 
     expect(books.some((book) => !book.isAtLeast(Confidence.of(0.5)))).toBe(true);
