@@ -1,0 +1,62 @@
+# Developpement local. Ce fichier ne decrit pas la production : celle-ci est une image
+# de conteneur sur Cloud Run plus un bucket (ADR 0004).
+#
+# Pas de service de base de donnees, et ce n'est pas un oubli. La persistance est SQLite
+# sur le bucket monte (ADR 0006) : ajouter Postgres ou MySQL ici ferait developper contre
+# une base que la production n'a pas. Le fichier SQLite vit dans un volume ; le bucket est
+# tenu par fake-gcs-server.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      NODE_ENV: development
+      PORT: '3000'
+      # Le volume `api-data` tient lieu de bucket monte en volume gcsfuse.
+      DATABASE_PATH: /data/pick-a-book.sqlite
+      STORAGE_BUCKET: pick-a-book-photos
+      STORAGE_EMULATOR_HOST: http://storage:4443
+      SHELF_SCANNER_API_KEY: ${SHELF_SCANNER_API_KEY:-}
+    ports:
+      - '3000:3000'
+    volumes:
+      - api-data:/data
+    depends_on:
+      storage:
+        condition: service_started
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - '4200:4200'
+    depends_on:
+      - api
+
+  # Tient le role du bucket : les photos d'etagere sont des objets, pas des lignes.
+  storage:
+    image: fsouza/fake-gcs-server:1.52.2
+    command: ['-scheme', 'http', '-port', '4443', '-public-host', 'storage:4443']
+    ports:
+      - '4443:4443'
+    volumes:
+      - storage-data:/storage
+
+volumes:
+  api-data:
+  storage-data:
