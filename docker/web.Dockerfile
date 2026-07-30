@@ -1,7 +1,8 @@
-# Image de developpement du frontend : serveur Vite, rechargement a chaud.
+# Frontend development image: Vite dev server, hot reload. Build context is the repository
+# root: `docker build -f docker/web.Dockerfile .`
 #
-# Ce n'est pas l'image de production. En production, `apps/web` est un lot de fichiers
-# statiques servis depuis le bucket (ADR 0004), pas un conteneur.
+# This is not the production image. In production, `apps/web` is a set of static files
+# served from the bucket (ADR 0004), not a container.
 
 FROM node:26.5.1-bookworm-slim
 WORKDIR /app

@@ -1,20 +1,22 @@
-# Developpement local. Ce fichier ne decrit pas la production : celle-ci est une image
-# de conteneur sur Cloud Run plus un bucket (ADR 0004).
+# Local development. This file does not describe production: production is a container
+# image on Cloud Run plus a bucket (ADR 0004).
 #
-# Pas de service de base de donnees, et ce n'est pas un oubli. La persistance est SQLite
-# sur le bucket monte (ADR 0006) : ajouter Postgres ou MySQL ici ferait developper contre
-# une base que la production n'a pas. Le fichier SQLite vit dans un volume ; le bucket est
-# tenu par fake-gcs-server.
+# No database service, and that is not an oversight. Persistence is SQLite on the mounted
+# bucket (ADR 0006): adding Postgres or MySQL here would mean developing against a database
+# production does not have. The SQLite file lives in a volume; the bucket is stood in for by
+# fake-gcs-server.
+#
+# The Dockerfiles live in docker/ and take the repository root as their build context.
 
 services:
   api:
     build:
       context: .
-      dockerfile: apps/api/Dockerfile
+      dockerfile: docker/api.Dockerfile
     environment:
       NODE_ENV: development
       PORT: '3000'
-      # Le volume `api-data` tient lieu de bucket monte en volume gcsfuse.
+      # The `api-data` volume stands in for the bucket mounted as a gcsfuse volume.
       DATABASE_PATH: /data/pick-a-book.sqlite
       STORAGE_BUCKET: pick-a-book-photos
       STORAGE_EMULATOR_HOST: http://storage:4443
@@ -42,13 +44,13 @@ services:
   web:
     build:
       context: .
-      dockerfile: apps/web/Dockerfile
+      dockerfile: docker/web.Dockerfile
     ports:
       - '4200:4200'
     depends_on:
       - api
 
-  # Tient le role du bucket : les photos d'etagere sont des objets, pas des lignes.
+  # Plays the part of the bucket: shelf photos are objects, not rows.
   storage:
     image: fsouza/fake-gcs-server:1.52.2
     command: ['-scheme', 'http', '-port', '4443', '-public-host', 'storage:4443']
