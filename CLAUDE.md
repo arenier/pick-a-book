@@ -22,6 +22,8 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
 - **Persistance** SQLite sur le bucket monté, versioning + snapshots datés. Corollaire :
   **`max-instances=1`**, un second écrivain corrompt la base ·
   [0006](docs/adr/0006-persistance-sqlite-bucket-monte.md)
+- **Build et test** — **Vite** pour les deux apps, **Vitest** partout. Ni webpack ni Jest ·
+  [0007](docs/adr/0007-vite-et-vitest-outillage-unique.md)
 - **Enrichissement bibliographique** — ADR à écrire, contraint par 0005
 
 ## Outillage
@@ -39,8 +41,15 @@ Plug'n'Play. Trois pièges :
   bon Yarn : c'est Volta qui le fournit en local, et une installation explicite
   (`npm i -g @yarnpkg/cli-dist@4.18.0`) en CI et dans les images Docker ;
 - **Node 26 n'est pas encore LTS** (attendu vers octobre 2026), à reconfirmer avant le premier
-  déploiement. Les `Dockerfile` épinglent Node de leur côté — les deux épinglages se maintiennent
-  à la main.
+  déploiement. Les `Dockerfile` de `docker/` épinglent Node de leur côté — les deux épinglages se
+  maintiennent à la main.
+
+Build et test passent par **Vite et Vitest sur tous les projets** ([0007](docs/adr/0007-vite-et-vitest-outillage-unique.md)) :
+un `vite.config.mts` par app, un `vitest.config.mts` par lib, et `tsc` pour la compilation des
+libs. Les générateurs Nx d'app Node proposent encore webpack — ne pas garder ce qu'ils écrivent.
+`apps/api/vite.config.mts` passe par **SWC** (`unplugin-swc`) : ni esbuild ni Oxc n'émettent les
+métadonnées de décorateurs dont NestJS a besoin, et sans elles l'injection casse **à l'exécution**,
+pas à la compilation.
 
 ## Commandes
 
@@ -75,6 +84,7 @@ libs/recognition/domain/         # entités, value objects, ports — zéro dép
 libs/recognition/application/    # use cases, parlent aux ports
 libs/recognition/infrastructure/ # adapters
 libs/shared/result/              # contenu partagé, une lib par sujet nommé
+docker/                          # Dockerfile des deux apps — contexte de build : la racine
 docs/adr/
 ```
 
@@ -112,7 +122,13 @@ Le découpage en bounded contexts n'est pas arrêté — futur ADR.
 
 ## Conventions
 
-- TypeScript strict. Pas de `any` implicite, ni de `as` pour faire taire le compilateur.
+- TypeScript strict. Pas de `any` implicite.
+- **Pas de `as`.** `@typescript-eslint/consistent-type-assertions` en `assertionStyle: 'never'`
+  fait échouer `yarn lint` sur une assertion — la règle est appliquée, pas seulement écrite.
+  Pour contraindre un type sans perdre l'inférence : **`satisfies`**. Quand le type n'est
+  réellement pas connu à la compilation (`process.env`, réponse HTTP, `document.getElementById`) :
+  un **type guard** ou une vérification explicite, qui prouve au lieu d'affirmer.
+  `as const` n'est pas concerné — il restreint un littéral, il n'affirme rien.
 - Pas de primitives nues dans le domaine : value objects validant à la construction.
 - Fichiers en `kebab-case`, classes en `PascalCase`, use cases en verbe explicite
   (`pick-book-for-user.use-case.ts`).
@@ -120,7 +136,9 @@ Le découpage en bounded contexts n'est pas arrêté — futur ADR.
 - Adapters de reconnaissance : tests sur **réponses enregistrées** ; la non-régression sur photos
   réelles est un test séparé et manuel.
 - Le SQL, le schéma et les migrations restent dans `infrastructure`.
-- Français dans la doc et les ADR, anglais dans le code et les commits.
+- **Français dans la doc et les ADR, anglais dans le code** — commentaires, messages d'erreur,
+  logs, descriptions de tests (`it('rejects an empty image')`) et commits inclus. Le texte affiché
+  à l'utilisateur dans `apps/web` reste en français : c'est du produit, pas du code.
 
 ## Workflow Git
 

@@ -37,6 +37,9 @@ docker compose up --build
 yarn check              # lint + test + build sur tous les projets
 ```
 
+Build et tests passent par **Vite** et **Vitest** sur tous les projets
+([ADR 0007](docs/adr/0007-vite-et-vitest-outillage-unique.md)).
+
 ## Organisation
 
 ```
@@ -46,6 +49,7 @@ libs/recognition/domain/         entités, value objects, ports — zéro dépen
 libs/recognition/application/    use cases, parlent aux ports
 libs/recognition/infrastructure/ adapters
 libs/shared/result/              contenu partagé, une lib par sujet nommé
+docker/                          Dockerfile des deux apps — contexte de build : la racine
 docs/adr/                        décisions d'architecture
 ```
 
