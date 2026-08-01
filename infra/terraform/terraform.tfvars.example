@@ -1,0 +1,12 @@
+# Copy to terraform.tfvars (gitignored) and fill in your own values.
+
+project_id      = "pick-a-book-XXXX" # must be globally unique; add a suffix if taken
+billing_account = "XXXXXX-XXXXXX-XXXXXX" # from `gcloud billing accounts list`
+
+# Only needed if your Google account belongs to a Cloud Identity / Workspace org.
+# org_id    = "123456789012"
+# folder_id = "123456789012"
+
+# region                  = "europe-west1"
+# experiment_bucket_name  = "pick-a-book-XXXX-experiments"
+# experiment_photos_dir   = "./data/experiment-photos"
