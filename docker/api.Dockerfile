@@ -27,12 +27,23 @@ RUN yarn install --immutable
 COPY . .
 RUN yarn nx build api
 
+# The build needed the dev dependencies; the runtime image must not carry them. `focus`
+# reinstalls node_modules as if `@pick-a-book/api` were the only workspace, keeping its
+# regular dependencies alone — nx, vite, typescript, eslint and the SWC toolchain go away.
+# The workspace symlinks it leaves behind are dangling here, and unused: the bundle inlines
+# those libraries. Removing them keeps the image honest about what it actually resolves.
+RUN yarn workspaces focus @pick-a-book/api --production \
+    && rm -rf node_modules/@pick-a-book
+
 FROM node:26.5.1-bookworm-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 
 # The Vite build bundles the workspace libraries into dist/main.js and leaves only npm
-# dependencies external (ADR 0007), so node_modules is all the runtime stage needs.
+# dependencies external (ADR 0007), so the pruned node_modules is all the runtime needs.
+# Note that `@swc/helpers` is one of those externals: the SWC transform emits calls to it
+# for decorators, which is why apps/api declares it as a regular dependency and not merely
+# as build tooling.
 COPY --from=build /app/apps/api/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
 
