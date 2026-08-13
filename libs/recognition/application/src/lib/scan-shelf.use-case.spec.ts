@@ -15,9 +15,9 @@ class ShelfScannerStub implements ShelfScannerPort {
 
   constructor(private readonly books: DetectedBook[]) {}
 
-  async scan(photo: ShelfPhoto): Promise<DetectedBook[]> {
+  scan(photo: ShelfPhoto): Promise<DetectedBook[]> {
     this.seen = photo;
-    return this.books;
+    return Promise.resolve(this.books);
   }
 }
 
@@ -57,7 +57,7 @@ describe('ScanShelfUseCase', () => {
 
     await expect(
       new ScanShelfUseCase(scanner).execute({ bytes: new Uint8Array(0), mediaType: 'image/jpeg' }),
-    ).rejects.toThrow(/empty/);
+    ).rejects.toThrow(/empty/u);
     expect(scanner.seen).toBeUndefined();
   });
 });

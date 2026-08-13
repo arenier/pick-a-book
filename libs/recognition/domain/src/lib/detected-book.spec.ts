@@ -10,23 +10,23 @@ describe('Author', () => {
   });
 
   it('rejects an empty name', () => {
-    expect(() => Author.of('   ')).toThrow(/empty/);
+    expect(() => Author.of('   ')).toThrow(/empty/u);
   });
 });
 
 describe('BookTitle', () => {
   it('rejects an empty title', () => {
-    expect(() => BookTitle.of('')).toThrow(/empty/);
+    expect(() => BookTitle.of('')).toThrow(/empty/u);
   });
 
   it('rejects an oversized title', () => {
-    expect(() => BookTitle.of('a'.repeat(501))).toThrow(/too long/);
+    expect(() => BookTitle.of('a'.repeat(501))).toThrow(/too long/u);
   });
 });
 
 describe('Confidence', () => {
   it.each([-0.1, 1.1, Number.NaN])('rejects %p', (value) => {
-    expect(() => Confidence.of(value)).toThrow();
+    expect(() => Confidence.of(value)).toThrow(/Confidence:/u);
   });
 
   it('compares against a threshold', () => {
@@ -37,12 +37,12 @@ describe('Confidence', () => {
 
 describe('ShelfPhoto', () => {
   it('rejects an empty image', () => {
-    expect(() => ShelfPhoto.of(new Uint8Array(0), 'image/jpeg')).toThrow(/empty/);
+    expect(() => ShelfPhoto.of(new Uint8Array(0), 'image/jpeg')).toThrow(/empty/u);
   });
 
   it('rejects an unknown media type', () => {
     expect(() => ShelfPhoto.of(new Uint8Array([1, 2, 3]), 'application/pdf')).toThrow(
-      /unsupported media type/,
+      /unsupported media type/u,
     );
   });
 });

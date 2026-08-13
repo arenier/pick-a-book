@@ -1,5 +1,14 @@
 import nx from '@nx/eslint-plugin';
+import oxlint from 'eslint-plugin-oxlint';
 
+// Hybrid lint setup (ADR 0008): oxlint is the primary linter (correctness, TypeScript, React,
+// imports) and runs first through `yarn lint`. ESLint is kept ONLY for the rules oxlint cannot
+// express — both driven by the Nx project graph:
+//   - @nx/enforce-module-boundaries: the hexagonal boundaries by tag (ADR 0002), below.
+//   - @nx/dependency-checks: each package.json must list the deps its code imports (per-lib config).
+// `eslint-plugin-oxlint` is spread last and disables every ESLint rule oxlint already owns, so the
+// two linters never report the same finding twice. The `no-as` and `no-unused-vars` conventions
+// now live in .oxlintrc.json.
 export default [
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
@@ -90,33 +99,7 @@ export default [
       ],
     },
   },
-  {
-    files: [
-      '**/*.ts',
-      '**/*.tsx',
-      '**/*.cts',
-      '**/*.mts',
-      '**/*.js',
-      '**/*.jsx',
-      '**/*.cjs',
-      '**/*.mjs',
-    ],
-    rules: {
-      // A parameter prefixed with `_` is intentionally unused: signature imposed by an
-      // interface, stub adapter ignoring its input, and so on.
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
-      // A type assertion silences the compiler without proving anything. Where a type has
-      // to be pinned down, `satisfies` checks the value against it and keeps inference;
-      // where the type is genuinely unknown at compile time, a type guard is the answer.
-      // `as const` is unaffected — it narrows a literal, it does not assert.
-      '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'never' }],
-    },
-  },
+  // Must stay last: disable every ESLint rule that oxlint already reports, leaving only the
+  // Nx-graph rules above active under ESLint.
+  ...oxlint.configs['flat/all'],
 ];

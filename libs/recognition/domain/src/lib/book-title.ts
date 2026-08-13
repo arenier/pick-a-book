@@ -7,7 +7,7 @@ export class BookTitle {
   private constructor(readonly value: string) {}
 
   static of(raw: string): BookTitle {
-    const trimmed = raw.trim().replace(/\s+/g, ' ');
+    const trimmed = raw.trim().replaceAll(/\s+/gu, ' ');
 
     if (trimmed.length === 0) {
       throw new Error('BookTitle: the title read cannot be empty');

@@ -17,6 +17,7 @@ documentation d'architecture — il ne décrit pas comment le système marche, i
 | [0005](0005-reconnaissance-livres-photo-etagere.md) | Source de reconnaissance des livres sur photo d'étagère  | Proposé  | 1     | 2026-07-29 |
 | [0006](0006-persistance-sqlite-bucket-monte.md)     | Persistance : SQLite sur bucket monté, avec snapshots datés | Proposé  | Socle | 2026-07-30 |
 | [0007](0007-vite-et-vitest-outillage-unique.md)     | Vite et Vitest comme outillage unique de build et de test | Accepté  | Socle | 2026-07-31 |
+| [0008](0008-lint-et-format-oxlint-oxfmt.md)         | Lint et format : oxlint + oxfmt, ESLint réduit aux frontières | Accepté  | Socle | 2026-08-14 |
 
 **À écrire** — la source d'enrichissement bibliographique. Elle n'a pas de numéro tant que le
 fichier n'existe pas ; [0005](0005-reconnaissance-livres-photo-etagere.md) s'y réfère par son sujet

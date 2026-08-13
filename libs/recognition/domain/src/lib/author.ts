@@ -9,7 +9,7 @@ export class Author {
   private constructor(readonly value: string) {}
 
   static of(raw: string): Author {
-    const trimmed = raw.trim().replace(/\s+/g, ' ');
+    const trimmed = raw.trim().replaceAll(/\s+/gu, ' ');
 
     if (trimmed.length === 0) {
       throw new Error('Author: the name read cannot be empty');
