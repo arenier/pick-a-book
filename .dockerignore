@@ -1,0 +1,10 @@
+node_modules
+**/node_modules
+**/dist
+**/out-tsc
+.nx
+.git
+.env
+.yarn/cache
+.yarn/install-state.gz
+docs

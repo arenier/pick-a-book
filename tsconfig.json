@@ -1,0 +1,26 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/api"
+    },
+    {
+      "path": "./apps/web"
+    },
+    {
+      "path": "./libs/recognition/domain"
+    },
+    {
+      "path": "./libs/recognition/application"
+    },
+    {
+      "path": "./libs/recognition/infrastructure"
+    },
+    {
+      "path": "./libs/shared/result"
+    }
+  ],
+  "compilerOptions": {}
+}

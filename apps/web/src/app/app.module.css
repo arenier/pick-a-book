@@ -1,0 +1,10 @@
+.shell {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+.status {
+  color: #6b6b6b;
+  font-style: italic;
+}

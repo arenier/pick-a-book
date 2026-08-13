@@ -1,0 +1,39 @@
+{
+  "name": "@pick-a-book/api",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "api",
+    "targets": {
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "api:build"
+        }
+      }
+    },
+    "tags": [
+      "type:app",
+      "scope:api"
+    ]
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/platform-express": "^11.0.0",
+    "@pick-a-book/recognition-application": "workspace:*",
+    "@pick-a-book/recognition-domain": "workspace:*",
+    "@pick-a-book/recognition-infrastructure": "workspace:*",
+    "@swc/helpers": "0.5.18",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^11.0.0"
+  }
+}
