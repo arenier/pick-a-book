@@ -15,5 +15,5 @@ url = "http://localhost:{{ (branch ~ '-web') | hash_port }}"
 #   wt api → API NestJS (lit PORT, cf. apps/api/src/config/environment.ts)
 #   wt web → front Vite (lit WEB_PORT, cf. apps/web/vite.config.mts)
 [aliases]
-api = "PORT={{ branch | hash_port }} yarn nx serve api"
-web = "WEB_PORT={{ (branch ~ '-web') | hash_port }} yarn nx serve web"
+api = "PORT={{ branch | hash_port }} yarn api"
+web = "WEB_PORT={{ (branch ~ '-web') | hash_port }} yarn web"

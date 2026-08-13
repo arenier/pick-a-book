@@ -1,9 +1,11 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
-// Dev/preview port, overridable per worktree (worktrunk sets WEB_PORT); defaults to 4200.
-// Mirrors the API, which reads PORT (see apps/api/src/config/environment.ts).
-const webPort = Number(process.env.WEB_PORT ?? '4200');
+// Dev/preview port, overridable per worktree via WEB_PORT (worktrunk); defaults to 4200.
+// A missing or non-numeric value falls back to 4200 (the API instead fails fast on a bad
+// PORT — see apps/api/src/config/environment.ts).
+const parsedWebPort = Number(process.env.WEB_PORT ?? '4200');
+const webPort = Number.isInteger(parsedWebPort) && parsedWebPort > 0 ? parsedWebPort : 4200;
 
 export default defineConfig({
   root: import.meta.dirname,
