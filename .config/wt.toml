@@ -1,0 +1,19 @@
+# Project configuration — worktrunk (https://worktrunk.dev)
+# Settings shared with the team through the repo. Hook docs: https://worktrunk.dev/hook/
+
+# On worktree creation: install its dependencies. The `node-modules` linker
+# (ADR 0001/0007, no PnP) means one `node_modules` per worktree.
+pre-start = "yarn install"
+
+# `wt list` URL column: the front, on the port derived from the branch name (alias `web`).
+# Dimmed until the port is listening.
+[list]
+url = "http://localhost:{{ (branch ~ '-web') | hash_port }}"
+
+# Shared aliases, run via `wt <name>`. Ports derived from the branch name so several
+# worktrees can run in parallel without port collisions.
+#   wt api → NestJS API (reads PORT, see apps/api/src/config/environment.ts)
+#   wt web → Vite front  (reads WEB_PORT, see apps/web/vite.config.mts)
+[aliases]
+api = "PORT={{ branch | hash_port }} yarn api"
+web = "WEB_PORT={{ (branch ~ '-web') | hash_port }} yarn web"

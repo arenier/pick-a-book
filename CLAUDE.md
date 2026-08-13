@@ -155,13 +155,20 @@ Le découpage en bounded contexts n'est pas arrêté — futur ADR.
 
 ## Workflow Git
 
+**Toujours travailler dans un worktree dédié** (worktrunk `wt`), jamais directement sur `main` ni
+dans le checkout principal — règle et procédure complète dans
+[`.claude/rules/always-work-in-a-worktree.md`](.claude/rules/always-work-in-a-worktree.md). La config projet
+worktrunk vit dans [`.config/wt.toml`](.config/wt.toml).
+
 `main` est protégée : push direct refusé, force-push et suppression interdits, conversations à
 résoudre. 0 approbation requise — l'auteur merge sa propre PR.
 
 ```bash
-git checkout -b feat/ma-feature
+wt switch --create feat/ma-feature   # branche + worktree isolé (pre-start fait yarn install)
+wt api                               # API sur un port dérivé de la branche · wt web pour le front
 gh pr create
 gh pr merge --squash --delete-branch
+wt remove                            # nettoie le worktree ; supprime la branche si mergée
 ```
 
 Toute décision structurante passe par un ADR avant ou avec le code — procédure dans
