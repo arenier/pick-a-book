@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Un seul run par ref : une nouvelle poussée annule celui en cours.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read # nx-set-shas lit les runs précédents (base = dernier vert sur push main)
+
+env:
+  # Yarn écrit son cache dans le projet (.yarn/cache) pour qu'il soit cachable.
+  YARN_ENABLE_GLOBAL_CACHE: 'false'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # nx affected diffère base..head : besoin de l'historique complet
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26.5.1 # épinglage exact, aligné sur Volta (CLAUDE.md)
+
+      # Node 26 ne fournit plus Corepack : Yarn 4 s'installe explicitement (CLAUDE.md).
+      - name: Install Yarn 4
+        run: |
+          npm i -g @yarnpkg/cli-dist@4.18.0
+          yarn --version
+
+      - name: Cache Yarn & Nx
+        uses: actions/cache@v4
+        with:
+          path: |
+            .yarn/cache
+            .nx/cache
+          key: ${{ runner.os }}-yarn-nx-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-nx-
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      # Calcule NX_BASE / NX_HEAD pour `nx affected` :
+      #   PR   → merge-base avec main ; push main → dernier commit vert.
+      - uses: nrwl/nx-set-shas@v5
+
+      # oxlint et oxfmt couvrent tout le dépôt (rapides, hors graphe Nx) ; nx affected
+      # restreint lint (ESLint/frontières), typecheck et test aux projets touchés.
+      - name: Checks
+        run: |
+          yarn oxlint
+          yarn oxfmt --check
+          yarn nx affected -t lint typecheck test

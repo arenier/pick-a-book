@@ -88,6 +88,11 @@ yarn nx graph                      # visualise le graphe de dépendances
 Avant de démarrer l'API : `cp .env.example .env`. Une variable requise manquante fait échouer le
 démarrage avec la liste de ce qui manque — c'est voulu, ne pas la contourner.
 
+La **CI** (GitHub Actions, `.github/workflows/ci.yml`) tourne sur chaque PR et push `main` : oxlint
+et oxfmt sur tout le dépôt, puis `nx affected -t lint typecheck test` sur les projets touchés (base
+calculée par `nrwl/nx-set-shas`). Node 26 n'ayant pas Corepack, elle installe Yarn avec
+`@yarnpkg/cli-dist@4.18.0` — comme les images Docker.
+
 ## Architecture
 
 ```
