@@ -138,7 +138,7 @@ Le découpage en bounded contexts n'est pas arrêté — futur ADR.
 - **TDD systématique.** Tout code s'écrit en cycle rouge/vert/refactor : le test qui échoue d'abord, puis le
   code minimal qui le fait passer, puis refactor. Aucun code de production sans un test qui le motive —
   correctifs inclus (test de non-régression **avant** le fix). Vaut aussi pour l'**IaC** : les modules
-  Terraform sont testés (`terraform test`), assertions écrites d'abord.
+  d'infrastructure sont testés, assertions écrites d'abord.
 - TypeScript strict. Pas de `any` implicite.
 - **Pas de `as`.** `typescript/consistent-type-assertions` en `assertionStyle: 'never'` (oxlint)
   fait échouer `yarn lint` sur une assertion — la règle est appliquée, pas seulement écrite.
