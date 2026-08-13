@@ -158,5 +158,5 @@ vitest.config.*.timestamp*
 # Donnees locales (SQLite hors conteneur)
 .data/
 
-# Worktrees Claude Code
+# Claude Code worktrees
 .claude/worktrees/
