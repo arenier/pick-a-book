@@ -10,7 +10,7 @@ export class Confidence {
 
   static of(raw: number): Confidence {
     if (!Number.isFinite(raw)) {
-      throw new Error(`Confidence: not a number (${raw})`);
+      throw new TypeError(`Confidence: not a number (${raw})`);
     }
     if (raw < 0 || raw > 1) {
       throw new Error(`Confidence: value outside [0, 1] (${raw})`);

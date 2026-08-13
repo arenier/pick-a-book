@@ -24,6 +24,8 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
   [0006](docs/adr/0006-persistance-sqlite-bucket-monte.md)
 - **Build et test** — **Vite** pour les deux apps, **Vitest** partout. Ni webpack ni Jest ·
   [0007](docs/adr/0007-vite-et-vitest-outillage-unique.md)
+- **Lint et format** — **oxlint** (strict) + **oxfmt**, écosystème Oxc. ESLint conservé pour les
+  seules frontières de modules Nx · [0008](docs/adr/0008-lint-et-format-oxlint-oxfmt.md)
 - **Enrichissement bibliographique** — ADR à écrire, contraint par 0005
 
 ## Outillage
@@ -51,16 +53,27 @@ libs. Les générateurs Nx d'app Node proposent encore webpack — ne pas garder
 métadonnées de décorateurs dont NestJS a besoin, et sans elles l'injection casse **à l'exécution**,
 pas à la compilation.
 
+Le lint et le format passent par **oxlint et oxfmt** (Oxc), montage hybride
+([0008](docs/adr/0008-lint-et-format-oxlint-oxfmt.md)) : oxlint est le linter principal, en
+catégories strictes ; **ESLint n'est conservé que pour les règles qu'oxlint ne sait pas exprimer** —
+`@nx/enforce-module-boundaries` (les frontières, ADR 0002) et `@nx/dependency-checks`, toutes deux
+fondées sur le graphe Nx. `eslint-plugin-oxlint` doit rester **en dernier** dans `eslint.config.mjs` :
+il éteint les doublons, sinon les deux linters reportent la même erreur. oxfmt remplace Prettier avec
+les mêmes réglages (`singleQuote`, `printWidth: 100`) — la bascule ne reformate aucun fichier, et il
+ne touche pas au Markdown des ADR. Adopter Oxc ici ne rouvre pas [0007](docs/adr/0007-vite-et-vitest-outillage-unique.md) :
+SWC reste le transpileur du build. Les règles strictes désactivées le sont chacune pour une raison
+tracée dans l'ADR 0008 (runtime JSX de React 19, CommonJS de l'API, modules NestJS).
+
 ## Commandes
 
 ```bash
 yarn install                       # installe le workspace
 yarn check                         # lint + test + build sur tous les projets
-yarn lint                          # nx run-many -t lint
+yarn lint                          # oxlint puis nx run-many -t lint (ESLint : frontières)
 yarn test                          # nx run-many -t test
 yarn build                         # nx run-many -t build
 yarn typecheck                     # nx run-many -t typecheck
-yarn format                        # prettier --write .
+yarn format                        # oxfmt          (yarn format:check pour vérifier sans écrire)
 
 yarn api                           # démarre l'API   (http://localhost:3000/health)
 yarn web                           # démarre le front (http://localhost:4200)
@@ -123,7 +136,7 @@ Le découpage en bounded contexts n'est pas arrêté — futur ADR.
 ## Conventions
 
 - TypeScript strict. Pas de `any` implicite.
-- **Pas de `as`.** `@typescript-eslint/consistent-type-assertions` en `assertionStyle: 'never'`
+- **Pas de `as`.** `typescript/consistent-type-assertions` en `assertionStyle: 'never'` (oxlint)
   fait échouer `yarn lint` sur une assertion — la règle est appliquée, pas seulement écrite.
   Pour contraindre un type sans perdre l'inférence : **`satisfies`**. Quand le type n'est
   réellement pas connu à la compilation (`process.env`, réponse HTTP, `document.getElementById`) :

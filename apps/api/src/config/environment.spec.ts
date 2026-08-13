@@ -19,19 +19,19 @@ describe('loadEnvironment', () => {
   });
 
   it('lists every missing variable at once', () => {
-    expect(() => loadEnvironment({})).toThrow(/DATABASE_PATH[\s\S]*STORAGE_BUCKET/);
+    expect(() => loadEnvironment({})).toThrow(/DATABASE_PATH[\s\S]*STORAGE_BUCKET/u);
   });
 
   it('treats an empty variable as absent', () => {
-    expect(() => loadEnvironment({ ...complete, DATABASE_PATH: '   ' })).toThrow(/DATABASE_PATH/);
+    expect(() => loadEnvironment({ ...complete, DATABASE_PATH: '   ' })).toThrow(/DATABASE_PATH/u);
   });
 
   it('rejects a PORT outside its bounds', () => {
-    expect(() => loadEnvironment({ ...complete, PORT: '70000' })).toThrow(/PORT/);
-    expect(() => loadEnvironment({ ...complete, PORT: 'eight-thousand' })).toThrow(/PORT/);
+    expect(() => loadEnvironment({ ...complete, PORT: '70000' })).toThrow(/PORT/u);
+    expect(() => loadEnvironment({ ...complete, PORT: 'eight-thousand' })).toThrow(/PORT/u);
   });
 
   it('rejects an unknown NODE_ENV', () => {
-    expect(() => loadEnvironment({ ...complete, NODE_ENV: 'staging' })).toThrow(/NODE_ENV/);
+    expect(() => loadEnvironment({ ...complete, NODE_ENV: 'staging' })).toThrow(/NODE_ENV/u);
   });
 });

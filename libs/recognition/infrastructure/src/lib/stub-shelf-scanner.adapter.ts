@@ -25,9 +25,13 @@ export class StubShelfScannerAdapter implements ShelfScannerPort {
     ['Auteur peu lisible', 'Titre peu lisible', 0.31],
   ];
 
-  async scan(_photo: ShelfPhoto): Promise<DetectedBook[]> {
-    return StubShelfScannerAdapter.SAMPLE.map(([author, title, confidence]) =>
-      DetectedBook.of(Author.of(author), BookTitle.of(title), Confidence.of(confidence)),
+  scan(_photo: ShelfPhoto): Promise<DetectedBook[]> {
+    // No `await`: the stub computes synchronously and only wraps its result to honour the
+    // async `ShelfScannerPort` contract. The real VLM adapter (ADR 0005) will actually await.
+    return Promise.resolve(
+      StubShelfScannerAdapter.SAMPLE.map(([author, title, confidence]) =>
+        DetectedBook.of(Author.of(author), BookTitle.of(title), Confidence.of(confidence)),
+      ),
     );
   }
 }

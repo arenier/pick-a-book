@@ -17,7 +17,7 @@ export class ScanShelfUseCase {
     const photo = ShelfPhoto.of(command.bytes, command.mediaType);
     const detected = await this.shelfScanner.scan(photo);
 
-    return { books: detected.map(toDto) };
+    return { books: detected.map((book) => toDto(book)) };
   }
 }
 

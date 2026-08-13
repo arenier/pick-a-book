@@ -39,7 +39,7 @@ export default defineConfig({
     // Workspace libraries are bundled rather than externalised: the runtime image ships
     // `dist` and `node_modules`, not `libs/*/dist`, so a `require('@pick-a-book/...')`
     // left in the output would resolve to a symlink that does not exist there.
-    noExternal: [/^@pick-a-book\//],
+    noExternal: [/^@pick-a-book\//u],
   },
   test: {
     name: 'api',
