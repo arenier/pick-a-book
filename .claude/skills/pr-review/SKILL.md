@@ -63,7 +63,7 @@ explicite (voir Interdits).**
 | **Titre Conventional Commits** | <conforme (`type(scope): sujet`, impératif, minuscule) / ⚠️ non conforme : <détail>> |
 | **CI** | <verte / rouge sur `<job>` (<cause>) / en attente / non lancée> — read-only, ne colore pas le verdict |
 | **ADR confrontés** | <numéros des ADR réellement relus pour cette review, ex. 0002 · 0006> |
-| **Schéma / migration** | <non concerné / entité ou schéma SQLite modifié dans `infrastructure` AVEC migration / ⚠️ SANS migration> |
+| **Schéma / migration** | <non concerné / entité ou schéma Postgres modifié dans `infrastructure` AVEC migration / ⚠️ SANS migration> |
 | **Tests** | <N spec(s) ajoutés/modifiés · couvre <quoi> / ⚠️ domaine ou application ajouté SANS test> |
 | **Frontières Nx** | <tags posés sur les nouveaux projets · imports conformes à `@nx/enforce-module-boundaries` / 🔴 <import interdit : path>> |
 | **Jumeaux** | <aucun / <jumeau identifié : chemin> · <corrigé / NON corrigé>> |
@@ -97,7 +97,7 @@ verdict 🔴 a des réserves lui aussi (ses bloquants) : la ligne est renseigné
 
 Une ligne du tableau sans objet se remplit `non concerné` (ex. **Schéma / migration** quand la PR ne
 touche pas `infrastructure`) plutôt que de s'inventer une préoccupation. **Multi-tenant : non
-concerné** — ce repo n'a pas de clé tenant (usage personnel, `max-instances=1` · ADR 0006).
+concerné** — ce repo n'a pas de clé tenant (usage personnel, un seul utilisateur · ADR 0006).
 
 Omettre les sous-sections de constats vides plutôt que d'écrire « aucun » — **sauf `✍️ Style &
 altitude`**, toujours renseignée : c'est le seul endroit qui survit au plafond de constats (étape 6),
@@ -194,14 +194,14 @@ pas à un résumé de mémoire. Route chaque chemin touché vers les décisions 
 |---|---|
 | `libs/*/domain/**` | 0002 — dépend de **rien** : ni framework, ni ORM, ni HTTP, ni autre contexte. Pas de primitive nue : value objects validant à la construction. |
 | `libs/*/application/**` | 0002 — dépend du `domain` seul, parle aux **ports**, jamais aux adapters. 0003 — pas d'event bus. |
-| `libs/*/infrastructure/**` | 0002 — personne n'en dépend hors composition root. 0006 — le SQL, le schéma SQLite et les migrations vivent **ici**. |
+| `libs/*/infrastructure/**` | 0002 — personne n'en dépend hors composition root. 0006 — le SQL, le schéma Postgres et les migrations vivent **ici**. |
 | `apps/api/**` (orchestration) | 0003 — seul module à connaître plus d'un contexte ; ne manipule que des **DTO de frontière**, jamais un objet de domaine ; ne porte aucune règle exprimable dans un contexte. |
 | `apps/web/**` | 0002 — feature-slice ; une slice n'importe pas l'intérieur d'une autre (passer par une lib partagée). |
 | `libs/shared/**` | 0002 — importable par tous, n'importe **aucun** contexte ; une lib par sujet nommé, jamais `common`/`utils`. |
 | Reconnaissance (adapter VLM) | 0005 — derrière `ShelfScannerPort` ; tests sur réponses enregistrées, non-régression photos réelles en test manuel séparé. |
 | `package.json`, `.yarnrc.yml`, lockfile, Volta | 0001 — Yarn 4 (jamais Classic), pins exacts (jamais de plage), `nodeLinker: node-modules` (pas de PnP). |
 | `vite.config.*`, `vitest.config.*`, générateurs Nx | 0007 — Vite/Vitest partout, ni webpack ni Jest ; `apps/api` passe par SWC (`unplugin-swc`) pour les métadonnées de décorateurs. |
-| `docker-compose.yml`, scripts de déploiement | 0006 — pas de service Postgres/MySQL ; `max-instances=1`. 0004 — Cloud Run + bucket. |
+| `docker-compose.yml`, scripts de déploiement | 0006 — base = Postgres managé (Neon) hors du bucket ; pas de montage gcsfuse ni SQLite comme base applicative. 0004 — Cloud Run + bucket. |
 | Nouveau projet (app ou lib) | tags `type:` / `context:` / `scope:` posés dans `nx.tags` de son `package.json` — sinon il échappe aux frontières. |
 
 **Fan-out.** Défaut : **relecture inline**, contexte partagé, sortie déterministe. Le déclencheur
@@ -253,8 +253,8 @@ une lecture hors diff) et **son résultat s'inscrit dans la fiche, y compris « 
 | 1 | **Frontières Nx** — un import franchit une frontière d'architecture | `grep` les imports ajoutés dans `libs/*/domain` et `libs/*/application` ; croiser avec les règles `@nx/enforce-module-boundaries` de `eslint.config.mjs` | 🔴 → ADR 0002 |
 | 2 | **Jumeaux** — le correctif laisse un chemin frère intact (adapter ↔ adapter, use case single ↔ bulk, VO ↔ VO sœur, slice web dupliquée) | `grep` la **signature du défaut** (pas le nom de fichier) dans tout le repo ; auditer chaque appelant de la méthode corrigée | 🟠 — corrigé, ou listé comme dette dans la description. Jamais silencieux. |
 | 3 | **Comportement verrouillé par un test ?** | `grep` la spec du fichier **et** de ses appelants ; vérifier la présence des **cas d'erreur** | 🟠 si rien ne le verrouille → conventions de test (CLAUDE.md) |
-| 4 | **Schéma / entité ↔ migration** — entité ou schéma SQLite modifié dans `infrastructure` sans migration | croiser `git diff --name-only` avec le répertoire de migrations d'`infrastructure` | 🔴 sans discussion (schéma non auto-synchronisé · ADR 0006) |
-| 5 | **APIs verrouillées introduites** — Yarn Classic, plage de versions, PnP, webpack, Jest, event bus (`@nestjs/cqrs`, EventEmitter applicatif), service SQL dans `docker-compose`, `max-instances>1` | `grep` le diff pour ces signatures | 🔴 → ADR 0001 / 0003 / 0006 / 0007 |
+| 4 | **Schéma / entité ↔ migration** — entité ou schéma Postgres modifié dans `infrastructure` sans migration | croiser `git diff --name-only` avec le répertoire de migrations d'`infrastructure` | 🔴 sans discussion (schéma non auto-synchronisé · ADR 0006) |
+| 5 | **APIs verrouillées introduites** — Yarn Classic, plage de versions, PnP, webpack, Jest, event bus (`@nestjs/cqrs`, EventEmitter applicatif), montage gcsfuse du bucket ou SQLite comme base applicative | `grep` le diff pour ces signatures | 🔴 → ADR 0001 / 0003 / 0006 / 0007 |
 | 6 | **`as` interdit** — une assertion de type introduite | `grep` le diff pour ` as ` (hors `as const`) | 🟠 → convention CLAUDE.md (`assertionStyle: 'never'`) ; proposer `satisfies` ou un type guard |
 
 ### 6. Filtrer les constats avant de les écrire
@@ -281,7 +281,7 @@ décrivent et peut rater ce qu'un lecteur neuf verrait tout de suite. **Déclenc
 critère d'enjeu OU de doute est rempli** — sur une PR ordinaire et propre, ça ne produit que du
 bruit :
 
-- **Enjeu** : le diff touche l'adapter VLM (`ShelfScannerPort`), la persistance SQLite, un schéma,
+- **Enjeu** : le diff touche l'adapter VLM (`ShelfScannerPort`), la persistance Postgres, un schéma,
   ou fait > ~300 lignes.
 - **Doute** : au moins un constat fini en 💬 faute de vérifiabilité ; un constat écarté sur une
   hypothèse non prouvée du comportement d'un tiers ; verdict 🟢 sans aucun constat sur un diff

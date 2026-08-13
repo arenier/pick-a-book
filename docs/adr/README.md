@@ -15,7 +15,7 @@ documentation d'architecture — il ne décrit pas comment le système marche, i
 | [0003](0003-orchestration-sans-event-bus.md)        | Orchestration inter-contextes sans event bus            | Accepté  | Socle | 2026-07-29 |
 | [0004](0004-hebergement-cloud-run.md)               | Hébergement sur Cloud Run + bucket                      | Accepté  | Socle | 2026-07-29 |
 | [0005](0005-reconnaissance-livres-photo-etagere.md) | Source de reconnaissance des livres sur photo d'étagère  | Proposé  | 1     | 2026-07-29 |
-| [0006](0006-persistance-sqlite-bucket-monte.md)     | Persistance : SQLite sur bucket monté, avec snapshots datés | Proposé  | Socle | 2026-07-30 |
+| [0006](0006-persistance-postgres-neon.md)           | Persistance : Postgres managé (Neon)                    | Proposé  | Socle | 2026-08-14 |
 | [0007](0007-vite-et-vitest-outillage-unique.md)     | Vite et Vitest comme outillage unique de build et de test | Accepté  | Socle | 2026-07-31 |
 | [0008](0008-lint-et-format-oxlint-oxfmt.md)         | Lint et format : oxlint + oxfmt, ESLint réduit aux frontières | Accepté  | Socle | 2026-08-14 |
 
