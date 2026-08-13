@@ -19,10 +19,16 @@ assets du frontend. Scale-to-zero assumé.
 Le déploiement se fait à partir d'une image de conteneur construite depuis le repo, sans état
 dans le conteneur : tout ce qui persiste est dans le bucket ou la base.
 
-La persistance relationnelle est précisée par [0006](0006-persistance-sqlite-bucket-monte.md) :
+La persistance relationnelle est précisée par [0006](0006-persistance-postgres-neon.md) :
 SQLite sur ce même bucket monté en volume, avec snapshots datés, ce qui évite toute base managée et
 son plancher de coût. Conséquence directe sur le présent ADR : **`max-instances=1`** n'est pas un
 réglage d'échelle mais une contrainte d'intégrité.
+
+> **Révisé (0006, 2026-08-14).** [0006](0006-persistance-postgres-neon.md) fait désormais porter la
+> persistance par un Postgres managé (Neon), **hors du bucket**. Le paragraphe ci-dessus décrit le
+> choix d'origine, il n'est plus en vigueur : `max-instances=1` **n'est plus une contrainte
+> d'intégrité**, le bucket retrouve sa seule finalité (images et assets du front) et Cloud Run son
+> scale-to-zero (0→N). La décision de cet ADR — Cloud Run + bucket — est, elle, inchangée.
 
 ## Alternatives envisagées
 

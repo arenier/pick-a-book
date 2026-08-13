@@ -19,9 +19,9 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
 - **Reconnaissance** par VLM seul pour le MVP, derrière `ShelfScannerPort`. Le filet
   anti-hallucination est la réconciliation en aval, pas l'OCR ·
   [0005](docs/adr/0005-reconnaissance-livres-photo-etagere.md)
-- **Persistance** SQLite sur le bucket monté, versioning + snapshots datés. Corollaire :
-  **`max-instances=1`**, un second écrivain corrompt la base ·
-  [0006](docs/adr/0006-persistance-sqlite-bucket-monte.md)
+- **Persistance** Postgres managé (Neon), backup `pg_dump` versionné vers le bucket. La base quitte
+  le bucket : plus de `max-instances=1`, le bucket redevient un simple object store (images, assets) ·
+  [0006](docs/adr/0006-persistance-postgres-neon.md)
 - **Build et test** — **Vite** pour les deux apps, **Vitest** partout. Ni webpack ni Jest ·
   [0007](docs/adr/0007-vite-et-vitest-outillage-unique.md)
 - **Lint et format** — **oxlint** (strict) + **oxfmt**, écosystème Oxc. ESLint conservé pour les

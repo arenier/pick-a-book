@@ -75,9 +75,13 @@ types n'a pas besoin d'un bundler.
 
 Le déclencheur mesurable est **un échec de build ou d'exécution que la déclaration d'une
 dépendance en `external` ne résout pas** — cas attendu le jour où la persistance SQLite
-([0006](0006-persistance-sqlite-bucket-monte.md)) amène une dépendance native. Dans ce cas,
+([0006](0006-persistance-postgres-neon.md)) amène une dépendance native. Dans ce cas,
 l'API repasse à `@nx/esbuild` ou à une simple compilation `tsc`, sans que Vitest ni les
 autres projets ne bougent.
+
+> **Note (0006, 2026-08-14).** [0006](0006-persistance-postgres-neon.md) a finalement retenu Postgres
+> (Neon) avec Drizzle, **en pur JavaScript** : l'exemple ci-dessus — une dépendance native amenée par
+> SQLite — ne se matérialise pas par la persistance. La condition de bascule générique reste valable.
 
 ### Conséquences
 
