@@ -34,7 +34,35 @@
     "typescript/no-extraneous-class": ["error", { "allowWithDecorator": true }],
     "react/react-in-jsx-scope": "off",
     "unicorn/prefer-top-level-await": "off",
-    "unicorn/prefer-query-selector": "off"
+    "unicorn/prefer-query-selector": "off",
+
+    "typescript/await-thenable": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": "error",
+    "typescript/promise-function-async": "error",
+
+    "typescript/no-unsafe-argument": "error",
+    "typescript/no-unsafe-assignment": "error",
+    "typescript/no-unsafe-call": "error",
+    "typescript/no-unsafe-member-access": "error",
+    "typescript/no-unsafe-return": "error",
+
+    "typescript/no-base-to-string": "error",
+    "typescript/no-for-in-array": "error",
+    "typescript/no-unnecessary-condition": "error",
+    "typescript/no-unnecessary-type-assertion": "error",
+    "typescript/non-nullable-type-assertion-style": "error",
+    "typescript/prefer-nullish-coalescing": "error",
+    "typescript/require-array-sort-compare": "error",
+    "typescript/restrict-plus-operands": "error",
+    "typescript/restrict-template-expressions": "error",
+    "typescript/strict-boolean-expressions": "error",
+    "typescript/unbound-method": "error",
+
+    "typescript/prefer-readonly-parameter-types": "off",
+
+    "require-await": "off",
+    "typescript/require-await": "off"
   },
   "ignorePatterns": ["**/dist/**", "**/out-tsc/**", "coverage/**", ".nx/**"]
 }

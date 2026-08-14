@@ -64,6 +64,21 @@ ne touche pas au Markdown des ADR. Adopter Oxc ici ne rouvre pas [0007](docs/adr
 SWC reste le transpileur du build. Les règles strictes désactivées le sont chacune pour une raison
 tracée dans l'ADR 0008 (runtime JSX de React 19, CommonJS de l'API, modules NestJS).
 
+Le lint est **type-aware** : oxlint tourne partout avec `--type-aware`, qui délègue à
+**`oxlint-tsgolint`** (moteur `tsgolint`) les règles ayant besoin du type-checker — l'étanchéité au
+`any` (`no-unsafe-*`) et surtout la justesse asynchrone (`no-floating-promises`,
+`no-misused-promises`, `await-thenable`, `promise-function-async`). Deux conséquences à connaître :
+
+- `oxlint-tsgolint` est **requis**, pas optionnel : sans lui, `yarn lint` s'arrête sur
+  `Failed to find tsgolint executable`. Épinglé à l'exact, comme le reste de l'outillage.
+- **`require-await` est désactivée** parce qu'elle contredit `promise-function-async` : une fonction
+  qui rend une `Promise` porte `async` même sans `await` dans le corps, pour qu'un échec **rejette**
+  au lieu de jeter de façon synchrone. Ne pas « corriger » un `async` qui paraît inutile.
+
+Le relevé qui a fixé la liste des règles retenues et écartées est dans l'ADR 0008. Pour vérifier que
+le garde-fou est opérant, ajouter un `void` manquant sur un appel asynchrone et constater que
+`yarn lint` échoue.
+
 ## Commandes
 
 ```bash

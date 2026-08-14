@@ -57,8 +57,11 @@ jobs:
 
       # oxlint and oxfmt cover the whole repo (fast, not bound to the Nx graph); nx affected
       # restricts lint (ESLint/boundaries), typecheck and test to the touched projects.
+      # `--type-aware` runs the tsgolint engine (oxlint-tsgolint): it type-checks, so it costs
+      # roughly +0.6 s on this repo — measured, and small enough to stay in this step rather
+      # than earn a job of its own.
       - name: Checks
         run: |
-          yarn oxlint
+          yarn oxlint --type-aware
           yarn format:check
           yarn nx affected -t lint typecheck test

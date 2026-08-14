@@ -15,9 +15,9 @@ class ShelfScannerStub implements ShelfScannerPort {
 
   constructor(private readonly books: DetectedBook[]) {}
 
-  scan(photo: ShelfPhoto): Promise<DetectedBook[]> {
+  async scan(photo: ShelfPhoto): Promise<DetectedBook[]> {
     this.seen = photo;
-    return Promise.resolve(this.books);
+    return this.books;
   }
 }
 
