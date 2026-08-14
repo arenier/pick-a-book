@@ -183,6 +183,12 @@ job de CI séparé ni une restriction à `nx affected` : le flag est ajouté au 
 existant, et aux scripts `lint` et `check`. La condition de bascule est là : le jour où ce
 surcoût devient sensible, le type-aware devient un job à part avant d'être rogné.
 
+Attention en lisant la CI : le step `Checks` est **dominé par `nx affected`**, pas par le lint. Sur
+la PR d'adoption il monte à 16 s, dont 11,8 s de `nx affected` seul (0/22 en cache — toucher
+`.oxlintrc.json` et `package.json` rend les six projets affectés, et modifier `yarn.lock` invalide
+la clé de cache). Comparer ce chiffre au step d'une PR qui ne touche que de la doc — où Nx ne lance
+aucune tâche — mesure l'étendue du diff, pas le type-aware.
+
 ## Question ouverte
 
 **Activer le tri d'imports (`sortImports`) et de `package.json` (`sortPackageJson`) d'oxfmt ?** Tous
