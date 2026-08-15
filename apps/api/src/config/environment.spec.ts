@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { InvalidEnvironment, loadEnvironment } from './environment';
 
 const complete = {

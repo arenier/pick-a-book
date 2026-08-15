@@ -75,9 +75,24 @@ Le lint est **type-aware** : oxlint tourne partout avec `--type-aware`, qui dél
   qui rend une `Promise` porte `async` même sans `await` dans le corps, pour qu'un échec **rejette**
   au lieu de jeter de façon synchrone. Ne pas « corriger » un `async` qui paraît inutile.
 
-Le relevé qui a fixé la liste des règles retenues et écartées est dans l'ADR 0008. Pour vérifier que
-le garde-fou est opérant, ajouter un `void` manquant sur un appel asynchrone et constater que
-`yarn lint` échoue.
+Le code de test a son propre jeu de règles, dans le bloc **`overrides`** de `.oxlintrc.json` ciblant
+`**/*.{spec,test}.{ts,tsx}` — 31 règles du plugin `vitest`, choisies sur relevé (ADR 0008). Le
+scope n'est pas décoratif : oxlint applique le plugin `vitest` à *tous* les fichiers, et sans lui
+des règles de test se mettent à contraindre `main.ts`. Trois conséquences dans le code :
+
+- **Les specs importent ce qu'elles utilisent** — `import { describe, expect, it } from 'vitest'`.
+  Les globales de Vitest sont désactivées (`globals: true` retiré des six configs) : un fichier de
+  test se lit seul, sans savoir qu'une config ailleurs injecte des noms. Corollaire côté front :
+  Testing Library ne s'auto-nettoie plus, le `afterEach(cleanup)` est explicite dans
+  `apps/web/src/test-setup.ts`.
+- **Les fichiers de test sont en `*.spec.ts`**, jamais `*.test.ts` — `consistent-test-filename` le
+  fait échouer.
+- `vitest` est dans les `allowedExternalImports` de `type:domain` et `type:application`
+  (`eslint.config.mjs`) : ces couches n'autorisent que `tslib` et le runner, rien d'autre.
+
+Le relevé qui a fixé les listes de règles retenues et écartées — type-aware et tests — est dans
+l'ADR 0008. Pour vérifier que le garde-fou est opérant, ajouter un `void` manquant sur un appel
+asynchrone, ou deux `it` de même titre dans un `describe`, et constater que `yarn lint` échoue.
 
 ## Commandes
 
@@ -170,6 +185,8 @@ Le découpage en bounded contexts n'est pas arrêté — futur ADR.
 - Fichiers en `kebab-case`, classes en `PascalCase`, use cases en verbe explicite
   (`pick-book-for-user.use-case.ts`).
 - `domain` et `application` se testent sans infra. Les adapters se testent contre la vraie techno.
+- Assertions strictes : `toStrictEqual` plutôt que `toEqual`, `toBe(true)` plutôt que `toBeTruthy`
+  — les matchers flous affirment au lieu de prouver, comme le `as`. Le lint le fait respecter.
 - Adapters de reconnaissance : tests sur **réponses enregistrées** ; la non-régression sur photos
   réelles est un test séparé et manuel.
 - Le SQL, le schéma et les migrations restent dans `infrastructure`.

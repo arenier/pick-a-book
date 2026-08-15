@@ -38,16 +38,19 @@ export default [
             // -- Layers -------------------------------------------------------
             {
               // The domain depends on nothing: no framework, no ORM, no HTTP.
-              // The allow-list of external imports forbids everything else.
+              // The allow-list of external imports forbids everything else. `vitest` is on it
+              // because the specs import it explicitly (ADR 0008) instead of relying on globals;
+              // it is the test runner of the lib, never reachable from the production code, which
+              // no spec file is part of.
               sourceTag: 'type:domain',
               onlyDependOnLibsWithTags: ['type:shared'],
-              allowedExternalImports: ['tslib'],
+              allowedExternalImports: ['tslib', 'vitest'],
             },
             {
               // The application depends on the domain alone and talks to ports only.
               sourceTag: 'type:application',
               onlyDependOnLibsWithTags: ['type:domain', 'type:shared'],
-              allowedExternalImports: ['tslib'],
+              allowedExternalImports: ['tslib', 'vitest'],
             },
             {
               // Infrastructure implements the ports; it does not know the application.
