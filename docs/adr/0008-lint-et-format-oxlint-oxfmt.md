@@ -100,12 +100,94 @@ fois. oxfmt remplace Prettier avec les mêmes réglages (`singleQuote`, `printWi
     classes décorées, parfois vides, par construction.
   - `unicorn/prefer-query-selector` → off : `getElementById` est volontaire au point de montage,
     mieux typé, et déjà gardé par une vérification explicite plutôt qu'un `as`.
+  - Deux autres, venues avec le type-aware, sont motivées dans l'extension ci-dessous :
+    `typescript/prefer-readonly-parameter-types` et `require-await`.
 - **Oxc en lint/format n'entame pas le choix de transpileur du build.** L'[ADR 0007](0007-vite-et-vitest-outillage-unique.md)
   écarte Oxc pour le build de l'API parce qu'il n'émet pas `design:paramtypes` ; c'est SWC qui
   transpile. Lint et format sont un autre plan : adopter oxlint/oxfmt ne rouvre pas 0007.
 - **oxfmt ne formate pas le Markdown** des ADR (`ignorePatterns`), qui restent enveloppés à la main
   à 100 colonnes. `sortPackageJson` est désactivé : un formateur trie les octets, pas les clés d'un
   manifeste — ce serait un diff sémantique déguisé en format.
+
+## Extension — lint type-aware (`oxlint-tsgolint`), 2026-08-14
+
+Ajout au corps de la décision, pas révision : la sévérité voulue au critère 🟠 supposait le pan
+type-aware, laissé de côté à la bascule. oxlint le met derrière deux verrous — le flag
+**`--type-aware`** et le paquet **`oxlint-tsgolint`** (moteur `tsgolint`, type-checker Go). Les
+deux sont désormais en place ; `oxlint-tsgolint` est une **dépendance structurante du lint**, au
+même titre qu'oxlint : sans elle, `yarn lint` s'arrête sur `Failed to find tsgolint executable`.
+Elle est épinglée à l'exact (`7.0.2001`) et se distribue comme oxlint, par paquets natifs par
+plateforme en `optionalDependencies` — donc sans script d'installation, ce que réclame le
+`enableScripts: false` du `.yarnrc.yml`.
+
+### Mesurer avant de choisir
+
+La liste de règles n'est pas reprise d'un preset : les 21 règles candidates ont été activées **en
+erreur toutes ensemble** sur l'ensemble du repo, et la liste finale calée sur ce relevé.
+
+| Règle | Violations | Sort |
+|---|---|---|
+| `prefer-readonly-parameter-types` | 27 | Écartée |
+| `promise-function-async` | 2 | Retenue, corrigées |
+| `no-deprecated` | 2 | Retenue, corrigées |
+| Les 20 autres candidates | 0 | Retenues |
+
+Un relevé à zéro ne prouve rien s'il vient d'un moteur muet : deux vérifications l'écartent. Un
+fichier sonde déposé dans **chacun des six projets** déclenche bien les règles type-aware — les
+`tsconfig` par projet et le `tsconfig.base` sont donc tous résolus. Une sonde par règle confirme
+que chacune des 21 est réellement implémentée par tsgolint et se déclenche. Le zéro est donc du
+signal : c'est l'effet des conventions déjà en vigueur — interdiction du `as`, `strict`, value
+objects validant à la construction — qui ferme d'avance les trous que ces règles surveillent.
+
+### Règles écartées, chacune pour une raison
+
+- **`prefer-readonly-parameter-types` → off.** Elle n'était pas candidate : elle arrive avec la
+  catégorie `pedantic` dès que le type-aware s'allume. Elle exige des paramètres *profondément*
+  readonly. Or `ShelfPhoto` porte ses octets en **`Uint8Array`**, type mutable dont TypeScript n'a
+  pas de variante readonly ; l'impossibilité se propage à tout ce qui traverse une photo — le port,
+  le use case, l'adapter. Idem pour `NodeJS.ProcessEnv` dans `apps/api/src/config/environment.ts`,
+  type externe. Même en `treatMethodsAsReadonly: true` — sans quoi tout value object doté d'une
+  méthode est compté mutable — il reste 12 violations, toutes structurellement insatisfiables sans
+  inventer de faux types. Une règle qu'on ne peut pas satisfaire n'apprend rien.
+- **`require-await` → off** (la règle `eslint` et sa jumelle `typescript`). Elle **contredit
+  frontalement `promise-function-async`**, retenue : l'une réclame `async` sur toute fonction qui
+  rend une `Promise`, l'autre l'interdit faute d'`await` dans le corps. Les deux ne peuvent pas
+  tenir. On garde celle qui prévient un bug : sans `async`, une fonction déclarée `Promise<T>` qui
+  échoue **jette de façon synchrone** au lieu de rejeter, et le `.catch` de l'appelant ne la voit
+  pas. C'est exactement ce que promet `ShelfScannerPort`. `require-await`, elle, ne signale qu'une
+  gêne de style, sur une prémisse fausse ici : l'`async` n'est pas décoratif quand le contrat de
+  la fonction est une promesse.
+
+`no-unnecessary-type-assertion` et `non-nullable-type-assertion-style` sont retenues bien que
+quasi inatteignables — `consistent-type-assertions: never` interdit déjà le `as` qu'elles
+surveillent. Elles ne coûtent rien et tiennent la seconde ligne.
+
+`strict-boolean-expressions` est retenue **à ses réglages par défaut** (`allowString` et
+`allowNumber` à `true`) : zéro violation en l'état. La durcir dépasse ce que le relevé justifie.
+
+### Corrections appliquées
+
+- `StubShelfScannerAdapter.scan` et le double de port de `scan-shelf.use-case.spec.ts` passent
+  `async` (`promise-function-async`). Aucun changement de comportement observable aujourd'hui :
+  les deux corps sont sans échec possible. Ce que la correction achète est le contrat — le jour où
+  le corps peut jeter, il rejettera.
+- `apps/api/vite.config.mts` : `rollupOptions` → `rolldownOptions`, Vite 8 bundlant avec Rolldown.
+  Vérifié : la sortie `dist/` est **identique octet pour octet** avant et après.
+- `apps/web/vite.config.mts` : `commonjsOptions` retiré, sans effet depuis Vite 8.
+
+### Coût
+
+`--type-aware` fait passer le lint de **142 ms à 770 ms** sur ce repo (binaire seul, moyenne de 5
+exécutions ; ~690 ms → ~1,3 s à travers `yarn`). Le surcoût — sous la seconde — ne justifie ni un
+job de CI séparé ni une restriction à `nx affected` : le flag est ajouté au step `Checks`
+existant, et aux scripts `lint` et `check`. La condition de bascule est là : le jour où ce
+surcoût devient sensible, le type-aware devient un job à part avant d'être rogné.
+
+Attention en lisant la CI : le step `Checks` est **dominé par `nx affected`**, pas par le lint. Sur
+la PR d'adoption il monte à 16 s, dont 11,8 s de `nx affected` seul (0/22 en cache — toucher
+`.oxlintrc.json` et `package.json` rend les six projets affectés, et modifier `yarn.lock` invalide
+la clé de cache). Comparer ce chiffre au step d'une PR qui ne touche que de la doc — où Nx ne lance
+aucune tâche — mesure l'étendue du diff, pas le type-aware.
 
 ## Question ouverte
 

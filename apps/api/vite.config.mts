@@ -30,7 +30,8 @@ export default defineConfig({
     // Node build: no browser bundle here. Dependencies stay external and are resolved from
     // node_modules at runtime, as the container image provides them.
     ssr: true,
-    rollupOptions: {
+    // Vite 8 bundles with Rolldown: `rollupOptions` is the deprecated alias of this key.
+    rolldownOptions: {
       input: 'src/main.ts',
       output: { format: 'cjs', entryFileNames: 'main.js' },
     },
