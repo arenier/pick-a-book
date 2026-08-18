@@ -14,14 +14,30 @@ Comme [`routines/recognition-v1`](../recognition-v1/README.md), elle écrit du c
 | Modules Terraform (`project`, `artifact-registry`, `bucket`, `secret-manager`, `iam`, `cloud-run`) | ✅ |
 | Tests `terraform test` / `.tftest.hcl`, écrits en TDD, `mock_provider` | ✅ écrits — exécutés **si** l'outillage est disponible |
 | Portes statiques (`fmt`, `validate`, `tflint`, scan sécurité) + câblage CI | ✅ |
-| **Création du projet GCP, facturation, `terraform apply`, secrets réels, instance Neon** | ❌ **jamais** |
+| `terraform apply` sur les ressources **internes** au projet | ✅ |
+| **Création/suppression de projet, facturation, `destroy`, valeurs de secrets, instance Neon** | ❌ **jamais** |
 
-**Pourquoi rien n'est provisionné.** L'issue #12 le pose elle-même : le provisioning GCP est une
-action sortante à forte conséquence, qui ne se fait pas sans le mainteneur. La routine produit donc
-du code et des tests hermétiques (`mock_provider`, aucun credential) — à l'issue de la PR, **aucune
-ressource GCP n'existe**.
+**Le partage.** Le mainteneur crée à la main ce qui est irréversible — projet `pick-a-book-505922`,
+facturation, service account de provisioning, bucket d'état `pick-a-book-tfstate`. La routine gère
+tout ce qui vit **dans** le projet, et qui est destructible et recréable. Un ID de projet n'est
+jamais réutilisable ; le reste, si.
+
+Les valeurs de secrets (`DATABASE_URL`, clés VLM) restent hors du state : Terraform crée les secrets
+vides, le mainteneur ajoute les versions hors-bande.
 
 **L'issue #12 reste ouverte** : la routine écrit `Refs #12`, jamais `Closes`.
+
+## Elle ne s'arrête pas à la première erreur
+
+Consigne explicite du prompt : les tests étant en `mock_provider`, ils sont aveugles au
+comportement réel de l'API GCP (APIs pas actives, propagation IAM, contraintes d'organisation). Des
+erreurs vont arriver — c'est le contenu de la nuit, pas son échec.
+
+La routine corrige ce qui est local, **isole ce qui résiste et continue à côté**, ne boucle pas
+au-delà de trois tentatives sur le même obstacle, et tient un journal des échecs qui atterrit dans
+la PR. Ce qui reste interdit même sous cette consigne : contourner par un `destroy`, par un
+élargissement de droits IAM, ou en désactivant un test qui gêne. On avance **à côté** d'un obstacle,
+jamais **à travers**.
 
 ## Le mode d'échec à surveiller
 
@@ -33,14 +49,26 @@ test.
 
 C'est le premier point à contrôler au réveil.
 
-## Ce que la routine ne peut pas décider
+## Valeurs figées
 
-Elle les déclare en variables **sans valeur par défaut** et les liste dans la PR :
-`billing_account_id`, `project_id`, `region` (l'issue propose `europe-west1` / `europe-west9`, à
-confirmer), `DATABASE_URL` de l'instance Neon, et l'hébergement du front (Cloud Run séparé vs bucket
-statique + CDN).
+| Sujet | Valeur |
+|---|---|
+| `project_id` | `pick-a-book-505922` |
+| `region` | `europe-west1` |
+| Bucket d'état | `pick-a-book-tfstate` |
+| Front | **Cloud Run** (second service) |
+| Rétention des dumps | versions non courantes supprimées après 30 jours |
 
-Un défaut inventé masquerait la décision au lieu de la poser.
+`project_id` et `region` sont commités en `*.tfvars` — ce sont des valeurs non secrètes, et #12
+tranche qu'elles vivent dans le dépôt plutôt que dans un environnement.
+
+**Le front en Cloud Run contredit ce que l'ADR 0004 laisse entendre** (statique servi depuis le
+bucket). Motif : le HTTPS sur domaine depuis un bucket impose un load balancer facturé à l'heure à
+vide (~18 $/mois), incompatible avec le « budget quasi nul » de 0004. La routine doit signaler la
+contradiction, pas la masquer.
+
+**La rétention des dumps est un défaut, pas un arbitrage** : l'ADR 0006 la laisse ouverte, « la
+taille réelle de la base sous les yeux ».
 
 ## Déployer
 
