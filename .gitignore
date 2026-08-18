@@ -160,3 +160,8 @@ vitest.config.*.timestamp*
 
 # Claude Code worktrees
 .claude/worktrees/
+
+# Photos de reference du bench de reconnaissance (issue #10) : jamais commitees.
+# Poids, et contexte ressourcerie. La verite terrain, elle, est commitee en YAML
+# dans fixtures/ground-truth/.
+fixtures/reference-photos/

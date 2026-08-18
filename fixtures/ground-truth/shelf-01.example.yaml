@@ -1,0 +1,21 @@
+# Ground truth for one reference photo. Copy this file, one per photo, named after it:
+# shelf-01.jpg -> shelf-01.yaml
+#
+# `books` lists every book actually on the shelf, whether or not a model could read it:
+# recall is computed against this list, so it has to be exhaustive for what is in frame.
+#
+# `legible: false` marks a spine a human cannot read from the photo (glare, hidden, worn).
+# Those are excluded from the ~70% target, which only covers legible spines — but they stay
+# in the list, because a model that invents a title for them is hallucinating.
+
+photo: shelf-01.jpg
+note: 'ressourcerie, shelf 1, natural light' # free-form, helps if the shot has to be redone
+
+books:
+  - author: Annie Ernaux
+    title: La Place
+    legible: true
+
+  - author: Georges Perec
+    title: W ou le souvenir d'enfance
+    legible: false # glare across the spine
