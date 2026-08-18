@@ -45,7 +45,6 @@ export default defineConfig({
   test: {
     name: 'api',
     watch: false,
-    globals: true,
     environment: 'node',
     include: ['src/**/*.{test,spec}.ts'],
     reporters: ['default'],

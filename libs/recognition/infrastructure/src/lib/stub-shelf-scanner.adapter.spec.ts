@@ -1,4 +1,5 @@
 import { Confidence, ShelfPhoto } from '@pick-a-book/recognition-domain';
+import { describe, expect, it } from 'vitest';
 
 import { StubShelfScannerAdapter } from './stub-shelf-scanner.adapter.js';
 

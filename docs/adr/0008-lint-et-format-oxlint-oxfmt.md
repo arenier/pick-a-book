@@ -189,6 +189,129 @@ la PR d'adoption il monte à 16 s, dont 11,8 s de `nx affected` seul (0/22 en ca
 la clé de cache). Comparer ce chiffre au step d'une PR qui ne touche que de la doc — où Nx ne lance
 aucune tâche — mesure l'étendue du diff, pas le type-aware.
 
+## Extension — hygiène des tests (plugin `vitest`), 2026-08-15
+
+Ajout au corps de la décision, comme le type-aware : la sévérité voulue au critère 🟠 n'avait jamais
+été instruite pour le code de test. Le plugin `vitest` était bien déclaré depuis la bascule, mais
+aucune règle n'avait été *choisie* pour les tests — les 19 règles actives n'étaient que la retombée
+des catégories globales (17 en `correctness`, `no-commented-out-tests` en `suspicious`,
+`no-conditional-in-test` en `pedantic`). Utile mais non délibéré : le filet attrapait déjà un
+`it.only` oublié ou un `expect` non appelé, sans que personne ait arbitré ce qu'il devait attraper.
+
+Le trou tenait à un détail de rangement : oxlint classe **les 53 autres règles vitest dans la
+catégorie `style`**, éteinte ici. Or « style » mélange chez lui du cosmétique et des règles qui
+attrapent de vrais défauts — `no-identical-title` en tête, où deux `it` de même titre font que le
+second masque le premier.
+
+### Mesurer avant de choisir
+
+Même méthode que pour le type-aware : les 53 règles activées **en erreur toutes ensemble** sur
+l'ensemble du repo, et la liste finale calée sur le relevé — **76 violations, sur 10 règles**.
+
+| Règle | Violations | Sort |
+|---|---|---|
+| `prefer-expect-assertions` | 27 | Écartée |
+| `prefer-lowercase-title` | 10 | Écartée |
+| `prefer-describe-function-title` | 10 | Écartée |
+| `prefer-importing-vitest-globals` | 7 | Retenue, corrigées |
+| `consistent-test-filename` | 7 | Retenue, **reconfigurée** |
+| `prefer-to-be-truthy` | 5 | Écartée (contradiction) |
+| `prefer-strict-equal` | 4 | Retenue, corrigées |
+| `require-hook` | 2 | Écartée |
+| `prefer-to-be-falsy` | 2 | Écartée (contradiction) |
+| `prefer-strict-boolean-matchers` | 2 | Retenue, corrigées |
+| Les 43 autres | 0 | 32 retenues, 2 inertes, 9 muettes |
+
+### Trois choses que le relevé apprend, qu'une lecture de doc n'aurait pas données
+
+- **Une paire frontalement contradictoire**, exactement le cas `require-await` /
+  `promise-function-async` plus haut. `prefer-to-be-truthy` et `prefer-to-be-falsy` (7 violations)
+  réclament `toBeTruthy()` / `toBeFalsy()` là où `prefer-strict-boolean-matchers` (2) réclame
+  `toBe(true)`. Les deux ne peuvent pas tenir. On garde la stricte : `toBeTruthy()` passe sur `{}`,
+  `[]` ou `"0"` — il affirme au lieu de prouver, ce que la convention « pas de `as` » refuse déjà
+  ailleurs.
+- **Les règles vitest ne se limitent pas aux fichiers de test.** oxlint applique le plugin à *tous*
+  les fichiers : les 2 violations de `require-hook` sont dans `apps/api/src/main.ts` et
+  `apps/web/src/main.tsx`, du code de production. D'où le bloc **`overrides`** ciblant
+  `**/*.{spec,test}.{ts,tsx}` : sans lui, une règle de test contraint le code de prod.
+- **Neuf des 43 zéros ne sont pas du signal — ces règles ne sont pas implémentées.** Déclarées dans
+  le schéma JSON d'oxlint 1.78.0, muettes sur violation délibérée : `no-test-return-statement`,
+  `prefer-each`, `no-large-snapshots`, `prefer-to-have-been-called-times`,
+  `no-unneeded-async-expect-function`, `prefer-to-be-object`, `prefer-called-times`,
+  `prefer-called-exactly-once-with`, `consistent-each-for`. Contrôle croisé : sous le plugin `jest`,
+  mêmes noms, même silence, alors que `jest/prefer-comparison-matcher` se déclenche dans la même
+  config — ce n'est donc pas le fichier sonde qui est en cause. **Corollaire à retenir : oxlint
+  accepte silencieusement un nom de règle inexistant** (`-D vitest/totally-bogus-rule` ne dit rien).
+  Le schéma ne prouve pas l'implémentation ; seule une sonde le fait.
+
+Le reste des zéros est du vrai signal, vérifié comme pour le type-aware : **32 règles se déclenchent
+bien** sur quatre fichiers sonde (dont `no-identical-title`, `prefer-to-be`, `prefer-spy-on`,
+`prefer-hooks-on-top`, `no-duplicate-hooks`, `require-top-level-describe`, `no-alias-methods`) — si
+elles ne trouvent rien, c'est que les sept specs existantes sont déjà propres. Deux dernières sont
+inertes par construction, sans options : `no-restricted-matchers` et `no-restricted-vi-methods`.
+
+**31 règles sont retenues** au total. Écartées, chacune pour une raison :
+
+- **`prefer-expect-assertions` → off** (27). Le profil de `prefer-readonly-parameter-types` : une
+  cérémonie sur chaque test, qui n'attrape rien que `expect-expect` — déjà active — ne couvre.
+- **`prefer-describe-function-title` → off** (10). Elle veut `describe(DetectedBook, …)` au lieu du
+  titre en chaîne, et casse dès que le sujet du `describe` n'est pas un symbole importé unique.
+- **`prefer-lowercase-title` → off** (10). Les titres portent des noms de classes (`Result`,
+  `ShelfPhoto`) : le `PascalCase` est voulu.
+- **`require-hook` → off** (2). Ses seules violations sont dans du code de production ; même scopée
+  aux specs, elle n'a rien à dire ici.
+- **`no-hooks`, `max-expects`, `padding-around-*` → off.** Cosmétique pur, zéro violation.
+- **`no-importing-vitest-globals` → off.** L'inverse de la règle retenue ci-dessous.
+
+**`consistent-test-filename` est retenue mais reconfigurée** : son pattern par défaut est
+`.*\.test\.[tj]sx?$`, qui condamnerait les sept specs du repo. Réglée sur `.*\.spec\.[tj]sx?$`, elle
+grave la convention en vigueur au lieu de la contredire — et c'est pour elle que le bloc `overrides`
+couvre aussi `**/*.test.ts` : scopé aux seuls `.spec.`, il ne verrait jamais un fichier mal nommé.
+
+### Les globales de Vitest cèdent la place aux imports explicites
+
+`prefer-importing-vitest-globals` est le seul point du relevé qui touche autre chose que du lint.
+Les six configs portaient `globals: true` : `describe`, `it` et `expect` étaient injectés dans
+l'objet global, et les specs les utilisaient sans import — leur typage venant d'un
+`types: ["vitest/globals"]` dans chaque `tsconfig.spec.json`. Un fichier de test n'était donc
+lisible qu'en sachant qu'une config, ailleurs, injecte ces noms.
+
+L'import explicite est retenu, cohérent avec le reste du repo, où rien n'est implicite. Trois
+conséquences, dont deux qui n'étaient pas prévues :
+
+- `globals: true` retiré des **6** configs, `"vitest/globals"` des **6** `tsconfig.spec.json`, et un
+  `import { describe, expect, it } from 'vitest'` ajouté aux **7** specs.
+- **`vitest` a dû être ajouté aux `allowedExternalImports` de `type:domain` et `type:application`**
+  dans `eslint.config.mjs`. Ces deux couches n'autorisaient que `tslib`, et
+  `@nx/enforce-module-boundaries` a immédiatement rejeté l'import. Ce n'est pas un contournement de
+  l'[ADR 0002](0002-ddd-et-architecture-hexagonale.md) mais sa confirmation : la dépendance des
+  tests du domaine au runner existait déjà, cachée par les globales ; la rendre explicite la rend
+  visible au garde-fou, qui l'arbitre au lieu de l'ignorer. Elle reste inatteignable depuis le code
+  de production, dont aucun fichier de spec ne fait partie.
+- **Testing Library perd son nettoyage automatique.** Il ne s'enregistre que si Vitest a injecté ses
+  globales. Sans lui, les rendus s'empilent d'un test à l'autre et
+  `screen.getByRole('heading', …)` échoue au second sur *Found multiple elements* — constaté, pas
+  supposé. Le teardown est désormais explicite dans `apps/web/src/test-setup.ts`
+  (`afterEach(cleanup)`), déclaré en `setupFiles`, et exclu du build de l'app.
+
+### Corrections appliquées
+
+- 4 `toEqual` passent en `toStrictEqual` (`prefer-strict-equal`), dans `result.spec.ts` et
+  `scan-shelf.use-case.spec.ts`.
+- Les 2 `toBeTruthy()` d'`app.spec.tsx` passent en **`toBeDefined()`**, pas en `toBe(true)` comme le
+  suggère `prefer-strict-boolean-matchers` : la valeur testée y est un élément du DOM, pas un
+  booléen — appliquer la suggestion à la lettre aurait cassé le test. La règle vise le matcher
+  flou ; `toBeDefined()` répond à l'intention réelle de l'assertion.
+
+### Vérification
+
+Le garde-fou est opérant, constaté sur fichiers sondes jetables : deux `it` de même titre font
+échouer `yarn lint` (`no-identical-title`), un fichier nommé `*.test.ts` aussi
+(`consistent-test-filename`), une globale utilisée sans import aussi
+(`prefer-importing-vitest-globals`). Et la même faute recopiée dans un fichier **hors** test n'est
+pas reportée : le `overrides` scope bien. `yarn check`, `yarn typecheck` et `yarn format:check`
+passent sur les six projets.
+
 ## Question ouverte
 
 **Activer le tri d'imports (`sortImports`) et de `package.json` (`sortPackageJson`) d'oxfmt ?** Tous

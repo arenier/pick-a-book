@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { Author } from './author.js';
 import { BookTitle } from './book-title.js';
 import { Confidence } from './confidence.js';

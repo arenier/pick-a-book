@@ -6,6 +6,7 @@ import {
   type ShelfPhoto,
   type ShelfScannerPort,
 } from '@pick-a-book/recognition-domain';
+import { describe, expect, it } from 'vitest';
 
 import { ScanShelfUseCase } from './scan-shelf.use-case.js';
 
@@ -32,7 +33,7 @@ describe('ScanShelfUseCase', () => {
 
     const result = await new ScanShelfUseCase(scanner).execute(aJpeg);
 
-    expect(result.books).toEqual([
+    expect(result.books).toStrictEqual([
       { author: 'Annie Ernaux', title: 'Les Annees', confidence: 0.91 },
     ]);
   });
@@ -49,7 +50,7 @@ describe('ScanShelfUseCase', () => {
   it('returns an empty list when nothing is readable', async () => {
     const result = await new ScanShelfUseCase(new ShelfScannerStub([])).execute(aJpeg);
 
-    expect(result.books).toEqual([]);
+    expect(result.books).toStrictEqual([]);
   });
 
   it('rejects an off-contract image before calling the port', async () => {

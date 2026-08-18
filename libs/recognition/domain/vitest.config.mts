@@ -6,7 +6,6 @@ export default defineConfig({
   test: {
     name: 'recognition-domain',
     watch: false,
-    globals: true,
     environment: 'node',
     include: ['src/**/*.{test,spec}.ts'],
     reporters: ['default'],
