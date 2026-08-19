@@ -72,6 +72,12 @@ module "cloud_run_api" {
   name                  = "pick-a-book-api"
   service_account_email = module.service_account_api.email
 
+  # The default startup probe budget (~9s) is too tight here: boot fail-fasts on
+  # DATABASE_URL, and a cold Neon resume can stack on top of NestJS's own startup time on
+  # the first request after scale-to-zero. The front has no such dependency and keeps the
+  # module default.
+  startup_probe_failure_threshold = 10
+
   env = {
     NODE_ENV = "production"
   }
