@@ -18,6 +18,7 @@ documentation d'architecture — il ne décrit pas comment le système marche, i
 | [0006](0006-persistance-postgres-neon.md)           | Persistance : Postgres managé (Neon)                    | Proposé  | Socle | 2026-08-14 |
 | [0007](0007-vite-et-vitest-outillage-unique.md)     | Vite et Vitest comme outillage unique de build et de test | Accepté  | Socle | 2026-07-31 |
 | [0008](0008-lint-et-format-oxlint-oxfmt.md)         | Lint et format : oxlint + oxfmt, ESLint réduit aux frontières | Accepté  | Socle | 2026-08-14 |
+| [0009](0009-outillage-iac-terraform.md)             | Outillage d'infrastructure as code : Terraform          | Proposé  | 1     | 2026-08-19 |
 
 **À écrire** — la source d'enrichissement bibliographique. Elle n'a pas de numéro tant que le
 fichier n'existe pas ; [0005](0005-reconnaissance-livres-photo-etagere.md) s'y réfère par son sujet
