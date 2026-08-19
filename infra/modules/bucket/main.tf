@@ -7,6 +7,11 @@
 # provisioned in the service-account module.
 
 resource "google_storage_bucket" "this" {
+  # checkov:skip=CKV_GCP_62: Access logging needs a second bucket to hold the logs, adding
+  # cost and complexity for a personal project (ADR 0004). The only writer is the dedicated,
+  # least-privilege service account from the service-account module (objectCreator only, no
+  # interactive IAM principal has access) — there is no unexpected actor for access logs to
+  # catch here.
   project                     = var.project_id
   name                        = var.name
   location                    = var.location
