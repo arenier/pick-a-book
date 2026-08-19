@@ -5,6 +5,7 @@ provider "registry.terraform.io/kislerdm/neon" {
   version     = "0.15.0"
   constraints = "~> 0.15"
   hashes = [
+    "h1:8L/JzdTWaU8q6F0oC9szjl2kCXg3Vuie6rzvptb6+c0=",
     "h1:fWvpRA8InFeUC5/NLBbw14UDxbf+tXRUiKJzJlhv11w=",
     "zh:021e5c921309039e96fc51775c5ad11dd53437e2cb529b660e2c5896b3b3d38b",
     "zh:1be4d47afd0ffa5b5e2a61676270870e2b1ae96cbf715c37533cc4f4fb568f82",
