@@ -65,3 +65,54 @@ jobs:
           yarn oxlint --type-aware
           yarn format:check
           yarn nx affected -t lint typecheck test
+
+  # Dedicated job (ADR 0009, issue #12): infra/ has nothing to do with Nx, and its gates
+  # (terraform test) are hermetic — mock_provider means no GCP credentials, no cost, safe to
+  # run on every PR. Kept separate from `check` rather than folded in.
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.3 # exact pin, matches infra/*/versions.tf's required_version floor
+          terraform_wrapper: false
+
+      - uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.64.0
+
+      - name: Install checkov
+        run: pip install --quiet checkov==3.3.11
+
+      - name: terraform fmt (whole tree)
+        run: terraform fmt -check -recursive infra
+
+      - name: terraform validate + tflint (every module and env)
+        run: |
+          set -euo pipefail
+          for dir in infra/modules/*/ infra/envs/*/; do
+            echo "::group::${dir}"
+            (
+              cd "$dir"
+              terraform init -backend=false -input=false
+              terraform validate
+              tflint --config "${GITHUB_WORKSPACE}/infra/.tflint.hcl"
+            )
+            echo "::endgroup::"
+          done
+
+      # Hermetic: mock_provider means every module's tests run without GCP credentials and
+      # without touching real infrastructure (issue #12 point 5).
+      - name: terraform test (modules only)
+        run: |
+          set -euo pipefail
+          for dir in infra/modules/*/; do
+            echo "::group::${dir}"
+            (cd "$dir" && terraform test)
+            echo "::endgroup::"
+          done
+
+      - name: checkov
+        run: checkov -d infra --framework terraform --compact

@@ -67,8 +67,8 @@ run "retention_days_is_configurable" {
 
   variables {
     project_id                        = "pick-a-book-test"
-    name                               = "pick-a-book-backups-test"
-    location                           = "europe-west1"
+    name                              = "pick-a-book-backups-test"
+    location                          = "europe-west1"
     noncurrent_version_retention_days = 7
   }
 

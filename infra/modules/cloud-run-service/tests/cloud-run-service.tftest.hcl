@@ -4,10 +4,10 @@
 mock_provider "google" {}
 
 variables {
-  project_id             = "pick-a-book-test"
-  region                 = "europe-west1"
-  name                   = "pick-a-book-api"
-  service_account_email  = "pick-a-book-api@pick-a-book-test.iam.gserviceaccount.com"
+  project_id            = "pick-a-book-test"
+  region                = "europe-west1"
+  name                  = "pick-a-book-api"
+  service_account_email = "pick-a-book-api@pick-a-book-test.iam.gserviceaccount.com"
 }
 
 run "deploys_to_the_given_project_and_region" {
@@ -86,10 +86,10 @@ run "plain_env_vars_are_passed_through" {
   command = plan
 
   variables {
-    project_id             = "pick-a-book-test"
-    region                 = "europe-west1"
-    name                   = "pick-a-book-api"
-    service_account_email  = "pick-a-book-api@pick-a-book-test.iam.gserviceaccount.com"
+    project_id            = "pick-a-book-test"
+    region                = "europe-west1"
+    name                  = "pick-a-book-api"
+    service_account_email = "pick-a-book-api@pick-a-book-test.iam.gserviceaccount.com"
     env = {
       NODE_ENV       = "production"
       STORAGE_BUCKET = "pick-a-book-photos"
@@ -111,10 +111,10 @@ run "secret_env_vars_are_sourced_from_secret_manager" {
   command = plan
 
   variables {
-    project_id             = "pick-a-book-test"
-    region                 = "europe-west1"
-    name                   = "pick-a-book-api"
-    service_account_email  = "pick-a-book-api@pick-a-book-test.iam.gserviceaccount.com"
+    project_id            = "pick-a-book-test"
+    region                = "europe-west1"
+    name                  = "pick-a-book-api"
+    service_account_email = "pick-a-book-api@pick-a-book-test.iam.gserviceaccount.com"
     secret_env = {
       DATABASE_URL = "DATABASE_URL"
     }
@@ -170,11 +170,11 @@ run "allow_unauthenticated_false_grants_no_public_access" {
   command = plan
 
   variables {
-    project_id             = "pick-a-book-test"
-    region                 = "europe-west1"
-    name                   = "pick-a-book-api"
-    service_account_email  = "pick-a-book-api@pick-a-book-test.iam.gserviceaccount.com"
-    allow_unauthenticated  = false
+    project_id            = "pick-a-book-test"
+    region                = "europe-west1"
+    name                  = "pick-a-book-api"
+    service_account_email = "pick-a-book-api@pick-a-book-test.iam.gserviceaccount.com"
+    allow_unauthenticated = false
   }
 
   assert {
