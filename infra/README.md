@@ -8,12 +8,12 @@ propres outils et sa propre CI (job `terraform` dans `.github/workflows/ci.yml`)
 
 | Outil | Version | Installation |
 |---|---|---|
-| [Terraform](https://developer.hashicorp.com/terraform/install) | **1.13.3** (épinglé, comme CI) | via `tfenv`, voir ci-dessous |
+| [Terraform](https://developer.hashicorp.com/terraform/install) | **1.15.9** (épinglé, comme CI) | via `tfenv`, voir ci-dessous |
 | [tflint](https://github.com/terraform-linters/tflint) | **0.64.0** | `brew install tflint` ou binaire release |
 | [checkov](https://www.checkov.io/) | **3.3.11** | `pip install checkov==3.3.11` |
 | [gcloud CLI](https://cloud.google.com/sdk/docs/install) | — | authentification |
 
-`infra/*/versions.tf` exige `>= 1.9` ; la CI épingle `1.13.3` exact — s'aligner en local pour éviter
+`infra/*/versions.tf` exige `>= 1.9` ; la CI épingle `1.15.9` exact — s'aligner en local pour éviter
 tout écart de comportement entre `terraform plan` local et CI. Aucune distro ne fournit Terraform
 par défaut (licence BUSL, plus dans `homebrew-core`) : passer par
 [`tfenv`](https://github.com/tfutils/tfenv), un gestionnaire de versions plutôt qu'un pin à la main,
@@ -21,7 +21,7 @@ cohérent avec l'épinglage exact déjà en place pour Node/Yarn (`CLAUDE.md`) :
 
 ```bash
 brew install tfenv
-tfenv install   # lit infra/.terraform-version, installe 1.13.3
+tfenv install   # lit infra/.terraform-version, installe 1.15.9
 ```
 
 `infra/.terraform-version` fixe la version pour tout ce qui est sous `infra/` : `tfenv` la lit

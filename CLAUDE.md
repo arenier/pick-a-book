@@ -134,6 +134,7 @@ libs/recognition/infrastructure/ # adapters
 libs/shared/result/              # contenu partagé, une lib par sujet nommé
 docker/                          # Dockerfile des deux apps — contexte de build : la racine
 docs/adr/
+infra/                           # infrastructure GCP en Terraform — voir infra/README.md
 ```
 
 `recognition` est le seul bounded context fondé aujourd'hui (ADR 0005). Les autres attendent leur
