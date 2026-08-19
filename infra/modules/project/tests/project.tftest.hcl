@@ -1,5 +1,5 @@
 # Hermetic tests: mock_provider never talks to the real GCP API, so these run without
-# credentials and without cost (ADR 0009, issue #12 point 5).
+# credentials and without cost.
 mock_provider "google" {}
 
 variables {

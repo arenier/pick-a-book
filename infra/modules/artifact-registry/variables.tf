@@ -4,7 +4,7 @@ variable "project_id" {
 }
 
 variable "region" {
-  description = "Region the repository lives in — kept identical to the bucket, Cloud Run services and tfstate backend (issue #12: single region)."
+  description = "Region the repository lives in — kept identical to the bucket, Cloud Run services and tfstate backend."
   type        = string
 }
 

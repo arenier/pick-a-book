@@ -1,5 +1,4 @@
-# Reusable across both apps/api and apps/web (issue #12's `cloud-run (api)` and
-# `cloud-run (front)` module entries): the only differences between the two are the
+# Reusable across both apps/api and apps/web: the only differences between the two are the
 # instantiation's variables, in infra/envs/prod.
 mock_provider "google" {}
 
@@ -20,7 +19,7 @@ run "deploys_to_the_given_project_and_region" {
 
   assert {
     condition     = google_cloud_run_v2_service.this.location == var.region
-    error_message = "Service must live in the given region (issue #12: single region across the infra)"
+    error_message = "Service must live in the given region (single region across the infra)"
   }
 
   assert {
@@ -48,7 +47,7 @@ run "has_no_bucket_volume_mounted" {
 
   assert {
     condition     = length(google_cloud_run_v2_service.this.template[0].volumes) == 0
-    error_message = "ADR 0006 removed the gcsfuse mount: no Cloud Run service may mount the bucket as a volume"
+    error_message = "No Cloud Run service may mount the backups bucket as a volume"
   }
 }
 
@@ -139,7 +138,7 @@ run "max_instances_is_a_cost_cap_not_an_integrity_constraint" {
 
   assert {
     condition     = google_cloud_run_v2_service.this.template[0].scaling[0].max_instance_count >= 1
-    error_message = "max-instances is no longer an integrity constraint since ADR 0006 (Postgres/Neon) — it must still be settable, but the default must not be pinned to 1"
+    error_message = "max-instances is a cost cap, not an integrity constraint — it must still be settable, but the default must not be pinned to 1"
   }
 }
 
@@ -148,7 +147,65 @@ run "min_instances_defaults_to_scale_to_zero" {
 
   assert {
     condition     = google_cloud_run_v2_service.this.template[0].scaling[0].min_instance_count == 0
-    error_message = "Scale-to-zero is the whole point of Cloud Run for this workload (ADR 0004, ADR 0006) — default min_instances must be 0"
+    error_message = "Scale-to-zero is the whole point of Cloud Run for this workload — default min_instances must be 0"
+  }
+}
+
+run "has_a_startup_probe_on_the_container_port" {
+  command = plan
+
+  assert {
+    condition     = google_cloud_run_v2_service.this.template[0].containers[0].startup_probe[0].tcp_socket[0].port == var.container_port
+    error_message = "The startup probe must check the container's own port, so Cloud Run only routes traffic once the app is actually listening"
+  }
+
+  assert {
+    condition     = google_cloud_run_v2_service.this.template[0].containers[0].startup_probe[0].failure_threshold >= 1
+    error_message = "A startup probe with no failure threshold never fails, which defeats its purpose"
+  }
+}
+
+run "has_an_explicit_request_timeout" {
+  command = plan
+
+  assert {
+    condition     = google_cloud_run_v2_service.this.template[0].timeout == "300s"
+    error_message = "Request timeout must be explicit, not left on Cloud Run's implicit default"
+  }
+}
+
+run "request_timeout_is_overridable" {
+  command = plan
+
+  variables {
+    project_id            = "pick-a-book-test"
+    region                = "europe-west1"
+    name                  = "pick-a-book-api"
+    service_account_email = "pick-a-book-api@pick-a-book-test.iam.gserviceaccount.com"
+    request_timeout       = "60s"
+  }
+
+  assert {
+    condition     = google_cloud_run_v2_service.this.template[0].timeout == "60s"
+    error_message = "Request timeout must be overridable per service"
+  }
+}
+
+run "has_an_explicit_concurrency" {
+  command = plan
+
+  assert {
+    condition     = google_cloud_run_v2_service.this.template[0].max_instance_request_concurrency == 80
+    error_message = "Concurrency must be explicit, not left on Cloud Run's implicit default"
+  }
+}
+
+run "cpu_idle_defaults_to_true" {
+  command = plan
+
+  assert {
+    condition     = google_cloud_run_v2_service.this.template[0].containers[0].resources[0].cpu_idle == true
+    error_message = "CPU must be throttled outside request handling by default — required for min_instances = 0 to be economical"
   }
 }
 

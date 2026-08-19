@@ -4,7 +4,7 @@ variable "project_id" {
 }
 
 variable "region" {
-  description = "Region the service runs in — kept identical across the infra (issue #12: single region)."
+  description = "Region the service runs in — kept identical across the infra."
   type        = string
 }
 
@@ -19,7 +19,7 @@ variable "service_account_email" {
 }
 
 variable "image" {
-  description = "Container image to deploy. Defaults to Google's public placeholder: at this stage of the infra bootstrap, no production image has been built and pushed yet for either app (CI/CD is out of scope for issue #12). The real image is deployed later, outside Terraform (`gcloud run deploy`) — see the `ignore_changes` lifecycle block in main.tf."
+  description = "Container image to deploy. Defaults to Google's public placeholder so the service can be created before a real image exists. The real image is deployed later, outside Terraform (`gcloud run deploy`) — see the `ignore_changes` lifecycle block in main.tf."
   type        = string
   default     = "us-docker.pkg.dev/cloudrun/container/hello:latest"
 }
@@ -55,13 +55,55 @@ variable "memory" {
 }
 
 variable "min_instances" {
-  description = "Minimum instance count. Default 0: scale-to-zero is the point of Cloud Run for this intermittent workload (ADR 0004, ADR 0006)."
+  description = "Minimum instance count. Default 0: scale-to-zero is the point of Cloud Run for this intermittent workload."
   type        = number
   default     = 0
 }
 
 variable "max_instances" {
-  description = "Maximum instance count. No longer an integrity constraint since ADR 0006 moved persistence to Postgres/Neon — this is purely a cost cap now."
+  description = "Maximum instance count — purely a cost cap, not an integrity constraint."
+  type        = number
+  default     = 3
+}
+
+variable "cpu_idle" {
+  description = "Whether CPU is throttled outside of request handling. Must be true for a scale-to-zero, request-based workload: allocating CPU only during requests is what makes min_instances = 0 economical."
+  type        = bool
+  default     = true
+}
+
+variable "request_timeout" {
+  description = "Maximum duration a request is allowed to take, as a duration string (e.g. \"300s\")."
+  type        = string
+  default     = "300s"
+}
+
+variable "concurrency" {
+  description = "Maximum number of concurrent requests a single container instance may handle."
+  type        = number
+  default     = 80
+}
+
+variable "startup_probe_initial_delay_seconds" {
+  description = "Seconds to wait before the first startup probe check."
+  type        = number
+  default     = 0
+}
+
+variable "startup_probe_period_seconds" {
+  description = "Seconds between startup probe checks."
+  type        = number
+  default     = 3
+}
+
+variable "startup_probe_timeout_seconds" {
+  description = "Seconds before a single startup probe check is considered failed."
+  type        = number
+  default     = 3
+}
+
+variable "startup_probe_failure_threshold" {
+  description = "Number of consecutive failed startup probe checks before the container is considered unhealthy."
   type        = number
   default     = 3
 }
@@ -73,7 +115,7 @@ variable "allow_unauthenticated" {
 }
 
 variable "ingress" {
-  description = "Ingress setting. Default allows all traffic — neither service sits behind a load balancer or VPC (no domain, no LB: issue #12 point 8)."
+  description = "Ingress setting. Default allows all traffic — neither service sits behind a load balancer or VPC."
   type        = string
   default     = "INGRESS_TRAFFIC_ALL"
 }

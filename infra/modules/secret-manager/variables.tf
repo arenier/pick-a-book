@@ -4,7 +4,7 @@ variable "project_id" {
 }
 
 variable "secret_ids" {
-  description = "Secret IDs to create, empty. Defaults to the three secrets decided in issue #12: DATABASE_URL (Neon, provisioned outside Terraform tonight — see the PR notes) and the two VLM provider keys."
+  description = "Secret IDs to create, empty. Defaults to DATABASE_URL (Neon) and the two VLM provider keys."
   type        = list(string)
   default     = ["DATABASE_URL", "GEMINI_API_KEY", "OPENROUTER_API_KEY"]
 }

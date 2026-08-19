@@ -9,12 +9,12 @@ variable "name" {
 }
 
 variable "location" {
-  description = "Bucket location — kept identical to the region of the rest of the infra (issue #12: single region)."
+  description = "Bucket location — kept identical to the region of the rest of the infra."
   type        = string
 }
 
 variable "noncurrent_version_retention_days" {
-  description = "Days a noncurrent (overwritten) object version is kept before deletion. Current objects (the dated snapshots themselves) are never auto-deleted. Default of 30 is a reasonable placeholder, not a settled arbitration — issue #12 leaves the real cadence and retention open, to revisit once the database's actual size is known (ADR 0006, question ouverte)."
+  description = "Days a noncurrent (overwritten) object version is kept before deletion. Current objects (the dated snapshots themselves) are never auto-deleted. Default of 30 is a reasonable placeholder, not a settled arbitration — to revisit once the database's actual size is known."
   type        = number
   default     = 30
 }

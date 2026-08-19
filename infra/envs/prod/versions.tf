@@ -9,7 +9,7 @@ terraform {
   }
 
   # State bucket bootstrapped by hand, outside Terraform, before this config existed
-  # (it cannot be managed by the state it holds). Private, versioned — issue #12.
+  # (it cannot be managed by the state it holds). Private, versioned.
   backend "gcs" {
     bucket = "pick-a-book-tfstate"
     prefix = "prod"
