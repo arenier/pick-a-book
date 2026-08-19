@@ -14,11 +14,13 @@ variable "display_name" {
 }
 
 variable "secret_ids" {
-  description = "Secret Manager secret IDs the service account may read (roles/secretmanager.secretAccessor), scoped per-secret — never a project-wide secret role."
+  description = "Secret Manager secret IDs the service account may read (roles/secretmanager.secretAccessor), scoped per-secret — never a project-wide secret role. Empty by default: a service account that needs no secrets gets none."
   type        = list(string)
+  default     = []
 }
 
 variable "bucket_name" {
-  description = "Backups bucket the service account may write objects to (roles/storage.objectCreator), for the pg_dump job."
+  description = "Backups bucket the service account may write objects to (roles/storage.objectCreator), for the pg_dump job. Null by default: a service account that needs no bucket access gets no binding at all."
   type        = string
+  default     = null
 }

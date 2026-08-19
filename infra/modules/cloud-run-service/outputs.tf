@@ -4,6 +4,6 @@ output "service_name" {
 }
 
 output "service_url" {
-  description = "The service's default *.run.app URL (no custom domain — issue #12 point 8)."
+  description = "The service's default *.run.app URL (no custom domain)."
   value       = google_cloud_run_v2_service.this.uri
 }

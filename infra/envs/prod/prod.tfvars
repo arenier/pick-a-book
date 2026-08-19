@@ -1,3 +1,3 @@
-# Non-secret. Committed by design (issue #12): project_id and region are not sensitive.
+# Non-secret. Committed by design: project_id and region are not sensitive.
 project_id = "pick-a-book-505922"
 region     = "europe-west1"

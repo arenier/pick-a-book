@@ -9,7 +9,7 @@ run "creates_exactly_the_three_expected_secrets" {
 
   assert {
     condition     = length(google_secret_manager_secret.this) == 3
-    error_message = "Expected exactly the 3 secrets from issue #12: DATABASE_URL, GEMINI_API_KEY, OPENROUTER_API_KEY"
+    error_message = "Expected exactly the 3 secrets: DATABASE_URL, GEMINI_API_KEY, OPENROUTER_API_KEY"
   }
 
   assert {
@@ -26,7 +26,7 @@ run "creates_exactly_the_three_expected_secrets" {
 # would fail at plan time with "reference to undeclared resource", which is exactly the
 # structural guarantee we want (there is no code path that could write a value). Values are
 # added out-of-band via `gcloud secrets versions add` so they never transit the state
-# (issue #12) — verified by code review of main.tf, not by an executable assertion.
+# verified by code review of main.tf, not by an executable assertion.
 
 run "secrets_replicate_automatically" {
   command = plan

@@ -11,7 +11,7 @@ run "versioning_is_enabled" {
 
   assert {
     condition     = google_storage_bucket.this.versioning[0].enabled == true
-    error_message = "Object versioning must be enabled — the bucket holds pg_dump backups and dated snapshots, and a botched upload must not silently overwrite the last good dump (ADR 0006)"
+    error_message = "Object versioning must be enabled — the bucket holds pg_dump backups and dated snapshots, and a botched upload must not silently overwrite the last good dump"
   }
 }
 
@@ -44,12 +44,12 @@ run "noncurrent_versions_expire_after_30_days_by_default" {
 
   assert {
     condition     = one(google_storage_bucket.this.lifecycle_rule[0].condition).with_state == "ARCHIVED"
-    error_message = "The rule must target noncurrent (archived) versions only — current snapshots are kept indefinitely (issue #12 point 9)"
+    error_message = "The rule must target noncurrent (archived) versions only — current snapshots are kept indefinitely"
   }
 
   assert {
     condition     = one(google_storage_bucket.this.lifecycle_rule[0].condition).days_since_noncurrent_time == 30
-    error_message = "Default retention for noncurrent versions is 30 days (issue #12 point 9) — a reasonable default, not a settled arbitration, per the routine's task instructions"
+    error_message = "Default retention for noncurrent versions is 30 days — a reasonable default, not a settled arbitration"
   }
 }
 

@@ -18,7 +18,12 @@ output "backups_bucket_name" {
   value       = module.bucket.bucket_name
 }
 
-output "service_account_email" {
-  description = "Runtime identity both Cloud Run services run as."
-  value       = module.service_account.email
+output "api_service_account_email" {
+  description = "Runtime identity the API service runs as — the only one with Secret Manager and bucket access."
+  value       = module.service_account_api.email
+}
+
+output "web_service_account_email" {
+  description = "Runtime identity the front service runs as — no grants."
+  value       = module.service_account_web.email
 }

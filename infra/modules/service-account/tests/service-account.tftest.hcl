@@ -40,12 +40,12 @@ run "grants_object_creator_on_the_backups_bucket_and_nothing_else" {
   command = plan
 
   assert {
-    condition     = google_storage_bucket_iam_member.bucket_writer.role == "roles/storage.objectCreator"
+    condition     = google_storage_bucket_iam_member.bucket_writer[0].role == "roles/storage.objectCreator"
     error_message = "objectCreator is the least-privilege role for writing pg_dump snapshots: it does not grant delete, list or read of other objects"
   }
 
   assert {
-    condition     = google_storage_bucket_iam_member.bucket_writer.bucket == var.bucket_name
+    condition     = google_storage_bucket_iam_member.bucket_writer[0].bucket == var.bucket_name
     error_message = "The write grant must target the given backups bucket"
   }
 }
@@ -68,7 +68,29 @@ run "member_reference_is_the_service_account_itself" {
   }
 
   assert {
-    condition     = startswith(google_storage_bucket_iam_member.bucket_writer.member, "serviceAccount:")
+    condition     = startswith(google_storage_bucket_iam_member.bucket_writer[0].member, "serviceAccount:")
     error_message = "The bucket IAM member must reference a service account principal, built from this module's own service account"
+  }
+}
+
+run "a_service_account_with_no_secrets_and_no_bucket_gets_no_grants" {
+  command = plan
+
+  variables {
+    project_id   = "pick-a-book-test"
+    account_id   = "pick-a-book-web"
+    display_name = "pick-a-book web runtime"
+    secret_ids   = []
+    bucket_name  = null
+  }
+
+  assert {
+    condition     = length(google_secret_manager_secret_iam_member.secret_accessor) == 0
+    error_message = "A service account passed no secret_ids must get no secretAccessor bindings — a dedicated, narrower identity than the API's"
+  }
+
+  assert {
+    condition     = length(google_storage_bucket_iam_member.bucket_writer) == 0
+    error_message = "A service account passed no bucket_name must get no bucket IAM binding at all"
   }
 }
