@@ -160,3 +160,15 @@ vitest.config.*.timestamp*
 
 # Claude Code worktrees
 .claude/worktrees/
+
+# Terraform (infra/)
+**/.terraform/
+*.tfplan
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
