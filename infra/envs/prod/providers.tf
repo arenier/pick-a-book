@@ -5,3 +5,7 @@ provider "google" {
   project = var.project_id
   region  = var.region
 }
+
+# No `api_key` attribute here either: the neon provider reads NEON_API_KEY from the
+# environment — never written to a file inside the repo or the state.
+provider "neon" {}

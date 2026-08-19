@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/google"
       version = "~> 7.0"
     }
+    neon = {
+      source  = "kislerdm/neon"
+      version = "~> 0.15"
+    }
   }
 
   # State bucket bootstrapped by hand, outside Terraform, before this config existed

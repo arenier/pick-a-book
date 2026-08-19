@@ -29,10 +29,26 @@ module "bucket" {
   depends_on = [module.project]
 }
 
+# Independent of the GCP project: Neon is a separate provider/account entirely, provisioned
+# in parallel rather than depending on module.project.
+module "neon" {
+  source = "../../modules/neon"
+
+  org_id = var.neon_org_id
+}
+
 module "secret_manager" {
   source = "../../modules/secret-manager"
 
   project_id = var.project_id
+
+  # DATABASE_URL is the one secret Terraform fills directly: it's a Neon-managed resource
+  # output, not a hand-entered secret, so letting it transit the state is the accepted
+  # exception (issue #12, decisions comment, point 4). GEMINI_API_KEY and OPENROUTER_API_KEY
+  # stay empty, filled out-of-band with `gcloud secrets versions add`.
+  secret_values = {
+    DATABASE_URL = module.neon.database_url
+  }
 
   depends_on = [module.project]
 }

@@ -21,12 +21,41 @@ run "creates_exactly_the_three_expected_secrets" {
   }
 }
 
-# "Secrets are created empty" is not asserted by a `run` block: this module declares no
-# google_secret_manager_secret_version resource at all (see main.tf) — referencing one here
-# would fail at plan time with "reference to undeclared resource", which is exactly the
-# structural guarantee we want (there is no code path that could write a value). Values are
-# added out-of-band via `gcloud secrets versions add` so they never transit the state
-# verified by code review of main.tf, not by an executable assertion.
+# Secrets stay empty by default: with no secret_values entry, no
+# google_secret_manager_secret_version is created for that secret — verified by
+# "no_version_created_for_secrets_without_a_value" below. Values are added out-of-band via
+# `gcloud secrets versions add` for GEMINI_API_KEY and OPENROUTER_API_KEY, so they never
+# transit the state. DATABASE_URL is the sole exception: it is a Neon-managed resource
+# output, not a hand-entered secret, so it is allowed to transit the state via secret_values
+# (issue #12, decisions comment, point 4).
+
+run "secret_values_creates_a_version_only_for_the_given_keys" {
+  command = plan
+
+  variables {
+    project_id    = "pick-a-book-test"
+    secret_values = { DATABASE_URL = "postgresql://user:pass@host/db" }
+  }
+
+  assert {
+    condition     = length(google_secret_manager_secret_version.this) == 1
+    error_message = "Exactly one secret version must be created — only for the key present in secret_values"
+  }
+
+  assert {
+    condition     = contains(keys(google_secret_manager_secret_version.this), "DATABASE_URL")
+    error_message = "The version created must be for DATABASE_URL, the key passed in secret_values"
+  }
+}
+
+run "no_version_created_for_secrets_without_a_value" {
+  command = plan
+
+  assert {
+    condition     = length(google_secret_manager_secret_version.this) == 0
+    error_message = "With the default empty secret_values, no secret version must be created for any secret — GEMINI_API_KEY and OPENROUTER_API_KEY are always filled out-of-band"
+  }
+}
 
 run "secrets_replicate_automatically" {
   command = plan
