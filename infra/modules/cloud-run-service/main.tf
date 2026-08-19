@@ -7,10 +7,12 @@
 # variable that could reintroduce one.
 
 resource "google_cloud_run_v2_service" "this" {
-  project  = var.project_id
-  name     = var.name
-  location = var.region
-  ingress  = var.ingress
+  project        = var.project_id
+  name           = var.name
+  location       = var.region
+  ingress        = var.ingress
+  client         = "terraform"
+  client_version = "1"
 
   template {
     service_account = var.service_account_email

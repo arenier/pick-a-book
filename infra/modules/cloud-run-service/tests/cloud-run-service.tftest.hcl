@@ -27,6 +27,11 @@ run "deploys_to_the_given_project_and_region" {
     condition     = google_cloud_run_v2_service.this.name == var.name
     error_message = "Service name must match var.name"
   }
+
+  assert {
+    condition     = google_cloud_run_v2_service.this.client == "terraform"
+    error_message = "client identifies Terraform as the API caller — also a convenient no-op field to bump when a stuck revision needs a fresh create attempt without destroying the service"
+  }
 }
 
 run "runs_as_the_given_service_account" {
