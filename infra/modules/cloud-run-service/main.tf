@@ -71,10 +71,20 @@ resource "google_cloud_run_v2_service" "this" {
   }
 
   lifecycle {
-    # The image is deployed by a separate CI/CD pipeline, via `gcloud run deploy` or
-    # equivalent, outside Terraform. Without this, the next `terraform apply` would revert
-    # a real deployment back to the placeholder image.
-    ignore_changes = [template[0].containers[0].image]
+    # All three are written by whoever deployed last, and that is not Terraform: the image is
+    # pushed by a separate CI/CD pipeline via `gcloud run deploy` or equivalent.
+    #
+    # - image: without this, the next `terraform apply` would revert a real deployment back to
+    #   the placeholder image.
+    # - client / client_version: `gcloud run deploy` stamps them with "gcloud" and its own
+    #   version, so every plan after a deployment would report a diff on two provenance labels
+    #   that change nothing about the service. A plan that is never empty is a plan nobody
+    #   reads.
+    ignore_changes = [
+      template[0].containers[0].image,
+      client,
+      client_version,
+    ]
   }
 }
 
