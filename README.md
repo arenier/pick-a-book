@@ -51,6 +51,7 @@ libs/recognition/infrastructure/ adapters
 libs/shared/result/              contenu partagé, une lib par sujet nommé
 docker/                          Dockerfile des deux apps — contexte de build : la racine
 docs/adr/                        décisions d'architecture
+infra/                           infrastructure GCP en Terraform — voir infra/README.md
 ```
 
 Les frontières entre couches et entre contextes ne sont pas qu'une convention : elles sont

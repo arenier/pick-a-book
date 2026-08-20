@@ -76,7 +76,7 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.13.3 # exact pin, satisfies infra/*/versions.tf's required_version (>= 1.9)
+          terraform_version: 1.15.9 # exact pin, satisfies infra/*/versions.tf's required_version (>= 1.9)
           terraform_wrapper: false
 
       - uses: terraform-linters/setup-tflint@v4
