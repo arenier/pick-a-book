@@ -27,9 +27,18 @@ run "deploys_to_the_given_project_and_region" {
     error_message = "Service name must match var.name"
   }
 
+  # client/client_version are provenance labels only: they sit on the service, not on the
+  # template, so writing them never derives a new revision — bumping one is not a way to
+  # retry a stuck revision. They are in the module's ignore_changes for that same reason:
+  # `gcloud run deploy` overwrites them on every deployment, and Terraform must not fight it.
   assert {
     condition     = google_cloud_run_v2_service.this.client == "terraform"
-    error_message = "client identifies Terraform as the API caller — also a convenient no-op field to bump when a stuck revision needs a fresh create attempt without destroying the service"
+    error_message = "client must identify Terraform as the API caller that created the service"
+  }
+
+  assert {
+    condition     = google_cloud_run_v2_service.this.client_version == "1"
+    error_message = "client_version must be set explicitly alongside client, so the pair reads as a deliberate provenance label rather than a partially-filled default"
   }
 }
 
