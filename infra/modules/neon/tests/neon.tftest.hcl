@@ -75,3 +75,33 @@ run "database_url_output_uses_the_pooled_connection" {
     error_message = "database_url must expose the pooler connection URI, not the direct one — Cloud Run's serverless, bursty connection pattern needs pgbouncer pooling to avoid exhausting Postgres connections"
   }
 }
+
+# Regression test for the apply that failed on 2026-08-21 against the real Neon API:
+#   requested history retention seconds exceeds allowed maximum;
+#   requested_history_retention_seconds:"86400", max:"21600"
+# The module never set this attribute, so the provider's own default (1 day) applied — and it
+# is twice what a Free plan accepts. mock_provider cannot enforce plan quotas, so nothing here
+# can reproduce the API rejection; what these assertions do protect is the module never again
+# leaving the value to the provider's default.
+run "history_retention_defaults_within_the_free_plan_ceiling" {
+  command = plan
+
+  assert {
+    condition     = neon_project.this.history_retention_seconds == 21600
+    error_message = "Default history retention must be set explicitly by the module and stay within the Free plan ceiling of 21600 s (6 h); leaving it unset lets the provider apply its own 86400 s default, which the Neon API rejects outright"
+  }
+}
+
+run "history_retention_is_overridable" {
+  command = plan
+
+  variables {
+    org_id                    = "org-jolly-fire-32376830"
+    history_retention_seconds = 604800
+  }
+
+  assert {
+    condition     = neon_project.this.history_retention_seconds == 604800
+    error_message = "history_retention_seconds must be overridable, so a paid plan can raise the PITR window without editing the module"
+  }
+}
