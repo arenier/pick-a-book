@@ -6,4 +6,8 @@ resource "neon_project" "this" {
   name      = var.project_name
   org_id    = var.org_id
   region_id = var.region_id
+
+  # Never leave this to the provider: its default is 86400 s, which the Neon API rejects on a
+  # Free plan (max 21600 s). See the variable's description.
+  history_retention_seconds = var.history_retention_seconds
 }
