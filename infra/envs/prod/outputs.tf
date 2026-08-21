@@ -18,6 +18,11 @@ output "backups_bucket_name" {
   value       = module.bucket.bucket_name
 }
 
+output "reference_photos_bucket_name" {
+  description = "Bucket holding the recognition bench's reference shelf photos (issue #10) — upload with `gsutil cp`, never committed."
+  value       = module.bucket_reference_photos.bucket_name
+}
+
 output "api_service_account_email" {
   description = "Runtime identity the API service runs as — the only one with Secret Manager and bucket access."
   value       = module.service_account_api.email

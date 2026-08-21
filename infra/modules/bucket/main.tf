@@ -1,9 +1,8 @@
-# Backups bucket only: pg_dump dumps and dated snapshots. Strictly private — opposite access
-# policy from a would-be static-site bucket, so the two are never the same module or the same
-# resource.
+# Generic private object store — one instantiation per use (backups, bench reference photos,
+# …), never the shared module of a would-be public/static-site bucket: that access policy is
+# the opposite of this one and belongs in a separate module entirely.
 #
-# No gcsfuse mount, no volume in any Cloud Run service: this bucket is a plain object store,
-# written to by the SA provisioned in the service-account module.
+# No gcsfuse mount, no volume in any Cloud Run service: this bucket is a plain object store.
 
 resource "google_storage_bucket" "this" {
   # checkov:skip=CKV_GCP_62: Access logging needs a second bucket to hold the logs, adding

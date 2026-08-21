@@ -103,3 +103,20 @@ une sortie de ressource gérée, pas une valeur saisie à la main, et peut donc 
 
 Seule la config racine (`infra/envs/prod/main.tf`) câble les modules entre eux — un module ne
 dépend jamais directement d'un autre.
+
+## Bucket des photos de référence (bench reconnaissance, issue #10)
+
+`module.bucket_reference_photos` (sortie `reference_photos_bucket_name`) héberge les photos
+d'étagère réelles servant au bench des adapters VLM — l'alternative bucket au dossier local
+gitignoré `fixtures/reference-photos/` prévue par l'issue #10. Bucket privé, sans service account
+dédié : accès via les ADC de l'opérateur, comme pour `terraform apply` (voir Authentification
+ci-dessus).
+
+```bash
+gsutil cp mes-photos/*.jpg gs://$(terraform -chdir=infra/envs/prod output -raw reference_photos_bucket_name)/
+gsutil ls gs://$(terraform -chdir=infra/envs/prod output -raw reference_photos_bucket_name)/
+```
+
+La vérité terrain (YAML) reste commitée dans le dépôt à côté du protocole de bench — seules les
+photos elles-mêmes (poids, contexte ressourcerie) passent par ce bucket ou par le dossier local,
+jamais par un commit.

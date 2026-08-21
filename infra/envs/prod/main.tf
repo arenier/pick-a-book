@@ -29,6 +29,21 @@ module "bucket" {
   depends_on = [module.project]
 }
 
+# Reference photos for the recognition bench (issue #10): real shelf photos plus their
+# ground truth, used to evaluate the VLM adapters offline. CLAUDE.md forbids committing them,
+# so this bucket is the shared alternative to a gitignored local `fixtures/reference-photos/`
+# folder. Personal, low-volume, no CI or runtime service ever touches it — accessed directly
+# via the operator's own gcloud ADC (infra/README.md), so no dedicated service account.
+module "bucket_reference_photos" {
+  source = "../../modules/bucket"
+
+  project_id = var.project_id
+  name       = "${var.project_id}-reference-photos"
+  location   = var.region
+
+  depends_on = [module.project]
+}
+
 # Independent of the GCP project: Neon is a separate provider/account entirely, provisioned
 # in parallel rather than depending on module.project.
 module "neon" {
