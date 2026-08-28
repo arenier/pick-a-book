@@ -76,13 +76,22 @@ terraform apply -var-file=prod.tfvars
 
 ## Vérifications
 
-`fmt`, `validate`, `tflint`, `terraform test` (hermétique, `mock_provider`, sans credentials ni
-coût) et `checkov` — les commandes exactes sont dans le job `terraform` de
-[`.github/workflows/ci.yml`](../.github/workflows/ci.yml), à rejouer en local à l'identique plutôt
-que dupliquées ici.
+`fmt`, `validate`, `tflint`, la **gate de couverture**, `terraform test` (hermétique,
+`mock_provider`, sans credentials ni coût) et `checkov` — les commandes exactes sont dans le job
+`terraform` de [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), à rejouer en local à
+l'identique plutôt que dupliquées ici.
 
-Chaque module a ses tests dans `tests/*.tftest.hcl` (TDD systématique, `CLAUDE.md`) : assertions
-`plan` sur entrées → sorties, sans jamais toucher à un vrai projet GCP.
+Chaque module **et chaque env** a ses tests dans `tests/*.tftest.hcl` (TDD systématique,
+`CLAUDE.md`) : assertions `plan` sur entrées → sorties, sans jamais toucher à un vrai projet GCP.
+Les tests de module prouvent le comportement d'une ressource ; ceux d'`envs/prod` prouvent le
+**câblage** entre modules — noms dérivés des variables, contrat de secrets dont dépend l'API,
+identité propre à chaque service — que par construction aucun test de module ne peut voir.
+
+La **gate de couverture** fait échouer la CI sur tout dossier de `modules/*` ou `envs/*` sans test.
+Elle existe parce que `terraform test` sort en **0** sur un dossier qui n'a aucun fichier de test :
+une suite au vert ne prouve donc pas à elle seule que quelque chose a été testé, et un nouveau
+module sans test passerait inaperçu. Elle compte les blocs `run`, pas les fichiers — un
+`.tftest.hcl` vide passe tout aussi silencieusement.
 
 ## Organisation
 
@@ -91,6 +100,7 @@ infra/modules/           un module par ressource : project, bucket, secret-manag
                           service-account, artifact-registry, cloud-run-service, neon
 infra/modules/*/tests/   *.tftest.hcl — mock_provider, hermétique
 infra/envs/prod/         seul environnement à ce jour ; assemble les modules
+infra/envs/*/tests/      *.tftest.hcl — tests de câblage entre modules
 ```
 
 Le module `neon` provisionne l'instance Postgres (région `aws-eu-central-1`, la plus proche

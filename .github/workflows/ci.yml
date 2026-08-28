@@ -103,12 +103,35 @@ jobs:
             echo "::endgroup::"
           done
 
-      # Hermetic: mock_provider means every module's tests run without GCP credentials and
-      # without touching real infrastructure.
-      - name: terraform test (modules only)
+      # TDD is not optional for the IaC either (CLAUDE.md): a config nobody tests is a config
+      # nothing is checking. `terraform test` exits 0 on a directory holding no test file at
+      # all, so a green suite is not by itself evidence that anything was tested — this gate is
+      # what makes a new, untested module or env fail instead of sailing through green.
+      - name: terraform test coverage gate (every module and env has tests)
         run: |
           set -euo pipefail
-          for dir in infra/modules/*/; do
+          untested=()
+          for dir in infra/modules/*/ infra/envs/*/; do
+            # Count run blocks rather than files: an empty .tftest.hcl passes just as silently.
+            run_blocks=$(cat "${dir}"tests/*.tftest.hcl 2>/dev/null | grep -c '^run "' || true)
+            if [ "${run_blocks}" -eq 0 ]; then
+              untested+=("${dir}")
+            fi
+          done
+          if [ ${#untested[@]} -ne 0 ]; then
+            for dir in "${untested[@]}"; do
+              echo "::error::${dir} has no Terraform test — expected run blocks in ${dir}tests/*.tftest.hcl"
+            done
+            exit 1
+          fi
+
+      # Hermetic: mock_provider means every suite runs without GCP or Neon credentials and
+      # without touching real infrastructure. envs/ is covered too, not just modules: the root
+      # config is where the modules are wired together, and no module test can see that wiring.
+      - name: terraform test (modules and envs)
+        run: |
+          set -euo pipefail
+          for dir in infra/modules/*/ infra/envs/*/; do
             echo "::group::${dir}"
             (cd "$dir" && terraform test)
             echo "::endgroup::"
