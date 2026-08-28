@@ -6,10 +6,11 @@
 
 resource "google_storage_bucket" "this" {
   # checkov:skip=CKV_GCP_62: Access logging needs a second bucket to hold the logs, adding
-  # cost and complexity for a personal project. The only writer is the dedicated,
-  # least-privilege service account from the service-account module (objectCreator only, no
-  # interactive IAM principal has access) — there is no unexpected actor for access logs to
-  # catch here.
+  # cost and complexity for a personal project. Each instantiation's set of principals is
+  # small and known ahead of time — either the dedicated, least-privilege service account
+  # from the service-account module (objectCreator only), or, for a bucket with no runtime
+  # consumer, the project owner's own ADC — so there is no unexpected actor for access logs
+  # to catch here. See each instantiation's comment in envs/prod/main.tf for its actual writer.
   project                     = var.project_id
   name                        = var.name
   location                    = var.location
