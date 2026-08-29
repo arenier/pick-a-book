@@ -4,19 +4,20 @@
 # root package.json, CLAUDE.md). Two version managers claiming the same tool is how a repo
 # ends up with a Node that depends on which shell hook fired last.
 #
-# tfenv keeps working unchanged for anyone already set up with it: both read
+# tfenv keeps working unchanged for anyone already set up with it: it reads
 # .terraform-version, so the two are interchangeable rather than exclusive.
-
-[settings]
-# mise stopped reading "idiomatic" version files (.terraform-version, .node-version, …) by
-# default. Enabling it for terraform alone keeps .terraform-version the single source of
-# truth for the Terraform version — the alternative, a `terraform = "1.15.9"` line below,
-# would pin it a third time (after .terraform-version and CI's setup-terraform), and a pin
-# repeated is a pin that drifts.
-idiomatic_version_file_enable_tools = ["terraform"]
 
 [tools]
 # Exact pins, like the rest of the toolchain (CLAUDE.md) — never a range.
+#
+# terraform is pinned here rather than left to be read from .terraform-version: mise stopped
+# reading those "idiomatic" version files by default, and relying on the setting that
+# re-enables them fails quietly — you keep whatever terraform is on PATH. The cost is that
+# 1.15.9 now lives in three places (here, .terraform-version for tfenv, and
+# setup-terraform in ci.yml), none of which can read the others. The "toolchain pins agree"
+# step of the terraform CI job is what keeps them from drifting apart; update all three
+# together, and let CI catch it when you don't.
+terraform = "1.15.9"
 tflint = "0.64.0"
 
 # checkov is deliberately absent: mise installs it through a Python backend (pipx/uv), one

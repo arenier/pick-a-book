@@ -74,6 +74,48 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Terraform and tflint are pinned in three files that cannot read each other:
+      # infra/.terraform-version (tfenv), infra/mise.toml (mise) and this workflow. The
+      # duplication is accepted — mise no longer reads .terraform-version by default, and
+      # tfenv reads nothing else — but silent drift is not: a local toolchain a version
+      # behind CI produces a `plan` that differs from the one CI produced, which is the
+      # whole point of pinning exactly. Every value below is read from the file that uses
+      # it, so this check never becomes a fourth copy of its own.
+      - name: toolchain pins agree (mise, .terraform-version, CI)
+        run: |
+          set -euo pipefail
+          fail=0
+
+          ci_terraform=$(sed -n 's/^ *terraform_version: *\([0-9][0-9.]*\).*/\1/p' .github/workflows/ci.yml)
+          ci_tflint=$(sed -n 's/^ *tflint_version: *v\([0-9][0-9.]*\).*/\1/p' .github/workflows/ci.yml)
+          tfenv_terraform=$(tr -d '[:space:]' < infra/.terraform-version)
+          mise_terraform=$(sed -n 's/^terraform *= *"\([^"]*\)".*/\1/p' infra/mise.toml)
+          mise_tflint=$(sed -n 's/^tflint *= *"\([^"]*\)".*/\1/p' infra/mise.toml)
+
+          # An empty capture means a pin was renamed or reformatted, not that the pins
+          # agree: without this, two empty strings would compare equal and the gate would
+          # pass having checked nothing.
+          for pin in ci_terraform ci_tflint tfenv_terraform mise_terraform mise_tflint; do
+            if [ -z "${!pin}" ]; then
+              echo "::error::${pin} could not be read — the pin moved or changed shape, update this check"
+              fail=1
+            fi
+          done
+          [ "$fail" -eq 0 ] || exit 1
+
+          expect() {
+            if [ "$2" != "$3" ]; then
+              echo "::error::${1} pins ${2}, but CI pins ${3} — update every copy together"
+              fail=1
+            fi
+          }
+
+          expect "infra/.terraform-version" "$tfenv_terraform" "$ci_terraform"
+          expect "infra/mise.toml (terraform)" "$mise_terraform" "$ci_terraform"
+          expect "infra/mise.toml (tflint)" "$mise_tflint" "$ci_tflint"
+
+          exit $fail
+
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.15.9 # exact pin, satisfies infra/*/versions.tf's required_version (>= 1.9)
