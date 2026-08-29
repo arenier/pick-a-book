@@ -1,10 +1,9 @@
 # Local development. This file does not describe production: production is a container
 # image on Cloud Run plus a bucket (ADR 0004).
 #
-# No database service, and that is not an oversight. Persistence is SQLite on the mounted
-# bucket (ADR 0006): adding Postgres or MySQL here would mean developing against a database
-# production does not have. The SQLite file lives in a volume; the bucket is stood in for by
-# fake-gcs-server.
+# Persistence is Postgres (ADR 0006), so the stack runs one: production is Neon, and
+# developing against the same engine is the whole point — the bucket keeps its single role,
+# object storage, and is stood in for by fake-gcs-server.
 #
 # The Dockerfiles live in docker/ and take the repository root as their build context.
 
@@ -16,16 +15,17 @@ services:
     environment:
       NODE_ENV: development
       PORT: '3000'
-      # The `api-data` volume stands in for the bucket mounted as a gcsfuse volume.
-      DATABASE_PATH: /data/pick-a-book.sqlite
+      # Local stand-in for the Neon endpoint; production reads this same variable from
+      # Secret Manager.
+      DATABASE_URL: postgresql://pick_a_book:pick_a_book@db:5432/pick_a_book
       STORAGE_BUCKET: pick-a-book-photos
       STORAGE_EMULATOR_HOST: http://storage:4443
       SHELF_SCANNER_API_KEY: ${SHELF_SCANNER_API_KEY:-}
     ports:
       - '3000:3000'
-    volumes:
-      - api-data:/data
     depends_on:
+      db:
+        condition: service_healthy
       storage:
         condition: service_started
     healthcheck:
@@ -50,6 +50,26 @@ services:
     depends_on:
       - api
 
+  # Stands in for Neon (ADR 0006). The major version is pinned here only: `infra/modules/neon`
+  # creates the project without `pg_version` and takes Neon's default, so the two pins are
+  # maintained by hand — same arrangement as the Node pins of docker/.
+  db:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_USER: pick_a_book
+      POSTGRES_PASSWORD: pick_a_book
+      POSTGRES_DB: pick_a_book
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U pick_a_book -d pick_a_book']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
   # Plays the part of the bucket: shelf photos are objects, not rows.
   storage:
     image: fsouza/fake-gcs-server:1.52.2
@@ -60,5 +80,5 @@ services:
       - storage-data:/storage
 
 volumes:
-  api-data:
+  db-data:
   storage-data:
