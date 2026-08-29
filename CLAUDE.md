@@ -107,7 +107,7 @@ yarn format                        # oxfmt          (yarn format:check pour vér
 
 yarn api                           # démarre l'API   (http://localhost:3000/health)
 yarn web                           # démarre le front (http://localhost:4200)
-docker compose up --build          # API + front + émulateur de bucket
+docker compose up --build          # API + front + Postgres + émulateur de bucket
 
 yarn nx run-many -t lint -p api    # cibler un projet
 yarn nx affected -t lint test build
@@ -194,6 +194,10 @@ Le découpage en bounded contexts n'est pas arrêté — futur ADR.
 - **Français dans la doc et les ADR, anglais dans le code** — commentaires, messages d'erreur,
   logs, descriptions de tests (`it('rejects an empty image')`) et commits inclus. Le texte affiché
   à l'utilisateur dans `apps/web` reste en français : c'est du produit, pas du code.
+- **Le titre d'une PR est un message de commit, donc en anglais.** Le merge est un squash et ce
+  titre devient le sujet du commit sur `main` — un titre français y laisse une trace définitive.
+  Le **corps** de la PR, lui, est de la doc : en français. La règle vaut même quand le skill
+  `create-pr` n'est pas chargé, d'où sa présence ici et pas seulement dans le skill.
 
 ## Workflow Git
 
