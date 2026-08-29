@@ -8,25 +8,50 @@ propres outils et sa propre CI (job `terraform` dans `.github/workflows/ci.yml`)
 
 | Outil | Version | Installation |
 |---|---|---|
-| [Terraform](https://developer.hashicorp.com/terraform/install) | **1.15.9** (épinglé, comme CI) | via `tfenv`, voir ci-dessous |
-| [tflint](https://github.com/terraform-linters/tflint) | **0.64.0** | `brew install tflint` ou binaire release |
+| [Terraform](https://developer.hashicorp.com/terraform/install) | **1.15.9** (épinglé, comme CI) | via `mise` ou `tfenv`, voir ci-dessous |
+| [tflint](https://github.com/terraform-linters/tflint) | **0.64.0** | via `mise`, ou `brew install tflint` |
 | [checkov](https://www.checkov.io/) | **3.3.11** | `pip install checkov==3.3.11` |
 | [gcloud CLI](https://cloud.google.com/sdk/docs/install) | — | authentification |
 
 `infra/*/versions.tf` exige `>= 1.9` ; la CI épingle `1.15.9` exact — s'aligner en local pour éviter
 tout écart de comportement entre `terraform plan` local et CI. Aucune distro ne fournit Terraform
-par défaut (licence BUSL, plus dans `homebrew-core`) : passer par
-[`tfenv`](https://github.com/tfutils/tfenv), un gestionnaire de versions plutôt qu'un pin à la main,
-cohérent avec l'épinglage exact déjà en place pour Node/Yarn (`CLAUDE.md`) :
+par défaut (licence BUSL, plus dans `homebrew-core`) : passer par un gestionnaire de versions
+plutôt qu'un pin à la main, cohérent avec l'épinglage exact déjà en place pour Node/Yarn
+(`CLAUDE.md`). Deux options au choix, `mise` ou `tfenv` : elles installent la même version, il n'y
+a rien à trancher au niveau du projet.
+
+**mise** ([`infra/mise.toml`](mise.toml)) couvre Terraform *et* tflint d'un coup :
+
+```bash
+brew install mise
+echo 'eval "$(mise activate zsh)"' >> ~/.zshrc && exec zsh
+
+cd infra && mise install   # Terraform 1.15.9 + tflint 0.64.0, épinglés dans mise.toml
+```
+
+**tfenv**, pour Terraform seul :
 
 ```bash
 brew install tfenv
-tfenv install   # lit infra/.terraform-version, installe 1.15.9
+cd infra && tfenv install   # lit infra/.terraform-version, installe 1.15.9
 ```
 
-`infra/.terraform-version` fixe la version pour tout ce qui est sous `infra/` : `tfenv` la lit
-automatiquement dès qu'on est dans le dossier ou un sous-dossier, sans `tfenv use` à relancer à
-chaque session.
+Les deux outils lisent leur propre fichier, automatiquement, dès qu'on est dans `infra/` ou un
+sous-dossier — rien à relancer à chaque session : `infra/.terraform-version` pour tfenv,
+`infra/mise.toml` pour mise. mise ne lit **pas** `.terraform-version` : il a cessé de lire ces
+fichiers « idiomatiques » par défaut, et le réglage qui les réactive échoue en silence — on garde
+le `terraform` du `PATH` sans s'en apercevoir. La version est donc épinglée explicitement des deux
+côtés.
+
+`1.15.9` vit ainsi à trois endroits qui ne peuvent pas se lire entre eux : `.terraform-version`,
+`mise.toml` et `setup-terraform` dans `ci.yml` (idem pour tflint, à deux endroits). C'est assumé,
+mais surveillé : l'étape **`toolchain pins agree`** du job `terraform` compare les trois et fait
+échouer la CI au premier désalignement. Mettre à jour une version, c'est mettre à jour toutes ses
+copies dans le même commit.
+
+Volta reste seul maître de Node et Yarn (`CLAUDE.md`) : `mise.toml` ne les déclare pas, et ne doit
+pas — deux gestionnaires sur le même outil, c'est une version qui dépend du hook shell qui a
+tourné en dernier.
 
 ## Authentification
 
@@ -76,10 +101,11 @@ terraform apply -var-file=prod.tfvars
 
 ## Vérifications
 
-`fmt`, `validate`, `tflint`, la **gate de couverture**, `terraform test` (hermétique,
-`mock_provider`, sans credentials ni coût) et `checkov` — les commandes exactes sont dans le job
-`terraform` de [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), à rejouer en local à
-l'identique plutôt que dupliquées ici.
+L'accord des versions épinglées, `fmt`, `validate`, `tflint`, la **gate de couverture**,
+`terraform test` (hermétique, `mock_provider`, sans credentials ni coût) et `checkov` — les
+commandes exactes sont dans le job `terraform` de
+[`.github/workflows/ci.yml`](../.github/workflows/ci.yml), à rejouer en local à l'identique plutôt
+que dupliquées ici.
 
 Chaque module **et chaque env** a ses tests dans `tests/*.tftest.hcl` (TDD systématique,
 `CLAUDE.md`) : assertions `plan` sur entrées → sorties, sans jamais toucher à un vrai projet GCP.
