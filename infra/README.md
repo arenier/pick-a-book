@@ -8,25 +8,44 @@ propres outils et sa propre CI (job `terraform` dans `.github/workflows/ci.yml`)
 
 | Outil | Version | Installation |
 |---|---|---|
-| [Terraform](https://developer.hashicorp.com/terraform/install) | **1.15.9** (épinglé, comme CI) | via `tfenv`, voir ci-dessous |
-| [tflint](https://github.com/terraform-linters/tflint) | **0.64.0** | `brew install tflint` ou binaire release |
+| [Terraform](https://developer.hashicorp.com/terraform/install) | **1.15.9** (épinglé, comme CI) | via `mise` ou `tfenv`, voir ci-dessous |
+| [tflint](https://github.com/terraform-linters/tflint) | **0.64.0** | via `mise`, ou `brew install tflint` |
 | [checkov](https://www.checkov.io/) | **3.3.11** | `pip install checkov==3.3.11` |
 | [gcloud CLI](https://cloud.google.com/sdk/docs/install) | — | authentification |
 
 `infra/*/versions.tf` exige `>= 1.9` ; la CI épingle `1.15.9` exact — s'aligner en local pour éviter
 tout écart de comportement entre `terraform plan` local et CI. Aucune distro ne fournit Terraform
-par défaut (licence BUSL, plus dans `homebrew-core`) : passer par
-[`tfenv`](https://github.com/tfutils/tfenv), un gestionnaire de versions plutôt qu'un pin à la main,
-cohérent avec l'épinglage exact déjà en place pour Node/Yarn (`CLAUDE.md`) :
+par défaut (licence BUSL, plus dans `homebrew-core`) : passer par un gestionnaire de versions
+plutôt qu'un pin à la main, cohérent avec l'épinglage exact déjà en place pour Node/Yarn
+(`CLAUDE.md`). Deux options équivalentes, `mise` ou `tfenv` — les deux lisent le même
+`infra/.terraform-version`, il n'y a rien à trancher au niveau du projet.
+
+**mise** ([`infra/mise.toml`](mise.toml)) couvre Terraform *et* tflint d'un coup :
+
+```bash
+brew install mise
+echo 'eval "$(mise activate zsh)"' >> ~/.zshrc && exec zsh
+
+cd infra && mise install   # Terraform 1.15.9 (via .terraform-version) + tflint 0.64.0
+```
+
+**tfenv**, pour Terraform seul :
 
 ```bash
 brew install tfenv
-tfenv install   # lit infra/.terraform-version, installe 1.15.9
+cd infra && tfenv install   # lit infra/.terraform-version, installe 1.15.9
 ```
 
-`infra/.terraform-version` fixe la version pour tout ce qui est sous `infra/` : `tfenv` la lit
-automatiquement dès qu'on est dans le dossier ou un sous-dossier, sans `tfenv use` à relancer à
-chaque session.
+`infra/.terraform-version` fixe la version pour tout ce qui est sous `infra/` : les deux outils la
+lisent automatiquement dès qu'on est dans le dossier ou un sous-dossier, sans commande à relancer à
+chaque session. Côté mise, c'est le réglage `idiomatic_version_file_enable_tools` de `mise.toml` qui
+l'autorise — mise ne lit plus ces fichiers par défaut. C'est ce qui évite d'épingler `1.15.9` une
+troisième fois, après `.terraform-version` et la CI : côté local, il ne vit que dans
+`.terraform-version`.
+
+Volta reste seul maître de Node et Yarn (`CLAUDE.md`) : `mise.toml` ne les déclare pas, et ne doit
+pas — deux gestionnaires sur le même outil, c'est une version qui dépend du hook shell qui a
+tourné en dernier.
 
 ## Authentification
 

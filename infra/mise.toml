@@ -1,0 +1,24 @@
+# mise toolchain for infra/ only — Terraform and its linters, nothing else.
+#
+# Node and Yarn are NOT declared here on purpose: Volta owns them (the `volta` field of the
+# root package.json, CLAUDE.md). Two version managers claiming the same tool is how a repo
+# ends up with a Node that depends on which shell hook fired last.
+#
+# tfenv keeps working unchanged for anyone already set up with it: both read
+# .terraform-version, so the two are interchangeable rather than exclusive.
+
+[settings]
+# mise stopped reading "idiomatic" version files (.terraform-version, .node-version, …) by
+# default. Enabling it for terraform alone keeps .terraform-version the single source of
+# truth for the Terraform version — the alternative, a `terraform = "1.15.9"` line below,
+# would pin it a third time (after .terraform-version and CI's setup-terraform), and a pin
+# repeated is a pin that drifts.
+idiomatic_version_file_enable_tools = ["terraform"]
+
+[tools]
+# Exact pins, like the rest of the toolchain (CLAUDE.md) — never a range.
+tflint = "0.64.0"
+
+# checkov is deliberately absent: mise installs it through a Python backend (pipx/uv), one
+# more moving part than the `pip install checkov==3.3.11` the CI job itself runs. Install it
+# the same way locally — see README.md.
