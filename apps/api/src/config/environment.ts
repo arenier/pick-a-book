@@ -16,10 +16,10 @@ export interface Environment {
   readonly nodeEnv: NodeEnvironment;
   readonly port: number;
   /**
-   * Path to the SQLite file on the mounted bucket (ADR 0006).
+   * Postgres connection string, as Neon hands it out (ADR 0006).
    * The domain knows nothing about it: only `infrastructure` uses it.
    */
-  readonly databasePath: string;
+  readonly databaseUrl: string;
   /** Bucket holding the shelf photos (ADR 0004). */
   readonly storageBucket: string;
   /**
@@ -55,7 +55,13 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
 
   // Every value is read through a narrowing helper rather than asserted with `as` at the
   // end: the placeholders below never escape, since a non-empty `problems` throws first.
-  const databasePath = required(source, 'DATABASE_PATH', problems);
+  const databaseUrl = required(source, 'DATABASE_URL', problems);
+  if (databaseUrl !== '' && !isPostgresUrl(databaseUrl)) {
+    problems.push(
+      'DATABASE_URL is not a Postgres connection string — expected a postgres:// or ' +
+        'postgresql:// URL',
+    );
+  }
   const storageBucket = required(source, 'STORAGE_BUCKET', problems);
 
   let nodeEnv: NodeEnvironment = 'development';
@@ -79,7 +85,7 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
   return {
     nodeEnv,
     port,
-    databasePath,
+    databaseUrl,
     storageBucket,
     storageEmulatorHost: optional(source.STORAGE_EMULATOR_HOST),
     shelfScannerApiKey: optional(source.SHELF_SCANNER_API_KEY),
@@ -102,6 +108,17 @@ function isPresent(value: string | undefined): value is string {
 
 function optional(value: string | undefined): string | undefined {
   return isPresent(value) ? value : undefined;
+}
+
+/**
+ * A connection string that is merely non-empty is not enough: the previous persistence took a
+ * filesystem path here (ADR 0006 replaced it), and a leftover path would fail deep inside the
+ * driver rather than at boot. Parsing proves the scheme instead of assuming it.
+ */
+function isPostgresUrl(value: string): boolean {
+  const parsed = URL.parse(value);
+
+  return parsed !== null && (parsed.protocol === 'postgres:' || parsed.protocol === 'postgresql:');
 }
 
 function isNodeEnvironment(value: string): value is NodeEnvironment {
