@@ -1,0 +1,16 @@
+{
+  "id": "gen-placeholder-not-a-real-recording",
+  "model": "qwen/qwen3-vl-235b-a22b-instruct",
+  "object": "chat.completion",
+  "choices": [
+    {
+      "index": 0,
+      "finish_reason": "stop",
+      "message": {
+        "role": "assistant",
+        "content": "{\"books\": [{\"author\": \"Marguerite Duras\", \"title\": \"L'Amant\", \"confidence\": 0.94}, {\"author\": \"Georges Perec\", \"title\": \"Les Choses\", \"confidence\": 0.88}]}"
+      }
+    }
+  ],
+  "usage": { "prompt_tokens": 1312, "completion_tokens": 64, "total_tokens": 1376 }
+}
