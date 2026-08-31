@@ -59,8 +59,12 @@ services:
       POSTGRES_USER: pick_a_book
       POSTGRES_PASSWORD: pick_a_book
       POSTGRES_DB: pick_a_book
+    # Published on 5433, not 5432: `yarn api` runs on the host and needs to reach this
+    # database, but the default port would collide with a Postgres already installed there.
+    # Inside the compose network the API still talks to `db:5432` — only the host side moves,
+    # so `.env.example` carries 5433 and has to move with it.
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
