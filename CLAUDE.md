@@ -98,7 +98,7 @@ asynchrone, ou deux `it` de même titre dans un `describe`, et constater que `ya
 
 ```bash
 yarn install                       # installe le workspace
-yarn check                         # lint + test + build sur tous les projets
+yarn check                         # lint + typecheck + test + build sur tous les projets
 yarn lint                          # oxlint puis nx run-many -t lint (ESLint : frontières)
 yarn test                          # nx run-many -t test
 yarn build                         # nx run-many -t build
