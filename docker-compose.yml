@@ -20,7 +20,11 @@ services:
       DATABASE_URL: postgresql://pick_a_book:pick_a_book@db:5432/pick_a_book
       STORAGE_BUCKET: pick-a-book-photos
       STORAGE_EMULATOR_HOST: http://storage:4443
-      SHELF_SCANNER_API_KEY: ${SHELF_SCANNER_API_KEY:-}
+      # Defaults to the stub, so the stack comes up without any provider key. Export the
+      # variables in your shell (or .env) to point it at a real VLM.
+      SHELF_SCANNER_PROVIDER: ${SHELF_SCANNER_PROVIDER:-stub}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
     ports:
       - '3000:3000'
     depends_on:

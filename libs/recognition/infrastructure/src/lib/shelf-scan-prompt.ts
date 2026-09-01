@@ -1,0 +1,51 @@
+/**
+ * The instruction both adapters send with the photo.
+ *
+ * Shared on purpose: the bench compares two providers, and a prompt that differed between
+ * them would measure the prompts as much as the models (issue #10).
+ *
+ * Every clause answers a failure mode ADR 0005 names: inventing a plausible title for a
+ * partly readable spine, promoting the publisher or the collection to author or title, and
+ * padding the list to look thorough.
+ */
+export const SHELF_SCAN_PROMPT = [
+  'You are reading the spines of books on a shelf, photographed with a phone.',
+  '',
+  'Return one entry per book you can actually read. For each one:',
+  '- "author": the author name printed on the spine.',
+  '- "title": the title printed on the spine.',
+  '- "confidence": your own certainty for that entry, between 0 and 1.',
+  '',
+  'Rules:',
+  '- Never invent. If a spine is partly readable, do not complete it towards a work you',
+  '  expect — report only what is printed, with a low confidence.',
+  '- Do not confuse the author or the title with the publisher or the collection',
+  '  (Gallimard, Folio, Points, Le Livre de Poche and the like are never the author).',
+  '- Skip any spine you cannot read. An empty list is a valid answer.',
+  '- Spines may be rotated or upside down; read them anyway.',
+  '',
+  'Answer with JSON only, of the form {"books": [{"author": "", "title": "", "confidence": 0}]}.',
+].join('\n');
+
+/**
+ * The same contract expressed as a JSON schema, for providers that constrain decoding to
+ * one. Kept beside the prompt so the two cannot drift apart.
+ */
+export const SHELF_SCAN_JSON_SCHEMA = {
+  type: 'object',
+  properties: {
+    books: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          author: { type: 'string' },
+          title: { type: 'string' },
+          confidence: { type: 'number' },
+        },
+        required: ['author', 'title', 'confidence'],
+      },
+    },
+  },
+  required: ['books'],
+} as const;

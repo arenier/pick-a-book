@@ -172,3 +172,7 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# Photos de référence du bench (issue #10) : jamais commitées — poids, contexte ressourcerie.
+# Source de vérité : le bucket GCS pick-a-book-505922-reference-photos.
+fixtures/reference-photos/

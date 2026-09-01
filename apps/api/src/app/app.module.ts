@@ -15,7 +15,7 @@ export class AppModule {
   static withEnvironment(environment: Environment) {
     return {
       module: AppModule,
-      imports: [RecognitionModule],
+      imports: [RecognitionModule.withEnvironment(environment)],
       controllers: [HealthController],
       providers: [{ provide: ENVIRONMENT, useValue: environment }],
     };
