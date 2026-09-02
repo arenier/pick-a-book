@@ -72,19 +72,39 @@ export class QwenShelfScannerAdapter implements ShelfScannerPort {
 
   private async post(photo: ShelfPhoto): Promise<Response> {
     const url = `${this.baseUrl}/chat/completions`;
-    const body = {
+
+    let response: Response;
+    try {
+      response = await this.transport(url, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          authorization: `Bearer ${this.configuration.apiKey}`,
+        },
+        body: JSON.stringify(this.requestBody(photo)),
+      });
+    } catch (cause) {
+      throw new ShelfScanFailed(`Qwen is unreachable (${describe(cause)})`, { cause });
+    }
+
+    if (!response.ok) {
+      throw new ShelfScanFailed(`Qwen answered ${response.status} (${await readText(response)})`);
+    }
+
+    return response;
+  }
+
+  private requestBody(photo: ShelfPhoto): object {
+    const dataUrl = `data:${photo.mediaType};base64,${Buffer.from(photo.bytes).toString('base64')}`;
+
+    return {
       model: this.model,
       messages: [
         {
           role: 'user',
           content: [
             { type: 'text', text: SHELF_SCAN_PROMPT },
-            {
-              type: 'image_url',
-              image_url: {
-                url: `data:${photo.mediaType};base64,${Buffer.from(photo.bytes).toString('base64')}`,
-              },
-            },
+            { type: 'image_url', image_url: { url: dataUrl } },
           ],
         },
       ],
@@ -100,26 +120,6 @@ export class QwenShelfScannerAdapter implements ShelfScannerPort {
       max_tokens: this.maxTokens,
       temperature: 0,
     };
-
-    let response: Response;
-    try {
-      response = await this.transport(url, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          authorization: `Bearer ${this.configuration.apiKey}`,
-        },
-        body: JSON.stringify(body),
-      });
-    } catch (cause) {
-      throw new ShelfScanFailed(`Qwen is unreachable (${describe(cause)})`, { cause });
-    }
-
-    if (!response.ok) {
-      throw new ShelfScanFailed(`Qwen answered ${response.status} (${await readText(response)})`);
-    }
-
-    return response;
   }
 }
 

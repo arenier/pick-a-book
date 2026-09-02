@@ -129,7 +129,9 @@ describe('QwenShelfScannerAdapter builds its request', () => {
     expect(request.response_format.json_schema?.schema.required).toContain('books');
     expect(request.temperature).toBe(0);
   });
+});
 
+describe('QwenShelfScannerAdapter caps and pins its request', () => {
   it('gives the answer room for a full shelf so a long list is not truncated', async () => {
     const transport = respondWith(recorded);
     await adapterWith(transport).scan(photo);

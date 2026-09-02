@@ -53,7 +53,8 @@ export function recordingTransport(): {
   return { transport, last: () => latest };
 }
 
-async function readUsage(response: Response): Promise<Omit<CallMetrics, 'latencyMs'>> {
+/** Exported for its own tests: the two usage-payload shapes feed the decision-note costs. */
+export async function readUsage(response: Response): Promise<Omit<CallMetrics, 'latencyMs'>> {
   const empty = { promptTokens: 0, completionTokens: 0, reportedCostUsd: null };
   let body: unknown;
   try {
