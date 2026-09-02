@@ -20,6 +20,12 @@
     },
     {
       "path": "./libs/shared/result"
+    },
+    {
+      "path": "./libs/shared/text-match"
+    },
+    {
+      "path": "./tools/bench"
     }
   ],
   "compilerOptions": {}

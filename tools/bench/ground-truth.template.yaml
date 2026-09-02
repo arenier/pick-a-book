@@ -1,0 +1,45 @@
+# Vérité terrain du jeu de référence — MODÈLE À COMPLÉTER PAR UN HUMAIN.
+#
+# Copier ce fichier en `tools/bench/ground-truth.yaml`, puis, pour chaque photo, saisir la
+# liste réelle des couples (auteur, titre) présents et lisibles sur l'étagère. Sans cette
+# vérité vérifiée à l'œil, ni rappel, ni précision, ni hallucination ne sont mesurables, donc
+# aucun fournisseur ne peut être départagé (#10, ADR 0005).
+#
+# Réserve de méthode (commentaire du 31/08 sur #10) : cette vérité DOIT être vérifiée par un
+# humain. Un brouillon produit par un VLM pour départager deux VLM mesure leur accord, pas leur
+# exactitude. La sortie brute d'un run (`tools/bench/output/<provider>.json`) fait gagner de la
+# saisie — elle ne dispense pas de la vérification.
+#
+# Règles de saisie :
+#   - un livre = un couple { author, title }, tel qu'il est lu sur la tranche (avant toute
+#     réconciliation) ; ne pas confondre l'auteur/titre avec l'éditeur ou la collection ;
+#   - une tranche illisible n'est pas saisie (elle deviendra un faux négatif, ce qui est voulu) ;
+#   - une étagère sans aucun livre lisible : `books: []`.
+#
+# Le fichier réel `ground-truth.yaml` est commité (texte, aucune image), à côté de ce modèle.
+
+version: 1
+photos:
+  - file: 20260801_113334.jpg
+    books:
+      # - author: Albert Camus
+      #   title: La Peste
+      []
+  - file: 20260801_113338.jpg
+    books: []
+  - file: 20260801_113352.jpg
+    books: []
+  - file: 20260801_113355.jpg
+    books: []
+  - file: 20260801_113405.jpg
+    books: []
+  - file: 20260801_113811.jpg
+    books: []
+  - file: 20260801_114113.jpg
+    books: []
+  - file: 20260801_114237.jpg
+    books: []
+  - file: 20260801_114252.jpg
+    books: []
+  - file: 20260801_114307.jpg
+    books: []
