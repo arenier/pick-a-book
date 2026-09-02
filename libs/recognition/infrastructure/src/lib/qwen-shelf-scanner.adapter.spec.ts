@@ -9,6 +9,7 @@ import recorded from './recorded/qwen-shelf-scan.json' with { type: 'json' };
 const chatRequestSchema = z.object({
   model: z.string(),
   temperature: z.number(),
+  max_tokens: z.number(),
   response_format: z.object({
     type: z.string(),
     json_schema: z
@@ -127,6 +128,22 @@ describe('QwenShelfScannerAdapter builds its request', () => {
     expect(request.response_format.json_schema?.strict).toBe(true);
     expect(request.response_format.json_schema?.schema.required).toContain('books');
     expect(request.temperature).toBe(0);
+  });
+
+  it('gives the answer room for a full shelf so a long list is not truncated', async () => {
+    const transport = respondWith(recorded);
+    await adapterWith(transport).scan(photo);
+
+    expect(chatRequestSchema.parse(JSON.parse(requestOf(transport).body)).max_tokens).toBe(8192);
+  });
+
+  it('defaults to the OCR-focused qwen2.5-vl-72b, not the unstable 235B (issue #10)', async () => {
+    const transport = respondWith(recorded);
+    await adapterWith(transport).scan(photo);
+
+    expect(chatRequestSchema.parse(JSON.parse(requestOf(transport).body)).model).toBe(
+      'qwen/qwen2.5-vl-72b-instruct',
+    );
   });
 
   it('reports an empty shelf as an empty array, not a failure', async () => {

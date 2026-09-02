@@ -6,7 +6,14 @@ import { SHELF_SCAN_JSON_SCHEMA, SHELF_SCAN_PROMPT } from './shelf-scan-prompt.j
 import { toDetectedBooks } from './shelf-scan-response.js';
 
 const DEFAULT_BASE_URL = 'https://openrouter.ai/api/v1';
-const DEFAULT_MODEL = 'qwen/qwen3-vl-235b-a22b-instruct';
+// qwen2.5-vl-72b, not qwen3-vl-235b: the 235B was unusable on dense shelves in the bench —
+// it returned 0 books on half the photos and truncated its JSON on others, where the 72B stays
+// stable (issue #10). The 72B is the OCR-focused line; the 235B a general model with vision.
+const DEFAULT_MODEL = 'qwen/qwen2.5-vl-72b-instruct';
+// Enough head-room for a full dense shelf (~100 spines) so a legitimate long list is not cut
+// off mid-JSON. It does not tame a runaway repetition — that still hits the cap and fails, which
+// is the right outcome — it only stops truncating honest answers (issue #10).
+const DEFAULT_MAX_TOKENS = 8192;
 
 export interface QwenConfiguration {
   readonly apiKey: string;
@@ -18,6 +25,8 @@ export interface QwenConfiguration {
    * is a different weight class from a quantised local one (issue #10).
    */
   readonly baseUrl?: string;
+  /** Completion-token ceiling. Overridable, but the default already fits a full shelf. */
+  readonly maxTokens?: number;
 }
 
 /** The slice of the chat-completions envelope this adapter depends on, and nothing more. */
@@ -38,6 +47,7 @@ const chatEnvelopeSchema = z.object({
 export class QwenShelfScannerAdapter implements ShelfScannerPort {
   private readonly model: string;
   private readonly baseUrl: string;
+  private readonly maxTokens: number;
 
   constructor(
     private readonly configuration: QwenConfiguration,
@@ -45,6 +55,7 @@ export class QwenShelfScannerAdapter implements ShelfScannerPort {
   ) {
     this.model = configuration.model ?? DEFAULT_MODEL;
     this.baseUrl = configuration.baseUrl ?? DEFAULT_BASE_URL;
+    this.maxTokens = configuration.maxTokens ?? DEFAULT_MAX_TOKENS;
   }
 
   async scan(photo: ShelfPhoto): Promise<DetectedBook[]> {
@@ -86,6 +97,7 @@ export class QwenShelfScannerAdapter implements ShelfScannerPort {
         type: 'json_schema',
         json_schema: { name: 'shelf_scan', strict: true, schema: SHELF_SCAN_JSON_SCHEMA },
       },
+      max_tokens: this.maxTokens,
       temperature: 0,
     };
 

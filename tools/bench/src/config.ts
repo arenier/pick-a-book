@@ -21,7 +21,7 @@ export interface ProviderSpec {
 // rather than inheriting whatever an adapter would fall back to, so the report names a truth.
 const DEFAULT_MODELS: Partial<Record<string, string>> = {
   gemini: 'gemini-3.6-flash',
-  qwen: 'qwen/qwen3-vl-235b-a22b-instruct',
+  qwen: 'qwen/qwen2.5-vl-72b-instruct',
 };
 
 const MEDIA_TYPES: Partial<Record<string, string>> = {
