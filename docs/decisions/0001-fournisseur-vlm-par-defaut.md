@@ -39,30 +39,37 @@ une photo sans livre lisible se lit en tableau vide.
 
 ### Contrat, coût, latence (run du 2026-09-02, sans vérité terrain)
 
+Les deux fournisseurs ont tourné de bout en bout (OpenRouter atteint après ajout de son domaine à
+l'egress de l'environnement ; en environnement proxifié, le runner a besoin de `NODE_USE_ENV_PROXY=1`
+pour que le `fetch` de Node passe par le proxy — cf. `tools/bench/README.md`).
+
 | Métrique | gemini | qwen |
 |---|---|---|
 | Modèle | `gemini-3.6-flash` | `qwen/qwen3-vl-235b-a22b-instruct` |
 | Photos scannées | 10 | 10 |
-| Échecs adapter | 1 | 10 |
-| Latence médiane | 19,7 s | — |
-| Tokens (prompt / complétion) | 11808 / 9389 | 0 / 0 |
-| Coût total | $0,0270 | n/a |
-| Coût / scan | $0,0027 | n/a |
+| Échecs adapter | 1 | 1 |
+| Latence médiane | 32,7 s | 4,8 s |
+| Tokens (prompt / complétion) | 11808 / 8389 | 50138 / 7356 |
+| Coût total | $0,0245 | $0,0232 |
+| Coût / scan | $0,0025 | $0,0023 |
 
-Gemini a lu 9 des 10 photos (4 à 62 livres par étagère selon la densité), un échec sur un `503`
-transitoire de l'API (« high demand ») — l'adapter l'a bien remonté en `ShelfScanFailed` et le run
-a continué. Coût mesuré ~0,27 ¢/scan, dans l'ordre de grandeur annoncé (~0,37 ¢).
+Coûts quasi identiques (~0,25 ¢ vs ~0,23 ¢/scan), Qwen ~7× plus rapide. Mais le **nombre** de
+détections trahit déjà des régimes très différents — un signal opérationnel, **pas** un verdict
+qualité (celui-là attend la vérité terrain) :
 
-> **Qwen n'a pas pu être mesuré depuis cet environnement.** Les 10 appels ont échoué en
-> « unreachable (fetch failed) » : la **politique réseau** de l'environnement d'exécution autorise
-> Google (Gemini passe) mais **bloque `openrouter.ai`** (le proxy répond `403` au `CONNECT`). Ce
-> n'est pas un bug de l'adapter — il a correctement levé `ShelfScanFailed` sur l'échec de connexion.
-> Le run Qwen doit se faire depuis un environnement dont la politique réseau autorise l'egress vers
-> OpenRouter (ou un endpoint OpenAI-compatible joignable, cf. `QWEN_BASE_URL`).
+- **Gemini** : détections régulières (5 à 53 livres selon la densité), grâce au décodage contraint
+  par schéma natif. L'unique échec est un **rejet du domaine** — le modèle a renvoyé un auteur vide,
+  `Author` l'a refusé, et le payload entier est rejeté en bloc (`ShelfScanFailed`) : le comportement
+  « rien de partiel ne remonte » voulu par l'ADR 0005, vérifié en vrai.
+- **Qwen** : très instable sous le même prompt en `json_object` (sans schéma natif) — **5 photos sur
+  10 renvoient 0 livre**, une en renvoie **158** (bien au-delà du réel), et l'unique échec est un
+  **JSON tronqué** (réponse coupée à ~48 ko). Un modèle qui rend 0 sur une étagère pleine et 158 sur
+  une autre est un drapeau rouge à confirmer sur la vérité terrain — c'est exactement le genre
+  d'écart que le rappel et l'hallucination mesureront.
 
-Ces chiffres valident la chaîne de bout en bout côté Gemini et donnent son coût et sa latence. Ils
-ne disent **rien** de la qualité : un fournisseur peut détecter beaucoup de livres et en inventer
-autant. C'est la vérité terrain qui tranche.
+Ces chiffres valident la chaîne de bout en bout pour les **deux** adapters et donnent coût et
+latence. Ils ne disent **rien de définitif** sur la qualité : un fournisseur peut détecter beaucoup
+et inventer autant, ou détecter peu et rater le reste. C'est la vérité terrain qui tranche.
 
 ### Qualité (rappel, précision, hallucination)
 

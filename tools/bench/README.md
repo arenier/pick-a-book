@@ -43,10 +43,10 @@ pas une erreur ; une photo sans livre lisible se lit en **tableau vide**.
    > d'un premier run fait gagner de la saisie — elle ne dispense pas de la vérification.
 3. **Clés** dans l'environnement : `GEMINI_API_KEY` et `OPENROUTER_API_KEY`.
 4. **Egress réseau** vers les hôtes des fournisseurs (`generativelanguage.googleapis.com`,
-   `openrouter.ai`). Certains environnements d'exécution restreignent l'egress par politique
-   réseau : un fournisseur injoignable fait échouer ses scans en `ShelfScanFailed`
-   (« unreachable ») — ce n'est pas un bug de l'adapter (constaté sur OpenRouter, cf. la note de
-   décision `docs/decisions/0001`).
+   `openrouter.ai`). Certains environnements restreignent l'egress par politique réseau : un
+   fournisseur injoignable fait échouer ses scans en `ShelfScanFailed` (« unreachable » ou
+   `403 Host not in allowlist`) — ce n'est pas un bug de l'adapter. Autoriser le domaine côté
+   environnement, et voir la note sur `NODE_USE_ENV_PROXY=1` ci-dessous.
 
 ## Lancer
 
@@ -54,6 +54,10 @@ pas une erreur ; une photo sans livre lisible se lit en **tableau vide**.
 yarn nx build bench                 # bundle le runner + ses dépendances de workspace
 node tools/bench/dist/main.js       # appels live, depuis la racine du repo
 ```
+
+En **environnement proxifié** (egress via un proxy, `HTTPS_PROXY` posé), le `fetch` de Node ne lit
+pas `HTTPS_PROXY` par défaut : préfixer par `NODE_USE_ENV_PROXY=1` (Node ≥ 22.21), sinon les appels
+échouent en `403 Host not in allowlist` ou en « unreachable » quand bien même le domaine est autorisé.
 
 Sortie dans `tools/bench/output/` (gitignoré, dérivé des photos privées) :
 `report.md` (le tableau) et `<provider>.json` (les détections brutes, par photo).
