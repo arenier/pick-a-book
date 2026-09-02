@@ -12,7 +12,7 @@
     "lint": "oxlint --type-aware && nx run-many -t lint",
     "test": "nx run-many -t test",
     "typecheck": "nx run-many -t typecheck",
-    "check": "oxlint --type-aware && nx run-many -t lint test build",
+    "check": "oxlint --type-aware && oxfmt --check && nx run-many -t lint typecheck test build",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "api": "nx serve api",
