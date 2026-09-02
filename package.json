@@ -17,7 +17,8 @@
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "api": "nx serve api",
-    "web": "nx serve web"
+    "web": "nx serve web",
+    "bench": "nx build bench && node tools/bench/dist/main.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",

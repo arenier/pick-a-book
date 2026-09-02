@@ -51,9 +51,11 @@ pas une erreur ; une photo sans livre lisible se lit en **tableau vide**.
 ## Lancer
 
 ```bash
-yarn nx build bench                 # bundle le runner + ses dépendances de workspace
-node tools/bench/dist/main.js       # appels live, depuis la racine du repo
+yarn bench                          # build le runner puis l'exécute (appels live), depuis la racine
 ```
+
+Équivaut à `nx build bench && node tools/bench/dist/main.js`. Les variables d'environnement ci-dessous
+se placent devant : `BENCH_PROVIDERS=qwen yarn bench`.
 
 En **environnement proxifié** (egress via un proxy, `HTTPS_PROXY` posé), le `fetch` de Node ne lit
 pas `HTTPS_PROXY` par défaut : préfixer par `NODE_USE_ENV_PROXY=1` (Node ≥ 22.21), sinon les appels

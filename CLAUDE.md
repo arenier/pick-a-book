@@ -107,6 +107,7 @@ yarn format                        # oxfmt          (yarn format:check pour vér
 
 yarn api                           # démarre l'API   (http://localhost:3000/health)
 yarn web                           # démarre le front (http://localhost:4200)
+yarn bench                         # départage les adapters VLM (appels live, hors CI) — voir tools/bench/README.md
 docker compose up --build          # API + front + Postgres + émulateur de bucket
 
 yarn nx run-many -t lint -p api    # cibler un projet
