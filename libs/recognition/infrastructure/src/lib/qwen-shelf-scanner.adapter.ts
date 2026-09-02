@@ -2,7 +2,7 @@ import { ShelfScanFailed } from '@pick-a-book/recognition-domain';
 import type { DetectedBook, ShelfPhoto, ShelfScannerPort } from '@pick-a-book/recognition-domain';
 import { z } from 'zod';
 
-import { SHELF_SCAN_PROMPT } from './shelf-scan-prompt.js';
+import { SHELF_SCAN_JSON_SCHEMA, SHELF_SCAN_PROMPT } from './shelf-scan-prompt.js';
 import { toDetectedBooks } from './shelf-scan-response.js';
 
 const DEFAULT_BASE_URL = 'https://openrouter.ai/api/v1';
@@ -77,10 +77,15 @@ export class QwenShelfScannerAdapter implements ShelfScannerPort {
           ],
         },
       ],
-      // `json_object` is the OpenAI-compatible way to ask for JSON. Weaker than Gemini's
-      // schema-constrained decoding, which is exactly why the answer is validated downstream
-      // rather than trusted.
-      response_format: { type: 'json_object' },
+      // Schema-constrained decoding, the OpenAI-compatible way: the same contract Gemini
+      // decodes against (`SHELF_SCAN_JSON_SCHEMA`), held over the model's grammar. Plain
+      // `json_object` let dense shelves truncate the JSON and emit empty author/title fields
+      // (issue #10) — the schema removes that failure mode. The answer is still validated
+      // downstream: `strict` narrows the shape, not the meaning.
+      response_format: {
+        type: 'json_schema',
+        json_schema: { name: 'shelf_scan', strict: true, schema: SHELF_SCAN_JSON_SCHEMA },
+      },
       temperature: 0,
     };
 

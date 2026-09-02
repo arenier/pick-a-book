@@ -9,7 +9,16 @@ import recorded from './recorded/qwen-shelf-scan.json' with { type: 'json' };
 const chatRequestSchema = z.object({
   model: z.string(),
   temperature: z.number(),
-  response_format: z.object({ type: z.string() }),
+  response_format: z.object({
+    type: z.string(),
+    json_schema: z
+      .object({
+        name: z.string(),
+        strict: z.boolean(),
+        schema: z.object({ required: z.array(z.string()) }),
+      })
+      .optional(),
+  }),
   messages: z.array(
     z.object({
       role: z.string(),
@@ -102,7 +111,7 @@ describe('QwenShelfScannerAdapter builds its request', () => {
     expect(request.messages[0]?.content[1]?.image_url?.url).toBe('data:image/jpeg;base64,/9j/4A==');
   });
 
-  it('authenticates with a bearer token and asks for a JSON answer', async () => {
+  it('authenticates with a bearer token and constrains the answer to the schema', async () => {
     const transport = respondWith(recorded);
     await adapterWith(transport).scan(photo);
     const { url, body, headers } = requestOf(transport);
@@ -110,8 +119,13 @@ describe('QwenShelfScannerAdapter builds its request', () => {
     expect(headers.get('authorization')).toBe('Bearer test-key');
     expect(url).not.toContain('test-key');
 
+    // json_schema, not json_object: free-form JSON let the model truncate and emit empty
+    // fields on dense shelves (issue #10). The schema is the same contract Gemini decodes
+    // against, so the two providers are held to one shape.
     const request = chatRequestSchema.parse(JSON.parse(body));
-    expect(request.response_format.type).toBe('json_object');
+    expect(request.response_format.type).toBe('json_schema');
+    expect(request.response_format.json_schema?.strict).toBe(true);
+    expect(request.response_format.json_schema?.schema.required).toContain('books');
     expect(request.temperature).toBe(0);
   });
 
