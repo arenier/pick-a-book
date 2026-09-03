@@ -122,6 +122,30 @@ describe('scorePhoto — structuring', () => {
   });
 });
 
+describe('scorePhoto — deduplication', () => {
+  it('collapses repeated detections of the same book before scoring', () => {
+    const truth = [ref('Albert Camus', 'La Peste')];
+    // The exhaustive prompt makes the model list a spine twice, in an OCR variant.
+    const detected = [det('Albert Camus', 'La Peste', 0.9), det('albert camus', 'La Peste.', 0.6)];
+
+    const score = scorePhoto(detected, truth, HIGH);
+
+    expect(score.detectedCount).toBe(1);
+    expect(score.truePositives).toBe(1);
+    expect(score.falsePositives).toBe(0);
+  });
+
+  it('keeps genuinely distinct books by the same author', () => {
+    const truth = [ref('Albert Camus', 'La Peste'), ref('Albert Camus', 'La Chute')];
+    const detected = [det('Albert Camus', 'La Peste', 0.9), det('Albert Camus', 'La Chute', 0.9)];
+
+    const score = scorePhoto(detected, truth, HIGH);
+
+    expect(score.detectedCount).toBe(2);
+    expect(score.truePositives).toBe(2);
+  });
+});
+
 describe('aggregate', () => {
   it('micro-averages counts and derives the rates from the totals', () => {
     const first = scorePhoto(

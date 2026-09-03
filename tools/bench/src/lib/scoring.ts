@@ -1,4 +1,4 @@
-import { fuzzyEquals, similarity } from '@pick-a-book/shared-text-match';
+import { fuzzyEquals, normalizeText, similarity } from '@pick-a-book/shared-text-match';
 
 /**
  * Scoring of a shelf reading against a human-verified ground truth (#10).
@@ -117,25 +117,48 @@ export function scorePhoto(
   truth: readonly BookRef[],
   highConfidenceThreshold: number,
 ): PhotoScore {
-  const pairs = correspond(detected, truth);
+  const distinct = dedupe(detected);
+  const pairs = correspond(distinct, truth);
   const fields = tallyFields(pairs);
 
   return {
     truthCount: truth.length,
-    detectedCount: detected.length,
+    detectedCount: distinct.length,
     truePositives: fields.truePositives,
-    falsePositives: detected.length - fields.truePositives,
+    falsePositives: distinct.length - fields.truePositives,
     falseNegatives: truth.length - fields.truePositives,
     correspondences: pairs.length,
     authorCorrect: fields.authorCorrect,
     titleCorrect: fields.titleCorrect,
     swapped: fields.swapped,
     highConfidenceHallucinations: countHighConfidenceHallucinations(
-      detected,
+      distinct,
       pairs,
       highConfidenceThreshold,
     ),
   };
+}
+
+/**
+ * Collapses repeated detections of the same book. The exhaustive prompt makes the model list a
+ * spine twice now and then (issue #10); keyed on the normalized `(author, title)`, only the
+ * highest-confidence copy survives — so a doubled read is neither double-counted nor charged as a
+ * false positive. It is not a matching step: two genuinely different books stay apart.
+ */
+function dedupe(detected: readonly DetectionRecord[]): DetectionRecord[] {
+  const byKey = new Map<string, DetectionRecord>();
+
+  for (const detection of detected) {
+    // Newline separates the fields: normalization never emits one, so "a b" + "c"
+    // cannot collide with "a" + "b c".
+    const key = `${normalizeText(detection.author)}\n${normalizeText(detection.title)}`;
+    const kept = byKey.get(key);
+    if (kept === undefined || detection.confidence > kept.confidence) {
+      byKey.set(key, detection);
+    }
+  }
+
+  return [...byKey.values()];
 }
 
 interface FieldTally {
