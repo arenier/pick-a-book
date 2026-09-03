@@ -20,26 +20,26 @@
 
 version: 1
 photos:
-  - file: 20260801_113334.jpg
+  - file: shelf-fixture-1.jpg
     books:
       # - author: Albert Camus
       #   title: La Peste
       []
-  - file: 20260801_113338.jpg
+  - file: shelf-fixture-2.jpg
     books: []
-  - file: 20260801_113352.jpg
+  - file: shelf-fixture-3.jpg
     books: []
-  - file: 20260801_113355.jpg
+  - file: shelf-fixture-4.jpg
     books: []
-  - file: 20260801_113405.jpg
+  - file: shelf-fixture-5.jpg
     books: []
-  - file: 20260801_113811.jpg
+  - file: shelf-fixture-6.jpg
     books: []
-  - file: 20260801_114113.jpg
+  - file: shelf-fixture-7.jpg
     books: []
-  - file: 20260801_114237.jpg
+  - file: shelf-fixture-8.jpg
     books: []
-  - file: 20260801_114252.jpg
+  - file: shelf-fixture-9.jpg
     books: []
-  - file: 20260801_114307.jpg
+  - file: shelf-fixture-10.jpg
     books: []

@@ -4,7 +4,7 @@ import { env, mediaTypeOf, requireEnv, selectedProviders } from './config.js';
 
 describe('mediaTypeOf', () => {
   it('maps known image extensions, case-insensitively', () => {
-    expect(mediaTypeOf('20260801_113334.jpg')).toBe('image/jpeg');
+    expect(mediaTypeOf('shelf-fixture-1.jpg')).toBe('image/jpeg');
     expect(mediaTypeOf('shelf.JPEG')).toBe('image/jpeg');
     expect(mediaTypeOf('shelf.png')).toBe('image/png');
   });

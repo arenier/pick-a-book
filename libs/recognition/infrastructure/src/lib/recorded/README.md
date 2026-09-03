@@ -8,7 +8,7 @@ nécessaire non plus — `ShelfPhoto` se construit avec quelques octets valides.
 
 | Fichier | Origine | Fiabilité |
 |---|---|---|
-| `gemini-shelf-scan.json` | **Appel réel**, capturé une fois le 2026-08-31 sur `gemini-3.6-flash`, photo de référence `20260801_114252.jpg` | Authentique : l'enveloppe est exactement celle que renvoie l'API |
+| `gemini-shelf-scan.json` | **Appel réel**, capturé une fois le 2026-08-31 sur `gemini-3.6-flash`, photo de référence `shelf-fixture-9.jpg` | Authentique : l'enveloppe est exactement celle que renvoie l'API |
 | `qwen-shelf-scan.json` | **Écrite à la main**, d'après la forme documentée de l'API chat-completions OpenAI | ⚠️ Non authentique — voir ci-dessous |
 
 ## Pourquoi la fixture Qwen n'est pas un enregistrement
