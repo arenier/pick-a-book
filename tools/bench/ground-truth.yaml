@@ -235,8 +235,6 @@ photos:
         title: Eleftheria
       - author: Antonio Tabucchi
         title: Petits malentendus sans importance
-      - author: Kressmann Taylor
-        title: Jour sans retour
 
       # --- Étagère 4 ---
       - author: Fred Uhlman
@@ -317,8 +315,6 @@ photos:
   - file: shelf-fixture-3.jpg
     description: 'Une seule étagère avec de nombreuses bandes dessinées, les tranches sont globalement lisibles mais certaines sont très inclinées et chevauchent visuellement les livres voisins.'
     books:
-      - author: Denayer - Van Hamme
-        title: (non lisible)
       - author: ''
         title: Ligne Rouge
       - author: Joann Sfar
@@ -329,8 +325,6 @@ photos:
         title: Charles de Foucauld - Le Marabout de Tananarive
       - author: Renoy
         title: Des clous pour le cachemire
-      - author: Tony Stark
-        title: (titre non lisible)
       - author: Dupuy - Berberian
         title: Monsieur Jean - La Théorie des gens seuls
       - author: Boccar / de Froidmont - Musk
@@ -632,8 +626,6 @@ photos:
         title: Les Soupes
       - author: ''
         title: Légumes faciles
-      - author: Virginie Garnier
-        title: (titre non lisible)
       - author: Guy Savoy & Christian
         title: Desserts
 
@@ -979,8 +971,6 @@ photos:
         title: Et ils meurent tous les deux à la fin (Robert Laffont)
       - author: Won-Pyung Sohn
         title: Amande
-      - author: Adam
-        title: Le Premier (titre incomplet)
 
       # --- Étagère 5 (la plus basse, partiellement visible) ---
 
