@@ -111,11 +111,16 @@ export class QwenShelfScannerAdapter implements ShelfScannerPort {
       // Schema-constrained decoding, the OpenAI-compatible way: the same contract Gemini
       // decodes against (`SHELF_SCAN_JSON_SCHEMA`), held over the model's grammar. Plain
       // `json_object` let dense shelves truncate the JSON and emit empty author/title fields
-      // (issue #10) — the schema removes that failure mode. The answer is still validated
-      // downstream: `strict` narrows the shape, not the meaning.
+      // (issue #10) — constraining decoding to the schema removes that failure mode. The
+      // answer is still validated downstream.
+      //
+      // `strict: false` on purpose: OpenAI strict mode demands every property sit in the
+      // schema's `required`, which would force `author` back to mandatory — the opposite of
+      // the 2026-09-04 amendment. The schema still pins the shape (what tamed the runaway),
+      // it just no longer forbids an optional field.
       response_format: {
         type: 'json_schema',
-        json_schema: { name: 'shelf_scan', strict: true, schema: SHELF_SCAN_JSON_SCHEMA },
+        json_schema: { name: 'shelf_scan', strict: false, schema: SHELF_SCAN_JSON_SCHEMA },
       },
       max_tokens: this.maxTokens,
       temperature: 0,

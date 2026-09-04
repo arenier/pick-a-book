@@ -60,4 +60,13 @@ describe('DetectedBook', () => {
     expect(book.isAtLeast(Confidence.of(0.5))).toBe(false);
     expect(book.isAtLeast(Confidence.of(0.4))).toBe(true);
   });
+
+  // The author is not on every spine (ADR 0005, 2026-09-04 amendment): the title identifies
+  // the book, the author is optional and reconciliation attaches it downstream.
+  it('allows a title-only book when the author is not on the spine', () => {
+    const book = DetectedBook.of(undefined, BookTitle.of('Les Choses'), Confidence.of(0.3));
+
+    expect(book.author).toBeUndefined();
+    expect(book.title.value).toBe('Les Choses');
+  });
 });

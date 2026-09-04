@@ -23,7 +23,7 @@ export class ScanShelfUseCase {
 
 function toDto(book: DetectedBook): DetectedBookDto {
   return {
-    author: book.author.value,
+    author: book.author?.value,
     title: book.title.value,
     confidence: book.confidence.value,
   };

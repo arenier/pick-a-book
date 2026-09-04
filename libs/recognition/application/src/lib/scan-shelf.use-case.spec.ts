@@ -38,6 +38,17 @@ describe('ScanShelfUseCase', () => {
     ]);
   });
 
+  it('carries a title-only book through, its author left undefined', async () => {
+    const titleOnly = DetectedBook.of(undefined, BookTitle.of('Les Choses'), Confidence.of(0.4));
+    const scanner = new ShelfScannerStub([titleOnly]);
+
+    const result = await new ScanShelfUseCase(scanner).execute(aJpeg);
+
+    expect(result.books).toStrictEqual([
+      { author: undefined, title: 'Les Choses', confidence: 0.4 },
+    ]);
+  });
+
   it('reports weak detections without filtering them out', async () => {
     const scanner = new ShelfScannerStub([aBook('Auteur incertain', 'Titre incertain', 0.12)]);
 

@@ -11,7 +11,8 @@ export interface ScanShelfCommand {
 }
 
 export interface DetectedBookDto {
-  readonly author: string;
+  /** Absent when the spine carried no readable author (ADR 0005, 2026-09-04 amendment). */
+  readonly author?: string;
   readonly title: string;
   /** The model's own self-assessment, in [0, 1]. Not calibrated (ADR 0005). */
   readonly confidence: number;

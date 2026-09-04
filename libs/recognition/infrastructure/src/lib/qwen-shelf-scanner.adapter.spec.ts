@@ -85,7 +85,7 @@ describe('QwenShelfScannerAdapter', () => {
     const books = await adapterWith(respondWith(recorded)).scan(photo);
 
     expect(books).toHaveLength(2);
-    expect(books[0]?.author.value).toBe('Marguerite Duras');
+    expect(books[0]?.author?.value).toBe('Marguerite Duras');
     expect(books[0]?.title.value).toBe("L'Amant");
     expect(books[0]?.confidence.value).toBeCloseTo(0.94);
   });
@@ -122,10 +122,11 @@ describe('QwenShelfScannerAdapter builds its request', () => {
 
     // json_schema, not json_object: free-form JSON let the model truncate and emit empty
     // fields on dense shelves (issue #10). The schema is the same contract Gemini decodes
-    // against, so the two providers are held to one shape.
+    // against, so the two providers are held to one shape. `strict: false` keeps the optional
+    // author the 2026-09-04 amendment allows (strict mode would force it back to required).
     const request = chatRequestSchema.parse(JSON.parse(body));
     expect(request.response_format.type).toBe('json_schema');
-    expect(request.response_format.json_schema?.strict).toBe(true);
+    expect(request.response_format.json_schema?.strict).toBe(false);
     expect(request.response_format.json_schema?.schema.required).toContain('books');
     expect(request.temperature).toBe(0);
   });
