@@ -1,7 +1,7 @@
 version: 1
 photos:
   - file: shelf-fixture-1.jpg
-    description: "Étagère avec de nombreux livres de poche sur plusieurs étagères, les livres sont rangés à la verticale et les tranches sont globalement bien lisibles."
+    description: 'Étagère avec de nombreux livres de poche sur plusieurs étagères, les livres sont rangés à la verticale et les tranches sont globalement bien lisibles.'
     books:
       # --- Étagère 1 (du haut) ---
       - author: Richard Russo
@@ -321,7 +321,7 @@ photos:
         title: Mon mari
 
   - file: shelf-fixture-3.jpg
-    description: "Une seule étagère avec de nombreuses bandes dessinées, les tranches sont globalement lisibles mais certaines sont très inclinées et chevauchent visuellement les livres voisins."
+    description: 'Une seule étagère avec de nombreuses bandes dessinées, les tranches sont globalement lisibles mais certaines sont très inclinées et chevauchent visuellement les livres voisins.'
     books:
       - author: Denayer - Van Hamme
         title: (non lisible)
@@ -350,13 +350,13 @@ photos:
       - author: J. Martin
         title: Les Aventures de Lefranc - La Grande Menace
       - author: Christophe Blain
-        title: Gus - 1. Nathalie 
+        title: Gus - 1. Nathalie
       - author: Joann Sfar
         title: Les Seigneurs des pirates
       - author: S. Gauthier / T. Labourot
         title: Trompe-la-mort
       - author: Philippe Geluck
-        title: Le Chat 
+        title: Le Chat
       - author: Philippe Geluck
         title: Chacun son chat
       - author: Binet
@@ -364,7 +364,7 @@ photos:
       - author: Binet
         title: Les Bidochon - Tome 11
       - author: Sternis / Gothias
-        title: "Memory, T.1: Le Bal des Mandibules"
+        title: 'Memory, T.1: Le Bal des Mandibules'
       - author: Gualdoni - Turconi - Tenderini
         title: Wondercity - Le Talent de Roary
       - author: Turk / Groot
@@ -415,13 +415,13 @@ photos:
         title: Fantômes
       - author: (non présent)
         title: Terre-Un - Batman
-    
+
   - file: shelf-fixture-4.jpg
     # Livres identifiés sur la photo shelf-fixture-4.jpg
     # Deux rangées : une pile de livres posés à plat en haut, une rangée debout en bas.
     # De gauche à droite, dessus puis dessous.
     # Les lignes marquées (incertain) signalent une lecture peu fiable de la tranche.
-    description: "Étagère de gros livres anciens, avec une pile de livres posés à plat en haut et une rangée de livres debout en bas. Les tranches ne sont pas simples à lire." 
+    description: 'Étagère de gros livres anciens, avec une pile de livres posés à plat en haut et une rangée de livres debout en bas. Les tranches ne sont pas simples à lire.'
     books:
       # --- Pile du haut (livres posés à plat), partie gauche ---
       - author: Balzac
@@ -477,7 +477,7 @@ photos:
     # Livres (polars / thrillers) identifiés sur la photo shelf-fixture-5.jpg
     # Deux étagères : haut puis bas, de gauche à droite.
     # Les lignes marquées (incertain) signalent une lecture peu fiable de la tranche.
-    description: "Étagère de polars et thrillers, avec deux étagères (haut puis bas). Les tranches sont bien dessinées mais certaines sont difficiles à lire."
+    description: 'Étagère de polars et thrillers, avec deux étagères (haut puis bas). Les tranches sont bien dessinées mais certaines sont difficiles à lire.'
     books:
       # --- Étagère du haut ---
       - author: Jussi Adler-Olsen
@@ -609,7 +609,7 @@ photos:
     # Livres de cuisine identifiés sur la photo shelf-fixture-6.jpg
     # Section "CUISINE". Deux étagères : haut puis bas, de gauche à droite.
     # Les lignes marquées (incertain) signalent une lecture peu fiable de la tranche.
-    description: "Étagère de livres de cuisine, avec deux étagères (haut puis bas). Les tranches sont globalement lisibles mais certaines sont difficiles à lire."
+    description: 'Étagère de livres de cuisine, avec deux étagères (haut puis bas). Les tranches sont globalement lisibles mais certaines sont difficiles à lire.'
     books:
       # --- Étagère du haut ---
       - author: Julia Manzat
@@ -644,7 +644,7 @@ photos:
         title: Légumes faciles
       - author: Virginie Garnier
         title: (titre non lisible)
-      - author: Guy Savoy & Christian 
+      - author: Guy Savoy & Christian
         title: Desserts
 
       # --- Étagère du bas ---
@@ -663,7 +663,7 @@ photos:
     # Pile de livres à plat (couvertures visibles) à gauche/centre, colonne de livres
     # debout (tranches) à droite. De haut en bas dans chaque groupe.
     # Les lignes marquées (incertain) signalent une lecture peu fiable.
-    description: "Étagère de livres divers, avec une pile de livres à plat (couvertures visibles) à gauche/centre et une colonne de livres debout (tranches) à droite."
+    description: 'Étagère de livres divers, avec une pile de livres à plat (couvertures visibles) à gauche/centre et une colonne de livres debout (tranches) à droite.'
     books:
       # --- Pile de gauche/centre (couvertures visibles), de haut en bas ---
       - author: La Bruyère
@@ -772,11 +772,11 @@ photos:
       - author: (non présent)
         title: Les Stratégies des ressources humaines
       - author: Jacques Généreux
-        title: Explique l'économie à tout le monde      
+        title: Explique l'économie à tout le monde
       - author: Jacques Généreux
         title: Économie Politique - 1. Économie descriptive
       - author: Jacques Généreux
-        title: Économie Politique - 2. Microéconomie 
+        title: Économie Politique - 2. Microéconomie
       - author: Jean-François Gleizes
         title: Comment nourrir le monde ?
       - author: Pierre Grou
@@ -784,7 +784,7 @@ photos:
       - author: Sabine Hargoux
         title: Les Déracinés du quart monde
       - author: Robin Hahnel
-        title: La Panique aux commandes 
+        title: La Panique aux commandes
       - author: J. Hamilton - V. Suslow - R. Pindyck - D. Rubinfeld
         title: Guide de l'étudiant en Microéconomie (6e édition)
       - author: Madeleine Hersent et Arturo Palma Torres
@@ -801,8 +801,8 @@ photos:
         title: L'Économie de marché
       - author: Serge Latouche
         title: Survivre au développement
-      - author: Serge Launois 
-        title: Analyse économique des coûts 
+      - author: Serge Launois
+        title: Analyse économique des coûts
       - author: Jacques de Larosière
         title: En finir avec le règne de l'illusion financière
       - author: Pierre Larrouturou
@@ -847,7 +847,7 @@ photos:
     # Section "ADO". Rangement alphabétique par auteur, sur 5 étagères.
     # De haut en bas, de gauche à droite dans chaque étagère.
     # Les lignes marquées (incertain) signalent une lecture peu fiable de la tranche.
-    description: "Étagère de livres pour adolescents, avec cinq étagères. Les tranches sont globalement lisibles mais certaines sont difficiles à lire."
+    description: 'Étagère de livres pour adolescents, avec cinq étagères. Les tranches sont globalement lisibles mais certaines sont difficiles à lire.'
     books:
       # --- Étagère 1 (la plus haute, coupée en haut de la photo) ---
       - author: Sophie Audouin-Mamikonian
@@ -889,7 +889,7 @@ photos:
       - author: Chris Colfer
         title: Struck
       - author: Eoin Colfer
-        title: Artemis Fowl /8 
+        title: Artemis Fowl /8
       - author: Fabrice Colin
         title: Invisible
       - author: Fabrice Colin
@@ -985,7 +985,7 @@ photos:
       - author: Rick Riordan
         title: Percy Jackson et les Héros Grecs
       - author: Matt Ruff
-        title: Bad Monkeys 
+        title: Bad Monkeys
       - author: Léa Silhol
         title: Contes de la Tisseuse
       - author: (non présent)
@@ -1029,7 +1029,7 @@ photos:
         title: Toufdepoil
       - author: P. Halter
         title: La mort derrière les rideaux
-      - author: Betsy Haynes 
+      - author: Betsy Haynes
         title: Une nièce de l'oncle Tom
       - author: Michael Hardcastl
         title: C'est ça la vie !
@@ -1078,7 +1078,7 @@ photos:
 
       # --- Étagère 2 ---
       - author: Kathryn Lasky
-        title: La Ballerine et les Barricades 
+        title: La Ballerine et les Barricades
       - author: Camara Laye
         title: L'Enfant noir
       - author: Mme Leprince de Beaumont - W. Clausauer
