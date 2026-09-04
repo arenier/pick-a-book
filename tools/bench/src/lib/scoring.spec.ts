@@ -28,6 +28,7 @@ describe('scorePhoto — a correct read', () => {
       falsePositives: 0,
       falseNegatives: 0,
       correspondences: 2,
+      authorGradable: 2,
       authorCorrect: 2,
       titleCorrect: 2,
       swapped: 0,
@@ -146,6 +147,31 @@ describe('scorePhoto — deduplication', () => {
   });
 });
 
+describe('scorePhoto — a title-only truth (author not on the spine)', () => {
+  it('counts a title match as a true positive, whatever the read author', () => {
+    // ADR 0005 (2026-09-04): the spine carries no author, so the book is graded on its title.
+    const truth = [ref('', 'La Peste')];
+    const detected = [det('Albert Camus', 'La Peste', 0.9)];
+
+    const score = scorePhoto(detected, truth, HIGH);
+
+    expect(score.truePositives).toBe(1);
+    expect(score.titleCorrect).toBe(1);
+    expect(score.falsePositives).toBe(0);
+    expect(score.falseNegatives).toBe(0);
+  });
+
+  it('leaves an author-less book out of the author-accuracy denominator', () => {
+    const truth = [ref('', 'La Peste')];
+    const detected = [det('Albert Camus', 'La Peste', 0.9)];
+
+    const score = scorePhoto(detected, truth, HIGH);
+
+    expect(score.authorGradable).toBe(0);
+    expect(score.authorCorrect).toBe(0);
+  });
+});
+
 describe('aggregate', () => {
   it('micro-averages counts and derives the rates from the totals', () => {
     const first = scorePhoto(
@@ -176,5 +202,28 @@ describe('aggregate', () => {
     expect(totals.precision).toBe(0);
     expect(totals.authorAccuracy).toBe(0);
     expect(totals.titleAccuracy).toBe(0);
+  });
+});
+
+describe('aggregate — author accuracy', () => {
+  it('derives author accuracy from gradable books only, not title-only ones', () => {
+    const withAuthor = scorePhoto(
+      [det('Albert Camus', 'La Peste', 0.9)],
+      [ref('Albert Camus', 'La Peste')],
+      HIGH,
+    );
+    const titleOnly = scorePhoto(
+      [det('Someone', 'Les Choses', 0.9)],
+      [ref('', 'Les Choses')],
+      HIGH,
+    );
+
+    const totals = aggregate([withAuthor, titleOnly]);
+
+    // Two correspondences, but only one book had an author to grade.
+    expect(totals.correspondences).toBe(2);
+    expect(totals.authorGradable).toBe(1);
+    expect(totals.authorAccuracy).toBe(1);
+    expect(totals.titleAccuracy).toBe(1);
   });
 });

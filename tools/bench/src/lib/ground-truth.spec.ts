@@ -67,8 +67,22 @@ photos:
     expect(() => parseGroundTruth(missing)).toThrow(ZodError);
   });
 
-  it('rejects an empty author, which is never a real reading', () => {
+  it('rejects an empty title, the irreducible identifier of a book', () => {
     const empty = `
+version: 1
+photos:
+  - file: shelf.jpg
+    books:
+      - author: Albert Camus
+        title: ""
+`;
+    expect(() => parseGroundTruth(empty)).toThrow(ZodError);
+  });
+});
+
+describe('parseGroundTruth — an author-less book', () => {
+  it('accepts a blank author as a title-only reading', () => {
+    const titleOnly = `
 version: 1
 photos:
   - file: shelf.jpg
@@ -76,7 +90,9 @@ photos:
       - author: ""
         title: La Peste
 `;
-    expect(() => parseGroundTruth(empty)).toThrow(ZodError);
+    const truth = parseGroundTruth(titleOnly);
+
+    expect(truth.photos[0].books).toStrictEqual([{ author: '', title: 'La Peste' }]);
   });
 });
 

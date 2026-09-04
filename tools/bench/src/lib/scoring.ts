@@ -32,8 +32,14 @@ export interface PhotoScore {
   readonly truePositives: number;
   readonly falsePositives: number;
   readonly falseNegatives: number;
-  /** Detections paired with a real book, right or wrong — the denominator of field accuracy. */
+  /** Detections paired with a real book, right or wrong — the denominator of title accuracy. */
   readonly correspondences: number;
+  /**
+   * Correspondences whose truth book actually carries an author — the denominator of author
+   * accuracy. A title-only truth (author not on the spine, ADR 0005) is graded on its title
+   * alone, so it is excluded here rather than counted as an author miss.
+   */
+  readonly authorGradable: number;
   readonly authorCorrect: number;
   readonly titleCorrect: number;
   readonly swapped: number;
@@ -128,6 +134,7 @@ export function scorePhoto(
     falsePositives: distinct.length - fields.truePositives,
     falseNegatives: truth.length - fields.truePositives,
     correspondences: pairs.length,
+    authorGradable: fields.authorGradable,
     authorCorrect: fields.authorCorrect,
     titleCorrect: fields.titleCorrect,
     swapped: fields.swapped,
@@ -163,36 +170,48 @@ function dedupe(detected: readonly DetectionRecord[]): DetectionRecord[] {
 
 interface FieldTally {
   readonly truePositives: number;
+  readonly authorGradable: number;
   readonly authorCorrect: number;
   readonly titleCorrect: number;
   readonly swapped: number;
 }
 
-/** Judges each correspondence: right pair, right field, or an author/title swap. */
+/**
+ * Judges each correspondence: right pair, right field, or an author/title swap.
+ *
+ * When the truth book has no author (not on the spine, ADR 0005), the book is graded on its
+ * title alone: a title match is a true positive whatever the read author, and the pair is left
+ * out of the author-accuracy count rather than scored as an author miss.
+ */
 function tallyFields(pairs: readonly Correspondence[]): FieldTally {
   let truePositives = 0;
+  let authorGradable = 0;
   let authorCorrect = 0;
   let titleCorrect = 0;
   let swapped = 0;
 
   for (const { detection, truth: book } of pairs) {
-    const authorRight = fuzzyEquals(detection.author, book.author);
+    const authorRequired = normalizeText(book.author).length > 0;
+    const authorRight = authorRequired && fuzzyEquals(detection.author, book.author);
     const titleRight = fuzzyEquals(detection.title, book.title);
 
+    if (authorRequired) {
+      authorGradable++;
+    }
     if (authorRight) {
       authorCorrect++;
     }
     if (titleRight) {
       titleCorrect++;
     }
-    if (authorRight && titleRight) {
+    if (titleRight && (!authorRequired || authorRight)) {
       truePositives++;
     } else if (isSwap(detection, book)) {
       swapped++;
     }
   }
 
-  return { truePositives, authorCorrect, titleCorrect, swapped };
+  return { truePositives, authorGradable, authorCorrect, titleCorrect, swapped };
 }
 
 function isSwap(detection: DetectionRecord, book: BookRef): boolean {
@@ -218,10 +237,10 @@ function countHighConfidenceHallucinations(
 }
 
 function isCorrectPair(pair: Correspondence): boolean {
-  return (
-    fuzzyEquals(pair.detection.author, pair.truth.author) &&
-    fuzzyEquals(pair.detection.title, pair.truth.title)
-  );
+  const authorRequired = normalizeText(pair.truth.author).length > 0;
+  const authorOk = !authorRequired || fuzzyEquals(pair.detection.author, pair.truth.author);
+
+  return authorOk && fuzzyEquals(pair.detection.title, pair.truth.title);
 }
 
 /** Micro-averages a set of per-photo scores: sum the counts, then derive the rates once. */
@@ -234,6 +253,7 @@ export function aggregate(scores: readonly PhotoScore[]): AggregateScore {
       falsePositives: totals.falsePositives + score.falsePositives,
       falseNegatives: totals.falseNegatives + score.falseNegatives,
       correspondences: totals.correspondences + score.correspondences,
+      authorGradable: totals.authorGradable + score.authorGradable,
       authorCorrect: totals.authorCorrect + score.authorCorrect,
       titleCorrect: totals.titleCorrect + score.titleCorrect,
       swapped: totals.swapped + score.swapped,
@@ -247,7 +267,7 @@ export function aggregate(scores: readonly PhotoScore[]): AggregateScore {
     ...summed,
     recall: ratio(summed.truePositives, summed.truthCount),
     precision: ratio(summed.truePositives, summed.detectedCount),
-    authorAccuracy: ratio(summed.authorCorrect, summed.correspondences),
+    authorAccuracy: ratio(summed.authorCorrect, summed.authorGradable),
     titleAccuracy: ratio(summed.titleCorrect, summed.correspondences),
   };
 }
@@ -259,6 +279,7 @@ const EMPTY: PhotoScore = {
   falsePositives: 0,
   falseNegatives: 0,
   correspondences: 0,
+  authorGradable: 0,
   authorCorrect: 0,
   titleCorrect: 0,
   swapped: 0,

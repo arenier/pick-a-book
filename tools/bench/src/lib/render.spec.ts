@@ -16,6 +16,7 @@ const run: ProviderRun = {
     falsePositives: 20,
     falseNegatives: 25,
     correspondences: 90,
+    authorGradable: 90,
     authorCorrect: 82,
     titleCorrect: 80,
     swapped: 1,

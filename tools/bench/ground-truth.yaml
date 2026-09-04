@@ -157,7 +157,7 @@ photos:
         title: Les Blondes
       - author: André Schwarz-Bart
         title: Le Dernier des Justes
-      - author: (non lisible)
+      - author: ''
         title: Le Cercle de Lady Tan
       - author: Lori Nelson Spielman
         title: Un doux pardon
@@ -193,11 +193,11 @@ photos:
         title: Il n'est jamais trop tard pour éclore
 
       # --- Étagère 3 ---
-      - author: (non lisible)
+      - author: ''
         title: Le Pavillon des pivoines
       - author: Gilbert Schlogel
         title: Toubib
-      - author: (non lisible)
+      - author: ''
         title: La Ballade d'Iza
       - author: Alexandre Soljenitsyne
         title: Zacharie l'escarcelle
@@ -253,7 +253,7 @@ photos:
         title: Grandeur nature
       - author: Henri Troyat
         title: La Tête sur les épaules
-      - author: (non lisible)
+      - author: ''
         title: Le Fils de Babel
       - author: Émilie de Turckheim
         title: Le Prince à la petite tasse
@@ -301,17 +301,17 @@ photos:
         title: Le Syndrome du spaghetti
       - author: Mario Vargas Llosa
         title: Lituma dans les Andes
-      - author: (non lisible)
+      - author: ''
         title: Les Kâma-sûtra
-      - author: (non lisible)
+      - author: ''
         title: Le Libraire de Sélinonte (incertain)
       - author: Alain Veinstein
         title: Violante
-      - author: (non lisible)
+      - author: ''
         title: L'Écume des jours (incertain)
-      - author: (non lisible)
+      - author: ''
         title: Le Silence de la mer
-      - author: (non lisible)
+      - author: ''
         title: Mayrig
       - author: Maud Ventura
         title: Mon mari
@@ -321,7 +321,7 @@ photos:
     books:
       - author: Denayer - Van Hamme
         title: (non lisible)
-      - author: (non lisible)
+      - author: ''
         title: Ligne Rouge
       - author: Joann Sfar
         title: Le Chat du Rabbin (1) - La Bar-Mitsva
@@ -377,7 +377,7 @@ photos:
         title: Jehan Pistolet et L'Espion
       - author: Godard / Ribera
         title: Le Vagabond des Limbes / Le labyrinthe virginal
-      - author: (non présent)
+      - author: ''
         title: Jerry Spring - Golden Creek
       - author: Bercovici / Corteggiani
         title: Le Grand Panic Circus
@@ -409,7 +409,7 @@ photos:
         title: Goulag
       - author: Marvel
         title: Fantômes
-      - author: (non présent)
+      - author: ''
         title: Terre-Un - Batman
 
   - file: shelf-fixture-4.jpg
@@ -422,13 +422,13 @@ photos:
       # --- Pile du haut (livres posés à plat), partie gauche ---
       - author: Balzac
         title: César Birotteau
-      - author: (non présent)
+      - author: ''
         title: Le Diable au corps *
-      - author: (non présent)
+      - author: ''
         title: Le Diable au corps **
 
       # --- Pile du haut, partie droite ---
-      - author: (non présent)
+      - author: ''
         title: La Vie légendaire d'Alexandre le Grand
       - author: Voltaire
         title: Romans et Contes
@@ -452,13 +452,13 @@ photos:
         title: Dictionnaire des littératures - 74 - R-Z
       - author: Pierre Maël
         title: Le Talisman
-      - author: (non présent)
+      - author: ''
         title: Index des œuvres de tous les temps et de tous les pays
       - author: P. Théophile
         title: Joyeux Passe-temps de la jeunesse
-      - author: (non présent)
+      - author: ''
         title: Histoire de Dom B... - Portier des Chartreux
-      - author: (non présent)
+      - author: ''
         title: Le Théâtre érotique de la rue de la santé
       - author: Marivaux
         title: La Vie de Marianne
@@ -612,31 +612,31 @@ photos:
         title: Huîtres et Saint-Jacques
       - author: Maël de Saint-Clair
         title: La Cuisine au Wok
-      - author: (non présent)
+      - author: ''
         title: Gourmandises de notre enfance
-      - author: (non présent)
+      - author: ''
         title: Cupcakes
       - author: Du Quesne
         title: Le Chocolat
-      - author: (non présent)
+      - author: ''
         title: Cantine California
-      - author: (non présent)
+      - author: ''
         title: À la table des géants - Recettes du Nord-Pas-de-Calais
-      - author: (non présent)
+      - author: ''
         title: Cuisine pour les geeks
       - author: Bernard Galliot
         title: Dictionnaire de restaurant
-      - author: (non présent)
+      - author: ''
         title: Cuisine évasion
       - author: Éditions Marie Claire
         title: Millefeuilles
       - author: Catherine Kluger (Marabout)
         title: millefeuilles
-      - author: (non présent)
+      - author: ''
         title: Des tartes pas comme les autres
-      - author: (non présent)
+      - author: ''
         title: Les Soupes
-      - author: (non présent)
+      - author: ''
         title: Légumes faciles
       - author: Virginie Garnier
         title: (titre non lisible)
@@ -666,7 +666,7 @@ photos:
         title: Les Caractères
       - author: E.L. Doctorow
         title: Ragtime
-      - author: (non présent)
+      - author: ''
         title: Cyrano de Bergerac - Les États et Empires de la Lune - Les États et Empires du Soleil
       - author: Anne Jacobs
         title: L'Héritage de la Villa aux Étoffes
@@ -711,13 +711,13 @@ photos:
     description: "Étagère de livres d'économie, avec plusieurs étagères. Les tranches sont globalement lisibles mais certaines sont difficiles à lire."
     books:
       # --- Étagère 1 (la plus haute) ---
-      - author: (non présent)
+      - author: ''
         title: Dictionnaire d'économie et de sciences sociales
       - author: Collectif Roosevelt
         title: Stop au malaise de la croissance
       - author: Philippe Askenazy
         title: Les Décennies aveugles
-      - author: (non présent)
+      - author: ''
         title: Histoire économique de la France
       - author: Philippe Aydalot
         title: Économie Régionale et Urbaine
@@ -727,13 +727,13 @@ photos:
         title: Osons rester humains
       - author: Albena Azmanova
         title: Contre la Précarité
-      - author: (non présent)
+      - author: ''
         title: Inflation et désinflation
       - author: Jérôme Blanc
         title: Les Monnaies alternatives
       - author: E. Busson-Fenet - M. Navarro
         title: La Microéconomie en pratique
-      - author: (non présent)
+      - author: ''
         title: La Mondialisation et l'emploi
       - author: François Chesnais
         title: La Mondialisation du capital
@@ -761,11 +761,11 @@ photos:
       # --- Étagère 2 ---
       - author: Gael Giraud
         title: Illusion financière
-      - author: (non présent)
+      - author: ''
         title: Associations et coopératives
       - author: Bernard Friot
         title: Émanciper le travail
-      - author: (non présent)
+      - author: ''
         title: Les Stratégies des ressources humaines
       - author: Jacques Généreux
         title: Explique l'économie à tout le monde
@@ -817,7 +817,7 @@ photos:
         title: Cochons - Voyage aux pays du Vivant (incertain)
       - author: Erik Orsenna
         title: Sur la route du papier
-      - author: (non présent)
+      - author: ''
         title: L'Europe monétaire
       - author: Christian Stoffaes
         title: Monnaie et financement de l'économie
@@ -852,7 +852,7 @@ photos:
       # --- Étagère 2 ---
       - author: Elizabeth Aston
         title: Les Filles de Mr Darcy
-      - author: (non présent)
+      - author: ''
         title: Lune Mauve
       - author: Gwenaëlle Barussaud
         title: Pauline - Les Lumières de Paris
@@ -892,7 +892,7 @@ photos:
         title: Les Enfants de la Lune
       - author: Suzanne Collins
         title: Hunger Games - La Révolte
-      - author: (non présent)
+      - author: ''
         title: Te Retrouver
 
       # --- Étagère 3 ---
@@ -980,7 +980,7 @@ photos:
         title: Bad Monkeys
       - author: Léa Silhol
         title: Contes de la Tisseuse
-      - author: (non présent)
+      - author: ''
         title: Night World 4 - Ange Noir
       - author: L.J. Smith
         title: Journal d'un Vampire 1
@@ -1035,7 +1035,7 @@ photos:
         title: Le Second Livre des Merveilles
       - author: N. Hawthorne
         title: Le Premier Livre des Merveilles
-      - author: (non présent)
+      - author: ''
         title: L'Abominable Homme des Neiges
       - author: Bruno Heitz
         title: L'Inconnu célèbre
@@ -1113,7 +1113,7 @@ photos:
         title: Opération Marcellin
       - author: Jean-François Ménard
         title: L'Oiseau de malheur
-      - author: (non présent)
+      - author: ''
         title: Prosper Mérimée
       - author: Claude Merle
         title: Héros de Légende - Alexandre le Grand
@@ -1125,7 +1125,7 @@ photos:
         title: Double Meurtre à l'Abbaye
       - author: Moka
         title: Un sale moment à passer
-      - author: (non présent)
+      - author: ''
         title: Le Royaume des Ombres
       - author: Christian de Montella
         title: La Fabrique de mensonges
@@ -1185,7 +1185,7 @@ photos:
         title: La Princesse qui voulait se marier
       - author: Rivais
         title: Pas de panique !
-      - author: (non présent)
+      - author: ''
         title: Dur dur d'être un héros !
       - author: B. Robinson
         title: Sauve qui peut, voilà les Herdman !
@@ -1209,11 +1209,11 @@ photos:
         title: L'Œil d'Horus, Tome 1
       - author: Alain Surget
         title: Les Disparus de Fort Boyard
-      - author: (non présent)
+      - author: ''
         title: Pavillon Noir - Graines de Pirates
-      - author: (non présent)
+      - author: ''
         title: Le Chevalier Noir - Mystères au Donjon
-      - author: (non présent)
+      - author: ''
         title: Chroniques du Marais qui pue - La Grotte du dragon (2)
       - author: Todd Strasser
         title: Délires - Piégé dans le corps de ma sœur !

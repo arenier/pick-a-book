@@ -15,7 +15,9 @@ import type { BookRef } from './scoring.js';
  * two VLMs measures their agreement, not their accuracy — the draft saves typing, not judgement.
  */
 const bookSchema = z.object({
-  author: z.string().trim().min(1),
+  // Empty is allowed: a spine may carry no author (ADR 0005, 2026-09-04 amendment). The
+  // annotator leaves the field blank, and the scorer grades such a book on its title alone.
+  author: z.string().trim(),
   title: z.string().trim().min(1),
 });
 

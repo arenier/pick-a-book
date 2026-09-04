@@ -142,7 +142,9 @@ function emptyAccumulator(): Accumulator {
 
 function toRecords(books: readonly DetectedBook[]): DetectionRecord[] {
   return books.map((book) => ({
-    author: book.author.value,
+    // Absent author collapses to '' — the scorer reads an empty field as "no author"
+    // and grades the book on its title alone (ADR 0005, 2026-09-04 amendment).
+    author: book.author?.value ?? '',
     title: book.title.value,
     confidence: book.confidence.value,
   }));
