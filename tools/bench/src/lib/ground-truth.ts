@@ -21,6 +21,9 @@ const bookSchema = z.object({
 
 const photoSchema = z.object({
   file: z.string().trim().min(1),
+  // A free-text note on the shelf, written by the human annotator. Documentation only — it is
+  // kept when present but never scored, so it stays optional (#10).
+  description: z.string().trim().min(1).optional(),
   books: z.array(bookSchema),
 });
 

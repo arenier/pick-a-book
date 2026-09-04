@@ -34,6 +34,24 @@ describe('parseGroundTruth', () => {
     expect(truth.photos[1].books).toStrictEqual([]);
   });
 
+  it('keeps a photo description when present, and tolerates its absence', () => {
+    const described = `
+version: 1
+photos:
+  - file: shelf-a.jpg
+    description: A dense shelf, spines mostly legible.
+    books: []
+  - file: shelf-b.jpg
+    books: []
+`;
+    const truth = parseGroundTruth(described);
+
+    expect(truth.photos[0].description).toBe('A dense shelf, spines mostly legible.');
+    expect(truth.photos[1].description).toBeUndefined();
+  });
+});
+
+describe('parseGroundTruth — rejects invalid input', () => {
   it('rejects a wrong version rather than guessing', () => {
     expect(() => parseGroundTruth('version: 2\nphotos: []\n')).toThrow(/version/u);
   });
