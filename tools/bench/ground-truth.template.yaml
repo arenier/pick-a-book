@@ -21,6 +21,7 @@
 version: 1
 photos:
   - file: shelf-fixture-1.jpg
+    description: "Étagère de test avec plusieurs livres."
     books:
       # - author: Albert Camus
       #   title: La Peste
