@@ -74,7 +74,7 @@ photos:
       - author: Lucinda Riley
         title: Ally
       - author: Élie Robert-Nicoud
-        title: Deux cents nœuds - Dans la cave (incertain)
+        title: Deux cents nœuds nus dans la cave
 
       # --- Étagère 2 ---
       - author: W. Sassine
@@ -93,8 +93,6 @@ photos:
         title: Le Planétarium
       - author: Jorge Semprún
         title: Autobiographie de Federico Sánchez
-      - author: Kate Sedley
-        title: Le Trésaurier (incertain)
       - author: Eric-Emmanuel Schmitt
         title: Les Deux Messieurs de Bruxelles
       - author: Arundhati Roy
@@ -102,7 +100,7 @@ photos:
       - author: Sophie Rouvier
         title: Comme une éclipse
       - author: Valérie Rouzeau
-        title: Pas revoir - Neige rien (incertain)
+        title: Pas revoir / Neige rien
       - author: Jed Rubenfeld
         title: L'Origine du silence
       - author: Jean-Christophe Rufin
@@ -186,7 +184,7 @@ photos:
       - author: Sylvain Tesson
         title: Berezina
       - author: Kressmann Taylor
-        title: Jour sans retour (incertain)
+        title: Jour sans retour
       - author: Brandon Taylor
         title: Real Life
       - author: Catherine Taret
@@ -274,11 +272,11 @@ photos:
       - author: Vailland
         title: La Fête
       - author: Valérie Valère
-        title: Malika (incertain)
+        title: Malika
       - author: Fernando Vallejo
         title: La Vierge des tueurs
       - author: Luis Vallejo
-        title: Hôtel Waldheim (incertain)
+        title: Hôtel Waldheim
       - author: Aurélie Valognes
         title: La Lignée
       - author: Didier van Cauwelaert
@@ -286,7 +284,7 @@ photos:
       - author: Didier van Cauwelaert
         title: La Nuit dernière au XVᵉ siècle
       - author: Didier van Cauwelaert
-        title: Un Dîner-Prisonnier (incertain)
+        title: La Demi-Pensionnaire
       - author: Didier van Cauwelaert
         title: Un aller simple
       - author: Didier van Cauwelaert
@@ -295,8 +293,8 @@ photos:
         title: L'Apparition
       - author: Simone van der Vlugt
         title: Bleu de Delft
-      - author: Poldermans
-        title: Bivouac d'un buisard (incertain)
+      - author: Pol Vandromme
+        title: Bivouacs d'un hussard
       - author: Marie Vareille
         title: Le Syndrome du spaghetti
       - author: Mario Vargas Llosa
@@ -304,11 +302,11 @@ photos:
       - author: ''
         title: Les Kâma-sûtra
       - author: ''
-        title: Le Libraire de Sélinonte (incertain)
+        title: Le Libraire de Sélinonte
       - author: Alain Veinstein
         title: Violante
       - author: ''
-        title: L'Écume des jours (incertain)
+        title: L'Écume des jours
       - author: ''
         title: Le Silence de la mer
       - author: ''
@@ -415,8 +413,6 @@ photos:
   - file: shelf-fixture-4.jpg
     # Livres identifiés sur la photo shelf-fixture-4.jpg
     # Deux rangées : une pile de livres posés à plat en haut, une rangée debout en bas.
-    # De gauche à droite, dessus puis dessous.
-    # Les lignes marquées (incertain) signalent une lecture peu fiable de la tranche.
     description: 'Étagère de gros livres anciens, avec une pile de livres posés à plat en haut et une rangée de livres debout en bas. Les tranches ne sont pas simples à lire.'
     books:
       # --- Pile du haut (livres posés à plat), partie gauche ---
@@ -472,7 +468,6 @@ photos:
   - file: shelf-fixture-5.jpg
     # Livres (polars / thrillers) identifiés sur la photo shelf-fixture-5.jpg
     # Deux étagères : haut puis bas, de gauche à droite.
-    # Les lignes marquées (incertain) signalent une lecture peu fiable de la tranche.
     description: 'Étagère de polars et thrillers, avec deux étagères (haut puis bas). Les tranches sont bien dessinées mais certaines sont difficiles à lire.'
     books:
       # --- Étagère du haut ---
@@ -604,7 +599,6 @@ photos:
   - file: shelf-fixture-6.jpg
     # Livres de cuisine identifiés sur la photo shelf-fixture-6.jpg
     # Section "CUISINE". Deux étagères : haut puis bas, de gauche à droite.
-    # Les lignes marquées (incertain) signalent une lecture peu fiable de la tranche.
     description: 'Étagère de livres de cuisine, avec deux étagères (haut puis bas). Les tranches sont globalement lisibles mais certaines sont difficiles à lire.'
     books:
       # --- Étagère du haut ---
@@ -658,7 +652,6 @@ photos:
     # Rangement classé par ordre alphabétique d'auteur (B à K environ).
     # Pile de livres à plat (couvertures visibles) à gauche/centre, colonne de livres
     # debout (tranches) à droite. De haut en bas dans chaque groupe.
-    # Les lignes marquées (incertain) signalent une lecture peu fiable.
     description: 'Étagère de livres divers, avec une pile de livres à plat (couvertures visibles) à gauche/centre et une colonne de livres debout (tranches) à droite.'
     books:
       # --- Pile de gauche/centre (couvertures visibles), de haut en bas ---
@@ -707,7 +700,6 @@ photos:
     # Livres identifiés sur la photo shelf-fixture-8.jpg
     # Section "ÉCONOMIE". Rangement alphabétique par auteur (A à S environ), sur plusieurs étagères.
     # De haut en bas, de gauche à droite dans chaque étagère.
-    # Les lignes marquées (incertain) signalent une lecture peu fiable de la tranche.
     description: "Étagère de livres d'économie, avec plusieurs étagères. Les tranches sont globalement lisibles mais certaines sont difficiles à lire."
     books:
       # --- Étagère 1 (la plus haute) ---
@@ -785,7 +777,7 @@ photos:
         title: Guide de l'étudiant en Microéconomie (6e édition)
       - author: Madeleine Hersent et Arturo Palma Torres
         title: L'Économie solidaire en pratiques
-      - author: Christian Larrousse (incertain)
+      - author: Christian Larrousse
         title: Introduction à l'économétrie
       - author: Steve Keen
         title: L'Imposture Économique
@@ -814,7 +806,7 @@ photos:
 
       # --- Étagère 3 ---
       - author: Erik Orsenna
-        title: Cochons - Voyage aux pays du Vivant (incertain)
+        title: Cochons - Voyage aux pays du Vivant
       - author: Erik Orsenna
         title: Sur la route du papier
       - author: ''
@@ -842,7 +834,6 @@ photos:
     # Livres identifiés sur la photo shelf-fixture-9.jpg
     # Section "ADO". Rangement alphabétique par auteur, sur 5 étagères.
     # De haut en bas, de gauche à droite dans chaque étagère.
-    # Les lignes marquées (incertain) signalent une lecture peu fiable de la tranche.
     description: 'Étagère de livres pour adolescents, avec cinq étagères. Les tranches sont globalement lisibles mais certaines sont difficiles à lire.'
     books:
       # --- Étagère 1 (la plus haute, coupée en haut de la photo) ---
@@ -997,7 +988,6 @@ photos:
     # Livres identifiés sur la photo shelf-fixture-10.jpg
     # Section "9-11 ans". Rangement alphabétique par auteur (G à S environ), sur 4 étagères.
     # De haut en bas, de gauche à droite dans chaque étagère.
-    # Les lignes marquées (incertain) signalent une lecture peu fiable de la tranche.
 
     books:
       # --- Étagère 1 ---
