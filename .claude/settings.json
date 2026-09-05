@@ -4,5 +4,13 @@
       { "hooks": [{ "type": "command",
           "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh" }] }
     ]
+  },
+  "extraKnownMarketplaces": {
+    "adri-skills": {
+      "source": { "source": "github", "repo": "arenier/claude-skills" }
+    }
+  },
+  "enabledPlugins": {
+    "adri-plugin@adri-skills": true
   }
 }
