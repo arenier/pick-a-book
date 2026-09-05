@@ -7,76 +7,93 @@
 
 ## Statut
 
-**En attente de la vérité terrain.** Le harnais de bench, les deux adapters et l'endpoint sont
-livrés (#10, étapes 1-5). Le run live sur les 10 photos de référence tourne et produit déjà le
-contrat, le coût et la latence. **Le gagnant qualité — donc le défaut de prod — ne peut pas être
-posé tant que la vérité terrain n'est pas saisie et vérifiée à la main** : sans elle, ni rappel,
-ni précision, ni hallucination ne sont mesurables (voir le commentaire du 31/08 sur #10 et
-`tools/bench/README.md`).
+**Décidé le 2026-09-05 — `gemini` comme défaut provisoire (`gemini-3.6-flash`).** On avance avec
+Gemini, mais le choix reste **ouvert** : on rebasculera dès qu'un modèle plus adapté sort, ou qu'une
+autre méthode de détection (voir #44) fait mieux. Le bascule est un changement de configuration, pas
+de code (voir *Plug and play*).
 
-Défaut actuel de `SHELF_SCANNER_PROVIDER` : `stub`. Il le reste jusqu'à ce que le bench qualité
-départage `gemini` et `qwen`.
+Défaut de code de `SHELF_SCANNER_PROVIDER` : reste `stub` (l'API boote sans clé). La prod pose
+`SHELF_SCANNER_PROVIDER=gemini` — cf. `.env.example`.
 
-## Candidats
+## Candidats mesurés
 
-Les deux configurations déployables (commentaire du 15/08 sur #10) :
+| Fournisseur | Modèle | Sortie | Prix (entrée / sortie) |
+|---|---|---|---|
+| Gemini | `gemini-3.6-flash` | — | (Google AI Studio) |
+| Qwen | `qwen2.5-vl-72b-instruct` | févr. 2025, dense, OCR-focused | $0.80 / $1.00 par M |
+| Qwen | `qwen3-vl-235b-a22b-instruct` | sept. 2025, MoE 235B/22B | $0.21 / $1.90 par M |
+| Qwen | `qwen3-vl-32b-instruct` | oct. 2025, dense | $0.10 / $0.42 par M |
 
-1. **Gemini 2.5/3.6 Flash** via `GEMINI_API_KEY` — décodage JSON contraint par schéma natif.
-2. **Qwen3-VL** via **OpenRouter** (`OPENROUTER_API_KEY`) — client OpenAI-compatible.
-
-Claude reste « non construit en V1 ». Un troisième candidat ne se justifierait que si le tableau
-sort serré.
+Claude reste « non construit en V1 » (ADR 0005) — candidat naturel d'une prochaine passe vu ses
+résultats en lecture d'étagère, à mettre en balance avec le coût et la contrainte open source.
 
 ## Méthode
 
-`tools/bench` envoie chaque photo de référence aux deux fournisseurs (appels live, hors CI),
-confronte la lecture à la vérité terrain avec une comparaison tolérante aux fautes
-(`shared-text-match`, seuil 0.85), et micro-moyenne les compteurs. Un couple `(auteur, titre)` est
-correct si les **deux** champs correspondent ; une tranche illisible non lue est un faux négatif,
-une photo sans livre lisible se lit en tableau vide.
+`tools/bench` envoie chaque photo de référence à chaque fournisseur (appels live, hors CI), confronte
+la lecture à la **vérité terrain vérifiée à la main** (`tools/bench/ground-truth.yaml` — 9 photos,
+552 livres) avec une comparaison tolérante aux fautes (`shared-text-match`, seuil 0.85), et
+micro-moyenne les compteurs. Un couple `(auteur, titre)` est correct si les **deux** champs
+correspondent ; un livre sans auteur sur la tranche est noté sur son seul titre (ADR 0005, amendement
+2026-09-04). Le prompt et le schéma sont partagés par tous les modèles, pour mesurer les modèles et
+non les prompts.
 
-## Mesures
+## Résultats (run du 2026-09-05, vérité terrain à 552 livres)
 
-### Contrat, coût, latence (run du 2026-09-02, sans vérité terrain)
+| Métrique | **gemini-3.6-flash** | qwen2.5-vl-72b | qwen3-vl-235b | qwen3-vl-32b |
+|---|---|---|---|---|
+| Rappel | **60.2 %** | 5.5 % † | 3.8 % † | 25.0 % |
+| Précision | **59.0 %** | 9.0 % | 6.4 % | 31.7 % |
+| Exactitude auteur | 82.6 % | 0.0 % † | 0.0 % † | 44.8 % |
+| Exactitude titre | 71.6 % | 51.6 % | 79.5 % | 52.3 % |
+| Hallucination haute confiance | 166 | 222 | 307 | 221 |
+| Latence médiane | 27.2 s | 5.4 s | 2.5 s | 3.5 s |
+| Coût / scan | $0.0035 | $0.0092 | $0.0030 | $0.0009 |
+| Échecs adapter (sur 9) | 1 (503 transitoire) | 1 (JSON tronqué) | 0 ‡ | 2 (JSON / enveloppe) |
 
-Les deux fournisseurs ont tourné de bout en bout (OpenRouter atteint après ajout de son domaine à
-l'egress de l'environnement ; en environnement proxifié, le runner a besoin de `NODE_USE_ENV_PROXY=1`
-pour que le `fetch` de Node passe par le proxy — cf. `tools/bench/README.md`).
+† **Chiffres faussés, pas une lecture.** Qwen 72b et 235b ont omis l'auteur sur **100 %** des livres
+(le schéma partagé ne le rend plus obligatoire depuis l'amendement, et le décodage contraint de ces
+deux modèles supprime alors le champ). Comme un vrai positif exige auteur **et** titre, leur rappel
+s'effondre mécaniquement. Le correctif (auteur `required` + `strict:true` côté schéma) n'a pas été
+appliqué : il ne renverserait pas le classement (voir ci-dessous). Le 32b et Gemini gardent l'auteur.
 
-| Métrique | gemini | qwen |
-|---|---|---|
-| Modèle | `gemini-3.6-flash` | `qwen/qwen3-vl-235b-a22b-instruct` |
-| Photos scannées | 10 | 10 |
-| Échecs adapter | 1 | 1 |
-| Latence médiane | 32,7 s | 4,8 s |
-| Tokens (prompt / complétion) | 11808 / 8389 | 50138 / 7356 |
-| Coût total | $0,0245 | $0,0232 |
-| Coût / scan | $0,0025 | $0,0023 |
+‡ Le 235b n'a « pas échoué » mais a rendu **0 livre sur 4 photos** — pire qu'un échec franc.
 
-Coûts quasi identiques (~0,25 ¢ vs ~0,23 ¢/scan), Qwen ~7× plus rapide. Mais le **nombre** de
-détections trahit déjà des régimes très différents — un signal opérationnel, **pas** un verdict
-qualité (celui-là attend la vérité terrain) :
+## Décision et justification
 
-- **Gemini** : détections régulières (5 à 53 livres selon la densité), grâce au décodage contraint
-  par schéma natif. L'unique échec est un **rejet du domaine** — le modèle a renvoyé un auteur vide,
-  `Author` l'a refusé, et le payload entier est rejeté en bloc (`ShelfScanFailed`) : le comportement
-  « rien de partiel ne remonte » voulu par l'ADR 0005, vérifié en vrai.
-- **Qwen** : très instable sous le même prompt en `json_object` (sans schéma natif) — **5 photos sur
-  10 renvoient 0 livre**, une en renvoie **158** (bien au-delà du réel), et l'unique échec est un
-  **JSON tronqué** (réponse coupée à ~48 ko). Un modèle qui rend 0 sur une étagère pleine et 158 sur
-  une autre est un drapeau rouge à confirmer sur la vérité terrain — c'est exactement le genre
-  d'écart que le rappel et l'hallucination mesureront.
+**Gemini gagne nettement**, et le verdict est robuste même en corrigeant l'artefact auteur de Qwen :
 
-Ces chiffres valident la chaîne de bout en bout pour les **deux** adapters et donnent coût et
-latence. Ils ne disent **rien de définitif** sur la qualité : un fournisseur peut détecter beaucoup
-et inventer autant, ou détecter peu et rater le reste. C'est la vérité terrain qui tranche.
+- **Qualité** : Gemini est le seul à un rappel/précision utilisables (60 % / 59 %) et une exactitude
+  auteur élevée (83 %). Le 32b, seul Qwen non faussé, plafonne à 25 % de rappel.
+- **Fiabilité sur notre cas (étagères denses)** : les trois Qwen montrent des défaillances
+  structurelles — JSON tronqué (72b, la photo la plus dense), 0 livre sur 4 photos (235b), échecs
+  d'enveloppe (32b). Gemini est propre sur 8/9, son unique échec étant un 503 transitoire (rejouable).
+- **Coût** : non discriminant à notre volumétrie (20–200 photos/mois) — tous à une fraction de
+  centime par scan.
 
-### Qualité (rappel, précision, hallucination)
+## Réserves — pourquoi « provisoire » et pas « satisfaisant »
 
-**En attente de la vérité terrain.** Une fois `tools/bench/ground-truth.yaml` saisi et vérifié,
-relancer le bench et coller ici le tableau complet, puis désigner le gagnant.
+- **Latence.** ~27 s par photo dense : au-delà des « quelques secondes » visées par l'ADR 0005. C'est
+  le principal bémol. Elle vient en partie du prompt exhaustif (longue sortie) — un levier à explorer.
+- **Hallucinations.** 166 détections haute confiance sans correspondance : c'est la **réconciliation
+  bibliographique aval** qui les filtre (ADR 0005, point 2), pas le scan.
+- **Échantillon.** 9 photos, une seule passe par modèle ; Gemini a un 503 aléatoire à surveiller.
 
-## Décision
+## Ouverture — ce qui rouvrira cette décision
 
-_À écrire une fois la qualité mesurée : fournisseur gagnant + `SHELF_SCANNER_PROVIDER` posé sur
-lui par défaut, dans `apps/api/src/config/environment.ts` / `.env.example`._
+- **Nouveaux modèles** (Claude vision, prochaines générations Qwen/Gemini) : une passe de bench et on
+  compare à armes égales.
+- **Autres méthodes de détection** (#44) : segmentation OpenCV, clustering des bounding boxes Cloud
+  Vision, ou YOLO + LLM vision par tranche — des pistes qui pourraient battre le VLM seul sur la
+  latence et le rappel.
+
+## Plug and play — pourquoi cette décision est bon marché à réviser
+
+Changer de fournisseur, ou en ajouter un, ne touche ni le domaine, ni l'application, ni le front :
+
+- le use case ne connaît que `ShelfScannerPort` (ADR 0002) ;
+- `createShelfScanner()` (composition root, `apps/api`) est le **seul** point qui connaît les adapters
+  et choisit selon `SHELF_SCANNER_PROVIDER` ;
+- ajouter un provider = un nouvel adapter dans `recognition-infrastructure` + une branche dans la
+  factory + une valeur d'enum ; le bench (`tools/bench`) le teste via la même config.
+
+C'est ce qui permet de poser Gemini aujourd'hui sans se fermer les portes de demain.
