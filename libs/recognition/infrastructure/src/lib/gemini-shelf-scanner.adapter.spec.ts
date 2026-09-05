@@ -71,7 +71,7 @@ describe('GeminiShelfScannerAdapter', () => {
     const books = await adapterWith(respondWith(recorded)).scan(photo);
 
     expect(books).toHaveLength(31);
-    expect(books[0]?.author.value).toBe('Elizabeth Aston');
+    expect(books[0]?.author?.value).toBe('Elizabeth Aston');
     expect(books[0]?.title.value).toBe('Les Filles de Mr Darcy');
     expect(books[0]?.confidence.value).toBeCloseTo(0.95);
   });

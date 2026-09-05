@@ -15,6 +15,10 @@ import { z } from 'zod';
  * like it, and the convention forbids asserting a type with `as` (CLAUDE.md). Every field is
  * proven here, or the whole answer is refused.
  *
+ * `author` is optional (ADR 0005, 2026-09-04 amendment): a spine may not print one, and the
+ * prompt asks the model to omit it rather than invent it. Absent or blank both mean "no
+ * author"; the title still identifies the book and is always required.
+ *
  * `confidence` is bounded in [0, 1] at this level too, even though `Confidence` checks it
  * again: the schema says what the provider promised, the value object says what the domain
  * accepts. Both failing on the same value is fine; only one of them failing would be a bug.
@@ -22,7 +26,7 @@ import { z } from 'zod';
 const shelfScanResponseSchema = z.object({
   books: z.array(
     z.object({
-      author: z.string(),
+      author: z.string().nullish(),
       title: z.string(),
       confidence: z.number().min(0).max(1),
     }),
@@ -51,7 +55,7 @@ export function toDetectedBooks(raw: string): DetectedBook[] {
   try {
     return parsed.data.books.map((book) =>
       DetectedBook.of(
-        Author.of(book.author),
+        toAuthor(book.author),
         BookTitle.of(book.title),
         Confidence.of(book.confidence),
       ),
@@ -64,6 +68,15 @@ export function toDetectedBooks(raw: string): DetectedBook[] {
       },
     );
   }
+}
+
+/**
+ * An author only when the spine actually carried one. Absent or blank collapses to `undefined`
+ * — a title-only reading, not a failure (ADR 0005, 2026-09-04 amendment). `Author.of` still
+ * guards length once a real name is there.
+ */
+function toAuthor(raw: string | null | undefined): Author | undefined {
+  return raw !== null && raw !== undefined && raw.trim().length > 0 ? Author.of(raw) : undefined;
 }
 
 function parseJson(raw: string): unknown {

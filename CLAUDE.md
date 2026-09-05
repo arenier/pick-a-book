@@ -107,6 +107,7 @@ yarn format                        # oxfmt          (yarn format:check pour vér
 
 yarn api                           # démarre l'API   (http://localhost:3000/health)
 yarn web                           # démarre le front (http://localhost:4200)
+yarn bench                         # départage les adapters VLM (appels live, hors CI) — voir tools/bench/README.md
 docker compose up --build          # API + front + Postgres + émulateur de bucket
 
 yarn nx run-many -t lint -p api    # cibler un projet
@@ -130,12 +131,18 @@ apps/api/                        # NestJS : composition root, orchestration inte
 apps/web/                        # React : feature-slice
 libs/recognition/domain/         # entités, value objects, ports — zéro dépendance technique
 libs/recognition/application/    # use cases, parlent aux ports
-libs/recognition/infrastructure/ # adapters
+libs/recognition/infrastructure/ # adapters (Gemini, Qwen, stub) derrière ShelfScannerPort
 libs/shared/result/              # contenu partagé, une lib par sujet nommé
+libs/shared/text-match/          # normalisation + comparaison floue de chaînes (bench, réconciliation)
+tools/bench/                     # départage manuel des adapters VLM sur photos réelles (#10) — hors CI
 docker/                          # Dockerfile des deux apps — contexte de build : la racine
 docs/adr/
+docs/decisions/                  # notes de décision de niveau inférieur (pas des ADR)
 infra/                           # infrastructure GCP en Terraform — voir infra/README.md
 ```
+
+Le glob des workspaces Yarn couvre `apps/*`, `libs/*/*` et `tools/*` — un projet Nx hors de ces
+trois emplacements n'est pas lié et perd ses tags (donc les frontières de modules).
 
 `recognition` est le seul bounded context fondé aujourd'hui (ADR 0005). Les autres attendent leur
 ADR de découpage — ne pas en créer au jugé.

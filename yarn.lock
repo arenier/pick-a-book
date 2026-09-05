@@ -3303,6 +3303,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@pick-a-book/bench@workspace:tools/bench":
+  version: 0.0.0-use.local
+  resolution: "@pick-a-book/bench@workspace:tools/bench"
+  dependencies:
+    "@pick-a-book/recognition-domain": "workspace:*"
+    "@pick-a-book/recognition-infrastructure": "workspace:*"
+    "@pick-a-book/shared-text-match": "workspace:*"
+    tslib: "npm:^2.3.0"
+    yaml: "npm:^2.9.0"
+    zod: "npm:^4.5.4"
+  languageName: unknown
+  linkType: soft
+
 "@pick-a-book/recognition-application@workspace:*, @pick-a-book/recognition-application@workspace:libs/recognition/application":
   version: 0.0.0-use.local
   resolution: "@pick-a-book/recognition-application@workspace:libs/recognition/application"
@@ -3333,6 +3346,14 @@ __metadata:
 "@pick-a-book/shared-result@workspace:libs/shared/result":
   version: 0.0.0-use.local
   resolution: "@pick-a-book/shared-result@workspace:libs/shared/result"
+  dependencies:
+    tslib: "npm:^2.3.0"
+  languageName: unknown
+  linkType: soft
+
+"@pick-a-book/shared-text-match@workspace:*, @pick-a-book/shared-text-match@workspace:libs/shared/text-match":
+  version: 0.0.0-use.local
+  resolution: "@pick-a-book/shared-text-match@workspace:libs/shared/text-match"
   dependencies:
     tslib: "npm:^2.3.0"
   languageName: unknown
@@ -13404,7 +13425,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:2.9.0, yaml@npm:^2.8.3":
+"yaml@npm:2.9.0, yaml@npm:^2.8.3, yaml@npm:^2.9.0":
   version: 2.9.0
   resolution: "yaml@npm:2.9.0"
   bin:

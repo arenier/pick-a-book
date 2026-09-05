@@ -1,0 +1,1201 @@
+version: 1
+photos:
+  - file: shelf-fixture-1.jpg
+    description: 'Étagère avec de nombreux livres de poche sur plusieurs étagères, les livres sont rangés à la verticale et les tranches sont globalement bien lisibles.'
+    books:
+      # --- Étagère 1 (du haut) ---
+      - author: Richard Russo
+        title: Retour à Martha's Vineyard
+      - author: Raymond Radiguet
+        title: Le Diable au corps
+      - author: Giacometti Ravenne
+        title: La Clef et la Croix
+      - author: Julie Ruocco
+        title: Furies
+
+      - author: Yann Queffélec
+        title: Naissance d'un Goncourt
+      - author: Yann Queffélec
+        title: La Femme sous l'horizon
+      - author: Raymond Queneau
+        title: Exercices de style
+      - author: Ann Quin
+        title: Berg
+      - author: Elisabeth Quin
+        title: Tu n'es pas la fille de ta mère
+      - author: Pascal Quignard
+        title: Terrasse à Rome
+      - author: Horacio Quiroga
+        title: Contes d'amour de folie et de mort
+      - author: Anne B. Ragde
+        title: Zona frigida
+      - author: Anne B. Ragde
+        title: Je ferai de toi un homme heureux
+      - author: Anne B. Ragde
+        title: La Ferme des Neshov
+      - author: Michel Ragon
+        title: Le Roman de Rabelais
+      - author: Alexis Ragougneau
+        title: Opus 77
+      - author: Patrick Rambaud
+        title: La Bataille
+      - author: Patrick Rambaud
+        title: Il neigeait
+      - author: Jean Raspail
+        title: Moi, Antoine de Tounens, roi de Patagonie
+      - author: Herman Raucher
+        title: Un été 42
+      - author: Pierre Raufast
+        title: La Fractale des ravioles
+      - author: Vincent Ravalec
+        title: Vol de sucettes - Recel de bâtons
+      - author: F.E. Raynal
+        title: Les Naufragés des Auckland
+      - author: Léonor de Récondo
+        title: Amoral
+      - author: Éric Reinhardt
+        title: Sarah, Susanne et l'écrivain
+      - author: Erich-Maria Remarque
+        title: À l'Ouest rien de nouveau
+      - author: E.M. Remarque
+        title: Les Exilés
+      - author: Jules Renard
+        title: Poil de Carotte
+      - author: Yasmina Reza
+        title: Hammerklavier
+      - author: Mathieu Riboulet
+        title: Le Corps des anges
+      - author: Jam Riel
+        title: La Vierge froide et autres racontars
+      - author: Virginie des Rieux
+        title: La Satyre
+      - author: Lucie Rico
+        title: Le Chant du poulet sous vide
+      - author: Lucinda Riley
+        title: Ally
+      - author: Élie Robert-Nicoud
+        title: Deux cents nœuds nus dans la cave
+
+      # --- Étagère 2 ---
+      - author: W. Sassine
+        title: Mémoire d'une peau
+      - author: Philip Roth
+        title: Indignation
+      - author: Jean-Christophe Rufin
+        title: Le Collier rouge
+      - author: Jean-Paul Sartre
+        title: Les Mots
+      - author: Jean Raspail
+        title: Adiós, Tierra del Fuego
+      - author: Clarisse Sabard
+        title: Ceux qui voulaient voir la mer
+      - author: Nathalie Sarraute
+        title: Le Planétarium
+      - author: Jorge Semprún
+        title: Autobiographie de Federico Sánchez
+      - author: Eric-Emmanuel Schmitt
+        title: Les Deux Messieurs de Bruxelles
+      - author: Arundhati Roy
+        title: Le Dieu des Petits Riens
+      - author: Sophie Rouvier
+        title: Comme une éclipse
+      - author: Valérie Rouzeau
+        title: Pas revoir / Neige rien
+      - author: Jed Rubenfeld
+        title: L'Origine du silence
+      - author: Jean-Christophe Rufin
+        title: Le Suspendu de Conakry
+      - author: Jean-Christophe Rufin
+        title: Sept histoires qui reviennent de loin
+      - author: Jean-Christophe Rufin
+        title: Les Sept mariages d'Edgar et Ludmilla
+      - author: Agathe Ruga
+        title: L'Homme que je ne devais pas aimer
+      - author: Murakami Ryū
+        title: Les Bébés de la consigne automatique
+      - author: Robert Sabatier
+        title: Les Allumettes suédoises
+      - author: David Safier
+        title: Maudit karma
+      - author: Françoise Sagan
+        title: La Robe mauve de Valentine
+      - author: Alix de Saint-André
+        title: En avant, route !
+      - author: Nathalie Saint-Cricq
+        title: L'Ombre d'un traître
+      - author: James Salter
+        title: Et rien d'autre
+      - author: James Salter
+        title: American Express
+      - author: Anna Sam
+        title: Les Tribulations d'une caissière
+      - author: Natalia Sanmartín Fenollera
+        title: L'Éveil de Mademoiselle Prim
+      - author: Romain Sardou
+        title: Mademoiselle France
+      - author: Romain Sardou
+        title: Pardonnez nos offenses
+      - author: Romain Sardou
+        title: L'Éclat de Dieu
+      - author: Nathalie Sarraute
+        title: L'Usage de la parole
+      - author: Jean-Paul Sartre
+        title: Huis clos
+      - author: Josyane Savigneau
+        title: Point de côté
+      - author: Giorgio Scerbanenco
+        title: Péchés et vertus
+      - author: Bernhard Schlink
+        title: Le Week-end
+      - author: Arno Schmidt
+        title: Scènes de la vie d'un faune
+      - author: Eric-Emmanuel Schmitt
+        title: L'Évangile selon Pilate
+      - author: Emily Schultz
+        title: Les Blondes
+      - author: André Schwarz-Bart
+        title: Le Dernier des Justes
+      - author: ''
+        title: Le Cercle de Lady Tan
+      - author: Lori Nelson Spielman
+        title: Un doux pardon
+      - author: Trollope
+        title: Une fille du Sud
+      - author: Kressmann Taylor
+        title: Inconnu à cette adresse
+      - author: Anne Tyler
+        title: Leçons de conduite
+      - author: Jean Teulé
+        title: Le Montespan
+      - author: Jean Teulé
+        title: Rainbow pour Rimbaud
+      - author: Jean Teulé
+        title: Charly 9
+      - author: Steve Tesich
+        title: Karoo
+      - author: Sylvie Testud
+        title: Gamines
+      - author: Sylvie Testud
+        title: Le Ciel t'aidera
+      - author: Sylvain Tesson
+        title: Petit traité sur l'immensité du monde
+      - author: Sylvain Tesson
+        title: L'Axe du loup
+      - author: Sylvain Tesson
+        title: Berezina
+      - author: Kressmann Taylor
+        title: Jour sans retour
+      - author: Brandon Taylor
+        title: Real Life
+      - author: Catherine Taret
+        title: Il n'est jamais trop tard pour éclore
+
+      # --- Étagère 3 ---
+      - author: ''
+        title: Le Pavillon des pivoines
+      - author: Gilbert Schlogel
+        title: Toubib
+      - author: ''
+        title: La Ballade d'Iza
+      - author: Alexandre Soljenitsyne
+        title: Zacharie l'escarcelle
+      - author: Helen Simonson
+        title: La Dernière Conquête du major Pettigrew
+      - author: Gilbert Sinoué
+        title: Inch'Allah - Le Cri des pierres
+      - author: Gilbert Sinoué
+        title: La Pourpre et l'olivier
+      - author: Paul Smaïl
+        title: Vivre me tue
+      - author: Paul Smaïl
+        title: La Passion selon moi
+      - author: Betty Smith
+        title: Le Lys de Brooklyn
+      - author: Vladimir Sorokine
+        title: La Glace
+      - author: Laura Spence-Ash
+        title: Ce monde par-delà l'océan
+      - author: Sacha Sperling
+        title: Mes illusions donnent sur la cour
+      - author: Mme de Staël
+        title: Delphine
+      - author: Peter Stamm
+        title: Sept ans
+      - author: M.L. Stedman
+        title: Une vie entre deux océans
+      - author: Stéphanie
+        title: Des cornichons au chocolat
+      - author: Sulivan
+        title: Mais il y a la mer
+      - author: Italo Svevo
+        title: La Conscience de Zeno
+      - author: Vikas Swarup
+        title: Pour quelques milliards et une roupie
+      - author: Murielle Szac
+        title: Eleftheria
+      - author: Antonio Tabucchi
+        title: Petits malentendus sans importance
+
+      # --- Étagère 4 ---
+      - author: Fred Uhlman
+        title: L'Ami retrouvé
+      - author: Sigrid Undset
+        title: Printemps
+      - author: Henri Troyat
+        title: Aliocha
+      - author: Henri Troyat
+        title: Faux-Jour
+      - author: Henri Troyat
+        title: Grandeur nature
+      - author: Henri Troyat
+        title: La Tête sur les épaules
+      - author: ''
+        title: Le Fils de Babel
+      - author: Émilie de Turckheim
+        title: Le Prince à la petite tasse
+      - author: Tiffany Quay Tyson
+        title: Un profond sommeil
+      - author: John Updike
+        title: Rabbit est riche
+      - author: Léon Uris
+        title: Exodus
+      - author: Zoé Valdès
+        title: La Douleur du dollar
+      - author: Zoé Valdès
+        title: Le Paradis du néant
+      - author: Zoé Valdès
+        title: La Sous-développée
+      - author: Roger Vailland
+        title: 325.000 francs
+      - author: Vailland
+        title: La Fête
+      - author: Valérie Valère
+        title: Malika
+      - author: Fernando Vallejo
+        title: La Vierge des tueurs
+      - author: Luis Vallejo
+        title: Hôtel Waldheim
+      - author: Aurélie Valognes
+        title: La Lignée
+      - author: Didier van Cauwelaert
+        title: Attirances
+      - author: Didier van Cauwelaert
+        title: La Nuit dernière au XVᵉ siècle
+      - author: Didier van Cauwelaert
+        title: La Demi-Pensionnaire
+      - author: Didier van Cauwelaert
+        title: Un aller simple
+      - author: Didier van Cauwelaert
+        title: La Vie interdite
+      - author: Didier van Cauwelaert
+        title: L'Apparition
+      - author: Simone van der Vlugt
+        title: Bleu de Delft
+      - author: Pol Vandromme
+        title: Bivouacs d'un hussard
+      - author: Marie Vareille
+        title: Le Syndrome du spaghetti
+      - author: Mario Vargas Llosa
+        title: Lituma dans les Andes
+      - author: ''
+        title: Les Kâma-sûtra
+      - author: ''
+        title: Le Libraire de Sélinonte
+      - author: Alain Veinstein
+        title: Violante
+      - author: ''
+        title: L'Écume des jours
+      - author: ''
+        title: Le Silence de la mer
+      - author: ''
+        title: Mayrig
+      - author: Maud Ventura
+        title: Mon mari
+
+  - file: shelf-fixture-3.jpg
+    description: 'Une seule étagère avec de nombreuses bandes dessinées, les tranches sont globalement lisibles mais certaines sont très inclinées et chevauchent visuellement les livres voisins.'
+    books:
+      - author: ''
+        title: Ligne Rouge
+      - author: Joann Sfar
+        title: Le Chat du Rabbin (1) - La Bar-Mitsva
+      - author: Ana & Bloz
+        title: Seule à la récré
+      - author: L. Oswald - S. Figuière
+        title: Charles de Foucauld - Le Marabout de Tananarive
+      - author: Renoy
+        title: Des clous pour le cachemire
+      - author: Dupuy - Berberian
+        title: Monsieur Jean - La Théorie des gens seuls
+      - author: Boccar / de Froidmont - Musk
+        title: Musk
+      - author: Michel Schetter
+        title: Le Boulevard de Marilyn
+      - author: Winoc - Ch. Jailloux
+        title: Pierres du Nord 1 - L'Éclat des Môres
+      - author: Winoc - Ch. Jailloux
+        title: Pierres du Nord 2 - Opale
+      - author: J. Martin
+        title: Les Aventures de Lefranc - La Grande Menace
+      - author: Christophe Blain
+        title: Gus - 1. Nathalie
+      - author: Joann Sfar
+        title: Les Seigneurs des pirates
+      - author: S. Gauthier / T. Labourot
+        title: Trompe-la-mort
+      - author: Philippe Geluck
+        title: Le Chat
+      - author: Philippe Geluck
+        title: Chacun son chat
+      - author: Binet
+        title: Kador - Tome 3
+      - author: Binet
+        title: Les Bidochon - Tome 11
+      - author: Sternis / Gothias
+        title: 'Memory, T.1: Le Bal des Mandibules'
+      - author: Gualdoni - Turconi - Tenderini
+        title: Wondercity - Le Talent de Roary
+      - author: Turk / Groot
+        title: Léonard est toujours un génie
+      - author: Claire Bretécher
+        title: Les Combats d'Agrippine
+      - author: Eddy Paape et Greg
+        title: La Légion des Anges Maudits
+      - author: Dany et Greg
+        title: Olivier Rameau 6
+      - author: Charlier (texte) - Jijé (dessins)
+        title: Mission Spéciale
+      - author: R. Goscinny - A. Uderzo
+        title: Jehan Pistolet et L'Espion
+      - author: Godard / Ribera
+        title: Le Vagabond des Limbes / Le labyrinthe virginal
+      - author: ''
+        title: Jerry Spring - Golden Creek
+      - author: Bercovici / Corteggiani
+        title: Le Grand Panic Circus
+      - author: Groot / Turk
+        title: Leonard La guerre des génies
+      - author: Gine / Convard
+        title: "Mathieu Lamy, T2: Et l'Ange n'avait pas d'ailes"
+      - author: Achdé
+        title: CRS = Détressse
+      - author: Raymond Reding
+        title: Vick et Vicky - Le Mystère du Baron de Lorcy
+      - author: Gürsel
+        title: C'est Hockey
+      - author: Julie / Gardera
+        title: Les Vélo Maniacs - Tome 1
+      - author: Bruno Dequier
+        title: Si seulement...
+      - author: Goscinny et Uderzo
+        title: Oumpah-Pah, le Peau Rouge
+      - author: Laudec / Cauvin
+        title: Cédric
+      - author: Frank Margerin
+        title: Lucien - Tome 7 - Ricky chez les Ricains
+      - author: Christophe Gaultier
+        title: Le Suédois
+      - author: Mignola, Golden & Stenbeck
+        title: Baltimore - The Plague Ships
+      - author: Marvel
+        title: Goulag
+      - author: Marvel
+        title: Fantômes
+      - author: ''
+        title: Terre-Un - Batman
+
+  - file: shelf-fixture-4.jpg
+    # Livres identifiés sur la photo shelf-fixture-4.jpg
+    # Deux rangées : une pile de livres posés à plat en haut, une rangée debout en bas.
+    description: 'Étagère de gros livres anciens, avec une pile de livres posés à plat en haut et une rangée de livres debout en bas. Les tranches ne sont pas simples à lire.'
+    books:
+      # --- Pile du haut (livres posés à plat), partie gauche ---
+      - author: Balzac
+        title: César Birotteau
+      - author: ''
+        title: Le Diable au corps *
+      - author: ''
+        title: Le Diable au corps **
+
+      # --- Pile du haut, partie droite ---
+      - author: ''
+        title: La Vie légendaire d'Alexandre le Grand
+      - author: Voltaire
+        title: Romans et Contes
+      - author: Marcel Schwob
+        title: Vies imaginaires
+      - author: Ivan Tourgueniev
+        title: Premier Amour / Les Amours célèbres
+
+      # --- Rangée du bas, de gauche à droite ---
+      - author: Rémy de Gourmont
+        title: Le Chemin de velours
+      - author: Charles Lisnier
+        title: Faux passeports
+      - author: Van Tieghem
+        title: Dictionnaire des littératures - 71 - A-C
+      - author: Van Tieghem
+        title: Dictionnaire des littératures - 72 - D-J
+      - author: Van Tieghem
+        title: Dictionnaire des littératures - 73 - K-Q
+      - author: Van Tieghem
+        title: Dictionnaire des littératures - 74 - R-Z
+      - author: Pierre Maël
+        title: Le Talisman
+      - author: ''
+        title: Index des œuvres de tous les temps et de tous les pays
+      - author: P. Théophile
+        title: Joyeux Passe-temps de la jeunesse
+      - author: ''
+        title: Histoire de Dom B... - Portier des Chartreux
+      - author: ''
+        title: Le Théâtre érotique de la rue de la santé
+      - author: Marivaux
+        title: La Vie de Marianne
+      - author: Stendhal
+        title: Le Rouge et le Noir
+      - author: Honoré de Balzac
+        title: La Cousine Bette
+      - author: Stendhal
+        title: Lucien Leuwen
+
+  - file: shelf-fixture-5.jpg
+    # Livres (polars / thrillers) identifiés sur la photo shelf-fixture-5.jpg
+    # Deux étagères : haut puis bas, de gauche à droite.
+    description: 'Étagère de polars et thrillers, avec deux étagères (haut puis bas). Les tranches sont bien dessinées mais certaines sont difficiles à lire.'
+    books:
+      # --- Étagère du haut ---
+      - author: Jussi Adler-Olsen
+        title: Miséricorde
+      - author: Jean d'Aillon
+        title: Le Captif au masque de fer
+      - author: M.J. Arlidge
+        title: La Maison de Poupée
+      - author: Franz Bartelt
+        title: Le Jardin du Bossu
+      - author: Patrick Bauwen
+        title: L'Heure du Diable
+      - author: Matthew Blake
+        title: Sophie L.
+      - author: François Boulay
+        title: Traces
+      - author: Dan Brown
+        title: Le Symbole Perdu
+      - author: Dan Brown
+        title: Inferno
+      - author: John Buchan
+        title: La Centrale d'Énergie
+      - author: Melvin Burgess
+        title: Rougesang
+      - author: James Lee Burke
+        title: New Iberia Blues
+      - author: Stieg Larsson
+        title: Millénnium 2 - La Fille qui rêvait d'un bidon d'essence et d'une allumette
+      - author: Stieg Larsson
+        title: Millénnium 3 - La Reine dans le palais des courants d'air
+      - author: Andrea Camilleri
+        title: La Démission de Montalbano
+      - author: Victoria Charlton
+        title: Gardez l'œil ouvert
+      - author: Maxime Chattam
+        title: Prédateurs
+      - author: Benoît Charavay
+        title: Jacks
+      - author: G.K. Chesterton
+        title: La Sagesse du Père Brown
+      - author: Tom Clancy
+        title: Red Rabbit - roman 1
+      - author: Tom Clancy
+        title: Red Rabbit - roman 2
+      - author: Tom Clancy
+        title: Les Dents du Tigre
+      - author: Mary Higgins Clark et Alafair Burke
+        title: La Reine du bal
+      - author: Lucienne Cluytens
+        title: Miss Lily-Ann
+      - author: Harlan Coben
+        title: Balle de match
+      - author: Harlan Coben
+        title: Dans les Bois
+      - author: Harlan Coben
+        title: Disparu à jamais
+      - author: Harlan Coben
+        title: Faux rebond
+      - author: Harlan Coben
+        title: Innocent
+      - author: Harlan Coben
+        title: Juste un regard
+      - author: Harlan Coben
+        title: Mauvaise Base
+      - author: Frank Delaney
+        title: Les Enfants de la nuit
+      - author: Thierry Jonquet
+        title: Ils sont votre épouvante et vous êtes leur crainte
+
+      # --- Étagère du bas ---
+      - author: Harlan Coben
+        title: Ne t'éloigne pas
+      - author: Harlan Coben
+        title: Du sang sur le green
+      - author: Harlan Coben
+        title: Sans laisser d'adresse
+      - author: Harlan Coben
+        title: Sans un mot
+      - author: Harlan Coben
+        title: Sans un adieu
+      - author: Harlan Coben
+        title: Temps Mort
+      - author: Harlan Coben
+        title: Une chance de trop
+      - author: W. Wilkie Collins
+        title: Seule contre la loi
+      - author: Michael Connelly
+        title: En attendant le jour
+      - author: Michael Connelly
+        title: Los Angeles River
+      - author: Michael Connelly
+        title: Deuil interdit
+      - author: Michael Connelly
+        title: Le Verdict du Plomb
+      - author: Michael Connelly
+        title: L'Étoile du Désert
+      - author: Maurice G. Dantec
+        title: Babylon Babies
+      - author: Ed Dee
+        title: Des Morts à la criée
+      - author: Joël Dicker
+        title: La Disparition de Stéphanie Mailer
+      - author: Joël Dicker
+        title: Un Animal Sauvage
+      - author: Pascale Dietrich
+        title: Les Mafieuses
+      - author: Igor Dupont
+        title: Meurtres à Moscou
+      - author: R.J. Ellory
+        title: Vendetta
+      - author: James Ellroy
+        title: La Tempête qui vient
+      - author: James Ellroy
+        title: Extorsion
+      - author: Percival Everett
+        title: Châtiment
+      - author: François Felix
+        title: Débandade de l'Ange Gardien
+      - author: Caryl Férey
+        title: Mapuche
+      - author: Joseph Finder
+        title: Paranoïa
+      - author: Serge Fréchet
+        title: Hanxuema
+      - author: Nicci French
+        title: Lundi Mélancolie - Le jour où les enfants disparaissent
+
+  - file: shelf-fixture-6.jpg
+    # Livres de cuisine identifiés sur la photo shelf-fixture-6.jpg
+    # Section "CUISINE". Deux étagères : haut puis bas, de gauche à droite.
+    description: 'Étagère de livres de cuisine, avec deux étagères (haut puis bas). Les tranches sont globalement lisibles mais certaines sont difficiles à lire.'
+    books:
+      # --- Étagère du haut ---
+      - author: Julia Manzat
+        title: Huîtres et Saint-Jacques
+      - author: Maël de Saint-Clair
+        title: La Cuisine au Wok
+      - author: ''
+        title: Gourmandises de notre enfance
+      - author: ''
+        title: Cupcakes
+      - author: Du Quesne
+        title: Le Chocolat
+      - author: ''
+        title: Cantine California
+      - author: ''
+        title: À la table des géants - Recettes du Nord-Pas-de-Calais
+      - author: ''
+        title: Cuisine pour les geeks
+      - author: Bernard Galliot
+        title: Dictionnaire de restaurant
+      - author: ''
+        title: Cuisine évasion
+      - author: Éditions Marie Claire
+        title: Millefeuilles
+      - author: Catherine Kluger (Marabout)
+        title: millefeuilles
+      - author: ''
+        title: Des tartes pas comme les autres
+      - author: ''
+        title: Les Soupes
+      - author: ''
+        title: Légumes faciles
+      - author: Guy Savoy & Christian
+        title: Desserts
+
+      # --- Étagère du bas ---
+      - author: Annegret Bretin
+        title: Poulet et Volailles
+      - author: Christophe Felder
+        title: Gâteaux - Workshop
+      - author: Saïmaa Miller
+        title: Australien
+      - author: A. Detœuf
+        title: Propos d'un Confiseur
+
+  - file: shelf-fixture-7.jpg
+    # Livres identifiés sur la photo shelf-fixture-7.jpg
+    # Rangement classé par ordre alphabétique d'auteur (B à K environ).
+    # Pile de livres à plat (couvertures visibles) à gauche/centre, colonne de livres
+    # debout (tranches) à droite. De haut en bas dans chaque groupe.
+    description: 'Étagère de livres divers, avec une pile de livres à plat (couvertures visibles) à gauche/centre et une colonne de livres debout (tranches) à droite.'
+    books:
+      # --- Pile de gauche/centre (couvertures visibles), de haut en bas ---
+      - author: La Bruyère
+        title: Les Caractères
+      - author: E.L. Doctorow
+        title: Ragtime
+      - author: ''
+        title: Cyrano de Bergerac - Les États et Empires de la Lune - Les États et Empires du Soleil
+      - author: Anne Jacobs
+        title: L'Héritage de la Villa aux Étoffes
+      - author: Maupassant
+        title: Pierre et Jean
+      - author: Charles Dickens
+        title: Monsieur Pickwick - Tome 1
+      - author: Erri De Luca
+        title: Impossible
+      - author: Nancy Huston
+        title: Les Variations Goldberg
+      - author: Gérald Messadié
+        title: Le Roi des Millions d'Années
+
+      # --- Pile centrale droite (couvertures visibles), de haut en bas ---
+      - author: Ingmar Bergman
+        title: Scènes de la vie conjugale
+      - author: Jetta Carleton
+        title: Les Fleurs de lune
+      - author: Dino Buzzati
+        title: Le Désert des Tartares
+      - author: Somerset Maugham
+        title: Le Sortilège Malais
+      - author: Bret Easton Ellis
+        title: American Psycho
+      - author: Inoue Hisashi
+        title: Les 7 Roses de Tôkyô
+      - author: Gabriel Tallent
+        title: My Absolute Darling
+      - author: Cazotte
+        title: Le Diable amoureux
+      - author: Chateaubriand
+        title: Atala - René - Les Aventures du dernier Abencérage
+      - author: André Gide
+        title: Les Faux-Monnayeurs
+
+  - file: shelf-fixture-8.jpg
+    # Livres identifiés sur la photo shelf-fixture-8.jpg
+    # Section "ÉCONOMIE". Rangement alphabétique par auteur (A à S environ), sur plusieurs étagères.
+    # De haut en bas, de gauche à droite dans chaque étagère.
+    description: "Étagère de livres d'économie, avec plusieurs étagères. Les tranches sont globalement lisibles mais certaines sont difficiles à lire."
+    books:
+      # --- Étagère 1 (la plus haute) ---
+      - author: ''
+        title: Dictionnaire d'économie et de sciences sociales
+      - author: Collectif Roosevelt
+        title: Stop au malaise de la croissance
+      - author: Philippe Askenazy
+        title: Les Décennies aveugles
+      - author: ''
+        title: Histoire économique de la France
+      - author: Philippe Aydalot
+        title: Économie Régionale et Urbaine
+      - author: Philippe Ammriel
+        title: La Pauvreté est-elle soluble dans le libéralisme ?
+      - author: Geneviève Azam
+        title: Osons rester humains
+      - author: Albena Azmanova
+        title: Contre la Précarité
+      - author: ''
+        title: Inflation et désinflation
+      - author: Jérôme Blanc
+        title: Les Monnaies alternatives
+      - author: E. Busson-Fenet - M. Navarro
+        title: La Microéconomie en pratique
+      - author: ''
+        title: La Mondialisation et l'emploi
+      - author: François Chesnais
+        title: La Mondialisation du capital
+      - author: Denis Clerc
+        title: Déchiffrer l'économie
+      - author: Emmanuel Druon
+        title: Écolonomie
+      - author: Daniel Cohen
+        title: La Prospérité du vice
+      - author: Élie Cohen
+        title: Penser la crise
+      - author: Daniel Cohen
+        title: Nos temps modernes
+      - author: Benjamin Coriat
+        title: La Pandémie, l'Anthropocène et le Bien commun
+      - author: Daniel Cohen
+        title: Richesse du monde, pauvretés des nations
+      - author: Daniel Cohen
+        title: Homo Economicus
+      - author: Daniel Cohen
+        title: La Mondialisation et ses ennemis
+      - author: Benjamin Coriat
+        title: Le bien commun, le climat et le marché
+
+      # --- Étagère 2 ---
+      - author: Gael Giraud
+        title: Illusion financière
+      - author: ''
+        title: Associations et coopératives
+      - author: Bernard Friot
+        title: Émanciper le travail
+      - author: ''
+        title: Les Stratégies des ressources humaines
+      - author: Jacques Généreux
+        title: Explique l'économie à tout le monde
+      - author: Jacques Généreux
+        title: Économie Politique - 1. Économie descriptive
+      - author: Jacques Généreux
+        title: Économie Politique - 2. Microéconomie
+      - author: Jean-François Gleizes
+        title: Comment nourrir le monde ?
+      - author: Pierre Grou
+        title: La Structure financière du capitalisme multinational
+      - author: Sabine Hargoux
+        title: Les Déracinés du quart monde
+      - author: Robin Hahnel
+        title: La Panique aux commandes
+      - author: J. Hamilton - V. Suslow - R. Pindyck - D. Rubinfeld
+        title: Guide de l'étudiant en Microéconomie (6e édition)
+      - author: Madeleine Hersent et Arturo Palma Torres
+        title: L'Économie solidaire en pratiques
+      - author: Christian Larrousse
+        title: Introduction à l'économétrie
+      - author: Steve Keen
+        title: L'Imposture Économique
+      - author: Paul Krugman
+        title: Sortez-nous de cette crise... Maintenant !
+      - author: Pierre Larrouturou
+        title: Non-assistance à peuple en danger
+      - author: Roger Guesnerie
+        title: L'Économie de marché
+      - author: Serge Latouche
+        title: Survivre au développement
+      - author: Serge Launois
+        title: Analyse économique des coûts
+      - author: Jacques de Larosière
+        title: En finir avec le règne de l'illusion financière
+      - author: Pierre Larrouturou
+        title: Du Temps pour vivre
+      - author: Pierre Léon
+        title: Histoire économique et sociale du monde - 2. 1580-1730 (Armand Colin)
+      - author: Jean-Louis Levet
+        title: Sept Leçons d'économie à l'usage du citoyen
+      - author: K. Levillain - B. Segrestin - A. Hatchuel et S. Vernac (dir.)
+        title: Entreprises, Responsabilités et Civilisations
+      - author: Steven D. Levitt - Stephen J. Dubner
+        title: Freakonomics
+
+      # --- Étagère 3 ---
+      - author: Erik Orsenna
+        title: Cochons - Voyage aux pays du Vivant
+      - author: Erik Orsenna
+        title: Sur la route du papier
+      - author: ''
+        title: L'Europe monétaire
+      - author: Christian Stoffaes
+        title: Monnaie et financement de l'économie
+      - author: R. Pindyck - D. Rubinfeld - M. Sollogoub
+        title: Microéconomie (7e édition)
+      - author: Dominique Plihon
+        title: Le Nouveau capitalisme
+      - author: Bernard Py
+        title: Exercices corrigés de statistique descriptive
+      - author: Bernard Py
+        title: Statistique descriptive
+      - author: Émile Quinet
+        title: Principes d'Économie des Transports
+      - author: Gilles Raveaud
+        title: Économie - on n'a pas tout essayé !
+      - author: Jeremy Rifkin
+        title: Une nouvelle conscience pour un monde en crise
+      - author: Jeremy Rifkin
+        title: La Nouvelle société du coût marginal zéro
+
+  - file: shelf-fixture-9.jpg
+    # Livres identifiés sur la photo shelf-fixture-9.jpg
+    # Section "ADO". Rangement alphabétique par auteur, sur 5 étagères.
+    # De haut en bas, de gauche à droite dans chaque étagère.
+    description: 'Étagère de livres pour adolescents, avec cinq étagères. Les tranches sont globalement lisibles mais certaines sont difficiles à lire.'
+    books:
+      # --- Étagère 1 (la plus haute, coupée en haut de la photo) ---
+      - author: Sophie Audouin-Mamikonian
+        title: Le Continent Interdit
+
+      # --- Étagère 2 ---
+      - author: Elizabeth Aston
+        title: Les Filles de Mr Darcy
+      - author: ''
+        title: Lune Mauve
+      - author: Gwenaëlle Barussaud
+        title: Pauline - Les Lumières de Paris
+      - author: Sarah-Maude Beauchesne
+        title: Billie-Lou
+      - author: Oscar Brenifier
+        title: Questions de philo entre ados
+      - author: Pierre Bottero
+        title: Zouck
+      - author: Pierre Bottero
+        title: La Huitième Porte
+      - author: Antoine Candeille
+        title: Le Butterflyland 1
+      - author: Antoine Candeille
+        title: Le Butterflyland 2
+      - author: Marine Carteron
+        title: Les Effacés
+      - author: Marine Carteron
+        title: Génération K
+      - author: Kiera Cass
+        title: La Sélection
+      - author: Sophie Carquain
+        title: Hikikomori - Dans le silence de ma chambre (Albin Michel)
+      - author: P.C. Cast eta Kristin Cast
+        title: La Maison de la Nuit - Traquée
+      - author: P.C. Cast et Kristin Cast
+        title: La Maison de la Nuit - Tentée
+      - author: Chris Colfer
+        title: Struck
+      - author: Eoin Colfer
+        title: Artemis Fowl /8
+      - author: Fabrice Colin
+        title: Invisible
+      - author: Fabrice Colin
+        title: La Fin du monde
+      - author: Fabrice Colin
+        title: Les Enfants de la Lune
+      - author: Suzanne Collins
+        title: Hunger Games - La Révolte
+      - author: ''
+        title: Te Retrouver
+
+      # --- Étagère 3 ---
+      - author: Christophe Galfard
+        title: Le Prince des Nuages - Le Blueberry
+      - author: Michelle Gagnon
+        title: Ne t'arrête pas - Expérience Noa Torson
+      - author: Nicholas Gannon
+        title: Les Doldrums
+      - author: K. Garcia et M. Stohl
+        title: Les Dangereuses Créatures
+      - author: K. Garcia et M. Stohl
+        title: 17 Lunes - 2e
+      - author: Michael Grant
+        title: Gone
+      - author: John Green
+        title: Qui es-tu Alaska ?
+      - author: John Green
+        title: La Face cachée de Margo
+      - author: Yves Grevet
+        title: Méto - Le Monde 3
+      - author: Alain Grousset et Paco Porter
+        title: Les Brigades Vertes
+      - author: Paige Harbison
+        title: Moi et Becca
+      - author: Johan Heliot
+        title: Secret ADN
+      - author: Johan Heliot
+        title: Ados sous contrôle
+      - author: L. Jameson
+        title: Prête à succomber
+      - author: Nancy Springer
+        title: Le Mystère des Pavots Blancs
+      - author: Marie-Pascale Huglo
+        title: Saut de puce
+      - author: Melissa Keil
+        title: La Fête dans les Étoiles
+      - author: Nathalie Le Gendre
+        title: Dans les Larmes de Gaïa
+      - author: Nathalie Le Gendre
+        title: Les Orphelins de Naja
+      - author: Nathalie Le Gendre
+        title: Automates
+      - author: Taï-Marc Le Thanh
+        title: Goodbye Papa !
+      - author: Xavier Mauméjean
+        title: La Reine des Lumières
+      - author: Stephenie Meyer
+        title: Tentation
+
+      # --- Étagère 4 ---
+      - author: Davide Morosinotto
+        title: Les Vous
+      - author: Lorris Murail
+        title: Douze ans, sept mois
+      - author: Béatrice Nicodème
+        title: Il n'est si longue nuit
+      - author: Alyson Noël
+        title: Éternels Tome 2 - Lune bleue
+      - author: Alyson Noël
+        title: Éternels (tome 3)
+      - author: Alyson Noël
+        title: Éternels (tome 4)
+      - author: Alyson Noël
+        title: Éternels (tome 5)
+      - author: Alyson Noël
+        title: Éternels (tome 6)
+      - author: Mikaël Ollivier
+        title: l'alibi
+      - author: Tristan et Pichard
+        title: Time Zone
+      - author: J.K. Rowling
+        title: Harry Potter à l'école des sorciers
+      - author: Riggs
+        title: Hollow City (II)
+      - author: Riggs
+        title: La Bibliothèque des Âmes (III)
+      - author: Riggs
+        title: Miss Peregrine et les Enfants Particuliers - La Carte des Jours (IV)
+      - author: Rick Riordan
+        title: Percy Jackson - La Mer des Monstres
+      - author: Rick Riordan
+        title: Percy Jackson et les Héros Grecs
+      - author: Matt Ruff
+        title: Bad Monkeys
+      - author: Léa Silhol
+        title: Contes de la Tisseuse
+      - author: ''
+        title: Night World 4 - Ange Noir
+      - author: L.J. Smith
+        title: Journal d'un Vampire 1
+      - author: Adam Silvera
+        title: Et ils meurent tous les deux à la fin (Robert Laffont)
+      - author: Won-Pyung Sohn
+        title: Amande
+
+      # --- Étagère 5 (la plus basse, partiellement visible) ---
+
+  - file: shelf-fixture-10.jpg
+    # Livres identifiés sur la photo shelf-fixture-10.jpg
+    # Section "9-11 ans". Rangement alphabétique par auteur (G à S environ), sur 4 étagères.
+    # De haut en bas, de gauche à droite dans chaque étagère.
+
+    books:
+      # --- Étagère 1 ---
+      - author: Christian Grenier
+        title: Virus L.I.V.3 ou La Mort des livres
+      - author: Grimm
+        title: Les trois plumes
+      - author: Griparipari
+        title: Inspecteur Toutou - Crac ! dans le sac
+      - author: Pierre Griparipari
+        title: Huit farces pour collégiens
+      - author: René Guillot
+        title: Crin-Blanc
+      - author: Gudule
+        title: Un bout de chemin ensemble
+      - author: Gudule
+        title: La Bibliothécaire
+      - author: René Guillot
+        title: Le Maître des éléphants
+      - author: Claude Gutman
+        title: Toufdepoil
+      - author: P. Halter
+        title: La mort derrière les rideaux
+      - author: Betsy Haynes
+        title: Une nièce de l'oncle Tom
+      - author: Michael Hardcastl
+        title: C'est ça la vie !
+      - author: Marie-Odile Hartmann
+        title: Ariane contre le Minotaure
+      - author: Yaël Hassan
+        title: Momo, petit prince des Bleuets
+      - author: Jacqui et Colin Hawkins
+        title: Les Sorcières
+      - author: N. Hawthorne
+        title: Le Second Livre des Merveilles
+      - author: N. Hawthorne
+        title: Le Premier Livre des Merveilles
+      - author: ''
+        title: L'Abominable Homme des Neiges
+      - author: Bruno Heitz
+        title: L'Inconnu célèbre
+      - author: Marie-Christine Helgerson
+        title: dans les chemineés
+      - author: Marie-Christine Helgerson
+        title: Vas-y Claire !
+      - author: Charlotte Herman
+        title: Le Fauteuil de Grand-Mère
+      - author: L.A. Hickok
+        title: L'Histoire d'Helen Keller
+      - author: Rudyard Kipling
+        title: Histoires comme ça
+      - author: Rudyard Kipling
+        title: Le Livre de la jungle
+      - author: Homère
+        title: L'Odyssée
+      - author: Anthony Horowitz
+        title: Satanée Grand-Mère
+      - author: James Houston
+        title: Akavak
+      - author: G. Hubert - Richou
+        title: Le Prix d'un coup de tête
+      - author: Norma Huidobro
+        title: Octobre, un crime
+      - author: Nina Jaffe et Steve Zeitlin
+        title: Debout sur un pied
+      - author: Pete Johnson
+        title: Combien tu paries ?
+
+      # --- Étagère 2 ---
+      - author: Kathryn Lasky
+        title: La Ballerine et les Barricades
+      - author: Camara Laye
+        title: L'Enfant noir
+      - author: Mme Leprince de Beaumont - W. Clausauer
+        title: La Belle et la Bête
+      - author: Maria Ewa Letki
+        title: Demain je repartirai
+      - author: Gail Carson Levine
+        title: La Fée s'est trompée
+      - author: C.S. Lewis
+        title: Le Monde de Narnia 1 - Le Neveu du Magicien (1686)
+      - author: Erik l'Homme
+        title: La Pâle Lumière des Ténèbres
+      - author: François Librini
+        title: À fond de train !
+      - author: Astrid Lindgren
+        title: Fifi Brindacier
+      - author: Astrid Lindgren
+        title: Le Cheval blanc
+      - author: Henryk Lothamer
+        title: À bientôt maman !
+      - author: Jean-Yves Loude
+        title: Le Coureur dans la brume
+      - author: Lois Lowry
+        title: Anastasia Krupnik
+      - author: Margaret Mahy - Alice Dumas
+        title: La Baignoire du Géant
+      - author: Léna Major
+        title: Les Licornes et la Menace du Griffon 1
+      - author: Marie et Joseph
+        title: Aladdin et le crime de la bibliothèque
+      - author: Ann M. Martin
+        title: Nos plus belles histoires de cœur
+      - author: A.M. Martin
+        title: Au revoir, Lucy !
+      - author: André Massepain
+        title: L'Île aux fossiles vivants
+      - author: Yvon Mauffret
+        title: Pépé la Boulange
+      - author: Claire Mazard
+        title: Monsieur Elliot
+      - author: C. Mazard / J.Fernandez
+        title: Opération Marcellin
+      - author: Jean-François Ménard
+        title: L'Oiseau de malheur
+      - author: ''
+        title: Prosper Mérimée
+      - author: Claude Merle
+        title: Héros de Légende - Alexandre le Grand
+      - author: F. David/D. Sala
+        title: Menteurs !
+      - author: Paul Beaupère
+        title: Un piano par la fenêtre
+      - author: Jacqueline Mirande
+        title: Double Meurtre à l'Abbaye
+      - author: Moka
+        title: Un sale moment à passer
+      - author: ''
+        title: Le Royaume des Ombres
+      - author: Christian de Montella
+        title: La Fabrique de mensonges
+      - author: Susie Morgenstern
+        title: Les Deux Moitiés de l'amitié
+      - author: Susie Morgenstern
+        title: La Sixième
+      - author: Michael Morpurgo
+        title: Anya
+      - author: Michael Morpurgo
+        title: Cheval de Guerre
+      - author: M. Morpurgo
+        title: Les 9 vies du chat Montezuma
+      - author: M. Morpurgo - J-M. Payet
+        title: Le Lion Blanc
+
+      # --- Étagère 3 ---
+      - author: Martin Page
+        title: Le Garçon de toutes les couleurs (J2690)
+      - author: R.J. Palacio
+        title: Wonder
+      - author: Anne-Marie Papierski-Brédy
+        title: La Balançoire
+      - author: Robert Newton Peck
+        title: Un certain monsieur L.
+      - author: Daniel Pennac
+        title: L'Œil du loup
+      - author: Daniel Pennac
+        title: Kamo l'Idée du Siècle
+      - author: Daniel Pennac
+        title: Kamo l'Agence Babel
+      - author: D. Pennac - J. Ferrandez
+        title: L'oeil du loup
+      - author: Daniel Pennac
+        title: Kamo et Moi
+      - author: François Place
+        title: Le Vieux Fou de Dessin
+      - author: Maud Poupa - Nathalie Desperbes Bonhotain
+        title: L'Énigme du tapis
+      - author: Christian Poslaniec
+        title: La Onzième Souris verte
+      - author: Pierre Rabhi
+        title: L'Enfant du désert
+      - author: Jules Renard
+        title: Poil de Carotte
+      - author: Jules Renard
+        title: Histoires Naturelles
+      - author: Isabelle Renaud
+        title: Baby-Sittor
+      - author: Florence Reynaud
+        title: L'Enfant-loup
+      - author: Florence Reynaud
+        title: La Grotte des chamans
+      - author: Yak Rivais
+        title: Quelle affaire !
+      - author: Yak Rivais
+        title: La Princesse qui voulait se marier
+      - author: Rivais
+        title: Pas de panique !
+      - author: ''
+        title: Dur dur d'être un héros !
+      - author: B. Robinson
+        title: Sauve qui peut, voilà les Herdman !
+      - author: Thérèse Roche
+        title: La classe arc-en-ciel
+      - author: Ron Roy
+        title: Risques d'avalanche !
+      - author: Kate Saunders
+        title: Les Bas-Rouge voient rouge
+      - author: Nicole Schneegans
+        title: La Plus grande lettre du monde
+      - author: Hermann Schulz
+        title: Mandela et Nelson
+      - author: Geneviève Senger
+        title: L'Été de toutes les cerises
+      - author: Florence Seyvos
+        title: Le Jour où j'ai été le chef
+      - author: Brigitte Smadja
+        title: La Vérité toute nue
+      - author: Alain Surget
+        title: L'Œil d'Horus, Tome 1
+      - author: Alain Surget
+        title: Les Disparus de Fort Boyard
+      - author: ''
+        title: Pavillon Noir - Graines de Pirates
+      - author: ''
+        title: Le Chevalier Noir - Mystères au Donjon
+      - author: ''
+        title: Chroniques du Marais qui pue - La Grotte du dragon (2)
+      - author: Todd Strasser
+        title: Délires - Piégé dans le corps de ma sœur !
+      - author: Todd Strasser
+        title: Délires - Piégé dans le corps du président !

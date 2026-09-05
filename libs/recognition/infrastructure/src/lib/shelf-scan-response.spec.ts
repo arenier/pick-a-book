@@ -18,7 +18,7 @@ describe('toDetectedBooks', () => {
     const books = toDetectedBooks(JSON.stringify(wellFormed));
 
     expect(books).toHaveLength(2);
-    expect(books[0]?.author.value).toBe('Marguerite Duras');
+    expect(books[0]?.author?.value).toBe('Marguerite Duras');
     expect(books[0]?.title.value).toBe("L'Amant");
     expect(books[0]?.confidence.value).toBe(0.94);
   });
@@ -34,6 +34,26 @@ describe('toDetectedBooks', () => {
     const fenced = `\`\`\`json\n${JSON.stringify(wellFormed)}\n\`\`\``;
 
     expect(toDetectedBooks(fenced)).toHaveLength(2);
+  });
+
+  // The author is optional (ADR 0005, 2026-09-04 amendment): a spine may not print it. The
+  // title identifies the book; an absent or blank author is a title-only reading, not a failure.
+  it('accepts a book whose author key is absent, as a title-only reading', () => {
+    const [book] = toDetectedBooks(
+      JSON.stringify({ books: [{ title: 'Les Choses', confidence: 0.5 }] }),
+    );
+
+    expect(book.author).toBeUndefined();
+    expect(book.title.value).toBe('Les Choses');
+  });
+
+  it('treats a blank author as absent rather than refusing the payload', () => {
+    const [book] = toDetectedBooks(
+      JSON.stringify({ books: [{ author: '   ', title: 'Les Choses', confidence: 0.5 }] }),
+    );
+
+    expect(book.author).toBeUndefined();
+    expect(book.title.value).toBe('Les Choses');
   });
 });
 
@@ -60,11 +80,11 @@ describe('toDetectedBooks rejects off-contract answers with ShelfScanFailed', ()
     expect(reject(JSON.stringify(wrongType))).toThrow(ShelfScanFailed);
   });
 
-  // The domain refuses an empty author; the failure has to surface as ShelfScanFailed
-  // rather than as the raw value object error leaking out of the adapter.
+  // The title is the irreducible identifier: the domain refuses a blank one, and that failure
+  // has to surface as ShelfScanFailed rather than as the raw value object error leaking out.
   it('when a value object refuses the value', () => {
-    const empty = { books: [{ author: '   ', title: 'Les Choses', confidence: 0.5 }] };
+    const blankTitle = { books: [{ author: 'Perec', title: '   ', confidence: 0.5 }] };
 
-    expect(reject(JSON.stringify(empty))).toThrow(ShelfScanFailed);
+    expect(reject(JSON.stringify(blankTitle))).toThrow(ShelfScanFailed);
   });
 });

@@ -176,3 +176,7 @@ override.tf.json
 # Photos de référence du bench (issue #10) : jamais commitées — poids, contexte ressourcerie.
 # Source de vérité : le bucket GCS pick-a-book-505922-reference-photos.
 fixtures/reference-photos/
+
+# Sortie du bench (#10) : détections brutes + tableau, dérivées des photos privées et d'appels
+# live. Le tableau final validé vit dans la note de décision commitée, pas ici.
+tools/bench/output/

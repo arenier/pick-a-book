@@ -1,0 +1,22 @@
+{
+  "name": "@pick-a-book/bench",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/main.js",
+  "nx": {
+    "name": "bench",
+    "tags": [
+      "type:app",
+      "scope:api"
+    ]
+  },
+  "dependencies": {
+    "@pick-a-book/recognition-domain": "workspace:*",
+    "@pick-a-book/recognition-infrastructure": "workspace:*",
+    "@pick-a-book/shared-text-match": "workspace:*",
+    "tslib": "^2.3.0",
+    "yaml": "^2.9.0",
+    "zod": "^4.5.4"
+  }
+}

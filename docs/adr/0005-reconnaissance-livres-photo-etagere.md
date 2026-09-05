@@ -73,6 +73,38 @@ Trois raisons :
 - Le port expose une confiance par livre détecté, pour que l'orchestration (phase 5) puisse écarter ou signaler les détections faibles.
 - Tests d'intégration phase 3 : réponses enregistrées pour le déterministe, test de non-régression séparé et manuel sur le jeu de référence.
 
+## Amendement — auteur optionnel à la détection (2026-09-04)
+
+Constaté en phase 3, sur le jeu de référence annoté à la main (#10) : beaucoup de tranches ne
+portent **pas** d'auteur lisible — auteur absent de la tranche, illisible, ou partiellement lisible
+(incertain). Or le contrat imposait un couple complet : `Author` refusait la chaîne vide et
+`toDetectedBooks` rejetait **tout le payload** au premier champ manquant. Conséquence : une seule
+tranche sans auteur faisait échouer le scan de l'étagère entière — intenable sur des étagères réelles
+où ce cas est courant (~6 % des livres du jeu de référence).
+
+Ce refus contredisait le point 2 de la solution retenue : **le filet anti-hallucination est la
+réconciliation en aval, pas l'OCR.** Exiger l'auteur au niveau de la lecture, c'est remettre un filet
+de complétude là où l'ADR dit de ne pas en mettre. Un titre seul (« La Peste ») se réconcilie très
+bien contre un référentiel de notices.
+
+Décision : **à la détection, seul le titre est obligatoire ; l'auteur est optionnel.**
+
+- Le titre reste l'identifiant irréductible : un `DetectedBook` sans titre lisible n'existe pas, et un
+  titre vide continue de faire échouer le payload.
+- L'auteur est rendu quand il est imprimé et lisible ; sinon il est **absent** (champ vide), jamais
+  inventé. Absent ≠ raté : le prompt demande explicitement d'omettre l'auteur plutôt que de le deviner.
+- La distinction absent / illisible / incertain n'est pas portée par le contrat : dans les trois cas
+  l'auteur est simplement absent. La finesse, si elle est un jour utile, viendra d'un champ dédié, pas
+  d'une valeur sentinelle dans `author`.
+- **La réconciliation (contexte à venir) reste libre de réexiger l'auteur** : y rattacher un auteur
+  fait partie de son travail, et c'est là, sur notices, que l'obligation a du sens — pas sur la tranche.
+
+Portée : `DetectedBook.author` devient `Author | undefined` ; le contrat VLM accepte un auteur absent
+ou vide (mappé sur *absent*) ; le prompt et le schéma JSON ne réclament plus l'auteur ; la vérité
+terrain du bench note un auteur absent par un champ vide, et le scoring évalue alors le livre sur son
+seul titre (l'exactitude-auteur ne compte que les livres où l'auteur est présent). Aucune refonte du
+port : `ShelfScannerPort.scan` est inchangé.
+
 ## Question ouverte
 
 **Périmètre de « open source ».** Si la contrainte couvre toute la chaîne d'exécution, seule A auto-hébergée est admissible et l'arbitrage s'inverse, au prix décrit en A. Si elle couvre le code du projet et sa portabilité, B et C restent ouvertes — reste à décider si un repli auto-hébergé est maintenu comme second adaptateur ou si la dépendance est assumée.

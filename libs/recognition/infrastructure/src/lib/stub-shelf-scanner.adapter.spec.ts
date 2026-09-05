@@ -11,7 +11,7 @@ describe('StubShelfScannerAdapter', () => {
 
     expect(books.length).toBeGreaterThan(0);
     for (const book of books) {
-      expect(book.author.value).not.toHaveLength(0);
+      expect(book.author?.value).not.toHaveLength(0);
       expect(book.title.value).not.toHaveLength(0);
       expect(book.confidence.value).toBeGreaterThanOrEqual(0);
       expect(book.confidence.value).toBeLessThanOrEqual(1);

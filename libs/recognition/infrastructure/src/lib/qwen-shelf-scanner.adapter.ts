@@ -2,11 +2,18 @@ import { ShelfScanFailed } from '@pick-a-book/recognition-domain';
 import type { DetectedBook, ShelfPhoto, ShelfScannerPort } from '@pick-a-book/recognition-domain';
 import { z } from 'zod';
 
-import { SHELF_SCAN_PROMPT } from './shelf-scan-prompt.js';
+import { SHELF_SCAN_JSON_SCHEMA, SHELF_SCAN_PROMPT } from './shelf-scan-prompt.js';
 import { toDetectedBooks } from './shelf-scan-response.js';
 
 const DEFAULT_BASE_URL = 'https://openrouter.ai/api/v1';
-const DEFAULT_MODEL = 'qwen/qwen3-vl-235b-a22b-instruct';
+// qwen2.5-vl-72b, not qwen3-vl-235b: the 235B was unusable on dense shelves in the bench —
+// it returned 0 books on half the photos and truncated its JSON on others, where the 72B stays
+// stable (issue #10). The 72B is the OCR-focused line; the 235B a general model with vision.
+const DEFAULT_MODEL = 'qwen/qwen2.5-vl-72b-instruct';
+// Enough head-room for a full dense shelf (~100 spines) so a legitimate long list is not cut
+// off mid-JSON. It does not tame a runaway repetition — that still hits the cap and fails, which
+// is the right outcome — it only stops truncating honest answers (issue #10).
+const DEFAULT_MAX_TOKENS = 8192;
 
 export interface QwenConfiguration {
   readonly apiKey: string;
@@ -18,6 +25,8 @@ export interface QwenConfiguration {
    * is a different weight class from a quantised local one (issue #10).
    */
   readonly baseUrl?: string;
+  /** Completion-token ceiling. Overridable, but the default already fits a full shelf. */
+  readonly maxTokens?: number;
 }
 
 /** The slice of the chat-completions envelope this adapter depends on, and nothing more. */
@@ -38,6 +47,7 @@ const chatEnvelopeSchema = z.object({
 export class QwenShelfScannerAdapter implements ShelfScannerPort {
   private readonly model: string;
   private readonly baseUrl: string;
+  private readonly maxTokens: number;
 
   constructor(
     private readonly configuration: QwenConfiguration,
@@ -45,6 +55,7 @@ export class QwenShelfScannerAdapter implements ShelfScannerPort {
   ) {
     this.model = configuration.model ?? DEFAULT_MODEL;
     this.baseUrl = configuration.baseUrl ?? DEFAULT_BASE_URL;
+    this.maxTokens = configuration.maxTokens ?? DEFAULT_MAX_TOKENS;
   }
 
   async scan(photo: ShelfPhoto): Promise<DetectedBook[]> {
@@ -61,28 +72,6 @@ export class QwenShelfScannerAdapter implements ShelfScannerPort {
 
   private async post(photo: ShelfPhoto): Promise<Response> {
     const url = `${this.baseUrl}/chat/completions`;
-    const body = {
-      model: this.model,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            { type: 'text', text: SHELF_SCAN_PROMPT },
-            {
-              type: 'image_url',
-              image_url: {
-                url: `data:${photo.mediaType};base64,${Buffer.from(photo.bytes).toString('base64')}`,
-              },
-            },
-          ],
-        },
-      ],
-      // `json_object` is the OpenAI-compatible way to ask for JSON. Weaker than Gemini's
-      // schema-constrained decoding, which is exactly why the answer is validated downstream
-      // rather than trusted.
-      response_format: { type: 'json_object' },
-      temperature: 0,
-    };
 
     let response: Response;
     try {
@@ -92,7 +81,7 @@ export class QwenShelfScannerAdapter implements ShelfScannerPort {
           'content-type': 'application/json',
           authorization: `Bearer ${this.configuration.apiKey}`,
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(this.requestBody(photo)),
       });
     } catch (cause) {
       throw new ShelfScanFailed(`Qwen is unreachable (${describe(cause)})`, { cause });
@@ -103,6 +92,39 @@ export class QwenShelfScannerAdapter implements ShelfScannerPort {
     }
 
     return response;
+  }
+
+  private requestBody(photo: ShelfPhoto): object {
+    const dataUrl = `data:${photo.mediaType};base64,${Buffer.from(photo.bytes).toString('base64')}`;
+
+    return {
+      model: this.model,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: SHELF_SCAN_PROMPT },
+            { type: 'image_url', image_url: { url: dataUrl } },
+          ],
+        },
+      ],
+      // Schema-constrained decoding, the OpenAI-compatible way: the same contract Gemini
+      // decodes against (`SHELF_SCAN_JSON_SCHEMA`), held over the model's grammar. Plain
+      // `json_object` let dense shelves truncate the JSON and emit empty author/title fields
+      // (issue #10) — constraining decoding to the schema removes that failure mode. The
+      // answer is still validated downstream.
+      //
+      // `strict: false` on purpose: OpenAI strict mode demands every property sit in the
+      // schema's `required`, which would force `author` back to mandatory — the opposite of
+      // the 2026-09-04 amendment. The schema still pins the shape (what tamed the runaway),
+      // it just no longer forbids an optional field.
+      response_format: {
+        type: 'json_schema',
+        json_schema: { name: 'shelf_scan', strict: false, schema: SHELF_SCAN_JSON_SCHEMA },
+      },
+      max_tokens: this.maxTokens,
+      temperature: 0,
+    };
   }
 }
 
