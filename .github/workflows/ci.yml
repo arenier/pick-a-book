@@ -28,6 +28,45 @@ jobs:
         with:
           fetch-depth: 0 # nx affected diffs base..head: it needs the full history
 
+      # `yarn check` (package.json) and this workflow must verify the same thing, so a green
+      # `yarn check` can never hide a red CI and vice versa. They cannot share one command —
+      # `yarn check` runs `run-many` (every project), CI runs `affected` (only the touched ones),
+      # and that difference is deliberate. What must not drift is the list of Nx *targets* and the
+      # two repo-wide Oxc steps: #40 already had to add `typecheck` to one side, this guard stops
+      # the next such gap. Each list is read from the file that owns it, so the check never
+      # becomes a third copy of the target list. Runs first: it is pure text and fails cheap.
+      - name: check and CI verify the same targets
+        run: |
+          set -euo pipefail
+
+          check_targets=$(sed -n 's/.*"check": ".*nx run-many -t \([a-z ]*[a-z]\).*/\1/p' package.json)
+          ci_targets=$(sed -n 's/.*nx affected -t \([a-z ]*[a-z]\).*/\1/p' .github/workflows/ci.yml)
+
+          # An empty capture means the command was renamed or reshaped, not that the lists agree:
+          # without this, two empty strings compare equal and the gate passes having read nothing.
+          fail=0
+          [ -n "$check_targets" ] || { echo "::error::could not read the Nx targets from the 'check' script in package.json — it moved or changed shape, update this check"; fail=1; }
+          [ -n "$ci_targets" ] || { echo "::error::could not read the Nx targets from 'nx affected' in ci.yml — it moved or changed shape, update this check"; fail=1; }
+          [ "$fail" -eq 0 ] || exit 1
+
+          # Compare as sets: target order carries no meaning, so sort before diffing.
+          normalize() { echo "$1" | tr ' ' '\n' | sort | paste -sd' ' -; }
+          check_norm=$(normalize "$check_targets")
+          ci_norm=$(normalize "$ci_targets")
+          if [ "$check_norm" != "$ci_norm" ]; then
+            echo "::error::yarn check verifies [$check_norm] but CI verifies [$ci_norm] — the Nx target lists diverged, align both sides"
+            exit 1
+          fi
+
+          # The two Oxc steps run repo-wide on both sides (spelled via aliases, so outside the set
+          # comparison above); guard their presence so neither side can silently drop one. The CI
+          # patterns are line-anchored to the real command lines, never this guard's own text.
+          grep -qF 'oxlint --type-aware' package.json || { echo "::error::package.json no longer runs 'oxlint --type-aware'"; fail=1; }
+          grep -qF 'oxfmt --check' package.json || { echo "::error::package.json no longer runs 'oxfmt --check'"; fail=1; }
+          grep -qE '^[[:space:]]*yarn oxlint --type-aware[[:space:]]*$' .github/workflows/ci.yml || { echo "::error::ci.yml no longer runs 'yarn oxlint --type-aware'"; fail=1; }
+          grep -qE '^[[:space:]]*yarn format:check[[:space:]]*$' .github/workflows/ci.yml || { echo "::error::ci.yml no longer runs 'yarn format:check'"; fail=1; }
+          [ "$fail" -eq 0 ] || exit 1
+
       - uses: actions/setup-node@v4
         with:
           node-version: 26.5.1 # exact pin, aligned with Volta (CLAUDE.md)
@@ -64,7 +103,7 @@ jobs:
         run: |
           yarn oxlint --type-aware
           yarn format:check
-          yarn nx affected -t lint typecheck test
+          yarn nx affected -t lint typecheck test build
 
   # Dedicated job: infra/ has nothing to do with Nx, and its gates (terraform test) are
   # hermetic — mock_provider means no GCP credentials, no cost, safe to run on every PR.
