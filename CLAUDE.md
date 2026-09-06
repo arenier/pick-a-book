@@ -120,9 +120,16 @@ Avant de démarrer l'API : `cp .env.example .env`. Une variable requise manquant
 démarrage avec la liste de ce qui manque — c'est voulu, ne pas la contourner.
 
 La **CI** (GitHub Actions, `.github/workflows/ci.yml`) tourne sur chaque PR et push `main` : oxlint
-et oxfmt sur tout le dépôt, puis `nx affected -t lint typecheck test` sur les projets touchés (base
-calculée par `nrwl/nx-set-shas`). Node 26 n'ayant pas Corepack, elle installe Yarn avec
+et oxfmt sur tout le dépôt, puis `nx affected -t lint typecheck test build` sur les projets touchés
+(base calculée par `nrwl/nx-set-shas`). Node 26 n'ayant pas Corepack, elle installe Yarn avec
 `@yarnpkg/cli-dist@4.18.0` — comme les images Docker.
+
+`yarn check` et la CI vérifient **les mêmes cibles** : la seule différence assumée est la sélection
+des projets — `run-many` (tout) en local, `affected` (les touchés) en CI. Un garde-fou de la CI
+(« check and CI verify the same targets », dans l'esprit du check « toolchain pins agree ») échoue si
+la liste des cibles Nx ou l'une des deux étapes Oxc diverge entre les deux — chaque liste est lue
+dans le fichier qui la porte, jamais recopiée. Pour le vérifier : retirer `build` d'un côté et
+constater que la CI échoue.
 
 ## Architecture
 
