@@ -87,17 +87,25 @@ configuration supplémentaire côté local.
 ```bash
 cd infra/envs/prod
 terraform init
-terraform plan -var-file=prod.tfvars
+terraform plan
 ```
+
+Pas de `-var-file` : les variables non secrètes vivent dans `prod.auto.tfvars`, que Terraform
+charge **automatiquement** (tout fichier `*.auto.tfvars` ou `terraform.tfvars`). Lancer `plan`/`apply`
+sans ce fichier chargé ferait retomber Terraform sur des **prompts interactifs** pour `project_id`,
+`region` et `neon_org_id` — le nom `*.auto.tfvars` supprime ce piège. Le secret, lui, ne passe pas
+par là : `NEON_API_KEY` est lu dans l'environnement par le provider `neon` (voir *Authentification*),
+donc il **faut** l'avoir exporté, sans quoi `plan`/`apply` échoue sur `authorization key must be
+provided` — tous les providers se chargent, même pour un `apply` qui ne toucherait que du GCP.
 
 **Pas de sandbox GCP** (décision figée de l'issue #12) : `plan` est le seul filet avant un `apply`
 qui touche directement la prod. Toujours relire un `plan` avant d'`apply`er :
 
 ```bash
-terraform apply -var-file=prod.tfvars
+terraform apply
 ```
 
-`prod.tfvars` est commité (non secret : `project_id` et `region`).
+`prod.auto.tfvars` est commité (non secret : `project_id`, `region`, `neon_org_id`).
 
 ## Vérifications
 
