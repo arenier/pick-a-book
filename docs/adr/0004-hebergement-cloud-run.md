@@ -30,21 +30,26 @@ réglage d'échelle mais une contrainte d'intégrité.
 > d'intégrité**, le bucket retrouve sa seule finalité (images et assets du front) et Cloud Run son
 > scale-to-zero (0→N). La décision de cet ADR — Cloud Run + bucket — est, elle, inchangée.
 
-> **Révisé (implémentation infra, 2026-08-19).** Le provisioning Terraform de l'issue
-> [#12](https://github.com/arenier/pick-a-book/issues/12) héberge `apps/web` sur un **second
-> service Cloud Run**, pas sur un bucket statique derrière un CDN — alors que le commentaire de
-> décisions figées de #12 avait retenu l'inverse (bucket + Cloud CDN, sans load balancer), et que
-> le paragraphe « Décision » ci-dessus, en ne mentionnant que « bucket d'objets pour les images
-> d'étagère et les assets du frontend », laisse entendre un front statique. **Motif du changement**,
-> constaté à l'implémentation et non anticipé par #12 : servir du HTTPS sur un bucket via Cloud CDN
-> impose un **load balancer HTTP(S) externe**, facturé à l'heure **même à trafic nul** (de l'ordre
-> de 18 $/mois) — un coût fixe qui contredit directement le « budget quasi nul » du présent ADR, et
-> que #12 avait à tort supposé nul en écrivant « pas de load balancer » à son point 8. Un second
-> service Cloud Run donne HTTPS gratuit sur `*.run.app` et le même scale-to-zero que l'API, sans
-> ressource facturée au repos. Le cœur de cet ADR (Cloud Run pour le calcul, bucket en simple
-> object store) est inchangé ; c'est la répartition du front entre les deux qui bascule. Détail de
-> l'arbitrage IaC dans [0009](0009-outillage-iac-terraform.md) ; l'écart avec la décision figée de
-> #12 est signalé dans la PR d'infrastructure plutôt que corrigé silencieusement dans l'issue.
+> **Front sur bucket statique public (issue #12, 2026-09-06).** `apps/web` est servi comme un
+> **site statique depuis un bucket GCS public** (`infra/modules/static-site`), conformément à la
+> décision figée de [#12](https://github.com/arenier/pick-a-book/issues/12) (point 2 : bucket
+> statique) et au paragraphe « Décision » ci-dessus, qui ne prévoyait pour le bucket que « les
+> images d'étagère et les assets du frontend ». Le front est joignable sur l'endpoint partagé
+> `https://storage.googleapis.com/<bucket>/index.html` : **HTTPS gratuit, aucune ressource facturée
+> au repos.**
+>
+> *Correctif au raisonnement d'une révision intermédiaire (implémentation du 2026-08-19, annulée
+> ici).* Cette révision avait hébergé le front sur un **second service Cloud Run**, au motif que
+> servir du HTTPS depuis un bucket imposerait un load balancer HTTP(S) externe facturé à l'heure
+> (~18 $/mois). Ce motif était **faux dans le cas général** : le load balancer n'est requis que
+> pour un **domaine custom** (ou pour Cloud CDN) devant le bucket. Sur l'endpoint
+> `storage.googleapis.com`, GCS sert déjà en HTTPS avec le certificat de Google, sans load
+> balancer et sans coût fixe. Compromis assumés de cet endpoint : URL longue, pas de cache edge, et
+> pas de réécriture 404 → index.html côté serveur — le routing SPA est porté par `apps/web`. Le
+> cœur de cet ADR (Cloud Run pour le calcul, bucket en simple object store) reste inchangé ; c'est
+> la seule répartition du front qui revient au bucket. Un domaine custom plus tard rouvrirait
+> l'arbitrage load balancer, localisé au module `static-site`. Détail IaC :
+> [0009](0009-outillage-iac-terraform.md).
 
 ## Alternatives envisagées
 

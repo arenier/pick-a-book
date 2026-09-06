@@ -122,8 +122,9 @@ module sans test passerait inaperçu. Elle compte les blocs `run`, pas les fichi
 ## Organisation
 
 ```
-infra/modules/           un module par ressource : project, bucket, secret-manager,
-                          service-account, artifact-registry, cloud-run-service, neon
+infra/modules/           un module par ressource : project, bucket, static-site,
+                          secret-manager, service-account, artifact-registry,
+                          cloud-run-service, neon
 infra/modules/*/tests/   *.tftest.hcl — mock_provider, hermétique
 infra/envs/prod/         seul environnement à ce jour ; assemble les modules
 infra/envs/*/tests/      *.tftest.hcl — tests de câblage entre modules
@@ -139,6 +140,30 @@ une sortie de ressource gérée, pas une valeur saisie à la main, et peut donc 
 
 Seule la config racine (`infra/envs/prod/main.tf`) câble les modules entre eux — un module ne
 dépend jamais directement d'un autre.
+
+## Front `apps/web` — bucket statique public
+
+`module.static_site` (sorties `web_bucket_name`, `web_url`) sert le front comme un site statique
+depuis un **bucket GCS public**, pas un second service Cloud Run. Le bundle Vite construit est du
+fichier statique lisible par tous : un runtime de conteneur n'apporterait rien.
+
+Le front est joignable sur l'endpoint partagé de Google
+`https://storage.googleapis.com/<bucket>/index.html` — **HTTPS gratuit, sans coût fixe**. Pas de
+CDN ni de load balancer : un domaine custom ou Cloud CDN imposerait un load balancer HTTP(S)
+facturé à l'heure même à trafic nul, incompatible avec « budget quasi nul » (ADR 0004). Compromis
+assumés : URL longue, pas de cache edge, et **pas de réécriture 404 → index.html côté serveur** sur
+cet endpoint (le bloc `website{}` ne vaut que pour l'endpoint website HTTP) — `apps/web` porte donc
+son routing SPA (hash routing, ou une entrée toujours `index.html`). Le passage à un domaine custom
+plus tard est un incrément localisé à ce module.
+
+Déploiement du front (hors Terraform, comme l'image de l'API) : construire le bundle puis le
+synchroniser dans le bucket avec les ADC de l'opérateur, sans service account dédié.
+
+```bash
+yarn nx build web
+gsutil -m rsync -d -r apps/web/dist gs://$(terraform -chdir=infra/envs/prod output -raw web_bucket_name)/
+terraform -chdir=infra/envs/prod output -raw web_url   # URL publique à ouvrir
+```
 
 ## Bucket des photos de référence (bench reconnaissance, issue #10)
 

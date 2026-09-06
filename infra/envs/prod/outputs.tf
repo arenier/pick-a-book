@@ -4,8 +4,13 @@ output "api_url" {
 }
 
 output "web_url" {
-  description = "Default *.run.app URL of the front service."
-  value       = module.cloud_run_web.service_url
+  description = "Public HTTPS URL of the front — Google's shared storage.googleapis.com endpoint for the static-site bucket, no custom domain or CDN."
+  value       = module.static_site.public_base_url
+}
+
+output "web_bucket_name" {
+  description = "Static-site bucket the built front is uploaded to (`gsutil rsync ./dist gs://<name>`)."
+  value       = module.static_site.bucket_name
 }
 
 output "artifact_registry_url" {
@@ -24,11 +29,6 @@ output "reference_photos_bucket_name" {
 }
 
 output "api_service_account_email" {
-  description = "Runtime identity the API service runs as — the only one with Secret Manager and bucket access."
+  description = "Runtime identity the API service runs as — the only service account in this env, holding the Secret Manager and bucket grants."
   value       = module.service_account_api.email
-}
-
-output "web_service_account_email" {
-  description = "Runtime identity the front service runs as — no grants."
-  value       = module.service_account_web.email
 }

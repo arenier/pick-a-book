@@ -16,9 +16,9 @@ module "artifact_registry" {
   depends_on = [module.project]
 }
 
-# Backups only — pg_dump dumps and dated snapshots. Strictly private, opposite access policy
-# from a would-be static-site bucket: the two are never the same bucket, and this repo does
-# not provision a static-site bucket at all — the front is a second Cloud Run service instead.
+# Backups only — pg_dump dumps and dated snapshots. Strictly private, the exact opposite
+# access policy from module.static_site (the public front): the two are never the same bucket
+# and never share the `bucket`/`static-site` module.
 module "bucket" {
   source = "../../modules/bucket"
 
@@ -81,16 +81,6 @@ module "service_account_api" {
   bucket_name  = module.bucket.bucket_name
 }
 
-# The front serves static traffic only: no secrets, no bucket. A dedicated service account
-# with zero grants, rather than reusing the API's.
-module "service_account_web" {
-  source = "../../modules/service-account"
-
-  project_id   = var.project_id
-  account_id   = "pick-a-book-web"
-  display_name = "pick-a-book web runtime"
-}
-
 # apps/api. env is intentionally minimal: the application code has not yet caught up to the
 # "shelf photos are ephemeral, not stored" decision — .env.example and docker-compose.yml
 # still describe the earlier SQLite-on-bucket shape at the time of this PR. Wiring more than
@@ -105,8 +95,7 @@ module "cloud_run_api" {
 
   # The default startup probe budget (~9s) is too tight here: boot fail-fasts on
   # DATABASE_URL, and a cold Neon resume can stack on top of NestJS's own startup time on
-  # the first request after scale-to-zero. The front has no such dependency and keeps the
-  # module default.
+  # the first request after scale-to-zero.
   startup_probe_failure_threshold = 10
 
   env = {
@@ -120,15 +109,19 @@ module "cloud_run_api" {
   }
 }
 
-# apps/web. No production image or Dockerfile exists yet for the front (docker/web.Dockerfile
-# is explicitly the *development* image — see its header comment); this service is created
-# now, pointed at the public placeholder, so the URL and the deployment target exist ahead of
-# that follow-up work.
-module "cloud_run_web" {
-  source = "../../modules/cloud-run-service"
+# apps/web. Served as a static site straight from a public GCS bucket, not a second Cloud Run
+# service (issue #12, static-site reconciliation): the built Vite bundle is world-readable
+# static files, so a container runtime buys nothing. Reached over Google's shared
+# https://storage.googleapis.com/<bucket>/ endpoint — free HTTPS, no CDN and no load balancer,
+# whose fixed monthly cost a custom domain would add for no benefit at this volume (ADR 0004).
+# No service account: a public object store has no runtime identity; the built bundle is
+# uploaded with the operator's own ADC, like the reference-photos bucket.
+module "static_site" {
+  source = "../../modules/static-site"
 
-  project_id            = var.project_id
-  region                = var.region
-  name                  = "pick-a-book-web"
-  service_account_email = module.service_account_web.email
+  project_id = var.project_id
+  name       = "${var.project_id}-web"
+  location   = var.region
+
+  depends_on = [module.project]
 }
