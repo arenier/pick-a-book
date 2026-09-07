@@ -1,0 +1,33 @@
+# Server-side build of the apps/api image, so deploying needs no local Docker daemon
+# (issue #12, reproducible deploy path). Driven by `yarn deploy:api`.
+#
+# The Dockerfile lives at a non-default path (docker/api.Dockerfile), which `gcloud builds
+# submit --tag` cannot target — hence this explicit config. Build context is the repo root,
+# exactly as the Dockerfile header documents.
+#
+# Portable to any deployer's own project: $PROJECT_ID is injected by Cloud Build, and the
+# region/repo are substitutions defaulting to this project's values (overridable with
+# --substitutions). No project id is hardcoded.
+substitutions:
+  _REGION: europe-west1
+  _REPO: pick-a-book
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - docker/api.Dockerfile
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/api:latest
+      - .
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/api:latest
+
+# Recent GCP projects no longer create the legacy Cloud Build service account, so builds run
+# under the Compute Engine default SA — which cannot write to the default GCS logs bucket.
+# CLOUD_LOGGING_ONLY sends build logs to Cloud Logging instead, which that SA can do once it
+# holds roles/cloudbuild.builds.builder (see infra/README).
+options:
+  logging: CLOUD_LOGGING_ONLY

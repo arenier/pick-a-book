@@ -42,6 +42,34 @@ run "deploys_to_the_given_project_and_region" {
   }
 }
 
+run "deletion_protection_is_on_by_default" {
+  command = plan
+
+  # A service removed from config must not be destroyable in the same apply — its teardown is a
+  # deliberate two-step (flip to false, then remove), never a side effect of a config edit.
+  assert {
+    condition     = google_cloud_run_v2_service.this.deletion_protection == true
+    error_message = "deletion_protection must default to true, matching the provider: a live service is never destroyed by simply removing it from configuration"
+  }
+}
+
+run "deletion_protection_is_overridable" {
+  command = plan
+
+  variables {
+    project_id            = "pick-a-book-test"
+    region                = "europe-west1"
+    name                  = "pick-a-book-api"
+    service_account_email = "pick-a-book-api@pick-a-book-test.iam.gserviceaccount.com"
+    deletion_protection   = false
+  }
+
+  assert {
+    condition     = google_cloud_run_v2_service.this.deletion_protection == false
+    error_message = "deletion_protection must be overridable to false — the first step of retiring a service is the apply that flips it off"
+  }
+}
+
 run "runs_as_the_given_service_account" {
   command = plan
 

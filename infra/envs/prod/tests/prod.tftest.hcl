@@ -42,13 +42,24 @@ run "artifact_registry_is_in_the_configured_project_and_region" {
   }
 }
 
-run "each_service_exposes_its_own_runtime_identity" {
+run "region_output_reflects_the_configured_region" {
   command = plan
 
-  # The emails are provider-computed, so mock_provider leaves them unknown at plan time.
-  # Pinning both to distinct known values is what lets the assertions prove *which* service
-  # account each output exposes — main.tf instantiates the two service-account modules from
-  # near-identical blocks, and a swapped output is invisible on re-reading.
+  # Deploy tooling (yarn deploy:api) reads `terraform output -raw region` for `gcloud run
+  # deploy --region`. A wrong value here targets the wrong region at deploy time, far from here.
+  assert {
+    condition     = output.region == "europe-west1"
+    error_message = "The region output must echo the configured region — deploy tooling relies on it as the single source of truth"
+  }
+}
+
+run "the_api_exposes_its_runtime_identity" {
+  command = plan
+
+  # The email is provider-computed, so mock_provider leaves it unknown at plan time. Pinning it
+  # to a known value is what lets the assertion prove the output exposes *this* service account.
+  # It is also the only service account in the env now: the front is a public static bucket with
+  # no runtime identity, so there is no second SA to accidentally swap it with.
   override_module {
     target = module.service_account_api
     outputs = {
@@ -56,20 +67,30 @@ run "each_service_exposes_its_own_runtime_identity" {
     }
   }
 
-  override_module {
-    target = module.service_account_web
-    outputs = {
-      email = "pick-a-book-web@pick-a-book-test.iam.gserviceaccount.com"
-    }
-  }
-
   assert {
     condition     = output.api_service_account_email == "pick-a-book-api@pick-a-book-test.iam.gserviceaccount.com"
     error_message = "api_service_account_email must expose the API's own service account — the one holding the Secret Manager and bucket grants"
   }
+}
+
+run "the_front_is_a_public_bucket_distinct_from_the_private_backups_bucket" {
+  command = plan
+
+  # Cross-module invariant the assembly can get wrong: the front (public) and the backups
+  # (private) must be two different buckets. Sharing a name would either expose the backups or
+  # break the front, and GCS bucket names are globally unique so the collision is real.
+  assert {
+    condition     = output.web_bucket_name == "pick-a-book-test-web"
+    error_message = "The static-site bucket name must derive from project_id — a hardcoded name collides the day a second environment is stood up"
+  }
 
   assert {
-    condition     = output.web_service_account_email == "pick-a-book-web@pick-a-book-test.iam.gserviceaccount.com"
-    error_message = "web_service_account_email must expose the front's own service account — the one with no grants at all. Exposing the API's here would hand the front an identity that can read every secret"
+    condition     = output.web_bucket_name != output.backups_bucket_name
+    error_message = "The public front bucket and the private backups bucket must never be the same bucket — their access policies are opposites"
+  }
+
+  assert {
+    condition     = output.web_url == "https://storage.googleapis.com/pick-a-book-test-web/index.html"
+    error_message = "web_url must be the storage.googleapis.com HTTPS endpoint for the front bucket — the static-site decision serves the front there, with no CDN or load balancer"
   }
 }

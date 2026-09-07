@@ -15,6 +15,11 @@ WORKDIR /app
 # Node 26 no longer ships Corepack, so the `packageManager` field is not enough here.
 RUN npm install -g @yarnpkg/cli-dist@4.18.0
 
+# One COPY per workspace manifest, so `yarn install` lands in its own layer — rebuilt when a
+# manifest changes, not on every source edit. This list must mirror EVERY workspace member (the
+# root package.json globs apps/*, libs/*/*, tools/*): a missing manifest makes Yarn resolve a
+# different graph than the committed yarn.lock, and `--immutable` then fails with "the lockfile
+# would have been modified". Keep it in sync whenever a workspace is added or removed.
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
@@ -22,6 +27,8 @@ COPY libs/recognition/domain/package.json libs/recognition/domain/
 COPY libs/recognition/application/package.json libs/recognition/application/
 COPY libs/recognition/infrastructure/package.json libs/recognition/infrastructure/
 COPY libs/shared/result/package.json libs/shared/result/
+COPY libs/shared/text-match/package.json libs/shared/text-match/
+COPY tools/bench/package.json tools/bench/
 RUN yarn install --immutable
 
 COPY . .

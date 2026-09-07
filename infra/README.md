@@ -87,17 +87,25 @@ configuration supplémentaire côté local.
 ```bash
 cd infra/envs/prod
 terraform init
-terraform plan -var-file=prod.tfvars
+terraform plan
 ```
+
+Pas de `-var-file` : les variables non secrètes vivent dans `prod.auto.tfvars`, que Terraform
+charge **automatiquement** (tout fichier `*.auto.tfvars` ou `terraform.tfvars`). Lancer `plan`/`apply`
+sans ce fichier chargé ferait retomber Terraform sur des **prompts interactifs** pour `project_id`,
+`region` et `neon_org_id` — le nom `*.auto.tfvars` supprime ce piège. Le secret, lui, ne passe pas
+par là : `NEON_API_KEY` est lu dans l'environnement par le provider `neon` (voir *Authentification*),
+donc il **faut** l'avoir exporté, sans quoi `plan`/`apply` échoue sur `authorization key must be
+provided` — tous les providers se chargent, même pour un `apply` qui ne toucherait que du GCP.
 
 **Pas de sandbox GCP** (décision figée de l'issue #12) : `plan` est le seul filet avant un `apply`
 qui touche directement la prod. Toujours relire un `plan` avant d'`apply`er :
 
 ```bash
-terraform apply -var-file=prod.tfvars
+terraform apply
 ```
 
-`prod.tfvars` est commité (non secret : `project_id` et `region`).
+`prod.auto.tfvars` est commité (non secret : `project_id`, `region`, `neon_org_id`).
 
 ## Vérifications
 
@@ -122,8 +130,9 @@ module sans test passerait inaperçu. Elle compte les blocs `run`, pas les fichi
 ## Organisation
 
 ```
-infra/modules/           un module par ressource : project, bucket, secret-manager,
-                          service-account, artifact-registry, cloud-run-service, neon
+infra/modules/           un module par ressource : project, bucket, static-site,
+                          secret-manager, service-account, artifact-registry,
+                          cloud-run-service, neon
 infra/modules/*/tests/   *.tftest.hcl — mock_provider, hermétique
 infra/envs/prod/         seul environnement à ce jour ; assemble les modules
 infra/envs/*/tests/      *.tftest.hcl — tests de câblage entre modules
@@ -139,6 +148,71 @@ une sortie de ressource gérée, pas une valeur saisie à la main, et peut donc 
 
 Seule la config racine (`infra/envs/prod/main.tf`) câble les modules entre eux — un module ne
 dépend jamais directement d'un autre.
+
+## Front `apps/web` — bucket statique public
+
+`module.static_site` (sorties `web_bucket_name`, `web_url`) sert le front comme un site statique
+depuis un **bucket GCS public**, pas un second service Cloud Run. Le bundle Vite construit est du
+fichier statique lisible par tous : un runtime de conteneur n'apporterait rien.
+
+Le front est joignable sur l'endpoint partagé de Google
+`https://storage.googleapis.com/<bucket>/index.html` — **HTTPS gratuit, sans coût fixe**. Pas de
+CDN ni de load balancer : un domaine custom ou Cloud CDN imposerait un load balancer HTTP(S)
+facturé à l'heure même à trafic nul, incompatible avec « budget quasi nul » (ADR 0004). Compromis
+assumés : URL longue, pas de cache edge, et **pas de réécriture 404 → index.html côté serveur** sur
+cet endpoint (le bloc `website{}` ne vaut que pour l'endpoint website HTTP) — `apps/web` porte donc
+son routing SPA (hash routing, ou une entrée toujours `index.html`). Le passage à un domaine custom
+plus tard est un incrément localisé à ce module.
+
+Déploiement du front (hors Terraform, comme l'image de l'API) : construire le bundle puis le
+synchroniser dans le bucket avec les ADC de l'opérateur, sans service account dédié.
+
+```bash
+yarn deploy:web                                        # nx build web + gsutil rsync vers le bucket
+terraform -chdir=infra/envs/prod output -raw web_url   # URL publique à ouvrir
+```
+
+`deploy:web` lit le nom du bucket depuis `terraform output` — rien de codé en dur, portable à l'env
+d'un tiers.
+
+## Déploiement de l'API — Cloud Build
+
+`yarn deploy:api` construit l'image `apps/api` **côté serveur avec Cloud Build** (pas de démon
+Docker local requis) via [`cloudbuild.yaml`](../cloudbuild.yaml) — le Dockerfile étant à un chemin
+non standard (`docker/api.Dockerfile`), `gcloud builds submit --tag` ne peut pas le cibler, d'où ce
+fichier de config. Puis `gcloud run deploy` remplace l'image du service ; le module `cloud-run-service`
+fait `ignore_changes` sur l'image, donc un futur `terraform apply` ne réécrase pas le déploiement.
+
+```bash
+yarn deploy:api
+terraform -chdir=infra/envs/prod output -raw api_url   # URL du service
+```
+
+Comme `deploy:web`, le script lit projet/région/repo depuis `terraform output`, rien n'est codé en
+dur.
+
+Prérequis Cloud Build, une seule fois sur un projet neuf :
+
+```bash
+gcloud services enable cloudbuild.googleapis.com   # pas encore dans les APIs du module project
+
+# Les projets GCP récents ne créent plus le service account Cloud Build « legacy » : les builds
+# tournent sous le SA Compute par défaut, qui doit porter le rôle builder, sinon `gcloud builds
+# submit` échoue en PERMISSION_DENIED même pour un owner.
+PROJECT_NUMBER=$(gcloud projects describe pick-a-book-505922 --format='value(projectNumber)')
+gcloud projects add-iam-policy-binding pick-a-book-505922 \
+  --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+  --role="roles/cloudbuild.builds.builder"
+```
+
+`cloudbuild.yaml` porte `logging: CLOUD_LOGGING_ONLY` pour cette raison : sous le SA Compute, le
+build ne peut pas écrire dans le bucket de logs par défaut, il envoie ses logs à Cloud Logging.
+
+### Alternative sans Cloud Build — `yarn deploy:api:local`
+
+Build de l'image **en local** (Docker Desktop lancé), push vers Artifact Registry, puis
+`gcloud run deploy`. Aucune permission Cloud Build en jeu — utile si le SA build n'est pas encore
+en place, ou pour builder hors ligne. Même dérivation `terraform output`, rien codé en dur.
 
 ## Bucket des photos de référence (bench reconnaissance, issue #10)
 

@@ -23,13 +23,14 @@ run "enables_the_apis_this_project_actually_needs" {
       for api in [
         "run.googleapis.com",
         "artifactregistry.googleapis.com",
+        "cloudbuild.googleapis.com",
         "secretmanager.googleapis.com",
         "storage.googleapis.com",
         "iam.googleapis.com",
         "cloudresourcemanager.googleapis.com",
       ] : contains([for s in google_project_service.this : s.service], api)
     ])
-    error_message = "Default API list must cover Cloud Run, Artifact Registry, Secret Manager, GCS, IAM and Resource Manager"
+    error_message = "Default API list must cover Cloud Run, Artifact Registry, Cloud Build, Secret Manager, GCS, IAM and Resource Manager"
   }
 }
 

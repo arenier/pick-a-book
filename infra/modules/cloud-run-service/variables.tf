@@ -119,3 +119,9 @@ variable "ingress" {
   type        = string
   default     = "INGRESS_TRAFFIC_ALL"
 }
+
+variable "deletion_protection" {
+  description = "Guards the service against destruction. Defaults to true, matching the provider: a service removed from configuration cannot be destroyed until this is set to false and applied first. That two-step teardown is deliberate — a config edit alone never deletes a live service — so to retire a service, flip this to false in one apply, then remove the module in the next."
+  type        = bool
+  default     = true
+}
