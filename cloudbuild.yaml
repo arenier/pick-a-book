@@ -24,3 +24,10 @@ steps:
 
 images:
   - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/api:latest
+
+# Recent GCP projects no longer create the legacy Cloud Build service account, so builds run
+# under the Compute Engine default SA — which cannot write to the default GCS logs bucket.
+# CLOUD_LOGGING_ONLY sends build logs to Cloud Logging instead, which that SA can do once it
+# holds roles/cloudbuild.builds.builder (see infra/README).
+options:
+  logging: CLOUD_LOGGING_ONLY

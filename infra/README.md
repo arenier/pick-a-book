@@ -188,9 +188,31 @@ yarn deploy:api
 terraform -chdir=infra/envs/prod output -raw api_url   # URL du service
 ```
 
-Prérequis une seule fois : l'API Cloud Build activée (`gcloud services enable cloudbuild.googleapis.com`)
-— elle n'est pas dans les APIs du module `project` aujourd'hui. Comme `deploy:web`, le script lit
-projet/région/repo depuis `terraform output`, rien n'est codé en dur.
+Comme `deploy:web`, le script lit projet/région/repo depuis `terraform output`, rien n'est codé en
+dur.
+
+Prérequis Cloud Build, une seule fois sur un projet neuf :
+
+```bash
+gcloud services enable cloudbuild.googleapis.com   # pas encore dans les APIs du module project
+
+# Les projets GCP récents ne créent plus le service account Cloud Build « legacy » : les builds
+# tournent sous le SA Compute par défaut, qui doit porter le rôle builder, sinon `gcloud builds
+# submit` échoue en PERMISSION_DENIED même pour un owner.
+PROJECT_NUMBER=$(gcloud projects describe pick-a-book-505922 --format='value(projectNumber)')
+gcloud projects add-iam-policy-binding pick-a-book-505922 \
+  --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+  --role="roles/cloudbuild.builds.builder"
+```
+
+`cloudbuild.yaml` porte `logging: CLOUD_LOGGING_ONLY` pour cette raison : sous le SA Compute, le
+build ne peut pas écrire dans le bucket de logs par défaut, il envoie ses logs à Cloud Logging.
+
+### Alternative sans Cloud Build — `yarn deploy:api:local`
+
+Build de l'image **en local** (Docker Desktop lancé), push vers Artifact Registry, puis
+`gcloud run deploy`. Aucune permission Cloud Build en jeu — utile si le SA build n'est pas encore
+en place, ou pour builder hors ligne. Même dérivation `terraform output`, rien codé en dur.
 
 ## Bucket des photos de référence (bench reconnaissance, issue #10)
 
