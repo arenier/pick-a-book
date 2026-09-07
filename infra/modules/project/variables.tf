@@ -4,11 +4,12 @@ variable "project_id" {
 }
 
 variable "apis" {
-  description = "APIs to enable on the project. Defaults cover Cloud Run, Artifact Registry, Secret Manager, GCS and IAM — the services the rest of infra/ provisions resources in."
+  description = "APIs to enable on the project. Defaults cover Cloud Run, Artifact Registry, Cloud Build, Secret Manager, GCS, IAM and Resource Manager — the services the rest of infra/ provisions in, plus Cloud Build for the reproducible image build (yarn deploy:api)."
   type        = list(string)
   default = [
     "run.googleapis.com",
     "artifactregistry.googleapis.com",
+    "cloudbuild.googleapis.com",
     "secretmanager.googleapis.com",
     "storage.googleapis.com",
     "iam.googleapis.com",
