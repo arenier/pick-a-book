@@ -1,0 +1,26 @@
+# Server-side build of the apps/api image, so deploying needs no local Docker daemon
+# (issue #12, reproducible deploy path). Driven by `yarn deploy:api`.
+#
+# The Dockerfile lives at a non-default path (docker/api.Dockerfile), which `gcloud builds
+# submit --tag` cannot target — hence this explicit config. Build context is the repo root,
+# exactly as the Dockerfile header documents.
+#
+# Portable to any deployer's own project: $PROJECT_ID is injected by Cloud Build, and the
+# region/repo are substitutions defaulting to this project's values (overridable with
+# --substitutions). No project id is hardcoded.
+substitutions:
+  _REGION: europe-west1
+  _REPO: pick-a-book
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - docker/api.Dockerfile
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/api:latest
+      - .
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/api:latest

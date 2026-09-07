@@ -168,10 +168,29 @@ Déploiement du front (hors Terraform, comme l'image de l'API) : construire le b
 synchroniser dans le bucket avec les ADC de l'opérateur, sans service account dédié.
 
 ```bash
-yarn nx build web
-gsutil -m rsync -d -r apps/web/dist gs://$(terraform -chdir=infra/envs/prod output -raw web_bucket_name)/
+yarn deploy:web                                        # nx build web + gsutil rsync vers le bucket
 terraform -chdir=infra/envs/prod output -raw web_url   # URL publique à ouvrir
 ```
+
+`deploy:web` lit le nom du bucket depuis `terraform output` — rien de codé en dur, portable à l'env
+d'un tiers.
+
+## Déploiement de l'API — Cloud Build
+
+`yarn deploy:api` construit l'image `apps/api` **côté serveur avec Cloud Build** (pas de démon
+Docker local requis) via [`cloudbuild.yaml`](../cloudbuild.yaml) — le Dockerfile étant à un chemin
+non standard (`docker/api.Dockerfile`), `gcloud builds submit --tag` ne peut pas le cibler, d'où ce
+fichier de config. Puis `gcloud run deploy` remplace l'image du service ; le module `cloud-run-service`
+fait `ignore_changes` sur l'image, donc un futur `terraform apply` ne réécrase pas le déploiement.
+
+```bash
+yarn deploy:api
+terraform -chdir=infra/envs/prod output -raw api_url   # URL du service
+```
+
+Prérequis une seule fois : l'API Cloud Build activée (`gcloud services enable cloudbuild.googleapis.com`)
+— elle n'est pas dans les APIs du module `project` aujourd'hui. Comme `deploy:web`, le script lit
+projet/région/repo depuis `terraform output`, rien n'est codé en dur.
 
 ## Bucket des photos de référence (bench reconnaissance, issue #10)
 

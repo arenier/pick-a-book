@@ -18,6 +18,11 @@ output "artifact_registry_url" {
   value       = module.artifact_registry.repository_url
 }
 
+output "region" {
+  description = "The single region every resource runs in. Exposed so deploy tooling (yarn deploy:*) reads it from state instead of hardcoding it — one source of truth, portable to any deployer's own env."
+  value       = var.region
+}
+
 output "backups_bucket_name" {
   description = "Bucket the pg_dump job (out of scope here, lives in `infrastructure`) writes to."
   value       = module.bucket.bucket_name

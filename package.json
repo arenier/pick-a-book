@@ -18,7 +18,9 @@
     "format:check": "oxfmt --check",
     "api": "nx serve api",
     "web": "nx serve web",
-    "bench": "nx build bench && node tools/bench/dist/main.js"
+    "bench": "nx build bench && node tools/bench/dist/main.js",
+    "deploy:web": "nx build web && gsutil -m rsync -d -r apps/web/dist \"gs://$(terraform -chdir=infra/envs/prod output -raw web_bucket_name)/\"",
+    "deploy:api": "gcloud builds submit --config=cloudbuild.yaml . && gcloud run deploy pick-a-book-api --image=\"$(terraform -chdir=infra/envs/prod output -raw artifact_registry_url)/api:latest\" --region=\"$(terraform -chdir=infra/envs/prod output -raw region)\""
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",

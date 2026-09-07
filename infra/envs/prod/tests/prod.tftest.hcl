@@ -42,6 +42,17 @@ run "artifact_registry_is_in_the_configured_project_and_region" {
   }
 }
 
+run "region_output_reflects_the_configured_region" {
+  command = plan
+
+  # Deploy tooling (yarn deploy:api) reads `terraform output -raw region` for `gcloud run
+  # deploy --region`. A wrong value here targets the wrong region at deploy time, far from here.
+  assert {
+    condition     = output.region == "europe-west1"
+    error_message = "The region output must echo the configured region — deploy tooling relies on it as the single source of truth"
+  }
+}
+
 run "the_api_exposes_its_runtime_identity" {
   command = plan
 
