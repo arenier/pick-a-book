@@ -27,6 +27,9 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
 - **Lint et format** — **oxlint** (strict) + **oxfmt**, écosystème Oxc. ESLint conservé pour les
   seules frontières de modules Nx · [0008](docs/adr/0008-lint-et-format-oxlint-oxfmt.md)
 - **Enrichissement bibliographique** — ADR à écrire, contraint par 0005
+- **Découpage en bounded contexts** — `recognition` (reconnaissance depuis une photo) et
+  `bibliography` (réconciliation + enrichissement, un seul contexte pour l'instant) ·
+  [0010](docs/adr/0010-decoupage-bounded-contexts.md)
 
 ## Outillage
 
@@ -151,8 +154,10 @@ infra/                           # infrastructure GCP en Terraform — voir infr
 Le glob des workspaces Yarn couvre `apps/*`, `libs/*/*` et `tools/*` — un projet Nx hors de ces
 trois emplacements n'est pas lié et perd ses tags (donc les frontières de modules).
 
-`recognition` est le seul bounded context fondé aujourd'hui (ADR 0005). Les autres attendent leur
-ADR de découpage — ne pas en créer au jugé.
+`recognition` est le seul bounded context fondé en code aujourd'hui (ADR 0005). `bibliography` a sa
+frontière actée ([0010](docs/adr/0010-decoupage-bounded-contexts.md)) mais pas encore de lib : elle
+arrive avec l'implémentation de l'ADR d'enrichissement bibliographique — ne pas en créer au jugé
+avant.
 
 Règles de dépendance, appliquées par les `tags` Nx et `@nx/enforce-module-boundaries` dans
 `eslint.config.mjs` — sans cette configuration, l'architecture n'est qu'un document :
@@ -174,14 +179,19 @@ Les tags portent trois dimensions indépendantes, à poser sur **chaque** nouvea
 | Dimension | Valeurs |
 |---|---|
 | `type:` | `domain`, `application`, `infrastructure`, `shared`, `app` |
-| `context:` | `recognition`, `none` (libs partagées) |
+| `context:` | `recognition`, `bibliography`, `none` (libs partagées) |
 | `scope:` | `api`, `web`, `shared` |
 
 Un projet sans tag échappe aux règles : c'est la façon la plus simple de percer la frontière sans
 s'en apercevoir. Pour vérifier que le garde-fou est encore opérant, ajouter un import interdit dans
 `libs/recognition/domain` et constater que `yarn lint` échoue.
 
-Le découpage en bounded contexts n'est pas arrêté — futur ADR.
+Le découpage en bounded contexts est acté par
+[0010](docs/adr/0010-decoupage-bounded-contexts.md) : `recognition` (fondé, ADR 0005) et
+`bibliography` (réconciliation + enrichissement — un seul contexte tant que l'ADR d'enrichissement
+bibliographique, à écrire, ne révèle pas un second langage métier). Pas de contexte dédié à la
+sélection/curation : c'est une slice front qui consomme, via l'orchestrateur, les DTO de frontière
+de ces deux contextes.
 
 ## Conventions
 
