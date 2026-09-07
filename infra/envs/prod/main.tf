@@ -81,10 +81,10 @@ module "service_account_api" {
   bucket_name  = module.bucket.bucket_name
 }
 
-# apps/api. env is intentionally minimal: the application code has not yet caught up to the
-# "shelf photos are ephemeral, not stored" decision — .env.example and docker-compose.yml
-# still describe the earlier SQLite-on-bucket shape at the time of this PR. Wiring more than
-# NODE_ENV here would mean inventing a contract the code doesn't have yet.
+# apps/api. NODE_ENV is the only plain env var: the rest of the boot contract is DATABASE_URL
+# and the VLM keys, all injected as secrets below. There is no STORAGE_BUCKET — the app
+# dropped the leftover object-storage config once it caught up to the "shelf photos are
+# ephemeral, not stored" decision (ADR 0006), so nothing else needs wiring here.
 module "cloud_run_api" {
   source = "../../modules/cloud-run-service"
 

@@ -4,7 +4,6 @@ import { InvalidEnvironment, loadEnvironment } from './environment';
 
 const complete = {
   DATABASE_URL: 'postgresql://user:secret@db.example.com/neondb?sslmode=require',
-  STORAGE_BUCKET: 'pick-a-book-photos',
 } satisfies NodeJS.ProcessEnv;
 
 /** Loads a complete environment, with `overrides` applied on top. */
@@ -27,11 +26,14 @@ describe('loadEnvironment', () => {
   });
 
   it('fails when a required variable is missing', () => {
-    expect(() => loadEnvironment({ STORAGE_BUCKET: 'photos' })).toThrow(InvalidEnvironment);
+    expect(() => loadEnvironment({})).toThrow(InvalidEnvironment);
+    expect(() => loadEnvironment({})).toThrow(/DATABASE_URL/u);
   });
 
-  it('lists every missing variable at once', () => {
-    expect(() => loadEnvironment({})).toThrow(/DATABASE_URL[\s\S]*STORAGE_BUCKET/u);
+  it('lists every problem at once', () => {
+    // DATABASE_URL missing and NODE_ENV invalid — a single error names both, so one boot
+    // surfaces every misconfiguration rather than one per restart.
+    expect(() => loadEnvironment({ NODE_ENV: 'staging' })).toThrow(/DATABASE_URL[\s\S]*NODE_ENV/u);
   });
 
   it('treats an empty variable as absent', () => {

@@ -20,13 +20,6 @@ export interface Environment {
    * The domain knows nothing about it: only `infrastructure` uses it.
    */
   readonly databaseUrl: string;
-  /** Bucket holding the shelf photos (ADR 0004). */
-  readonly storageBucket: string;
-  /**
-   * Endpoint of an object storage emulator, for local development (`fake-gcs-server` from
-   * the docker-compose stack). Absent in production.
-   */
-  readonly storageEmulatorHost: string | undefined;
   /** Which VLM answers a scan, and the key it needs (ADR 0005). */
   readonly shelfScanner: ShelfScannerConfiguration;
 }
@@ -92,7 +85,6 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
         'postgresql:// URL',
     );
   }
-  const storageBucket = required(source, 'STORAGE_BUCKET', problems);
 
   let nodeEnv: NodeEnvironment = 'development';
   const rawNodeEnv = source.NODE_ENV ?? 'development';
@@ -118,8 +110,6 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
     nodeEnv,
     port,
     databaseUrl,
-    storageBucket,
-    storageEmulatorHost: optional(source.STORAGE_EMULATOR_HOST),
     shelfScanner,
   };
 }
@@ -167,10 +157,6 @@ function required(source: NodeJS.ProcessEnv, name: string, problems: string[]): 
 
 function isPresent(value: string | undefined): value is string {
   return value !== undefined && value.trim().length > 0;
-}
-
-function optional(value: string | undefined): string | undefined {
-  return isPresent(value) ? value : undefined;
 }
 
 /**
