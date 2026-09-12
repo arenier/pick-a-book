@@ -150,6 +150,8 @@ docker/                          # Dockerfile des deux apps — contexte de buil
 docs/adr/
 docs/decisions/                  # notes de décision de niveau inférieur (pas des ADR)
 infra/                           # infrastructure GCP en Terraform — voir infra/README.md
+.specify/                        # Spec Kit : constitution, templates, scripts (voir plus bas)
+specs/                           # une spec par feature, gardée durablement (Spec Kit)
 ```
 
 Le glob des workspaces Yarn couvre `apps/*`, `libs/*/*` et `tools/*` — un projet Nx hors de ces
@@ -223,6 +225,38 @@ d'`apps/api`, via des DTO de frontière.
   titre devient le sujet du commit sur `main` — un titre français y laisse une trace définitive.
   Le **corps** de la PR, lui, est de la doc : en français. La règle vaut même quand le skill
   `create-pr` n'est pas chargé, d'où sa présence ici et pas seulement dans le skill.
+
+## Spec-driven development (GitHub Spec Kit)
+
+Toute feature non triviale se spécifie avant de se coder, avec [GitHub Spec
+Kit](https://github.com/github/spec-kit) : `specs/NNN-nom-feature/spec.md` est la source de vérité
+du comportement et du scope de la feature, gardée durablement dans le repo. Toute évolution
+ultérieure de cette feature **repasse par la spec avant le code**, jamais l'inverse.
+
+```
+/speckit-constitution   # établit/amende les principes projet (.specify/memory/constitution.md)
+/speckit-specify        # crée ou met à jour spec.md à partir d'une description en langage naturel
+/speckit-clarify        # (optionnel) désambiguïse spec.md avant /speckit-plan
+/speckit-plan           # produit plan.md, respecte la constitution et les ADR
+/speckit-tasks          # découpe plan.md en tasks.md, ordonnées par dépendance
+/speckit-analyze        # (optionnel) vérifie la cohérence spec/plan/tasks avant d'implémenter
+/speckit-implement      # exécute tasks.md
+/speckit-taskstoissues  # (optionnel) convertit tasks.md en issues GitHub
+```
+
+Articulation avec l'existant, actée dans
+[`.specify/memory/constitution.md`](.specify/memory/constitution.md) :
+
+- **ADR** (`docs/adr/`) tranche une décision d'architecture transverse, une fois, rarement révisée.
+- **Spec** décrit le comportement d'une feature précise ; une spec qui bute sur une décision
+  transverse propose un ADR, elle ne tranche pas à sa place.
+- **Issue GitHub** reste le point d'entrée de discussion et de suivi ; elle référence la spec sans
+  la dupliquer.
+
+La constitution (`.specify/memory/constitution.md`) reflète les principes de ce fichier — TDD,
+architecture hexagonale et bounded contexts étanches, pas de `as`, outillage unique, français en
+doc/anglais en code. Elle se met à jour avec `/speckit-constitution`, jamais en divergeant à la
+main de ce `CLAUDE.md`.
 
 ## Workflow Git
 
