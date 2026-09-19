@@ -11,6 +11,7 @@
     }
   },
   "enabledPlugins": {
-    "adri-plugin@adri-skills": true
+    "adri-plugin@adri-skills": true,
+    "documentation-plugin@adri-skills": true
   }
 }
