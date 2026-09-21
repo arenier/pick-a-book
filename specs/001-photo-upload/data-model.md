@@ -1,8 +1,10 @@
 # Data Model: Upload d'une photo d'étagère
 
-Cette feature ne touche à aucune persistance (le scan reste éphémère, cf. `ScanController` et les
-Assumptions de `spec.md`). Les « entités » ci-dessous sont des formes de données côté client,
-locales à `apps/web/src/features/photo-upload/`, valables pour la durée d'un envoi.
+Les entités **SelectedPhoto**, **UploadState** et **DetectedBook** ci-dessous sont des formes de
+données côté client, locales à `apps/web/src/features/photo-upload/`, valables pour la durée d'un
+envoi — le frontend lui-même ne persiste rien. **ShelfScanRecord** (ajoutée le 21/09/2026, US3) est
+en revanche durable côté backend : c'est la trace conservée d'une analyse, dans `recognition`
+(`libs/recognition/*`), indépendante de la durée de vie d'un onglet.
 
 ## SelectedPhoto
 
@@ -26,14 +28,17 @@ L'état affiché à l'écran — une union discriminée, jamais plusieurs branch
 
 | État | Quand | Contenu |
 |---|---|---|
-| `idle` | Au chargement, ou après « recommencer » (US3) | aucun |
+| `idle` | Au chargement, ou après « recommencer » (US4) | aucun |
 | `uploading` | Entre l'envoi et la réponse du serveur | aucun (empêche un second envoi concurrent, FR-007) |
 | `success` | Réponse 200 reçue, avec ou sans livre détecté | `books: DetectedBook[]` (peut être vide → « aucun livre détecté », scénario US1.3) |
 | `error` | Validation locale refusée, ou réponse HTTP non 200, ou échec réseau | `message: string` (texte prêt à afficher, distinct pour 400 côté client, 400/502 côté serveur, et échec réseau — FR-006) |
 
 Transitions valides : `idle → uploading → (success | error)`, puis `(success | error) → idle` sur
-action « recommencer » (US3, FR-008). Aucune transition ne part de `uploading` vers `uploading`
-(FR-007).
+action « recommencer » (US4, FR-008). Aucune transition ne part de `uploading` vers `uploading`
+(FR-007). Cet état est indépendant de `ShelfScanRecord` ci-dessous : la persistance côté backend
+n'est jamais reflétée dans l'UI (US3 est invisible pour l'utilisateur), et un état `error` (panne du
+service de reconnaissance) correspond côté backend à un `ShelfScanRecord` de statut `failed`, pas à
+une absence d'enregistrement.
 
 ## DetectedBook
 
@@ -47,3 +52,26 @@ du contrat de réponse, décrite formellement dans `contracts/scan-api.md`.
 | `author` | `string \| undefined` | Absent quand la tranche ne portait pas d'auteur lisible (ADR 0005, amendement du 2026-09-04) — jamais une chaîne vide affichée telle quelle. |
 | `title` | `string` | Toujours présent. |
 | `confidence` | `number` | Reçu mais non affiché dans cette feature (spec : « titre et, quand il est connu, leur auteur », pas de score) ; conservé dans le type pour fidélité au contrat, ignoré par l'UI. |
+
+## ShelfScanRecord *(backend, `libs/recognition/*`, ajouté le 21/09/2026 — US3)*
+
+L'enregistrement durable d'une tentative d'analyse aboutie (FR-011, FR-012). Table Postgres
+`shelf_scans`, détail complet et rationale du schéma dans `research.md` §8.
+
+| Champ | Type | Règle |
+|---|---|---|
+| `id` | `uuid` | Généré à la création (`crypto.randomUUID()`), sert aussi de clé de l'objet dans le bucket (research.md §9) — une photo et son enregistrement partagent un seul identifiant. |
+| `photoBucketKey` | `string` | `shelf-photos/{id}`. |
+| `photoMediaType` | `ShelfPhotoMediaType` | Le type déjà validé par `ShelfPhoto` (`image/jpeg` \| `image/png` \| `image/webp` \| `image/heic`). |
+| `outcome` | `ShelfScanOutcome` | Union discriminée : `{ status: 'completed'; books: DetectedBook[] }` \| `{ status: 'failed' }`. Jamais les deux à la fois (FR-012). |
+| `createdAt` | `Date` | Horodatage de l'analyse. |
+
+**Règles** :
+- Un `ShelfScanRecord` n'existe QUE si le service de reconnaissance a répondu — succès ou échec
+  (FR-011). Un fichier refusé avant analyse (US2, FR-009) ne produit aucun `ShelfScanRecord`
+  (FR-013) : la validation de `ShelfPhoto` échoue avant que le port de stockage soit appelé.
+- `outcome.books` peut être un tableau vide (`status: 'completed'`, aucun livre détecté) —
+  distinct de `status: 'failed'` (le service n'a pas répondu du tout). Les deux sont des
+  `ShelfScanRecord` valides, aucun des deux n'est une erreur de persistance.
+- Aucune politique de rétention ni de purge (Assumptions de `spec.md`) : un `ShelfScanRecord`,
+  une fois créé, n'est ni modifié ni supprimé par cette feature.

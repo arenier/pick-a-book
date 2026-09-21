@@ -98,3 +98,85 @@ une seule interaction (changement de fichier) que `fireEvent` couvre déjà irai
 
 **Alternatives considered**: `@testing-library/user-event` — rejeté (dépendance non nécessaire pour
 ce besoin précis).
+
+---
+
+Sections 7 à 9 ajoutées le 21/09/2026, à la demande du porteur du projet d'étendre le scope à la
+persistance (US3 de `spec.md`). Décisions actées avec lui : conserver aussi en cas d'échec du
+service de reconnaissance (502), aucune politique de rétention pour l'instant.
+
+## 7. Où et comment orchestrer la persistance côté backend
+
+**Decision**: étendre `ScanShelfUseCase` (`libs/recognition/application`) avec deux nouveaux ports
+domain — `ShelfPhotoStoragePort.store(photo): Promise<StoredPhoto>` et
+`ShelfScanHistoryPort.record(photo, outcome): Promise<void>` où `outcome` est
+`{ status: 'completed'; books } | { status: 'failed' }`. Séquence : valider (`ShelfPhoto.of`,
+inchangé) → stocker la photo → appeler `ShelfScannerPort.scan` → enregistrer l'issue (succès avec
+livres, y compris liste vide, ou échec) → renvoyer le DTO comme avant. Le stockage de la photo a
+lieu **avant** l'appel au scanner, pas après : c'est ce qui permet de la conserver même quand le
+scanner échoue (US3, scénario 2).
+
+**Rationale**: la persistance ne franchit aucune frontière de bounded context — elle porte
+uniquement sur des concepts déjà propres à `recognition` (`ShelfPhoto`, `DetectedBook`). Un
+orchestrateur `apps/api` (ADR 0003) n'a de raison d'être que pour croiser plusieurs contextes ; en
+ajouter un ici pour une séquence interne à un seul contexte serait une indirection sans objet.
+Regrouper « scanner » et « archiver » dans le même use case garde au composition root
+(`recognition.module.ts`) une seule chose à construire et à appeler, plutôt que deux use cases dont
+il devrait connaître l'ordre et la gestion d'erreur.
+
+**Alternatives considered**: un second use case `ArchiveShelfScanUseCase` appelé par
+`ScanController` après `ScanShelfUseCase` — rejeté : déplace vers la composition root (censée
+ignorer la logique métier, ADR 0002) la décision de séquencement et la nécessité d'archiver même
+sur échec, qui est une règle du contexte `recognition`, pas du contrôleur HTTP. Un événement de
+domaine consommé ailleurs — rejeté d'emblée par l'ADR 0003 (pas d'event bus).
+
+## 8. Forme de l'enregistrement conservé
+
+**Decision**: une seule table Postgres, `shelf_scans` :
+
+| Colonne | Type | Note |
+|---|---|---|
+| `id` | `uuid`, clé primaire | Généré par l'application (`crypto.randomUUID()`), sert aussi de nom d'objet dans le bucket — un seul identifiant pour la paire photo/enregistrement. |
+| `photo_bucket_key` | `text` | Clé de l'objet dans le bucket (research.md §9). |
+| `photo_media_type` | `text` | Un des quatre types acceptés par `ShelfPhoto`. |
+| `status` | `text` (`completed` \| `failed`) | Reflète `ShelfScanOutcome`. |
+| `detected_books` | `jsonb`, nullable | Peuplé seulement si `status = completed` ; `null` si `failed`. Tableau de `{ author?, title, confidence }`, la forme même de `DetectedBookDto` — dénormalisé, pas une table par livre. |
+| `created_at` | `timestamptz`, défaut `now()` | Horodatage de l'analyse (FR-011, US3 scénario 1). |
+
+**Rationale**: les livres détectés ne sont pas encore des entités stables — ils n'ont pas traversé
+la réconciliation (`bibliography`, pas encore fondé) qui leur donnerait une identité propre. Les
+dénormaliser en `jsonb` évite de construire un schéma relationnel (table `books`, clé étrangère)
+pour une donnée qui sera de toute façon retraitée par un contexte qui n'existe pas encore — cette
+normalisation-là, si elle a lieu, sera le travail de `bibliography`, pas de cette feature
+(convention « pas d'abstraction prématurée »). `status` en union fermée plutôt que
+`detected_books` seul avec `null` implicite comme signal d'échec : un `null` ambigu (échec ? liste
+non encore peuplée ?) est exactement ce que la Constitution (III, « typage prouvé ») demande
+d'éviter.
+
+**Alternatives considered**: table `books` séparée avec clé étrangère vers `shelf_scans` — rejetée
+(prématuré, aucun besoin de requêter les livres indépendamment d'un scan pour l'instant) ; un champ
+`error_message` sur échec — rejeté, `ShelfScanFailed` ne garantit pas un message stable ou utile à
+conserver, et US3 ne demande qu'un statut, pas un diagnostic.
+
+## 9. Stockage du fichier et émulation locale
+
+**Decision**: `@google-cloud/storage` (SDK officiel) derrière `ShelfPhotoStoragePort`, clé d'objet
+`shelf-photos/{id}` (le même `id` que la ligne `shelf_scans`, sans extension — le type MIME est
+posé comme métadonnée de l'objet, pas déduit d'une extension). En local et en CI,
+`fsouza/fake-gcs-server` ajouté comme service `bucket` dans `docker-compose.yml` — c'est
+l'émulateur que `CLAUDE.md` mentionne déjà dans la description de la stack (`docker compose up
+--build # API + front + Postgres + émulateur de bucket`), pas encore présent dans le fichier
+réel : cette feature comble cet écart plutôt que d'en introduire un nouveau. Le client GCS pointe
+vers l'émulateur via une variable d'environnement optionnelle (`STORAGE_EMULATOR_HOST`, absente en
+production — le SDK s'adresse alors à la vraie API GCS).
+
+**Rationale**: `@google-cloud/storage` est le SDK officiel du fournisseur déjà choisi (ADR 0004),
+pas un nouvel arbitrage. `fake-gcs-server` est le même choix de catégorie que `db` dans le
+`docker-compose.yml` existant (« développer contre le même moteur que la prod » — ici, la même API
+S3-like GCS plutôt qu'un mock en mémoire) et évite un aller-retour réseau vers un vrai bucket
+pendant les tests d'adapter, qui doivent rester exécutables sans clé ni compte GCP (cohérent avec
+`SHELF_SCANNER_PROVIDER=stub` qui permet déjà de développer sans clé de fournisseur VLM).
+
+**Alternatives considered**: mock du SDK GCS en mémoire — rejeté, contredit la convention « les
+adapters se testent contre la vraie techno » ; un vrai bucket GCP même en dev/CI — rejeté (clé de
+service à distribuer, coût et latence réseau pour une simple boucle de test).
