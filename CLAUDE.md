@@ -244,6 +244,9 @@ ultérieure de cette feature **repasse par la spec avant le code**, jamais l'inv
 /speckit-taskstoissues  # (optionnel) convertit tasks.md en issues GitHub
 ```
 
+Mode d'emploi détaillé — ordre d'enchaînement, entrée/sortie de chaque commande, comment reprendre
+une feature déjà spécifiée — dans [`docs/spec-driven-development.md`](docs/spec-driven-development.md).
+
 Articulation avec l'existant, actée dans
 [`.specify/memory/constitution.md`](.specify/memory/constitution.md) :
 
