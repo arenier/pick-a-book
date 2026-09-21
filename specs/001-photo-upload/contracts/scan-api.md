@@ -114,3 +114,10 @@ son propre message (Edge case de `spec.md` : coupure réseau) — que la coupure
 - Le champ `confidence` n'est pas affiché (voir `data-model.md#DetectedBook`), seulement transporté.
 - Aucune UX de reprise manuelle sur un `ShelfScanRecord` resté `pending` ou passé `failed` — cette
   feature ne relance jamais l'étape 2 de son propre chef (research.md §7, alternative rejetée).
+
+## Ce qu'aucune réponse n'expose jamais
+
+- `originalFilename`, `ownerId`, `photoBucketKey` et `photoSizeBytes`
+  (`data-model.md#ShelfScanRecord`) restent des colonnes internes à `shelf_scans` — aucun des deux
+  endpoints ci-dessus ne les renvoie dans son corps de réponse (FR-015). Le seul identifiant que le
+  frontend reçoit et manipule est `id`.

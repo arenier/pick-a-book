@@ -9,7 +9,9 @@ yarn install
 
 Aucune clé de fournisseur VLM n'est nécessaire : `SHELF_SCANNER_PROVIDER` vaut `stub` par défaut
 (`.env.example`), et le stub renvoie des livres fixes sans appel externe — suffisant pour valider
-le flux d'upload de bout en bout.
+le flux d'upload de bout en bout. `OWNER_ID` vaut `default` par défaut (research.md §10) —
+suffisant tant qu'il n'y a qu'un seul utilisateur ; le changer dans `.env` avant un envoi fait
+apparaître le sous-dossier correspondant dans le bucket émulé.
 
 ## Lancer les deux services
 
@@ -35,10 +37,13 @@ research.md §9.)
 5. **Attendu côté persistance (US3, invisible à l'écran)** : la ligne créée dans `shelf_scans` par
    le premier appel (`status = 'pending'`) est passée à `status = 'completed'` par le second,
    `detected_books` peuplé des mêmes livres ; l'objet correspondant existe dans le bucket émulé,
-   sous la clé `shelf-photos/{id}` où `id` est la valeur de la colonne `id` de cette ligne.
+   sous la clé `{owner_id}/shelf-photos/{id}` (`owner_id` = `OWNER_ID`, défaut `default`) où `id`
+   est la valeur de la colonne `id` de cette ligne — jamais le nom du fichier envoyé (research.md
+   §10, FR-015). `photo_size_bytes` reflète le poids réel du fichier ; `original_filename` porte le
+   nom tel qu'envoyé par le navigateur, uniquement pour référence.
    ```bash
    docker compose exec db psql -U pick_a_book -d pick_a_book \
-     -c "select id, status, photo_bucket_key, created_at from shelf_scans order by created_at desc limit 1;"
+     -c "select id, owner_id, status, photo_bucket_key, photo_media_type, photo_size_bytes, original_filename, created_at from shelf_scans order by created_at desc limit 1;"
    ```
 6. **Rejeu manuel des deux étapes (optionnel, pour voir la séparation)** :
    ```bash

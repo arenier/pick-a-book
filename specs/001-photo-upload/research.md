@@ -138,10 +138,12 @@ Le frontend enchaîne les deux appels lui-même (research.md §3), en une seule 
 l'utilisateur (US1 inchangée) : le découpage est un détail de transport, pas une nouvelle étape
 visible à l'écran.
 
-**Nouveau port** : `ShelfPhotoStoragePort` gagne `retrieve(bucketKey, mediaType): Promise<ShelfPhoto>`
-en plus de `store`. `ShelfScanHistoryPort` devient `ShelfScanRepositoryPort` (lecture + écriture,
-ce n'est plus un simple journal d'ajout) : `createPending`, `get`, `markCompleted`, `markFailed`
-(data-model.md#ShelfScanRecord).
+**Nouveau port** : `ShelfPhotoStoragePort` expose `store(photo, key): Promise<void>` et
+`retrieve(key, mediaType): Promise<ShelfPhoto>` — `store` reçoit la clé plutôt que d'en générer une
+(research.md §10 : c'est `StoreShelfPhotoUseCase`, pas le port, qui sait construire
+`{owner_id}/shelf-photos/{id}`). `ShelfScanHistoryPort` devient `ShelfScanRepositoryPort` (lecture +
+écriture, ce n'est plus un simple journal d'ajout) : `createPending`, `get`, `markCompleted`,
+`markFailed` (data-model.md#ShelfScanRecord).
 
 **Rationale** : conserver la photo **avant** de risquer l'appel le plus long et le plus faillible
 de toute la chaîne (le VLM) rend la panne partagée par les deux requêtes sans en payer le prix deux
@@ -180,8 +182,11 @@ non-perte, pas une UX de retry explicite, hors scope de cette feature).
 | Colonne | Type | Note |
 |---|---|---|
 | `id` | `uuid`, clé primaire | Généré par l'application (`crypto.randomUUID()`) dans `StoreShelfPhotoUseCase`, sert aussi de nom d'objet dans le bucket et d'identifiant renvoyé au frontend (research.md §7) — un seul identifiant pour la photo, son enregistrement, et la ressource HTTP `/shelf-photos/{id}`. |
-| `photo_bucket_key` | `text` | Clé de l'objet dans le bucket (research.md §9). |
+| `owner_id` | `text` | Segment « utilisateur » du chemin dans le bucket (research.md §11) — une valeur fixe pour l'instant, jamais un compte réel. Stocké en base plutôt que reconstruit depuis `photo_bucket_key` : interroger « toutes les photos d'un propriétaire » ne doit pas dépendre du format de la clé. |
+| `photo_bucket_key` | `text` | Clé complète de l'objet dans le bucket, y compris le segment `owner_id` (research.md §9, §11). |
 | `photo_media_type` | `text` | Un des quatre types acceptés par `ShelfPhoto`. |
+| `photo_size_bytes` | `integer` | Poids de la photo en octets (`bytes.byteLength`, déjà validé ≤ 20 Mo par `ShelfPhoto`) — demandé explicitement par le porteur du projet en plus de l'emplacement et du type, pour que la référence Postgres d'un fichier du bucket porte ses attributs techniques complets. |
+| `original_filename` | `text` | Le nom de fichier tel que fourni par le navigateur (`file.name` côté web, `file.originalname` côté multer) — **jamais** utilisé pour nommer l'objet stocké (research.md §11), gardé uniquement à des fins de référence en base (FR-015). |
 | `status` | `text` (`pending` \| `completed` \| `failed`) | `pending` dès la création par `StoreShelfPhotoUseCase` (photo stockée, analyse pas encore lancée) ; `completed`/`failed` posés par `ScanStoredShelfPhotoUseCase` une fois le scanner appelé. Un enregistrement ne revient jamais en arrière (`ScanStoredShelfPhotoUseCase` refuse — 409 — si le statut n'est déjà plus `pending`, research.md §7). |
 | `detected_books` | `jsonb`, nullable | Peuplé seulement si `status = completed` ; `null` si `pending` ou `failed`. Tableau de `{ author?, title, confidence }`, la forme même de `DetectedBookDto` — dénormalisé, pas une table par livre. |
 | `created_at` | `timestamptz`, défaut `now()` | Horodatage de la création de l'enregistrement, donc du **stockage de la photo** — pas de l'issue de l'analyse, qui peut arriver plus tard ou jamais si la deuxième requête n'arrive pas (Edge case de `spec.md`). |
@@ -194,20 +199,28 @@ normalisation-là, si elle a lieu, sera le travail de `bibliography`, pas de cet
 (convention « pas d'abstraction prématurée »). `status` en union fermée plutôt que
 `detected_books` seul avec `null` implicite comme signal d'échec : un `null` ambigu (échec ? liste
 non encore peuplée ?) est exactement ce que la Constitution (III, « typage prouvé ») demande
-d'éviter.
+d'éviter. Une seule table plutôt qu'une table générique « fichiers du bucket » séparée de
+`shelf_scans` : cette feature n'a qu'un seul type de fichier à référencer (la photo elle-même), et
+la référence demandée (emplacement, type, poids) est déjà 1 pour 1 avec l'enregistrement du scan —
+extraire une table `stored_files` générique attendrait un deuxième type de fichier à référencer, pas
+avant.
 
 **Alternatives considered**: table `books` séparée avec clé étrangère vers `shelf_scans` — rejetée
 (prématuré, aucun besoin de requêter les livres indépendamment d'un scan pour l'instant) ; un champ
 `error_message` sur échec — rejeté, `ShelfScanFailed` ne garantit pas un message stable ou utile à
-conserver, et US3 ne demande qu'un statut, pas un diagnostic.
+conserver, et US3 ne demande qu'un statut, pas un diagnostic ; table générique `stored_files`
+distincte de `shelf_scans` — rejetée pour l'instant (voir rationale), à reconsidérer si un second
+type de fichier (couverture de livre enrichie, par exemple) doit un jour être référencé de la même
+manière.
 
 ## 9. Stockage du fichier et émulation locale
 
 **Decision**: `@google-cloud/storage` (SDK officiel) derrière `ShelfPhotoStoragePort` — `store`
 pour `StoreShelfPhotoUseCase`, `retrieve` pour `ScanStoredShelfPhotoUseCase` (research.md §7) —,
-clé d'objet `shelf-photos/{id}` (le même `id` que la ligne `shelf_scans`, sans extension — le type
-MIME est posé comme métadonnée de l'objet à l'écriture, et refourni tel quel par `retrieve` : pas
-déduit d'une extension). En local et en CI,
+clé d'objet `{owner_id}/shelf-photos/{id}` (le même `id` que la ligne `shelf_scans`, sans
+extension — le type MIME est posé comme métadonnée de l'objet à l'écriture, et refourni tel quel
+par `retrieve` : pas déduit d'une extension). Le segment `owner_id` et le choix de ne jamais y
+faire apparaître le nom de fichier d'origine sont détaillés en research.md §10. En local et en CI,
 `fsouza/fake-gcs-server` ajouté comme service `bucket` dans `docker-compose.yml` — c'est
 l'émulateur que `CLAUDE.md` mentionne déjà dans la description de la stack (`docker compose up
 --build # API + front + Postgres + émulateur de bucket`), pas encore présent dans le fichier
@@ -225,3 +238,49 @@ pendant les tests d'adapter, qui doivent rester exécutables sans clé ni compte
 **Alternatives considered**: mock du SDK GCS en mémoire — rejeté, contredit la convention « les
 adapters se testent contre la vraie techno » ; un vrai bucket GCP même en dev/CI — rejeté (clé de
 service à distribuer, coût et latence réseau pour une simple boucle de test).
+
+---
+
+Section 10 ajoutée le 21/09/2026, troisième échange : le porteur du projet a demandé (1) une
+référence Postgres complète pour chaque fichier du bucket (emplacement, type, **poids** — déjà
+couvert pour les deux premiers, complété en §8), (2) un sous-dossier par utilisateur dans le
+bucket, et (3) que le nom de fichier d'origine n'apparaisse jamais tel quel dans le stockage, tout
+en restant retrouvable en base. Décidé avec lui : le sous-dossier utilisateur utilise un
+identifiant fixe pour l'instant, aucune authentification n'est introduite par cette feature.
+
+## 10. Isolation par utilisateur et anonymisation du nom de fichier
+
+**Decision**:
+- Clé d'objet : `{owner_id}/shelf-photos/{id}` (research.md §9), où `owner_id` vient d'une
+  nouvelle variable d'environnement optionnelle `OWNER_ID` (défaut `"default"`), lue par
+  `environment.ts` au même titre que `WEB_ORIGIN`. `StoreShelfPhotoUseCase` la reçoit à la
+  construction (composition root, `recognition.module.ts`) et l'utilise pour construire la clé
+  complète, qu'il transmet à `ShelfPhotoStoragePort.store(photo, key)` — le port ne décide plus du
+  nom de l'objet, il stocke sous le nom qu'on lui donne (léger changement de signature par rapport
+  à research.md §7 : `store` ne renvoie plus de clé générée, il en reçoit une).
+- `id` reste l'identifiant `uuid` généré par l'application (research.md §7, §8) : c'est lui, et
+  seulement lui, qui nomme l'objet dans le bucket. Le nom de fichier d'origine (`file.name` côté
+  web, capturé côté serveur par multer sous `file.originalname`) est reçu par
+  `StoreShelfPhotoUseCase` et écrit dans la colonne `original_filename` de `shelf_scans` (§8) —
+  jamais utilisé pour construire la clé, jamais renvoyé dans une réponse HTTP
+  (`contracts/scan-api.md`, inchangé : aucun endpoint n'expose `original_filename`).
+
+**Rationale**: un identifiant fixe (`OWNER_ID`, une valeur de configuration comme
+`SHELF_SCANNER_PROVIDER`) donne au bucket une disposition déjà compatible avec de vrais comptes
+utilisateurs plus tard — passer d'un `owner_id` constant à un `owner_id` par compte ne change ni le
+schéma ni la disposition du bucket, seulement la source de la valeur — sans que cette feature n'ait
+à construire la moindre notion d'authentification, hors de son scope (`spec.md`, Assumptions :
+« usage mono-utilisateur, sans compte »). Ne jamais nommer l'objet d'après le fichier d'origine
+évite deux problèmes propres à un nom de fichier de téléphone : il peut entrer en collision avec un
+autre envoi (deux photos nommées `IMG_0001.jpg` par deux appareils, ou par le même après une
+réinitialisation de compteur), et il peut porter une information qu'on ne veut pas voir apparaître
+dans une clé d'objet ou une URL (un nom de fichier reste, par construction, un texte libre fourni
+par un tiers). Le conserver en base répond au besoin réel derrière la demande (retrouver, au besoin,
+sous quel nom l'utilisateur connaissait sa photo) sans lui faire porter aucun rôle technique.
+
+**Alternatives considered**: dériver `owner_id` de l'adresse IP ou d'un cookie de session — rejeté,
+introduirait une notion de session sans qu'elle soit demandée, pour un bénéfice nul tant qu'un seul
+« utilisateur » existe ; laisser le port `ShelfPhotoStoragePort` générer lui-même la clé complète
+(y compris `owner_id`) plutôt que de la recevoir déjà construite — rejeté, ça lui ferait porter une
+connaissance (la configuration `OWNER_ID`) qui n'est pas la sienne : construire la clé est une
+décision de `StoreShelfPhotoUseCase`, le stockage à cette clé est celle du port.

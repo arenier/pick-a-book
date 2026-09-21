@@ -171,6 +171,10 @@ puis en vérifiant qu'un bouton ou une action ramène à l'état initial prêt p
   tentative d'analyse qui la concerne échoue avant d'atteindre le service de reconnaissance (panne
   réseau, interruption côté client) — la soumission de la photo et le déclenchement de son analyse
   sont deux garanties distinctes, la seconde ne pouvant pas défaire la première une fois acquise.
+- **FR-015**: Le système DOIT conserver, pour chaque photo, le nom de fichier fourni par
+  l'utilisateur uniquement à des fins de référence en base de données — ce nom ne DOIT jamais
+  apparaître tel quel dans l'endroit où la photo est effectivement stockée, ni être exposé par une
+  réponse du système.
 
 ### Key Entities
 
@@ -179,11 +183,14 @@ puis en vérifiant qu'un bouton ou une action ramène à l'état initial prêt p
   par la reconnaissance (hors scope de cette spec).
 - **Résultat d'analyse** : ce que l'utilisateur voit après un envoi — une liste de livres détectés
   (auteur optionnel, titre), ou l'indication qu'aucun livre n'a été détecté, ou un message d'échec.
-- **Scan conservé** : l'enregistrement durable d'une tentative d'analyse aboutie — la photo
-  conservée, le résultat associé (livres détectés ou statut d'échec) et la date de l'analyse.
-  Distinct du « Résultat d'analyse » affiché : celui-ci est ce que voit l'utilisateur dans
-  l'instant, celui-là est ce qui en reste après (US3). Aucune notion de propriétaire ni de session
-  utilisateur (Assumptions : usage mono-utilisateur).
+- **Scan conservé** : l'enregistrement durable d'une photo soumise et de ce qui en a été tiré —
+  l'endroit où la photo est stockée, ses attributs techniques (format, poids), le nom de fichier
+  d'origine à des fins de référence (jamais utilisé comme identifiant de stockage, FR-015), le
+  résultat associé une fois l'analyse tentée (livres détectés ou statut d'échec, ou son absence si
+  l'analyse n'a pas encore été déclenchée — FR-014) et la date de la soumission. Distinct du
+  « Résultat d'analyse » affiché : celui-ci est ce que voit l'utilisateur dans l'instant, celui-là
+  est ce qui en reste après (US3). Isolé par un identifiant technique fixe pour l'instant, pas par
+  un compte utilisateur réel (Assumptions).
 
 ## Success Criteria *(mandatory)*
 
@@ -207,6 +214,10 @@ puis en vérifiant qu'un bouton ou une action ramène à l'état initial prêt p
 - Usage mono-utilisateur, une photo à la fois, sans compte ni authentification (cohérent avec
   l'usage personnel décrit pour le projet) — pas de file d'attente ni d'historique multi-appareil
   à gérer dans cette feature.
+- Les photos conservées sont néanmoins isolées par un identifiant technique fixe (pas un compte
+  réel, aucune authentification introduite) — décision actée avec le porteur du projet le
+  21/09/2026, pour que l'emplacement de stockage soit déjà compatible avec de vrais comptes
+  utilisateurs le jour où ils existeront, sans anticiper leur conception.
 - La photo est conservée dès qu'une analyse a été tentée et que le service de reconnaissance a
   répondu, y compris en cas d'échec de ce service — décision actée avec le porteur du projet le
   21/09/2026, qui révise le comportement « éphémère en V1 » documenté à l'origine dans

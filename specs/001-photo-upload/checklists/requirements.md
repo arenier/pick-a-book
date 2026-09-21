@@ -50,3 +50,11 @@
   garantie côté produit, FR-014, sans exposer le découpage en deux appels réseau dans `spec.md`,
   qui reste au niveau du comportement observable). Le détail technique du découpage (deux
   endpoints, deux use cases) vit dans `plan.md`/`research.md` §7, pas dans la spec.
+- Troisième mise à jour le même jour : le porteur du projet a demandé (1) une référence Postgres
+  complète pour chaque fichier du bucket (emplacement, type, poids), (2) un sous-dossier par
+  utilisateur dans le bucket, et (3) que le nom de fichier d'origine n'apparaisse jamais tel quel
+  dans le stockage. Un point (le (2), qui suppose un identifiant utilisateur alors que la spec
+  assume « sans compte ») a été posé comme question à choix ([AskUserQuestion], pas un
+  [NEEDS CLARIFICATION] dans le document) et tranché avec lui : identifiant fixe pour l'instant,
+  aucune authentification introduite (FR-015, Assumptions). Les détails de schéma (colonnes,
+  nommage de la clé bucket) vivent dans `research.md` §10 et `data-model.md`, pas dans la spec.

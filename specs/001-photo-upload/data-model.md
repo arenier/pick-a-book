@@ -53,17 +53,20 @@ du contrat de réponse, décrite formellement dans `contracts/scan-api.md`.
 | `title` | `string` | Toujours présent. |
 | `confidence` | `number` | Reçu mais non affiché dans cette feature (spec : « titre et, quand il est connu, leur auteur », pas de score) ; conservé dans le type pour fidélité au contrat, ignoré par l'UI. |
 
-## ShelfScanRecord *(backend, `libs/recognition/*`, ajouté le 21/09/2026 — US3 ; révisé le même jour, deux endpoints — research.md §7)*
+## ShelfScanRecord *(backend, `libs/recognition/*`, ajouté le 21/09/2026 — US3 ; révisé le même jour à deux reprises — deux endpoints (research.md §7), puis isolation par utilisateur et référence complète du fichier (research.md §10))*
 
-L'enregistrement durable d'une photo soumise (FR-011, FR-012) — créé dès l'envoi, avant même que
-l'analyse soit lancée. Table Postgres `shelf_scans`, détail complet et rationale du schéma dans
-`research.md` §8.
+L'enregistrement durable d'une photo soumise (FR-011, FR-012, FR-015) — créé dès l'envoi, avant
+même que l'analyse soit lancée. Table Postgres `shelf_scans`, détail complet et rationale du
+schéma dans `research.md` §8.
 
 | Champ | Type | Règle |
 |---|---|---|
-| `id` | `ShelfScanId` (`uuid`) | Généré à la création par `StoreShelfPhotoUseCase` (`crypto.randomUUID()`), sert aussi de clé de l'objet dans le bucket (research.md §9) et d'identifiant de ressource HTTP (`/shelf-photos/{id}/scan`) — un seul identifiant pour la photo, son enregistrement, et la ressource exposée au frontend. |
-| `photoBucketKey` | `string` | `shelf-photos/{id}`. |
+| `id` | `ShelfScanId` (`uuid`) | Généré à la création par `StoreShelfPhotoUseCase` (`crypto.randomUUID()`), sert aussi de nom (sans extension) de l'objet dans le bucket (research.md §9, §10) et d'identifiant de ressource HTTP (`/shelf-photos/{id}/scan`) — un seul identifiant pour la photo, son enregistrement, et la ressource exposée au frontend. **Jamais le nom de fichier d'origine** (FR-015). |
+| `ownerId` | `string` | Segment « utilisateur » de `photoBucketKey`. Une valeur fixe pour l'instant (`OWNER_ID`, research.md §10) — pas un compte réel, aucune authentification introduite par cette feature. |
+| `photoBucketKey` | `string` | `{ownerId}/shelf-photos/{id}` (research.md §9, §10). |
 | `photoMediaType` | `ShelfPhotoMediaType` | Le type déjà validé par `ShelfPhoto` (`image/jpeg` \| `image/png` \| `image/webp` \| `image/heic`). |
+| `photoSizeBytes` | `number` | Poids de la photo en octets (`bytes.byteLength`, ≤ 20 Mo déjà garanti par `ShelfPhoto`). |
+| `originalFilename` | `string` | Le nom de fichier tel que fourni par le navigateur, gardé pour référence uniquement (research.md §10) — jamais utilisé pour construire `photoBucketKey`, jamais renvoyé par un endpoint HTTP (FR-015). |
 | `status` | `'pending' \| 'completed' \| 'failed'` | `pending` posé par `StoreShelfPhotoUseCase` à la création. `completed`/`failed` posés par `ScanStoredShelfPhotoUseCase` une fois le scanner appelé — jamais l'inverse : un enregistrement ne repasse jamais à `pending`. |
 | `detectedBooks` | `DetectedBook[] \| undefined` | Présent si et seulement si `status === 'completed'` (y compris un tableau vide, « aucun livre détecté ») ; `undefined` pour `pending` et `failed`. |
 | `createdAt` | `Date` | Horodatage de la **création** de l'enregistrement, donc du stockage de la photo — pas de l'issue de l'analyse (research.md §8). |
@@ -81,6 +84,9 @@ l'analyse soit lancée. Table Postgres `shelf_scans`, détail complet et rationa
 - `ScanStoredShelfPhotoUseCase` refuse (409) de traiter un enregistrement dont le statut n'est
   déjà plus `pending` — protège contre un second appel accidentel qui écraserait un résultat déjà
   posé ou relancerait un appel VLM déjà payé (research.md §7).
+- `originalFilename` ne participe à aucune décision de stockage ou de routage — un nom de fichier
+  imprévisible, voire malicieux (`../..`, un caractère de contrôle) ne doit jamais atteindre un
+  chemin de bucket ou une commande : seul `id` (généré par l'application) nomme l'objet (FR-015).
 - Aucune politique de rétention ni de purge (Assumptions de `spec.md`) : un `ShelfScanRecord`,
-  une fois créé, n'est jamais supprimé par cette feature — seul son `status` (et `detectedBooks`)
-  peut être posé une fois, de `pending` vers `completed` ou `failed`.
+  une fois créé, n'est jamais supprimé par cette feature — seuls `status` et `detectedBooks`
+  peuvent être posés une fois, de `pending` vers `completed` ou `failed`.
