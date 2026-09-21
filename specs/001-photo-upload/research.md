@@ -124,10 +124,11 @@ serveur — or FR-011 veut justement que cette photo ne soit pas reperdue.
 **Decision** : séparer l'envoi de la photo et le déclenchement de l'analyse en deux requêtes HTTP
 distinctes, donc deux use cases dans `libs/recognition/application` :
 
-1. `StoreShelfPhotoUseCase.execute({ bytes, mediaType })` — valide (`ShelfPhoto.of`, inchangé),
-   génère un identifiant (`crypto.randomUUID()`), stocke la photo dans le bucket sous
-   `shelf-photos/{id}`, crée un `ShelfScanRecord` de statut `pending`, renvoie `{ id }`. Aussi
-   rapide qu'un envoi de fichier peut l'être — pas d'appel VLM sur ce chemin.
+1. `StoreShelfPhotoUseCase.execute({ bytes, mediaType, originalFilename })` — valide
+   (`ShelfPhoto.of`, inchangé), génère un identifiant (`crypto.randomUUID()`), stocke la photo dans
+   le bucket sous `{owner_id}/shelf_photo/{id}` (research.md §8, §10), crée un `ShelfScanRecord` de
+   statut `pending`, renvoie `{ id }`. Aussi rapide qu'un envoi de fichier peut l'être — pas d'appel
+   VLM sur ce chemin.
 2. `ScanStoredShelfPhotoUseCase.execute({ id })` — relit l'enregistrement (404 si absent), refuse
    si son statut n'est plus `pending` (409 — voir plus bas), relit la photo depuis le bucket (pas de
    fichier en mémoire entre les deux requêtes : Cloud Run est sans état entre requêtes, ADR 0004),
@@ -141,9 +142,10 @@ visible à l'écran.
 **Nouveau port** : `ShelfPhotoStoragePort` expose `store(photo, key): Promise<void>` et
 `retrieve(key, mediaType): Promise<ShelfPhoto>` — `store` reçoit la clé plutôt que d'en générer une
 (research.md §10 : c'est `StoreShelfPhotoUseCase`, pas le port, qui sait construire
-`{owner_id}/shelf-photos/{id}`). `ShelfScanHistoryPort` devient `ShelfScanRepositoryPort` (lecture +
+`{owner_id}/shelf_photo/{id}`). `ShelfScanHistoryPort` devient `ShelfScanRepositoryPort` (lecture +
 écriture, ce n'est plus un simple journal d'ajout) : `createPending`, `get`, `markCompleted`,
-`markFailed` (data-model.md#ShelfScanRecord).
+`markFailed` (data-model.md#ShelfScanRecord) — tous keyés par l'identifiant de l'upload (research.md
+§8 : `ShelfScanId` correspond à `uploads.id`, pas au `id` propre de la ligne `shelf_scans`).
 
 **Rationale** : conserver la photo **avant** de risquer l'appel le plus long et le plus faillible
 de toute la chaîne (le VLM) rend la panne partagée par les deux requêtes sans en payer le prix deux
@@ -175,52 +177,88 @@ non-perte, pas une UX de retry explicite, hors scope de cette feature).
   409 est le comportement le plus sûr par défaut (ne jamais relancer un appel VLM sans qu'on l'ait
   demandé). Documenté comme limitation connue plutôt que résolu par anticipation.
 
-## 8. Forme de l'enregistrement conservé
+## 8. Forme de l'enregistrement conservé — révisé le 21/09/2026 (quatrième échange : table `uploads` générique)
 
-**Decision**: une seule table Postgres, `shelf_scans` :
+**Première version (dépassée)** : une seule table `shelf_scans` portant à la fois les attributs du
+fichier (emplacement, type, poids, nom d'origine) et l'état du scan. Le porteur du projet a demandé
+de séparer les deux : une table `uploads` générique, avec un discriminant `type`, référencée par
+`shelf_scans` via une clé étrangère — plutôt que de dupliquer les colonnes « fichier » si un
+deuxième type d'upload apparaît un jour (`bibliography` référençant une couverture enrichie, par
+exemple).
+
+**Decision**: deux tables Postgres.
+
+**`uploads`** — la référence générique de tout fichier déposé dans le bucket, quel que soit le
+contexte qui l'a écrit :
 
 | Colonne | Type | Note |
 |---|---|---|
-| `id` | `uuid`, clé primaire | Généré par l'application (`crypto.randomUUID()`) dans `StoreShelfPhotoUseCase`, sert aussi de nom d'objet dans le bucket et d'identifiant renvoyé au frontend (research.md §7) — un seul identifiant pour la photo, son enregistrement, et la ressource HTTP `/shelf-photos/{id}`. |
-| `owner_id` | `text` | Segment « utilisateur » du chemin dans le bucket (research.md §11) — une valeur fixe pour l'instant, jamais un compte réel. Stocké en base plutôt que reconstruit depuis `photo_bucket_key` : interroger « toutes les photos d'un propriétaire » ne doit pas dépendre du format de la clé. |
-| `photo_bucket_key` | `text` | Clé complète de l'objet dans le bucket, y compris le segment `owner_id` (research.md §9, §11). |
-| `photo_media_type` | `text` | Un des quatre types acceptés par `ShelfPhoto`. |
-| `photo_size_bytes` | `integer` | Poids de la photo en octets (`bytes.byteLength`, déjà validé ≤ 20 Mo par `ShelfPhoto`) — demandé explicitement par le porteur du projet en plus de l'emplacement et du type, pour que la référence Postgres d'un fichier du bucket porte ses attributs techniques complets. |
-| `original_filename` | `text` | Le nom de fichier tel que fourni par le navigateur (`file.name` côté web, `file.originalname` côté multer) — **jamais** utilisé pour nommer l'objet stocké (research.md §11), gardé uniquement à des fins de référence en base (FR-015). |
-| `status` | `text` (`pending` \| `completed` \| `failed`) | `pending` dès la création par `StoreShelfPhotoUseCase` (photo stockée, analyse pas encore lancée) ; `completed`/`failed` posés par `ScanStoredShelfPhotoUseCase` une fois le scanner appelé. Un enregistrement ne revient jamais en arrière (`ScanStoredShelfPhotoUseCase` refuse — 409 — si le statut n'est déjà plus `pending`, research.md §7). |
-| `detected_books` | `jsonb`, nullable | Peuplé seulement si `status = completed` ; `null` si `pending` ou `failed`. Tableau de `{ author?, title, confidence }`, la forme même de `DetectedBookDto` — dénormalisé, pas une table par livre. |
-| `created_at` | `timestamptz`, défaut `now()` | Horodatage de la création de l'enregistrement, donc du **stockage de la photo** — pas de l'issue de l'analyse, qui peut arriver plus tard ou jamais si la deuxième requête n'arrive pas (Edge case de `spec.md`). |
+| `id` | `uuid`, clé primaire | Généré par l'application (`crypto.randomUUID()`), sert aussi de nom d'objet dans le bucket (research.md §9). |
+| `owner_id` | `text` | Segment « utilisateur » du chemin dans le bucket (research.md §10) — une valeur fixe pour l'instant, jamais un compte réel. |
+| `type` | `text` | Discriminant du genre d'upload — `'shelf_photo'` pour tout ce qu'écrit cette feature, texte libre plutôt qu'un type Postgres `enum` pour rester extensible sans migration de type à chaque nouveau genre (cohérent avec `shelf_scans.status`, déjà en texte). |
+| `bucket_key` | `text` | `{owner_id}/{type}/{id}` — le segment `type` remplace le `shelf-photos/` fixe de la version précédente, désormais dérivé de la colonne du même nom. |
+| `media_type` | `text` | Un des quatre types acceptés par `ShelfPhoto` pour `type = 'shelf_photo'` ; pas de contrainte fixée ici pour un genre d'upload qui n'existe pas encore. |
+| `size_bytes` | `integer` | Poids du fichier en octets (`bytes.byteLength`, ≤ 20 Mo déjà garanti par `ShelfPhoto` pour ce genre). |
+| `original_filename` | `text` | Le nom de fichier tel que fourni par le navigateur (`file.name` côté web, `file.originalname` côté multer) — **jamais** utilisé pour nommer l'objet stocké (research.md §10), gardé uniquement à des fins de référence (FR-015). |
+| `created_at` | `timestamptz`, défaut `now()` | Horodatage du **stockage du fichier** — canonique pour toute la ligne, y compris pour `shelf_scans` qui n'a plus son propre horodatage. |
 
-**Rationale**: les livres détectés ne sont pas encore des entités stables — ils n'ont pas traversé
-la réconciliation (`bibliography`, pas encore fondé) qui leur donnerait une identité propre. Les
-dénormaliser en `jsonb` évite de construire un schéma relationnel (table `books`, clé étrangère)
-pour une donnée qui sera de toute façon retraitée par un contexte qui n'existe pas encore — cette
-normalisation-là, si elle a lieu, sera le travail de `bibliography`, pas de cette feature
-(convention « pas d'abstraction prématurée »). `status` en union fermée plutôt que
-`detected_books` seul avec `null` implicite comme signal d'échec : un `null` ambigu (échec ? liste
-non encore peuplée ?) est exactement ce que la Constitution (III, « typage prouvé ») demande
-d'éviter. Une seule table plutôt qu'une table générique « fichiers du bucket » séparée de
-`shelf_scans` : cette feature n'a qu'un seul type de fichier à référencer (la photo elle-même), et
-la référence demandée (emplacement, type, poids) est déjà 1 pour 1 avec l'enregistrement du scan —
-extraire une table `stored_files` générique attendrait un deuxième type de fichier à référencer, pas
-avant.
+**`shelf_scans`** — l'état du scan associé à un upload de type `shelf_photo`, et seulement ça :
 
-**Alternatives considered**: table `books` séparée avec clé étrangère vers `shelf_scans` — rejetée
-(prématuré, aucun besoin de requêter les livres indépendamment d'un scan pour l'instant) ; un champ
-`error_message` sur échec — rejeté, `ShelfScanFailed` ne garantit pas un message stable ou utile à
-conserver, et US3 ne demande qu'un statut, pas un diagnostic ; table générique `stored_files`
-distincte de `shelf_scans` — rejetée pour l'instant (voir rationale), à reconsidérer si un second
-type de fichier (couverture de livre enrichie, par exemple) doit un jour être référencé de la même
-manière.
+| Colonne | Type | Note |
+|---|---|---|
+| `id` | `uuid`, clé primaire | Identité propre de l'enregistrement de scan — distincte de `upload_id`, pour ne pas figer la relation à « un scan = un upload » au niveau du type de la clé elle-même, même si c'est le cas aujourd'hui. |
+| `upload_id` | `uuid`, clé étrangère vers `uploads.id`, `NOT NULL`, `UNIQUE` | Un upload correspond à au plus un scan pour cette feature (`UNIQUE` l'impose plutôt que de le laisser à la seule discipline applicative). Identifiant renvoyé au frontend (`/shelf-photos/{id}/scan`, research.md §7) — c'est en réalité `upload_id` qui circule côté HTTP, `shelf_scans.id` reste un détail interne au schéma (voir Rationale). |
+| `status` | `text` (`pending` \| `completed` \| `failed`) | Inchangé (research.md §7). |
+| `detected_books` | `jsonb`, nullable | Inchangé — dénormalisé, pas une table par livre (voir Rationale ci-dessous, reprise de la version précédente). |
+
+**Rationale** (table `uploads`) : le porteur du projet anticipe un deuxième genre d'upload
+(couverture enrichie pour `bibliography`, par exemple) — une seule table de référence évite de
+recopier `bucket_key`/`media_type`/`size_bytes`/`original_filename` dans chaque nouvelle table
+métier qui a besoin de référencer un fichier du bucket. Rester dans `recognition-infrastructure`
+pour l'instant plutôt que dans une lib partagée (`libs/shared/*`) : `recognition` est le seul
+contexte fondé en code aujourd'hui (`bibliography`/`curation` n'existent pas encore), et l'ADR 0002
+prévient justement contre une lib `shared` ouverte par anticipation plutôt que sur un besoin
+constaté — promouvoir `uploads` en schéma partagé redevient une décision légitime le jour où un
+second contexte écrit réellement dans le bucket, pas avant.
+
+**Rationale** (FK `shelf_scans.upload_id`, `id` propre plutôt que clé partagée) : une clé primaire
+partagée (`shelf_scans.id = uploads.id`) aurait évité la colonne `upload_id`, mais aurait aussi fait
+porter à `shelf_scans` une contrainte de son voisin (« mon identifiant est en réalité celui d'un
+upload ») au lieu de l'exprimer comme une relation explicite. Une FK ordinaire dit directement ce
+qu'elle est : un scan **porte sur** un upload, il ne **s'y substitue** pas.
+
+**Rationale** (`detected_books` en `jsonb`, reprise de la version précédente) : les livres détectés
+ne sont pas encore des entités stables — ils n'ont pas traversé la réconciliation (`bibliography`,
+pas encore fondé) qui leur donnerait une identité propre. Les dénormaliser évite de construire un
+schéma relationnel pour une donnée qui sera de toute façon retraitée par un contexte qui n'existe
+pas encore (convention « pas d'abstraction prématurée »). `status` en union fermée plutôt qu'un
+`null` implicite comme signal d'échec : la Constitution (III, « typage prouvé ») demande d'éviter
+l'ambiguïté qu'un `null` porterait (échec ? liste non encore peuplée ?).
+
+**Étanchéité avec le domaine** : ce découpage en deux tables est entièrement un détail
+d'`infrastructure` (convention « le SQL, le schéma et les migrations restent dans infrastructure »)
+— `ShelfScanRecord` (`data-model.md`), le type que `ShelfScanRepositoryPort` manipule, garde
+exactement la même forme qu'avant (`ownerId`, `photoBucketKey`, `photoMediaType`, `photoSizeBytes`,
+`originalFilename`, `status`, `detectedBooks`) : c'est l'adaptateur Drizzle qui fait le
+join/l'écriture transactionnelle entre les deux tables pour reconstruire ou peupler cette forme
+unique. Ni `domain` ni `application` n'ont connaissance de l'existence de deux tables.
+
+**Alternatives considered**: rester sur une seule table `shelf_scans` (version précédente) —
+rejetée à la demande du porteur du projet, qui anticipe un second genre d'upload ; un champ
+`error_message` sur échec — toujours rejeté (`ShelfScanFailed` ne garantit pas un message stable) ;
+promouvoir `uploads` en schéma `libs/shared/*` dès maintenant — rejetée (YAGNI, un seul contexte
+fondé) ; clé primaire partagée entre `uploads` et `shelf_scans` plutôt qu'une FK — rejetée (voir
+Rationale).
 
 ## 9. Stockage du fichier et émulation locale
 
 **Decision**: `@google-cloud/storage` (SDK officiel) derrière `ShelfPhotoStoragePort` — `store`
 pour `StoreShelfPhotoUseCase`, `retrieve` pour `ScanStoredShelfPhotoUseCase` (research.md §7) —,
-clé d'objet `{owner_id}/shelf-photos/{id}` (le même `id` que la ligne `shelf_scans`, sans
-extension — le type MIME est posé comme métadonnée de l'objet à l'écriture, et refourni tel quel
-par `retrieve` : pas déduit d'une extension). Le segment `owner_id` et le choix de ne jamais y
-faire apparaître le nom de fichier d'origine sont détaillés en research.md §10. En local et en CI,
+clé d'objet `{owner_id}/shelf_photo/{id}` (le même `id` que la ligne `uploads`, sans extension —
+le type MIME est posé comme métadonnée de l'objet à l'écriture, et refourni tel quel par
+`retrieve` : pas déduit d'une extension). Le segment `owner_id` et le choix de ne jamais y faire
+apparaître le nom de fichier d'origine sont détaillés en research.md §10 ; le segment `shelf_photo`
+reprend la colonne `type` de la table `uploads`, research.md §8. En local et en CI,
 `fsouza/fake-gcs-server` ajouté comme service `bucket` dans `docker-compose.yml` — c'est
 l'émulateur que `CLAUDE.md` mentionne déjà dans la description de la stack (`docker compose up
 --build # API + front + Postgres + émulateur de bucket`), pas encore présent dans le fichier
@@ -251,7 +289,7 @@ identifiant fixe pour l'instant, aucune authentification n'est introduite par ce
 ## 10. Isolation par utilisateur et anonymisation du nom de fichier
 
 **Decision**:
-- Clé d'objet : `{owner_id}/shelf-photos/{id}` (research.md §9), où `owner_id` vient d'une
+- Clé d'objet : `{owner_id}/shelf_photo/{id}` (research.md §9), où `owner_id` vient d'une
   nouvelle variable d'environnement optionnelle `OWNER_ID` (défaut `"default"`), lue par
   `environment.ts` au même titre que `WEB_ORIGIN`. `StoreShelfPhotoUseCase` la reçoit à la
   construction (composition root, `recognition.module.ts`) et l'utilise pour construire la clé
@@ -261,8 +299,10 @@ identifiant fixe pour l'instant, aucune authentification n'est introduite par ce
 - `id` reste l'identifiant `uuid` généré par l'application (research.md §7, §8) : c'est lui, et
   seulement lui, qui nomme l'objet dans le bucket. Le nom de fichier d'origine (`file.name` côté
   web, capturé côté serveur par multer sous `file.originalname`) est reçu par
-  `StoreShelfPhotoUseCase` et écrit dans la colonne `original_filename` de `shelf_scans` (§8) —
-  jamais utilisé pour construire la clé, jamais renvoyé dans une réponse HTTP
+  `StoreShelfPhotoUseCase` et écrit dans la colonne `original_filename` de la table **`uploads`**
+  (§8, révisée depuis : cette colonne vivait initialement sur `shelf_scans`, avant l'introduction
+  de la table générique) — jamais utilisé pour construire la clé, jamais renvoyé dans une réponse
+  HTTP
   (`contracts/scan-api.md`, inchangé : aucun endpoint n'expose `original_filename`).
 
 **Rationale**: un identifiant fixe (`OWNER_ID`, une valeur de configuration comme

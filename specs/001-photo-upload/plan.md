@@ -34,10 +34,19 @@ appels lui-même, sans que cela change rien pour l'utilisateur (US1 inchangée) 
 **Révision du même jour** (troisième échange) : `ShelfScanRecord` porte désormais la référence
 complète du fichier stocké — emplacement, type, **poids** (`photoSizeBytes`, nouveau) — et deux
 nouveautés produit demandées par le porteur du projet : les photos sont isolées par un identifiant
-« utilisateur » dans le bucket (`{owner_id}/shelf-photos/{id}`, une valeur fixe pour l'instant,
+« utilisateur » dans le bucket (`{owner_id}/shelf_photo/{id}`, une valeur fixe pour l'instant,
 `OWNER_ID`, sans authentification — research.md §10), et le nom de fichier d'origine
 (`originalFilename`) n'apparaît jamais dans le stockage ni dans une réponse HTTP, seulement en
 base, à des fins de référence (FR-015).
+
+**Révision du même jour** (quatrième échange) : la référence de fichier n'est plus portée
+directement par `shelf_scans`, mais par une table Postgres générique, `uploads` (emplacement, type,
+poids, nom d'origine, un discriminant `type` valant `'shelf_photo'` pour cette feature) —
+`shelf_scans` y référence sa ligne par une clé étrangère (`upload_id`). Décision du porteur du
+projet, qui anticipe un second genre d'upload plus tard (`bibliography`, par exemple) sans vouloir
+dupliquer ces colonnes dans chaque table métier. Entièrement un détail d'`infrastructure`
+(research.md §8) : `ShelfScanRecord` (`data-model.md`) garde la même forme qu'avant pour
+`domain`/`application`, c'est l'adapter Drizzle qui fait le lien entre les deux tables.
 
 ## Technical Context
 
@@ -154,7 +163,7 @@ libs/recognition/domain/src/lib/
 └── shelf-scan-repository.port.spec.ts     # forme des types uniquement (pas de logique à tester ici)
 
 libs/recognition/application/src/lib/
-├── store-shelf-photo.use-case.ts          # valide, génère id + clé {ownerId}/shelf-photos/{id}, stocke, crée le ShelfScanRecord `pending`, renvoie { id }
+├── store-shelf-photo.use-case.ts          # valide, génère id + clé {ownerId}/shelf_photo/{id}, stocke, crée le ShelfScanRecord `pending`, renvoie { id }
 ├── store-shelf-photo.use-case.spec.ts     # + cas : ownerId et originalFilename bien reportés sur le ShelfScanRecord créé
 ├── scan-stored-shelf-photo.use-case.ts    # relit le record + la photo, appelle ShelfScannerPort, marque completed|failed
 └── scan-stored-shelf-photo.use-case.spec.ts  # cas : succès, échec 502, id inconnu, déjà traité (409)
@@ -163,9 +172,9 @@ libs/recognition/infrastructure/src/lib/
 ├── gcs-shelf-photo-storage.adapter.ts      # implémente ShelfPhotoStoragePort : store + retrieve (@google-cloud/storage)
 ├── gcs-shelf-photo-storage.adapter.spec.ts # contre l'émulateur de bucket (docker-compose)
 ├── drizzle/
-│   ├── schema.ts                          # table shelf_scans (data-model.md#ShelfScanRecord)
+│   ├── schema.ts                          # tables uploads + shelf_scans, FK shelf_scans.upload_id (research.md §8)
 │   └── migrations/                        # générées par drizzle-kit
-├── drizzle-shelf-scan-repository.adapter.ts     # implémente ShelfScanRepositoryPort
+├── drizzle-shelf-scan-repository.adapter.ts     # implémente ShelfScanRepositoryPort : écrit/lit uploads+shelf_scans en une transaction, reconstruit ShelfScanRecord par jointure
 └── drizzle-shelf-scan-repository.adapter.spec.ts  # contre le Postgres du docker-compose existant
 
 apps/api/src/

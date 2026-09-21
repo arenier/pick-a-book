@@ -53,17 +53,19 @@ du contrat de réponse, décrite formellement dans `contracts/scan-api.md`.
 | `title` | `string` | Toujours présent. |
 | `confidence` | `number` | Reçu mais non affiché dans cette feature (spec : « titre et, quand il est connu, leur auteur », pas de score) ; conservé dans le type pour fidélité au contrat, ignoré par l'UI. |
 
-## ShelfScanRecord *(backend, `libs/recognition/*`, ajouté le 21/09/2026 — US3 ; révisé le même jour à deux reprises — deux endpoints (research.md §7), puis isolation par utilisateur et référence complète du fichier (research.md §10))*
+## ShelfScanRecord *(backend, `libs/recognition/*`, ajouté le 21/09/2026 — US3 ; révisé le même jour à trois reprises — deux endpoints (research.md §7), isolation par utilisateur et référence complète du fichier (research.md §10), puis table `uploads` générique (research.md §8))*
 
 L'enregistrement durable d'une photo soumise (FR-011, FR-012, FR-015) — créé dès l'envoi, avant
-même que l'analyse soit lancée. Table Postgres `shelf_scans`, détail complet et rationale du
-schéma dans `research.md` §8.
+même que l'analyse soit lancée. **Cette forme est celle que voit l'application** ; en base, elle est
+reconstruite par jointure entre deux tables Postgres, `uploads` et `shelf_scans` — détail complet
+et rationale du schéma dans `research.md` §8. Ni `domain` ni `application` n'ont connaissance de ce
+découpage en deux tables : c'est un choix d'`infrastructure`, invisible ici.
 
 | Champ | Type | Règle |
 |---|---|---|
-| `id` | `ShelfScanId` (`uuid`) | Généré à la création par `StoreShelfPhotoUseCase` (`crypto.randomUUID()`), sert aussi de nom (sans extension) de l'objet dans le bucket (research.md §9, §10) et d'identifiant de ressource HTTP (`/shelf-photos/{id}/scan`) — un seul identifiant pour la photo, son enregistrement, et la ressource exposée au frontend. **Jamais le nom de fichier d'origine** (FR-015). |
+| `id` | `ShelfScanId` (`uuid`) | Généré à la création par `StoreShelfPhotoUseCase` (`crypto.randomUUID()`) — **c'est l'identifiant de la ligne `uploads`**, pas de la ligne `shelf_scans` (qui a son propre id, jamais exposé hors d'`infrastructure`, research.md §8). Sert de nom (sans extension) de l'objet dans le bucket (research.md §9, §10) et d'identifiant de ressource HTTP (`/shelf-photos/{id}/scan`) — un seul identifiant pour la photo, son enregistrement, et la ressource exposée au frontend. **Jamais le nom de fichier d'origine** (FR-015). |
 | `ownerId` | `string` | Segment « utilisateur » de `photoBucketKey`. Une valeur fixe pour l'instant (`OWNER_ID`, research.md §10) — pas un compte réel, aucune authentification introduite par cette feature. |
-| `photoBucketKey` | `string` | `{ownerId}/shelf-photos/{id}` (research.md §9, §10). |
+| `photoBucketKey` | `string` | `{ownerId}/shelf_photo/{id}` (research.md §9, §10 ; le segment fixe `shelf-photos/` de la version précédente devient le `type` de la ligne `uploads`, research.md §8). |
 | `photoMediaType` | `ShelfPhotoMediaType` | Le type déjà validé par `ShelfPhoto` (`image/jpeg` \| `image/png` \| `image/webp` \| `image/heic`). |
 | `photoSizeBytes` | `number` | Poids de la photo en octets (`bytes.byteLength`, ≤ 20 Mo déjà garanti par `ShelfPhoto`). |
 | `originalFilename` | `string` | Le nom de fichier tel que fourni par le navigateur, gardé pour référence uniquement (research.md §10) — jamais utilisé pour construire `photoBucketKey`, jamais renvoyé par un endpoint HTTP (FR-015). |

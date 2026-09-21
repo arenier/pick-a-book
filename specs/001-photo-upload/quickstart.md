@@ -34,16 +34,20 @@ research.md §9.)
    à l'écran, FR-004), puis la liste des livres renvoyés par le stub (titre, auteur quand présent)
    — voir `libs/recognition/infrastructure/src/lib/stub-shelf-scanner.adapter.ts` pour les livres
    exacts renvoyés.
-5. **Attendu côté persistance (US3, invisible à l'écran)** : la ligne créée dans `shelf_scans` par
-   le premier appel (`status = 'pending'`) est passée à `status = 'completed'` par le second,
-   `detected_books` peuplé des mêmes livres ; l'objet correspondant existe dans le bucket émulé,
-   sous la clé `{owner_id}/shelf-photos/{id}` (`owner_id` = `OWNER_ID`, défaut `default`) où `id`
-   est la valeur de la colonne `id` de cette ligne — jamais le nom du fichier envoyé (research.md
-   §10, FR-015). `photo_size_bytes` reflète le poids réel du fichier ; `original_filename` porte le
-   nom tel qu'envoyé par le navigateur, uniquement pour référence.
+5. **Attendu côté persistance (US3, invisible à l'écran)** : le premier appel crée une ligne dans
+   `uploads` (`type = 'shelf_photo'`) et une ligne `shelf_scans` liée par `upload_id`
+   (`status = 'pending'`) ; le second passe `shelf_scans.status` à `'completed'`, `detected_books`
+   peuplé des mêmes livres. L'objet correspondant existe dans le bucket émulé, sous la clé
+   `{owner_id}/shelf_photo/{id}` (`owner_id` = `OWNER_ID`, défaut `default`) où `id` est la valeur
+   de la colonne `id` de la ligne `uploads` — jamais le nom du fichier envoyé (research.md §10,
+   FR-015). `size_bytes` (sur `uploads`) reflète le poids réel du fichier ; `original_filename`
+   porte le nom tel qu'envoyé par le navigateur, uniquement pour référence.
    ```bash
-   docker compose exec db psql -U pick_a_book -d pick_a_book \
-     -c "select id, owner_id, status, photo_bucket_key, photo_media_type, photo_size_bytes, original_filename, created_at from shelf_scans order by created_at desc limit 1;"
+   docker compose exec db psql -U pick_a_book -d pick_a_book -c "
+     select u.id, u.owner_id, u.type, u.bucket_key, u.media_type, u.size_bytes,
+            u.original_filename, s.status, s.detected_books, u.created_at
+     from uploads u join shelf_scans s on s.upload_id = u.id
+     order by u.created_at desc limit 1;"
    ```
 6. **Rejeu manuel des deux étapes (optionnel, pour voir la séparation)** :
    ```bash
