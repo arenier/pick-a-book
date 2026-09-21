@@ -14,7 +14,7 @@ le flux d'upload de bout en bout.
 ## Lancer les deux services
 
 ```bash
-yarn api     # http://localhost:3000 (POST /scan, GET /health)
+yarn api     # http://localhost:3000 (POST /shelf-photos, POST /shelf-photos/:id/scan, GET /health)
 yarn web     # http://localhost:4200
 ```
 
@@ -27,17 +27,25 @@ research.md §9.)
    largeur ≤ 400px pour simuler — SC-004).
 2. Choisir une photo (prise à l'instant ou existante).
 3. Envoyer.
-4. **Attendu côté écran** : un état de chargement s'affiche, puis la liste des livres renvoyés par
-   le stub (titre, auteur quand présent) — voir
-   `libs/recognition/infrastructure/src/lib/stub-shelf-scanner.adapter.ts` pour les livres exacts
-   renvoyés.
-5. **Attendu côté persistance (US3, invisible à l'écran)** : une ligne apparaît dans
-   `shelf_scans` (`status = 'completed'`, `detected_books` peuplé des mêmes livres) et l'objet
-   correspondant existe dans le bucket émulé, sous la clé `shelf-photos/{id}` où `id` est la
-   valeur de la colonne `id` de cette ligne.
+4. **Attendu côté écran** : un état de chargement s'affiche pendant les deux appels enchaînés
+   (`POST /shelf-photos` puis `POST /shelf-photos/{id}/scan`, research.md §7 — un seul état visible
+   à l'écran, FR-004), puis la liste des livres renvoyés par le stub (titre, auteur quand présent)
+   — voir `libs/recognition/infrastructure/src/lib/stub-shelf-scanner.adapter.ts` pour les livres
+   exacts renvoyés.
+5. **Attendu côté persistance (US3, invisible à l'écran)** : la ligne créée dans `shelf_scans` par
+   le premier appel (`status = 'pending'`) est passée à `status = 'completed'` par le second,
+   `detected_books` peuplé des mêmes livres ; l'objet correspondant existe dans le bucket émulé,
+   sous la clé `shelf-photos/{id}` où `id` est la valeur de la colonne `id` de cette ligne.
    ```bash
    docker compose exec db psql -U pick_a_book -d pick_a_book \
      -c "select id, status, photo_bucket_key, created_at from shelf_scans order by created_at desc limit 1;"
+   ```
+6. **Rejeu manuel des deux étapes (optionnel, pour voir la séparation)** :
+   ```bash
+   curl -F "photo=@photo.jpg" http://localhost:3000/shelf-photos
+   # {"id":"<uuid>"} — la ligne est déjà en base à ce stade, status pending
+   curl -X POST http://localhost:3000/shelf-photos/<uuid>/scan
+   # {"books":[...]} — un second appel sur le même <uuid> renvoie 409
    ```
 
 ## Scénario 2 — fichier refusé (US2)
@@ -53,12 +61,14 @@ research.md §9.)
    couper l'accès réseau sortant de l'API).
 2. Envoyer une photo valide.
 3. **Attendu côté écran** : message d'erreur distinct de « aucun livre détecté », invitant à
-   réessayer plus tard (le contrôleur renvoie 502 sur `ShelfScanFailed` — voir
+   réessayer plus tard (`POST /shelf-photos/{id}/scan` renvoie 502 sur `ShelfScanFailed` — voir
    `contracts/scan-api.md`).
-4. **Attendu côté persistance (US3)** : contrairement au scénario 2 (fichier refusé), une ligne
-   apparaît quand même dans `shelf_scans`, avec `status = 'failed'` et `detected_books` à `null` —
+4. **Attendu côté persistance (US3)** : contrairement au scénario 2 (fichier refusé, où le premier
+   appel échoue et rien n'est créé), le premier appel a ici réussi (`status = 'pending'`) avant que
+   le second échoue ; la ligne passe alors à `status = 'failed'`, `detected_books` reste `null` —
    et l'objet existe dans le bucket émulé. C'est le point qui distingue US3 scénario 2 (conservé
-   malgré l'échec) de US2 scénario 2 (fichier refusé, rien de conservé).
+   malgré l'échec du scan) de US2 scénario 2 (fichier refusé dès le premier appel, rien de
+   conservé) et de FR-014 (coupure entre les deux appels : reste `pending`, pas `failed`).
 
 ## Scénario 4 — recommencer (US4)
 
@@ -70,8 +80,8 @@ research.md §9.)
 ```bash
 yarn nx test web                        # specs de la feature (TDD : écrites avant le code, cf. tasks.md)
 yarn nx test recognition-domain         # + specs des deux nouveaux ports (forme des types)
-yarn nx test recognition-application    # + specs de ScanShelfUseCase : archive après succès, après échec
+yarn nx test recognition-application    # + specs de StoreShelfPhotoUseCase et ScanStoredShelfPhotoUseCase (succès, échec 502, id inconnu, 409)
 yarn nx test recognition-infrastructure # + specs des deux nouveaux adapters, contre Postgres et l'émulateur de bucket
-yarn nx test api                        # specs de environment.ts (WEB_ORIGIN, BUCKET_NAME) et scan.controller.ts existantes
+yarn nx test api                        # specs de environment.ts (WEB_ORIGIN, BUCKET_NAME) et shelf-photos.controller.ts
 yarn lint                               # frontières de modules, y compris scope:web ne dépendant pas de scope:api
 ```

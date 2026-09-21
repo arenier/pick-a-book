@@ -15,13 +15,21 @@ en dossier dans `apps/web` (pas de nouvelle lib Nx), `fetch` natif en `multipart
 l'endpoint existant, CORS activé côté API pour que les deux origines séparées (ADR 0004 : web sur
 un bucket, api sur Cloud Run) puissent se parler.
 
-**Extension du 21/09/2026** (US3) : côté `apps/api`, `ScanShelfUseCase` conserve désormais la photo
-dans le bucket et enregistre une référence en Postgres — livres détectés en cas d'analyse aboutie,
-statut d'échec sinon — chaque fois que le service de reconnaissance répond, y compris en échec.
-Reste dans le contexte `recognition`, derrière deux nouveaux ports (`ShelfPhotoStoragePort`,
-`ShelfScanHistoryPort`), sans changer le contrat HTTP consommé par le frontend
-(`contracts/scan-api.md`). C'est la première persistance du projet : `DATABASE_URL` était déjà
+**Extension du 21/09/2026** (US3) : côté `apps/api`, la photo est désormais conservée dans le
+bucket et son résultat enregistré en Postgres — livres détectés en cas d'analyse aboutie, statut
+d'échec sinon — chaque fois que le service de reconnaissance répond, y compris en échec. Reste
+dans le contexte `recognition`. C'est la première persistance du projet : `DATABASE_URL` était déjà
 validé au démarrage (`environment.ts`) mais jamais utilisé jusqu'ici.
+
+**Révision du même jour** (deuxième échange) : plutôt qu'un unique endpoint synchrone
+envoi+analyse, l'API expose désormais **deux** endpoints — `POST /shelf-photos` (conserve la
+photo, répond avec un `id`) puis `POST /shelf-photos/{id}/scan` (déclenche l'analyse sur la photo
+déjà conservée) — pour que la photo ne dépende pas de la réussite de l'appel VLM (le plus long,
+~27 s, le plus faillible) pour être conservée (research.md §7). `ScanShelfUseCase` est scindé en
+`StoreShelfPhotoUseCase` et `ScanStoredShelfPhotoUseCase`, tous deux dans `recognition`, derrière
+deux ports (`ShelfPhotoStoragePort`, `ShelfScanRepositoryPort`). Le frontend enchaîne les deux
+appels lui-même, sans que cela change rien pour l'utilisateur (US1 inchangée) ni pour `spec.md`
+(FR-014 documente uniquement la garantie que cela permet, pas le découpage lui-même).
 
 ## Technical Context
 
@@ -52,7 +60,8 @@ ressourcerie sur téléphone), dégradation utilisable sur navigateur desktop sa
 
 **Project Type**: Application web (frontend `apps/web` + extension du backend `apps/api` /
 `libs/recognition/*` existant — activation de CORS, persistance de la photo et de son résultat,
-aucune nouvelle route HTTP).
+et un endpoint HTTP scindé en deux — `POST /shelf-photos` puis `POST /shelf-photos/{id}/scan` —
+research.md §7).
 
 **Performance Goals**: Aucun objectif de performance propre à cette feature au-delà de SC-001
 (retour à l'écran de résultat en moins de 30 s hors temps d'analyse du VLM, déjà mesuré à part —
@@ -74,9 +83,9 @@ rétention (Assumptions de `spec.md`).
 
 | Principe | Application à cette feature |
 |---|---|
-| I. TDD non-négociable | Chaque unité (validation de fichier, machine d'état d'upload, appel HTTP, composants côté web ; `ScanShelfUseCase` étendu, les deux nouveaux adapters côté api) s'écrit rouge/vert/refactor. `tasks.md` (`/speckit-tasks`) ordonnera les tests avant le code qu'ils motivent. Les deux nouveaux adapters (bucket, Postgres) se testent contre la vraie techno (convention du projet), pas sur des doubles — Postgres et l'émulateur de bucket du `docker-compose.yml`. |
-| II. Hexagonal et bounded contexts étanches | Le frontend n'importe aucun package `scope:api` (research.md §5) : le contrat de `POST /scan` est dupliqué localement plutôt qu'importé de `libs/recognition/*`. Aucun contexte n'est traversé — la persistance de la photo et de son résultat reste entièrement dans `recognition` (c'est ce contexte qui produit `ShelfPhoto` et `DetectedBook`, US3 n'introduit aucune notion nouvelle empruntée à `bibliography` ou `curation`), derrière deux nouveaux ports domain (`ShelfPhotoStoragePort`, `ShelfScanHistoryPort`) implémentés dans `recognition-infrastructure` — schéma et client Postgres y restent, jamais dans `domain` ou `application` (convention « le SQL, le schéma et les migrations restent dans infrastructure »). Côté API, l'autre changement (CORS) est dans `main.ts`, hors des bounded contexts. |
-| III. Typage prouvé, jamais affirmé | Pas de `as` dans le nouveau code ; l'état d'upload est une union discriminée (`data-model.md#UploadState`), la réponse HTTP est validée par des type guards avant usage (le JSON de `fetch` est `unknown` à la réception, jamais casté). Côté api, l'issue d'un scan (`ShelfScanOutcome`) est aussi une union discriminée `completed \| failed` plutôt qu'un objet à champs optionnels contradictoires. |
+| I. TDD non-négociable | Chaque unité (validation de fichier, machine d'état d'upload, appel HTTP en deux temps, composants côté web ; `StoreShelfPhotoUseCase`, `ScanStoredShelfPhotoUseCase`, les deux nouveaux adapters côté api) s'écrit rouge/vert/refactor. `tasks.md` (`/speckit-tasks`) ordonnera les tests avant le code qu'ils motivent. Les deux nouveaux adapters (bucket, Postgres) se testent contre la vraie techno (convention du projet), pas sur des doubles — Postgres et l'émulateur de bucket du `docker-compose.yml`. |
+| II. Hexagonal et bounded contexts étanches | Le frontend n'importe aucun package `scope:api` (research.md §5) : le contrat des deux endpoints est dupliqué localement plutôt qu'importé de `libs/recognition/*`. Aucun contexte n'est traversé — la persistance de la photo et de son résultat reste entièrement dans `recognition` (c'est ce contexte qui produit `ShelfPhoto` et `DetectedBook`, US3 n'introduit aucune notion nouvelle empruntée à `bibliography` ou `curation`), derrière deux nouveaux ports domain (`ShelfPhotoStoragePort`, `ShelfScanRepositoryPort`) implémentés dans `recognition-infrastructure` — schéma et client Postgres y restent, jamais dans `domain` ou `application` (convention « le SQL, le schéma et les migrations restent dans infrastructure »). Deux use cases plutôt qu'un ne créent pas d'orchestrateur `apps/api` : ADR 0003 ne s'applique qu'au croisement de contextes, absent ici (research.md §7). Côté API, l'autre changement (CORS) est dans `main.ts`, hors des bounded contexts. |
+| III. Typage prouvé, jamais affirmé | Pas de `as` dans le nouveau code ; l'état d'upload est une union discriminée (`data-model.md#UploadState`), la réponse HTTP est validée par des type guards avant usage (le JSON de `fetch` est `unknown` à la réception, jamais casté). Côté api, `ShelfScanRecord.status` est une union fermée `pending \| completed \| failed` (`data-model.md#ShelfScanRecord`) plutôt qu'un objet à champs optionnels contradictoires, et la transition `pending → completed \| failed` est imposée par `ScanStoredShelfPhotoUseCase` (409 sinon), jamais par un champ qu'on pourrait modifier deux fois. |
 | IV. Outillage unique | Aucun nouvel outil de build/test/lint. Aucune dépendance HTTP ou de gestion d'état ajoutée côté web (research.md §3–4, §6). Côté api, `@google-cloud/storage` et `drizzle-orm`/`pg` sont des dépendances nouvelles, mais pas un choix local concurrent d'un outillage acté : ADR 0004 nomme le bucket, ADR 0006 nomme Postgres **et** Drizzle explicitement — cette feature les câble pour la première fois, elle n'arbitre rien. |
 | V. Français dans la doc, anglais dans le code | Le texte affiché à l'utilisateur (messages, libellés) est en français dans le code de `apps/web` (cohérent avec l'existant, `app.tsx`) ; identifiants, commentaires et messages de commit en anglais, y compris dans les nouveaux adapters. |
 
@@ -128,26 +137,28 @@ apps/web/src/
         │   ├── photo-constraints.spec.ts
         │   └── detected-book.ts           # type local, reflète contracts/scan-api.md
         └── api/
-            ├── scan-shelf-photo.ts        # fetch POST /scan, mapping réponse -> UploadState
+            ├── scan-shelf-photo.ts        # enchaîne POST /shelf-photos puis POST /shelf-photos/{id}/scan (research.md §3, §7)
             └── scan-shelf-photo.spec.ts
 
 libs/recognition/domain/src/lib/
-├── shelf-photo-storage.port.ts            # StoredPhoto, ShelfPhotoStoragePort (+ injection token)
-├── shelf-scan-history.port.ts             # ShelfScanOutcome (completed|failed), ShelfScanHistoryPort
-└── shelf-scan-history.port.spec.ts        # forme des types uniquement (pas de logique à tester ici)
+├── shelf-photo-storage.port.ts            # StoredPhoto, ShelfPhotoStoragePort (store + retrieve, + injection token)
+├── shelf-scan-repository.port.ts          # ShelfScanId, ShelfScanRecord, ShelfScanRepositoryPort
+└── shelf-scan-repository.port.spec.ts     # forme des types uniquement (pas de logique à tester ici)
 
 libs/recognition/application/src/lib/
-├── scan-shelf.use-case.ts                 # + photoStorage, + scanHistory (research.md §7)
-└── scan-shelf.use-case.spec.ts            # + cas : archive après succès, archive après échec 502
+├── store-shelf-photo.use-case.ts          # valide, stocke, crée le ShelfScanRecord `pending`, renvoie { id }
+├── store-shelf-photo.use-case.spec.ts
+├── scan-stored-shelf-photo.use-case.ts    # relit le record + la photo, appelle ShelfScannerPort, marque completed|failed
+└── scan-stored-shelf-photo.use-case.spec.ts  # cas : succès, échec 502, id inconnu, déjà traité (409)
 
 libs/recognition/infrastructure/src/lib/
-├── gcs-shelf-photo-storage.adapter.ts      # implémente ShelfPhotoStoragePort (@google-cloud/storage)
+├── gcs-shelf-photo-storage.adapter.ts      # implémente ShelfPhotoStoragePort : store + retrieve (@google-cloud/storage)
 ├── gcs-shelf-photo-storage.adapter.spec.ts # contre l'émulateur de bucket (docker-compose)
 ├── drizzle/
 │   ├── schema.ts                          # table shelf_scans (data-model.md#ShelfScanRecord)
 │   └── migrations/                        # générées par drizzle-kit
-├── drizzle-shelf-scan-history.adapter.ts   # implémente ShelfScanHistoryPort
-└── drizzle-shelf-scan-history.adapter.spec.ts  # contre le Postgres du docker-compose existant
+├── drizzle-shelf-scan-repository.adapter.ts     # implémente ShelfScanRepositoryPort
+└── drizzle-shelf-scan-repository.adapter.spec.ts  # contre le Postgres du docker-compose existant
 
 apps/api/src/
 ├── main.ts                                # + app.enableCors(...) avec l'origine configurée
@@ -155,7 +166,9 @@ apps/api/src/
 │   ├── environment.ts                     # + WEB_ORIGIN (optionnel), + BUCKET_NAME (requis)
 │   └── environment.spec.ts                # + cas WEB_ORIGIN, BUCKET_NAME
 └── recognition/
-    ├── recognition.module.ts              # + binding des deux nouveaux ports
+    ├── shelf-photos.controller.ts         # remplace scan.controller.ts : POST /shelf-photos, POST /shelf-photos/:id/scan
+    ├── shelf-photos.controller.spec.ts
+    ├── recognition.module.ts              # + binding des deux nouveaux ports, des deux use cases
     └── shelf-scan-archive.factory.ts       # construit les clients GCS/Postgres depuis Environment
 
 docker-compose.yml                         # + service émulateur de bucket (research.md §9)
@@ -166,12 +179,13 @@ docker-compose.yml                         # + service émulateur de bucket (res
 (research.md §1), organisée par sous-dossier technique interne à la slice (`ui/`, `model/`,
 `api/`) — une seule slice existant à ce jour, cette subdivision reste lisible sans lib séparée ;
 elle deviendrait le contenu d'une lib Nx le jour où une deuxième app ou une deuxième slice a besoin
-d'en réutiliser une partie (ADR 0002). Côté backend, la persistance reste dans `recognition` :
-deux ports supplémentaires en `domain`, deux adapters en `infrastructure`, `ScanShelfUseCase`
-étendu en `application` (research.md §7) — pas de nouveau module, pas d'orchestrateur `apps/api`
-puisqu'aucun contexte n'est traversé (ADR 0003 ne s'applique pas ici). `apps/api` gagne en plus
-l'activation CORS, la variable `WEB_ORIGIN`, et le câblage des deux nouveaux adapters dans
-`recognition.module.ts`.
+d'en réutiliser une partie (ADR 0002). Côté backend, la persistance reste dans `recognition` : deux
+ports supplémentaires en `domain`, deux adapters en `infrastructure`, et l'endpoint synchrone
+d'origine scindé en deux use cases (`StoreShelfPhotoUseCase`, `ScanStoredShelfPhotoUseCase`) et
+deux routes (`shelf-photos.controller.ts`, qui remplace `scan.controller.ts`) — research.md §7. Pas
+de nouveau module, pas d'orchestrateur `apps/api` puisqu'aucun contexte n'est traversé (ADR 0003 ne
+s'applique pas ici). `apps/api` gagne en plus l'activation CORS, la variable `WEB_ORIGIN`, et le
+câblage des deux nouveaux adapters et use cases dans `recognition.module.ts`.
 
 ## Complexity Tracking
 

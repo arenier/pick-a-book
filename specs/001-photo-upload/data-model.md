@@ -42,7 +42,7 @@ une absence d'enregistrement.
 
 ## DetectedBook
 
-Un livre détecté, tel que reçu de `POST /scan`. Reflète `DetectedBookDto`
+Un livre détecté, tel que reçu de `POST /shelf-photos/{id}/scan` (research.md §7). Reflète `DetectedBookDto`
 (`libs/recognition/application/src/lib/scan-shelf.dto.ts`) sans l'importer — la frontière
 `scope:web` / `scope:api` l'interdit (research.md §5) ; ce type est une copie locale et volontaire
 du contrat de réponse, décrite formellement dans `contracts/scan-api.md`.
@@ -53,25 +53,34 @@ du contrat de réponse, décrite formellement dans `contracts/scan-api.md`.
 | `title` | `string` | Toujours présent. |
 | `confidence` | `number` | Reçu mais non affiché dans cette feature (spec : « titre et, quand il est connu, leur auteur », pas de score) ; conservé dans le type pour fidélité au contrat, ignoré par l'UI. |
 
-## ShelfScanRecord *(backend, `libs/recognition/*`, ajouté le 21/09/2026 — US3)*
+## ShelfScanRecord *(backend, `libs/recognition/*`, ajouté le 21/09/2026 — US3 ; révisé le même jour, deux endpoints — research.md §7)*
 
-L'enregistrement durable d'une tentative d'analyse aboutie (FR-011, FR-012). Table Postgres
-`shelf_scans`, détail complet et rationale du schéma dans `research.md` §8.
+L'enregistrement durable d'une photo soumise (FR-011, FR-012) — créé dès l'envoi, avant même que
+l'analyse soit lancée. Table Postgres `shelf_scans`, détail complet et rationale du schéma dans
+`research.md` §8.
 
 | Champ | Type | Règle |
 |---|---|---|
-| `id` | `uuid` | Généré à la création (`crypto.randomUUID()`), sert aussi de clé de l'objet dans le bucket (research.md §9) — une photo et son enregistrement partagent un seul identifiant. |
+| `id` | `ShelfScanId` (`uuid`) | Généré à la création par `StoreShelfPhotoUseCase` (`crypto.randomUUID()`), sert aussi de clé de l'objet dans le bucket (research.md §9) et d'identifiant de ressource HTTP (`/shelf-photos/{id}/scan`) — un seul identifiant pour la photo, son enregistrement, et la ressource exposée au frontend. |
 | `photoBucketKey` | `string` | `shelf-photos/{id}`. |
 | `photoMediaType` | `ShelfPhotoMediaType` | Le type déjà validé par `ShelfPhoto` (`image/jpeg` \| `image/png` \| `image/webp` \| `image/heic`). |
-| `outcome` | `ShelfScanOutcome` | Union discriminée : `{ status: 'completed'; books: DetectedBook[] }` \| `{ status: 'failed' }`. Jamais les deux à la fois (FR-012). |
-| `createdAt` | `Date` | Horodatage de l'analyse. |
+| `status` | `'pending' \| 'completed' \| 'failed'` | `pending` posé par `StoreShelfPhotoUseCase` à la création. `completed`/`failed` posés par `ScanStoredShelfPhotoUseCase` une fois le scanner appelé — jamais l'inverse : un enregistrement ne repasse jamais à `pending`. |
+| `detectedBooks` | `DetectedBook[] \| undefined` | Présent si et seulement si `status === 'completed'` (y compris un tableau vide, « aucun livre détecté ») ; `undefined` pour `pending` et `failed`. |
+| `createdAt` | `Date` | Horodatage de la **création** de l'enregistrement, donc du stockage de la photo — pas de l'issue de l'analyse (research.md §8). |
 
 **Règles** :
-- Un `ShelfScanRecord` n'existe QUE si le service de reconnaissance a répondu — succès ou échec
-  (FR-011). Un fichier refusé avant analyse (US2, FR-009) ne produit aucun `ShelfScanRecord`
-  (FR-013) : la validation de `ShelfPhoto` échoue avant que le port de stockage soit appelé.
-- `outcome.books` peut être un tableau vide (`status: 'completed'`, aucun livre détecté) —
-  distinct de `status: 'failed'` (le service n'a pas répondu du tout). Les deux sont des
-  `ShelfScanRecord` valides, aucun des deux n'est une erreur de persistance.
+- Un `ShelfScanRecord` n'existe QUE si l'envoi de la photo a été accepté par
+  `StoreShelfPhotoUseCase` (FR-011). Un fichier refusé avant cet envoi (US2, FR-009) ne produit
+  aucun `ShelfScanRecord` (FR-013) : la validation de `ShelfPhoto` échoue avant que le port de
+  stockage soit appelé.
+- Un `ShelfScanRecord` peut rester `pending` indéfiniment si la deuxième requête
+  (`/shelf-photos/{id}/scan`) n'arrive jamais — coupure réseau entre les deux appels (Edge case de
+  `spec.md`, FR-014). Ce n'est pas un état d'erreur : la photo est bien conservée (FR-011 est
+  respecté), seule l'analyse n'a pas eu lieu. Aucune reprise automatique dans le scope de cette
+  feature.
+- `ScanStoredShelfPhotoUseCase` refuse (409) de traiter un enregistrement dont le statut n'est
+  déjà plus `pending` — protège contre un second appel accidentel qui écraserait un résultat déjà
+  posé ou relancerait un appel VLM déjà payé (research.md §7).
 - Aucune politique de rétention ni de purge (Assumptions de `spec.md`) : un `ShelfScanRecord`,
-  une fois créé, n'est ni modifié ni supprimé par cette feature.
+  une fois créé, n'est jamais supprimé par cette feature — seul son `status` (et `detectedBooks`)
+  peut être posé une fois, de `pending` vers `completed` ou `failed`.

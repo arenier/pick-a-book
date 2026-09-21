@@ -48,17 +48,21 @@ identiquement en local et une fois `apps/web` déployé comme fichiers statiques
 
 ## 3. Client HTTP
 
-**Decision**: `fetch` natif du navigateur, envoi en `multipart/form-data` (`FormData` avec un
-champ `photo`), pas de bibliothèque HTTP ajoutée.
+**Decision**: `fetch` natif du navigateur, deux appels séquentiels (research.md §7 : upload puis
+scan), le premier en `multipart/form-data` (`FormData` avec un champ `photo`), le second sans
+corps. Pas de bibliothèque HTTP ajoutée. Le module `api/scan-shelf-photo.ts` enchaîne les deux et
+n'expose qu'une seule fonction à l'écran (`submitShelfPhoto`) : l'UI ignore qu'il y a deux requêtes.
 
-**Rationale**: `ScanController` accepte déjà ce format exact
-(`FileInterceptor('photo', …)`) — c'est le chemin le plus direct, et il évite l'inflation ~33 % du
-repli JSON+base64 documenté dans le contrôleur (`ScanRequestBody`, prévu pour d'autres appelants).
-Une seule requête vers un seul endpoint ne justifie pas une dépendance HTTP dédiée (axios,
-react-query) : le projet n'en a aucune aujourd'hui, et `require-await`/`promise-function-async`
-(ADR 0008) couvrent déjà la rigueur asynchrone que ces bibliothèques apportent par ailleurs.
+**Rationale**: `ScanController` (devenu, avec le découpage de §7, un contrôleur en deux routes)
+accepte déjà le multipart (`FileInterceptor('photo', …)`) — c'est le chemin le plus direct, et il
+évite l'inflation ~33 % du repli JSON+base64 (`ScanRequestBody`, prévu pour d'autres appelants).
+Deux requêtes vers deux endpoints ne justifient pas plus une dépendance HTTP dédiée (axios,
+react-query) qu'une seule n'en justifiait : le projet n'en a aucune aujourd'hui, et
+`require-await`/`promise-function-async` (ADR 0008) couvrent déjà la rigueur asynchrone que ces
+bibliothèques apportent par ailleurs. Enchaîner deux `fetch` à la main reste plus simple que
+d'introduire une lib pour gérer une séquence de deux appels sans état partagé au-delà d'un id.
 
-**Alternatives considered**: `axios` — rejeté (dépendance non justifiée par un seul appel) ;
+**Alternatives considered**: `axios` — rejeté (dépendance non justifiée) ;
 `@tanstack/react-query` — rejeté pour la même raison, et parce que cette feature n'a ni cache ni
 requêtes concurrentes à coordonner (FR-007 : un envoi à la fois).
 
@@ -103,32 +107,71 @@ ce besoin précis).
 
 Sections 7 à 9 ajoutées le 21/09/2026, à la demande du porteur du projet d'étendre le scope à la
 persistance (US3 de `spec.md`). Décisions actées avec lui : conserver aussi en cas d'échec du
-service de reconnaissance (502), aucune politique de rétention pour l'instant.
+service de reconnaissance (502), aucune politique de rétention pour l'instant. Section 7 révisée
+le même jour, deuxième échange : le porteur du projet a demandé de séparer l'envoi et l'analyse en
+deux requêtes plutôt qu'une seule pour ne pas perdre la photo si le second appel (le plus long, le
+plus faillible) échoue en réseau — proposition retenue, détaillée en §7.
 
-## 7. Où et comment orchestrer la persistance côté backend
+## 7. Où et comment orchestrer la persistance côté backend — révisé le 21/09/2026 (deux endpoints)
 
-**Decision**: étendre `ScanShelfUseCase` (`libs/recognition/application`) avec deux nouveaux ports
-domain — `ShelfPhotoStoragePort.store(photo): Promise<StoredPhoto>` et
-`ShelfScanHistoryPort.record(photo, outcome): Promise<void>` où `outcome` est
-`{ status: 'completed'; books } | { status: 'failed' }`. Séquence : valider (`ShelfPhoto.of`,
-inchangé) → stocker la photo → appeler `ShelfScannerPort.scan` → enregistrer l'issue (succès avec
-livres, y compris liste vide, ou échec) → renvoyer le DTO comme avant. Le stockage de la photo a
-lieu **avant** l'appel au scanner, pas après : c'est ce qui permet de la conserver même quand le
-scanner échoue (US3, scénario 2).
+**Première version (dépassée)** : un seul `ScanShelfUseCase` étendu, faisant stocker-puis-scanner
+dans la même requête HTTP. Abandonnée : elle enchaînait, dans un seul aller-retour réseau mobile, un
+envoi multipart (poids : jusqu'à 20 Mo) et un appel VLM synchrone dont la latence mesurée est de
+l'ordre de 27 s (`docs/decisions/0001`). Sur un réseau de ressourcerie instable, la moindre coupure
+pendant les 27 s d'analyse fait échouer une requête qui avait pourtant déjà livré la photo au
+serveur — or FR-011 veut justement que cette photo ne soit pas reperdue.
 
-**Rationale**: la persistance ne franchit aucune frontière de bounded context — elle porte
-uniquement sur des concepts déjà propres à `recognition` (`ShelfPhoto`, `DetectedBook`). Un
-orchestrateur `apps/api` (ADR 0003) n'a de raison d'être que pour croiser plusieurs contextes ; en
-ajouter un ici pour une séquence interne à un seul contexte serait une indirection sans objet.
-Regrouper « scanner » et « archiver » dans le même use case garde au composition root
-(`recognition.module.ts`) une seule chose à construire et à appeler, plutôt que deux use cases dont
-il devrait connaître l'ordre et la gestion d'erreur.
+**Decision** : séparer l'envoi de la photo et le déclenchement de l'analyse en deux requêtes HTTP
+distinctes, donc deux use cases dans `libs/recognition/application` :
 
-**Alternatives considered**: un second use case `ArchiveShelfScanUseCase` appelé par
-`ScanController` après `ScanShelfUseCase` — rejeté : déplace vers la composition root (censée
-ignorer la logique métier, ADR 0002) la décision de séquencement et la nécessité d'archiver même
-sur échec, qui est une règle du contexte `recognition`, pas du contrôleur HTTP. Un événement de
-domaine consommé ailleurs — rejeté d'emblée par l'ADR 0003 (pas d'event bus).
+1. `StoreShelfPhotoUseCase.execute({ bytes, mediaType })` — valide (`ShelfPhoto.of`, inchangé),
+   génère un identifiant (`crypto.randomUUID()`), stocke la photo dans le bucket sous
+   `shelf-photos/{id}`, crée un `ShelfScanRecord` de statut `pending`, renvoie `{ id }`. Aussi
+   rapide qu'un envoi de fichier peut l'être — pas d'appel VLM sur ce chemin.
+2. `ScanStoredShelfPhotoUseCase.execute({ id })` — relit l'enregistrement (404 si absent), refuse
+   si son statut n'est plus `pending` (409 — voir plus bas), relit la photo depuis le bucket (pas de
+   fichier en mémoire entre les deux requêtes : Cloud Run est sans état entre requêtes, ADR 0004),
+   appelle `ShelfScannerPort.scan`, marque l'enregistrement `completed` (avec les livres, y compris
+   liste vide) ou `failed`, renvoie le DTO comme avant.
+
+Le frontend enchaîne les deux appels lui-même (research.md §3), en une seule action perçue par
+l'utilisateur (US1 inchangée) : le découpage est un détail de transport, pas une nouvelle étape
+visible à l'écran.
+
+**Nouveau port** : `ShelfPhotoStoragePort` gagne `retrieve(bucketKey, mediaType): Promise<ShelfPhoto>`
+en plus de `store`. `ShelfScanHistoryPort` devient `ShelfScanRepositoryPort` (lecture + écriture,
+ce n'est plus un simple journal d'ajout) : `createPending`, `get`, `markCompleted`, `markFailed`
+(data-model.md#ShelfScanRecord).
+
+**Rationale** : conserver la photo **avant** de risquer l'appel le plus long et le plus faillible
+de toute la chaîne (le VLM) rend la panne partagée par les deux requêtes sans en payer le prix deux
+fois — si la deuxième requête échoue en réseau, la photo est déjà en sécurité, contrairement à un
+schéma en un temps où la même coupure aurait aussi perdu la photo. Ça satisfait FR-011 plus
+directement qu'un `try/catch` unique : la conservation ne dépend plus de la survie de la requête
+qui contient l'appel VLM. Ça découple aussi deux profils de risque très différents — un transfert de
+données sensible au débit montant du mobile, un calcul distant sensible à la latence et à la
+disponibilité du fournisseur — ce que ADR 0005 traite déjà comme deux préoccupations séparées
+(la latence VLM est déjà nommée comme un point de vigilance à part, `docs/decisions/0001`).
+
+Aucune frontière de bounded context n'est franchie : les deux use cases restent des concepts
+propres à `recognition`. Un orchestrateur `apps/api` (ADR 0003) n'a de raison d'être que pour
+croiser plusieurs contextes ; il n'y a ici qu'un seul contexte, en deux étapes.
+
+Le 409 sur un enregistrement déjà `completed`/`failed` empêche un second appel accidentel (double
+clic, requête réseau rejouée) de relancer un appel VLM déjà payé et déjà répondu — pas une
+fonctionnalité de nouvelle tentative (voir FR-014 plus bas, qui documente uniquement la garantie de
+non-perte, pas une UX de retry explicite, hors scope de cette feature).
+
+**Alternatives considered**:
+- Un seul endpoint synchrone (version précédente) — rejeté pour la raison ci-dessus.
+- Un troisième endpoint asynchrone avec file d'attente et statut interrogé par polling (`GET
+  /shelf-photos/{id}`) — rejeté : sur-ingénierie à 20–200 photos/mois, un seul utilisateur ; les
+  deux appels synchrones suffisent et restent dans le budget de latence déjà accepté (ADR 0005).
+  Reste une extension possible si le volume ou la latence VLM l'exigeaient un jour.
+- Idempotence complète du deuxième appel (rejouer un scan déjà `completed` renverrait le même
+  résultat plutôt qu'un 409) — rejeté : aucune UX de retry n'est demandée par cette feature, et le
+  409 est le comportement le plus sûr par défaut (ne jamais relancer un appel VLM sans qu'on l'ait
+  demandé). Documenté comme limitation connue plutôt que résolu par anticipation.
 
 ## 8. Forme de l'enregistrement conservé
 
@@ -136,12 +179,12 @@ domaine consommé ailleurs — rejeté d'emblée par l'ADR 0003 (pas d'event bus
 
 | Colonne | Type | Note |
 |---|---|---|
-| `id` | `uuid`, clé primaire | Généré par l'application (`crypto.randomUUID()`), sert aussi de nom d'objet dans le bucket — un seul identifiant pour la paire photo/enregistrement. |
+| `id` | `uuid`, clé primaire | Généré par l'application (`crypto.randomUUID()`) dans `StoreShelfPhotoUseCase`, sert aussi de nom d'objet dans le bucket et d'identifiant renvoyé au frontend (research.md §7) — un seul identifiant pour la photo, son enregistrement, et la ressource HTTP `/shelf-photos/{id}`. |
 | `photo_bucket_key` | `text` | Clé de l'objet dans le bucket (research.md §9). |
 | `photo_media_type` | `text` | Un des quatre types acceptés par `ShelfPhoto`. |
-| `status` | `text` (`completed` \| `failed`) | Reflète `ShelfScanOutcome`. |
-| `detected_books` | `jsonb`, nullable | Peuplé seulement si `status = completed` ; `null` si `failed`. Tableau de `{ author?, title, confidence }`, la forme même de `DetectedBookDto` — dénormalisé, pas une table par livre. |
-| `created_at` | `timestamptz`, défaut `now()` | Horodatage de l'analyse (FR-011, US3 scénario 1). |
+| `status` | `text` (`pending` \| `completed` \| `failed`) | `pending` dès la création par `StoreShelfPhotoUseCase` (photo stockée, analyse pas encore lancée) ; `completed`/`failed` posés par `ScanStoredShelfPhotoUseCase` une fois le scanner appelé. Un enregistrement ne revient jamais en arrière (`ScanStoredShelfPhotoUseCase` refuse — 409 — si le statut n'est déjà plus `pending`, research.md §7). |
+| `detected_books` | `jsonb`, nullable | Peuplé seulement si `status = completed` ; `null` si `pending` ou `failed`. Tableau de `{ author?, title, confidence }`, la forme même de `DetectedBookDto` — dénormalisé, pas une table par livre. |
+| `created_at` | `timestamptz`, défaut `now()` | Horodatage de la création de l'enregistrement, donc du **stockage de la photo** — pas de l'issue de l'analyse, qui peut arriver plus tard ou jamais si la deuxième requête n'arrive pas (Edge case de `spec.md`). |
 
 **Rationale**: les livres détectés ne sont pas encore des entités stables — ils n'ont pas traversé
 la réconciliation (`bibliography`, pas encore fondé) qui leur donnerait une identité propre. Les
@@ -160,9 +203,11 @@ conserver, et US3 ne demande qu'un statut, pas un diagnostic.
 
 ## 9. Stockage du fichier et émulation locale
 
-**Decision**: `@google-cloud/storage` (SDK officiel) derrière `ShelfPhotoStoragePort`, clé d'objet
-`shelf-photos/{id}` (le même `id` que la ligne `shelf_scans`, sans extension — le type MIME est
-posé comme métadonnée de l'objet, pas déduit d'une extension). En local et en CI,
+**Decision**: `@google-cloud/storage` (SDK officiel) derrière `ShelfPhotoStoragePort` — `store`
+pour `StoreShelfPhotoUseCase`, `retrieve` pour `ScanStoredShelfPhotoUseCase` (research.md §7) —,
+clé d'objet `shelf-photos/{id}` (le même `id` que la ligne `shelf_scans`, sans extension — le type
+MIME est posé comme métadonnée de l'objet à l'écriture, et refourni tel quel par `retrieve` : pas
+déduit d'une extension). En local et en CI,
 `fsouza/fake-gcs-server` ajouté comme service `bucket` dans `docker-compose.yml` — c'est
 l'émulateur que `CLAUDE.md` mentionne déjà dans la description de la stack (`docker compose up
 --build # API + front + Postgres + émulateur de bucket`), pas encore présent dans le fichier

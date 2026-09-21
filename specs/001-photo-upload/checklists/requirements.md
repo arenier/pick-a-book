@@ -45,3 +45,8 @@
   laissée dans le document) : conserver aussi en cas d'échec du service de reconnaissance (502),
   et ne mettre en place aucune politique de rétention pour l'instant (cohérent avec la question
   déjà ouverte de l'ADR 0006).
+- Deuxième mise à jour le même jour : le porteur du projet a proposé de séparer l'envoi de la
+  photo et le déclenchement de l'analyse (question, pas un [NEEDS CLARIFICATION] — reformulée en
+  garantie côté produit, FR-014, sans exposer le découpage en deux appels réseau dans `spec.md`,
+  qui reste au niveau du comportement observable). Le détail technique du découpage (deux
+  endpoints, deux use cases) vit dans `plan.md`/`research.md` §7, pas dans la spec.

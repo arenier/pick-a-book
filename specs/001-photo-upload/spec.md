@@ -125,6 +125,10 @@ puis en vérifiant qu'un bouton ou une action ramène à l'état initial prêt p
   pendant l'analyse ?
 - Que se passe-t-il si l'appareil de l'utilisateur ne dispose pas d'appareil photo (ordinateur de
   bureau) ? L'envoi depuis un fichier existant doit rester possible.
+- Que se passe-t-il si la photo est correctement soumise mais que la connexion est coupée avant que
+  l'analyse elle-même ait pu être lancée ? La photo déjà soumise reste conservée (FR-014) ; côté
+  écran, ce cas se présente comme les autres coupures réseau, sans distinction visible pour
+  l'utilisateur.
 
 ## Requirements *(mandatory)*
 
@@ -163,6 +167,10 @@ puis en vérifiant qu'un bouton ou une action ramène à l'état initial prêt p
 - **FR-013**: Le système NE DOIT PAS conserver une photo dont l'envoi est refusé avant toute
   tentative d'analyse (format non supporté, poids excessif — FR-009) : rien n'a été soumis au
   service de reconnaissance, rien n'est retenu.
+- **FR-014**: Le système DOIT garantir qu'une photo correctement soumise reste conservée même si la
+  tentative d'analyse qui la concerne échoue avant d'atteindre le service de reconnaissance (panne
+  réseau, interruption côté client) — la soumission de la photo et le déclenchement de son analyse
+  sont deux garanties distinctes, la seconde ne pouvant pas défaire la première une fois acquise.
 
 ### Key Entities
 
@@ -208,6 +216,13 @@ puis en vérifiant qu'un bouton ou une action ramène à l'état initial prêt p
   leurs enregistrements sont conservés indéfiniment pour l'instant — cohérent avec la question de
   rétention déjà laissée ouverte par l'ADR 0006 (cadence du `pg_dump`), tranchée plus tard au vu du
   volume réel plutôt qu'anticipée ici.
+- La soumission d'une photo et le déclenchement de son analyse sont deux opérations distinctes
+  (FR-014) — décision actée avec le porteur du projet le 21/09/2026, en réaction à la latence du
+  service de reconnaissance (de l'ordre de 27 s, `docs/decisions/0001`) : les enchaîner dans une
+  seule opération réseau risquerait de perdre la photo déjà reçue si la partie la plus longue et la
+  plus faillible échoue. Une photo soumise dont l'analyse n'a jamais pu être déclenchée (coupure
+  entre les deux) reste dans un état intermédiaire, sans reprise automatique ni notion d'expiration
+  dans le scope de cette feature — cohérent avec l'absence de politique de rétention ci-dessus.
 - Les formats acceptés et la taille maximale (JPEG/PNG/WebP/HEIC, 20 Mo) reprennent une contrainte
   déjà actée côté domaine (`ShelfPhoto`, contexte `recognition`) plutôt que d'en introduire une
   nouvelle pour cette feature.
