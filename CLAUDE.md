@@ -112,7 +112,11 @@ yarn format                        # oxfmt          (yarn format:check pour vér
 yarn api                           # démarre l'API   (http://localhost:3000/health)
 yarn web                           # démarre le front (http://localhost:4200)
 yarn bench                         # départage les adapters VLM (appels live, hors CI) — voir tools/bench/README.md
+yarn db:generate                   # régénère les migrations Drizzle depuis le schéma
+yarn db:migrate                    # applique les migrations à DATABASE_URL
+
 docker compose up --build          # API + front + Postgres + émulateur de bucket
+docker compose up -d db bucket     # juste les dépendances : requis par yarn check (voir ci-dessous)
 
 yarn nx run-many -t lint -p api    # cibler un projet
 yarn nx affected -t lint test build
@@ -122,6 +126,19 @@ yarn nx graph                      # visualise le graphe de dépendances
 
 Avant de démarrer l'API : `cp .env.example .env`. Une variable requise manquante fait échouer le
 démarrage avec la liste de ce qui manque — c'est voulu, ne pas la contourner.
+
+**`yarn test` et `yarn check` ont besoin de la pile** (`docker compose up -d db bucket`) : les
+adapters de `recognition-infrastructure` se testent contre le vrai Postgres et le vrai émulateur de
+bucket, jamais contre des doubles (voir Conventions). Sans eux, ces deux suites échouent — elles ne
+sont pas silencieusement passées, c'est le but. La CI démarre les deux mêmes services avant ses
+checks. Les tables ne sont pas créées au démarrage de l'API : `yarn db:migrate` les applique, une
+fois (un pod Cloud Run qui migre au boot courserait avec le suivant, ADR 0004).
+
+`BUCKET_EMULATOR_HOST` pointe le client bucket vers l'émulateur en local. **Pas
+`STORAGE_EMULATOR_HOST`** : `@google-cloud/storage` lit ce nom-là de lui-même et le prend pour
+l'URL de base entière, ce qui retire le préfixe `/storage/v1` que sert `fake-gcs-server` — tous les
+appels répondent 404. Le SDK documente sa variable comme expérimentale et renvoie vers
+`apiEndpoint`, que l'adapter passe.
 
 La **CI** (GitHub Actions, `.github/workflows/ci.yml`) tourne sur chaque PR et push `main` : oxlint
 et oxfmt sur tout le dépôt, puis `nx affected -t lint typecheck test build` sur les projets touchés
@@ -142,7 +159,8 @@ apps/api/                        # NestJS : composition root, orchestration inte
 apps/web/                        # React : feature-slice
 libs/recognition/domain/         # entités, value objects, ports — zéro dépendance technique
 libs/recognition/application/    # use cases, parlent aux ports
-libs/recognition/infrastructure/ # adapters (Gemini, Qwen, stub) derrière ShelfScannerPort
+libs/recognition/infrastructure/ # adapters (Gemini, Qwen, stub) derrière ShelfScannerPort,
+                                 # bucket (GCS) et Postgres (Drizzle : schéma + migrations)
 libs/shared/result/              # contenu partagé, une lib par sujet nommé
 libs/shared/text-match/          # normalisation + comparaison floue de chaînes (bench, réconciliation)
 tools/bench/                     # départage manuel des adapters VLM sur photos réelles (#10) — hors CI

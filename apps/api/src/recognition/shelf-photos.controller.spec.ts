@@ -64,6 +64,11 @@ class InMemoryArchive implements ShelfPhotoStoragePort, ShelfScanRepositoryPort 
     return this.records.get(id);
   }
 
+  /** How much was kept — zero is what FR-013 asks for on a refused photo. */
+  countRecords(): number {
+    return this.records.size;
+  }
+
   async markCompleted(id: ShelfScanId, books: readonly DetectedBook[]): Promise<void> {
     const record = this.leavePending(id);
     this.records.set(id, { ...record, status: 'completed', detectedBooks: [...books] });
@@ -167,5 +172,69 @@ describe('ShelfPhotosController, scanning a stored photo', () => {
     const { id } = await controller.store(uploadedPhoto);
 
     await expect(controller.scan(id)).rejects.toMatchObject({ status: 502 });
+  });
+});
+
+describe('ShelfPhotosController refuses a bad photo with 400, keeping nothing (FR-013)', () => {
+  it('when no file is sent at all', async () => {
+    const { controller } = controllerWith();
+
+    await expect(controller.store()).rejects.toMatchObject({ status: 400 });
+  });
+
+  it('when the media type is not a supported image', async () => {
+    const { controller } = controllerWith();
+
+    await expect(
+      controller.store({ buffer: jpegBytes, mimetype: 'application/pdf', originalname: 'a.pdf' }),
+    ).rejects.toMatchObject({ status: 400 });
+  });
+
+  it('when the image is empty', async () => {
+    const { controller } = controllerWith();
+
+    await expect(
+      controller.store({ buffer: Buffer.alloc(0), mimetype: 'image/jpeg', originalname: 'a.jpg' }),
+    ).rejects.toMatchObject({ status: 400 });
+  });
+
+  it('keeps no record of a photo it refused', async () => {
+    const { controller, archive } = controllerWith();
+
+    await expect(
+      controller.store({ buffer: Buffer.alloc(0), mimetype: 'image/jpeg' }),
+    ).rejects.toMatchObject({ status: 400 });
+
+    expect(archive.countRecords()).toBe(0);
+  });
+});
+
+describe('ShelfPhotosController, a scan it will not run', () => {
+  it('answers 404 for an id no submission answers to', async () => {
+    const { controller } = controllerWith();
+
+    await expect(controller.scan(crypto.randomUUID())).rejects.toMatchObject({ status: 404 });
+  });
+
+  it('answers 409 when the scan already answered', async () => {
+    const { controller } = controllerWith();
+    const { id } = await controller.store(uploadedPhoto);
+    await controller.scan(id);
+
+    await expect(controller.scan(id)).rejects.toMatchObject({ status: 409 });
+  });
+
+  // US3 scenario 2: the photo and its record outlive the failure of the provider.
+  it('keeps the photo and marks the scan failed when the provider is down', async () => {
+    const { controller, archive } = controllerWith(failingScanner);
+    const { id } = await controller.store(uploadedPhoto);
+
+    await expect(controller.scan(id)).rejects.toMatchObject({ status: 502 });
+
+    expect((await archive.get(id))?.status).toBe('failed');
+    expect((await archive.get(id))?.detectedBooks).toBeUndefined();
+    await expect(archive.retrieve(`default/shelf_photo/${id}`)).resolves.toBeInstanceOf(
+      ShelfPhotoValue,
+    );
   });
 });

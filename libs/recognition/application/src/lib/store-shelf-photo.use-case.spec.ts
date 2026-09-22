@@ -99,3 +99,19 @@ describe('StoreShelfPhotoUseCase, what it records of the file', () => {
     expect(stored[0]?.key).not.toContain('passwd');
   });
 });
+
+describe('StoreShelfPhotoUseCase, a photo the domain refuses (FR-013)', () => {
+  const refused = [
+    { name: 'an unsupported media type', photo: { ...aPhoto, mediaType: 'application/pdf' } },
+    { name: 'an empty file', photo: { ...aPhoto, bytes: new Uint8Array(0) } },
+  ];
+
+  it.each(refused)('stores nothing and records nothing for $name', async ({ photo }) => {
+    const { useCase, stored, created } = useCaseWith();
+
+    await expect(useCase.execute(photo)).rejects.toThrow(/ShelfPhoto/u);
+
+    expect(stored).toStrictEqual([]);
+    expect(created).toStrictEqual([]);
+  });
+});

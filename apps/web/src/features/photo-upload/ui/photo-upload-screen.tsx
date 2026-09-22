@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 
 import { submitShelfPhoto } from '../api/scan-shelf-photo';
+import { rejectionReason } from '../model/photo-constraints';
 import { IDLE, type UploadState } from '../model/upload-state';
 import { PhotoPicker } from './photo-picker';
 import styles from './photo-upload-screen.module.css';
@@ -23,6 +24,16 @@ export function PhotoUploadScreen() {
   const uploading = state.status === 'uploading';
 
   const select = useCallback((file: File | null) => {
+    const refusal = file === null ? undefined : rejectionReason(file);
+    if (refusal !== undefined) {
+      // Refused here, before any round trip: the API would say the same thing, one network
+      // wait later (FR-003, FR-009). The photo is dropped, so the button stays out of reach.
+      setPhoto(null);
+      setState({ status: 'error', message: refusal });
+
+      return;
+    }
+
     setPhoto(file);
     setState(IDLE);
   }, []);
@@ -48,16 +59,18 @@ export function PhotoUploadScreen() {
   return (
     <section className={styles.screen}>
       <PhotoPicker disabled={uploading} onSelect={select} />
-      <button
-        type="button"
-        className={styles.submit}
-        disabled={photo === null || uploading}
-        onClick={send}
-      >
-        Analyser l&apos;étagère
-      </button>
+      <SubmitButton disabled={photo === null || uploading} onSubmit={send} />
       <UploadOutcome state={state} onRestart={restart} />
     </section>
+  );
+}
+
+/** The one trigger of the screen — disabled with no photo, and while one is being read. */
+function SubmitButton({ disabled, onSubmit }: { disabled: boolean; onSubmit: () => void }) {
+  return (
+    <button type="button" className={styles.submit} disabled={disabled} onClick={onSubmit}>
+      Analyser l&apos;étagère
+    </button>
   );
 }
 

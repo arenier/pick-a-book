@@ -41,7 +41,8 @@ renumérotées en conséquence.
       `CLAUDE.md` (« API + front + Postgres + émulateur de bucket », research.md §9)
 - [X] T004 [P] Documenter dans `.env.example` les nouvelles variables : `BUCKET_NAME` (requis),
       `OWNER_ID` (optionnel, défaut `"default"`), `WEB_ORIGIN` (optionnel, défaut
-      `"http://localhost:4200"`), `STORAGE_EMULATOR_HOST` (optionnel, dev uniquement)
+      `"http://localhost:4200"`), `BUCKET_EMULATOR_HOST` (optionnel, dev uniquement — pas
+      `STORAGE_EMULATOR_HOST`, que le SDK GCS lit de lui-même et interprète mal, research.md §9)
 
 ---
 
@@ -93,7 +94,7 @@ par toutes les stories — aucune n'est testable avant que ce socle existe.
       sur une clé absente rejette
 - [X] T016 Implémenter
       `libs/recognition/infrastructure/src/lib/gcs-shelf-photo-storage.adapter.ts`
-      (`GcsShelfPhotoStorageAdapter`, `@google-cloud/storage`, lit `STORAGE_EMULATOR_HOST` si
+      (`GcsShelfPhotoStorageAdapter`, `@google-cloud/storage`, reçoit `BUCKET_EMULATOR_HOST` si
       présent) pour faire passer T015 (dépend de T015)
 - [X] T017 [P] Écrire
       `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.spec.ts`
@@ -108,7 +109,7 @@ par toutes les stories — aucune n'est testable avant que ce socle existe.
 - [X] T019 Exporter les deux nouveaux adapters depuis `libs/recognition/infrastructure/src/index.ts`
       (dépend de T016, T018)
 - [X] T020 Créer `apps/api/src/recognition/shelf-scan-archive.factory.ts` : construit le client GCS
-      (`BUCKET_NAME`, `STORAGE_EMULATOR_HOST`) et le pool Postgres (`DATABASE_URL`) depuis
+      (`BUCKET_NAME`, `BUCKET_EMULATOR_HOST`) et le pool Postgres (`DATABASE_URL`) depuis
       `Environment`, retourne les deux adapters instanciés (dépend de T016, T018)
 
 **Checkpoint** : le socle est prêt — les user stories peuvent démarrer.
@@ -222,45 +223,45 @@ compréhensible, jamais une page blanche.
 
 ### Tests pour User Story 2
 
-- [ ] T044 [P] [US2] Étendre `apps/web/src/features/photo-upload/model/photo-constraints.spec.ts` :
+- [X] T044 [P] [US2] Étendre `apps/web/src/features/photo-upload/model/photo-constraints.spec.ts` :
       un `mediaType` hors de `image/jpeg`, `image/png`, `image/webp`, `image/heic` échoue avec un
       message ; un `sizeInBytes` strictement positif requis, dépassant 20 971 520 octets (20 Mo)
       échoue avec un message (FR-009, data-model.md#SelectedPhoto)
-- [ ] T045 [P] [US2] Étendre `apps/web/src/features/photo-upload/ui/photo-upload-screen.spec.tsx` :
+- [X] T045 [P] [US2] Étendre `apps/web/src/features/photo-upload/ui/photo-upload-screen.spec.tsx` :
       choisir un fichier non-image ou trop volumineux affiche un message d'erreur sans appel
       réseau (US2 scénarios 1–2, FR-003)
-- [ ] T046 [P] [US2] Étendre `apps/api/src/recognition/shelf-photos.controller.spec.ts` :
+- [X] T046 [P] [US2] Étendre `apps/api/src/recognition/shelf-photos.controller.spec.ts` :
       `POST /shelf-photos` avec un fichier absent, vide, de type non supporté ou de plus de 20 Mo
       renvoie `400` (contracts/scan-api.md §1)
-- [ ] T047 [P] [US2] Étendre
+- [X] T047 [P] [US2] Étendre
       `libs/recognition/application/src/lib/scan-stored-shelf-photo.use-case.spec.ts` : quand
       `ShelfScannerPort.scan` rejette avec `ShelfScanFailed`, `execute({ id })` rejette (mappé en
       502 par le contrôleur)
-- [ ] T048 [P] [US2] Étendre `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts` :
+- [X] T048 [P] [US2] Étendre `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts` :
       une réponse 502 de l'étape 2 résout un `UploadState` `error` avec un message distinct de
       « aucun livre détecté » (US2 scénario 3, FR-006)
-- [ ] T049 [P] [US2] Étendre `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts`
+- [X] T049 [P] [US2] Étendre `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts`
       (`/speckit-analyze` G3, contracts/scan-api.md « Échec réseau ») : `fetch` qui rejette sans
       réponse HTTP (coupure réseau) sur l'étape 1 **et** sur l'étape 2 résout chacun un
       `UploadState` `error` avec un message distinct de ceux des cas 400/502/succès
 
 ### Implémentation pour User Story 2
 
-- [ ] T050 [US2] Implémenter
+- [X] T050 [US2] Implémenter
       `apps/web/src/features/photo-upload/model/photo-constraints.ts`
       (`ACCEPTED_MEDIA_TYPES`, `MAX_SIZE_IN_BYTES = 20_971_520`, fonction de validation) pour
       faire passer T044 (dépend de T044)
-- [ ] T051 [US2] Appeler la validation de `photo-constraints.ts` dans `photo-upload-screen.tsx`
+- [X] T051 [US2] Appeler la validation de `photo-constraints.ts` dans `photo-upload-screen.tsx`
       avant tout appel réseau, pour faire passer T045 (dépend de T045, T050)
-- [ ] T052 [US2] Vérifier/compléter le mappage d'erreur dans `shelf-photos.controller.ts`
+- [X] T052 [US2] Vérifier/compléter le mappage d'erreur dans `shelf-photos.controller.ts`
       (`BadRequestException` sur l'échec de `ShelfPhoto.of`) pour faire passer T046 (dépend de
       T046)
-- [ ] T053 [US2] Étendre `scan-stored-shelf-photo.use-case.ts` pour laisser remonter
+- [X] T053 [US2] Étendre `scan-stored-shelf-photo.use-case.ts` pour laisser remonter
       `ShelfScanFailed` telle quelle et `shelf-photos.controller.ts` pour la mapper en
       `BadGatewayException` (502), pour faire passer T047 (dépend de T047)
-- [ ] T054 [US2] Étendre `scan-shelf-photo.ts` pour distinguer le message d'erreur 502 de celui
+- [X] T054 [US2] Étendre `scan-shelf-photo.ts` pour distinguer le message d'erreur 502 de celui
       « aucun livre détecté », pour faire passer T048 (dépend de T048, T053)
-- [ ] T055 [US2] Étendre `scan-shelf-photo.ts` (`/speckit-analyze` G3) : entourer chacun des deux
+- [X] T055 [US2] Étendre `scan-shelf-photo.ts` (`/speckit-analyze` G3) : entourer chacun des deux
       appels `fetch` d'un `catch` distinct qui produit un message d'erreur réseau propre (différent
       des messages 400/502/succès), pour faire passer T049 (dépend de T049, T054)
 
@@ -279,21 +280,21 @@ conservé » du scénario 2.
 
 ### Tests pour User Story 3
 
-- [ ] T056 [P] [US3] Étendre
+- [X] T056 [P] [US3] Étendre
       `libs/recognition/application/src/lib/scan-stored-shelf-photo.use-case.spec.ts` : quand
       `ShelfScannerPort.scan` rejette, `repository.markFailed(id)` est appelé (et
       `markCompleted` ne l'est pas) — US3 scénario 2, FR-011
-- [ ] T057 [P] [US3] Étendre
+- [X] T057 [P] [US3] Étendre
       `libs/recognition/application/src/lib/store-shelf-photo.use-case.spec.ts` : quand
       `ShelfPhoto.of` rejette (format/poids), ni `storage.store` ni `repository.createPending` ne
       sont appelés — US3 scénario 3, FR-013
-- [ ] T058 [P] [US3] Étendre `scan-stored-shelf-photo.use-case.spec.ts` : `execute({ id })` sur un
+- [X] T058 [P] [US3] Étendre `scan-stored-shelf-photo.use-case.spec.ts` : `execute({ id })` sur un
       `id` sans enregistrement rejette avec une erreur dédiée (mappée en 404 par le contrôleur,
       contracts/scan-api.md)
-- [ ] T059 [P] [US3] Étendre `scan-stored-shelf-photo.use-case.spec.ts` : `execute({ id })` sur un
+- [X] T059 [P] [US3] Étendre `scan-stored-shelf-photo.use-case.spec.ts` : `execute({ id })` sur un
       enregistrement déjà `completed` ou `failed` rejette avec une erreur dédiée sans rappeler
       `ShelfScannerPort.scan` (mappée en 409, research.md §7)
-- [ ] T060 [P] [US3] Étendre
+- [X] T060 [P] [US3] Étendre
       `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.spec.ts` :
       `createPending` persiste `ownerId`, `photoMediaType`, `photoSizeBytes` et
       `originalFilename` tels quels, relisibles via `get` ; la colonne `uploads.bucket_key`
@@ -301,19 +302,19 @@ conservé » du scénario 2.
 
 ### Implémentation pour User Story 3
 
-- [ ] T061 [US3] Étendre `scan-stored-shelf-photo.use-case.ts` pour appeler
+- [X] T061 [US3] Étendre `scan-stored-shelf-photo.use-case.ts` pour appeler
       `repository.markFailed(id)` avant de relancer l'erreur du scanner, pour faire passer T056
       (dépend de T056)
-- [ ] T062 [US3] Vérifier `store-shelf-photo.use-case.ts` (l'ordre validation → stockage → création
+- [X] T062 [US3] Vérifier `store-shelf-photo.use-case.ts` (l'ordre validation → stockage → création
       déjà écrit en T028 doit satisfaire T057 sans modification ; sinon corriger l'ordre des
       appels) (dépend de T057)
-- [ ] T063 [US3] Ajouter une erreur dédiée (ex. `ShelfScanNotFound`) et l'appel correspondant dans
+- [X] T063 [US3] Ajouter une erreur dédiée (ex. `ShelfScanNotFound`) et l'appel correspondant dans
       `scan-stored-shelf-photo.use-case.ts` + mappage en `NotFoundException` (404) dans
       `shelf-photos.controller.ts`, pour faire passer T058 (dépend de T058)
-- [ ] T064 [US3] Ajouter une erreur dédiée (ex. `ShelfScanAlreadyProcessed`) et l'appel
+- [X] T064 [US3] Ajouter une erreur dédiée (ex. `ShelfScanAlreadyProcessed`) et l'appel
       correspondant dans `scan-stored-shelf-photo.use-case.ts` + mappage en `ConflictException`
       (409) dans `shelf-photos.controller.ts`, pour faire passer T059 (dépend de T059)
-- [ ] T065 [US3] Corriger `drizzle-shelf-scan-repository.adapter.ts` si T060 révèle un écart
+- [X] T065 [US3] Corriger `drizzle-shelf-scan-repository.adapter.ts` si T060 révèle un écart
       (dépend de T060)
 
 **Checkpoint**: User Story 3 fonctionnelle et testable isolément.
@@ -329,13 +330,13 @@ page.
 
 ### Tests pour User Story 4
 
-- [ ] T066 [P] [US4] Étendre `apps/web/src/features/photo-upload/ui/photo-upload-screen.spec.tsx` :
+- [X] T066 [P] [US4] Étendre `apps/web/src/features/photo-upload/ui/photo-upload-screen.spec.tsx` :
       depuis un état `success` ou `error`, déclencher « recommencer » ramène l'écran à l'état
       `idle` sans rechargement de page (US4 scénario 1, FR-008)
 
 ### Implémentation pour User Story 4
 
-- [ ] T067 [US4] Ajouter l'action « recommencer » (bouton + transition vers `idle`) dans
+- [X] T067 [US4] Ajouter l'action « recommencer » (bouton + transition vers `idle`) dans
       `photo-upload-screen.tsx` pour faire passer T066 (dépend de T066)
 
 **Checkpoint**: les quatre user stories sont fonctionnelles indépendamment.
@@ -344,15 +345,21 @@ page.
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T068 [P] `yarn lint` sur l'ensemble du dépôt — vérifie notamment que `apps/web`
+- [X] T068 [P] `yarn lint` sur l'ensemble du dépôt — vérifie notamment que `apps/web`
       (`scope:web`) n'importe aucun package `scope:api` et que le lint type-aware
       (`no-floating-promises`, etc.) passe sur les nouveaux adapters asynchrones
-- [ ] T069 [P] `yarn nx run-many -t test build` sur tous les projets touchés
+- [X] T069 [P] `yarn nx run-many -t test build` sur tous les projets touchés
       (`web`, `api`, `recognition-domain`, `recognition-application`, `recognition-infrastructure`)
-- [ ] T070 Exécuter manuellement les 4 scénarios de `quickstart.md` contre
+- [X] T070 Exécuter manuellement les 4 scénarios de `quickstart.md` contre
       `docker compose up --build`, y compris la vérification visuelle de SC-004 (largeur ≤ 400px,
-      scénario 1 étape 1)
-- [ ] T071 Relire `CLAUDE.md` (section Commandes) : le commentaire `docker compose up --build`
+      scénario 1 étape 1) — exécuté le 22/09/2026 contre Postgres + `fake-gcs-server` et l'API
+      réelle : 201/200 puis 409 sur rejeu, 404 sur id inconnu, 400 sur un PDF (rien en base),
+      ligne `uploads`+`shelf_scans` jointe conforme, objet nommé par l'`id` seul, en-tête CORS
+      présent ; écran piloté à 360px (0px de débordement horizontal, « recommencer » revient à
+      l'état initial, refus local du PDF sans appel réseau). Scénario 3 couvert par les tests
+      (`shelf-photos.controller.spec.ts`) plutôt qu'en live, pour ne pas appeler un vrai
+      fournisseur VLM
+- [X] T071 Relire `CLAUDE.md` (section Commandes) : le commentaire `docker compose up --build`
       décrit désormais un stack réellement conforme (émulateur de bucket présent) — ajuster si un
       détail diverge
 

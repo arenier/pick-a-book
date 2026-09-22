@@ -120,12 +120,26 @@ jobs:
       #   PR -> merge-base with main; push to main -> last green commit.
       - uses: nrwl/nx-set-shas@v5
 
+      # The two adapters of `recognition-infrastructure` are tested against the real
+      # technologies, not doubles (CLAUDE.md: "les adapters se testent contre la vraie
+      # techno"), so CI runs the very services the compose stack defines — same image, same
+      # versions as a developer's machine. Without this step those suites fail here rather
+      # than being silently skipped, which is the point: a green run means they ran.
+      - name: Start Postgres and the bucket emulator
+        run: docker compose up -d --wait db bucket
+
       # oxlint and oxfmt cover the whole repo (fast, not bound to the Nx graph); nx affected
       # restricts lint (ESLint/boundaries), typecheck and test to the touched projects.
       # `--type-aware` runs the tsgolint engine (oxlint-tsgolint): it type-checks, so it costs
       # roughly +0.6 s on this repo — measured, and small enough to stay in this step rather
       # than earn a job of its own.
       - name: Checks
+        env:
+          # The published ports of the compose stack, as `.env.example` documents them for a
+          # developer running `yarn api` on the host.
+          DATABASE_URL: postgresql://pick_a_book:pick_a_book@localhost:5433/pick_a_book
+          BUCKET_NAME: pick-a-book-photos
+          BUCKET_EMULATOR_HOST: http://localhost:4443
         run: |
           yarn oxlint --type-aware
           yarn format:check

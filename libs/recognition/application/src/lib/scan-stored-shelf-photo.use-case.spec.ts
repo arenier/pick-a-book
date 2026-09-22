@@ -15,6 +15,8 @@ import {
 import { describe, expect, it } from 'vitest';
 
 import { ScanStoredShelfPhotoUseCase } from './scan-stored-shelf-photo.use-case.js';
+import { ShelfScanAlreadyProcessed } from './shelf-scan-already-processed.error.js';
+import { ShelfScanNotFound } from './shelf-scan-not-found.error.js';
 
 const jpegBytes = new Uint8Array([0xff, 0xd8, 0xff, 0xe0]);
 const storedId = '1f9c2e3a-4b5d-4e6f-8a7b-9c0d1e2f3a4b';
@@ -133,5 +135,63 @@ describe('ScanStoredShelfPhotoUseCase', () => {
 
     expect(result.books).toStrictEqual([]);
     expect(completed).toStrictEqual([{ id: storedId, books: [] }]);
+  });
+});
+
+describe('ScanStoredShelfPhotoUseCase, when the provider fails (US2, US3)', () => {
+  it('lets the failure through, for the controller to map to 502', async () => {
+    const { useCase } = useCaseWith(new ShelfScanFailed('provider unavailable'));
+
+    await expect(useCase.execute({ id: storedId })).rejects.toBeInstanceOf(ShelfScanFailed);
+  });
+
+  // FR-011: the photo stays, and the record says what became of it. A failed scan is worth
+  // keeping — it is what a later retry would start from (US3 scenario 2).
+  it('records the failure against the photo, and no books', async () => {
+    const { useCase, failed, completed } = useCaseWith(new ShelfScanFailed('provider down'));
+
+    await expect(useCase.execute({ id: storedId })).rejects.toBeInstanceOf(ShelfScanFailed);
+
+    expect(failed).toStrictEqual([storedId]);
+    expect(completed).toStrictEqual([]);
+  });
+});
+
+describe('ScanStoredShelfPhotoUseCase, a scan it will not run', () => {
+  it('refuses an id no submission answers to (404)', async () => {
+    const { useCase, scanned } = useCaseWith([camus], []);
+
+    await expect(useCase.execute({ id: storedId })).rejects.toBeInstanceOf(ShelfScanNotFound);
+    expect(scanned).toStrictEqual([]);
+  });
+
+  // The guard behind the 409: never pay twice for a VLM call that already answered, and
+  // never overwrite the answer it gave (research.md §7).
+  it('refuses a scan that already answered, without calling the provider again', async () => {
+    const completedRecord = {
+      ...pendingRecord,
+      status: 'completed',
+      detectedBooks: [camus],
+    } satisfies ShelfScanRecord;
+    const { useCase, scanned } = useCaseWith([camus], [completedRecord]);
+
+    await expect(useCase.execute({ id: storedId })).rejects.toBeInstanceOf(
+      ShelfScanAlreadyProcessed,
+    );
+    expect(scanned).toStrictEqual([]);
+  });
+
+  it('refuses a scan that already failed, just the same', async () => {
+    const failedRecord = {
+      ...pendingRecord,
+      status: 'failed',
+      detectedBooks: undefined,
+    } satisfies ShelfScanRecord;
+    const { useCase, scanned } = useCaseWith([camus], [failedRecord]);
+
+    await expect(useCase.execute({ id: storedId })).rejects.toBeInstanceOf(
+      ShelfScanAlreadyProcessed,
+    );
+    expect(scanned).toStrictEqual([]);
   });
 });

@@ -41,6 +41,8 @@ const select = (file: File) => {
 
 const submit = () => fireEvent.click(screen.getByRole('button', { name: /analyser/iu }));
 
+const restart = () => fireEvent.click(screen.getByRole('button', { name: /recommencer/iu }));
+
 const submitDisabled = () =>
   screen.getByRole('button', { name: /analyser/iu }).hasAttribute('disabled');
 
@@ -119,5 +121,104 @@ describe('PhotoUploadScreen, one analysis at a time (FR-007)', () => {
     await waitFor(() => {
       expect(input.hasAttribute('disabled')).toBe(true);
     });
+  });
+});
+
+describe('PhotoUploadScreen, a file the API would refuse (US2)', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('refuses a file that is not an image, without calling the API', async () => {
+    const fetchMock = mockFetch();
+    render(<PhotoUploadScreen />);
+
+    select(new File([new Uint8Array([1, 2, 3])], 'facture.pdf', { type: 'application/pdf' }));
+
+    await expect(screen.findByRole('alert')).resolves.toBeDefined();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(submitDisabled()).toBe(true);
+  });
+
+  it('refuses a photo heavier than 20 MB, without calling the API', async () => {
+    const fetchMock = mockFetch();
+    render(<PhotoUploadScreen />);
+    const tooHeavy = jpeg();
+    Object.defineProperty(tooHeavy, 'size', { value: 20 * 1024 * 1024 + 1 });
+
+    select(tooHeavy);
+
+    await expect(screen.findByText(/20 Mo/u)).resolves.toBeDefined();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  // The refusal is undone by choosing another photo, not by reloading the page (FR-008).
+  it('lets another photo be chosen right after a refusal', async () => {
+    mockFetch(...storedThenScanned([]));
+    render(<PhotoUploadScreen />);
+
+    select(new File([new Uint8Array([1, 2, 3])], 'facture.pdf', { type: 'application/pdf' }));
+    await expect(screen.findByRole('alert')).resolves.toBeDefined();
+    select(jpeg());
+    submit();
+
+    await expect(screen.findByText(/aucun livre/iu)).resolves.toBeDefined();
+  });
+});
+
+describe('PhotoUploadScreen, starting over (US4)', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('returns to the initial state after a result, ready for another photo', async () => {
+    mockFetch(
+      ...storedThenScanned([{ author: 'Albert Camus', title: 'La Peste', confidence: 0.92 }]),
+    );
+    render(<PhotoUploadScreen />);
+
+    select(jpeg());
+    submit();
+    await expect(screen.findByText('La Peste')).resolves.toBeDefined();
+    restart();
+
+    expect(screen.queryByText('La Peste')).toBeNull();
+    expect(screen.queryByRole('button', { name: /recommencer/iu })).toBeNull();
+    expect(submitDisabled()).toBe(true);
+  });
+
+  it('returns to the initial state after an error too', async () => {
+    mockFetch(new TypeError('Failed to fetch'));
+    render(<PhotoUploadScreen />);
+
+    select(jpeg());
+    submit();
+    await expect(screen.findByRole('alert')).resolves.toBeDefined();
+    restart();
+
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+});
+
+describe('PhotoUploadScreen, two photos in a row (SC-003)', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('sends a second photo without the page ever reloading', async () => {
+    mockFetch(
+      ...storedThenScanned([]),
+      ...storedThenScanned([{ author: 'Albert Camus', title: 'La Peste', confidence: 0.92 }]),
+    );
+    render(<PhotoUploadScreen />);
+
+    select(jpeg());
+    submit();
+    await expect(screen.findByText(/aucun livre/iu)).resolves.toBeDefined();
+    restart();
+    select(jpeg());
+    submit();
+
+    await expect(screen.findByText('La Peste')).resolves.toBeDefined();
   });
 });

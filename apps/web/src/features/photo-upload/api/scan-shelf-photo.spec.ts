@@ -44,6 +44,10 @@ const mockFetch = (...responses: (Response | Error)[]): RecordedCall[] => {
   return calls;
 };
 
+/** The message a failed submission carries, or nothing when it did not fail. */
+const messageOf = (state: Awaited<ReturnType<typeof submitShelfPhoto>>) =>
+  state.status === 'error' ? state.message : '';
+
 /** The conditional lives here rather than in a test, which is where lint wants it. */
 const photoField = (body: BodyInit | null | undefined) =>
   body instanceof FormData ? body.get('photo') : null;
@@ -143,5 +147,50 @@ describe('submitShelfPhoto, when something goes wrong', () => {
     const state = await submitShelfPhoto(photo);
 
     expect(state.status).toBe('error');
+  });
+});
+
+describe('submitShelfPhoto, telling the failures apart (FR-006)', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('says an upstream failure (502) in words of its own', async () => {
+    mockFetch(jsonResponse(201, { id: 'a-uuid' }), jsonResponse(502, { statusCode: 502 }));
+
+    const state = await submitShelfPhoto(photo);
+
+    expect(state.status).toBe('error');
+    expect(messageOf(state)).toMatch(/service de reconnaissance/iu);
+    expect(messageOf(state)).not.toMatch(/aucun livre/iu);
+  });
+
+  // A dropped line is neither a refused photo nor a broken provider: it gets its own words
+  // (contracts/scan-api.md, "Échec réseau").
+  it('says a dropped connection on the first call in words of its own', async () => {
+    mockFetch(new TypeError('Failed to fetch'));
+
+    const state = await submitShelfPhoto(photo);
+
+    expect(messageOf(state)).toMatch(/connexion/iu);
+  });
+
+  it('says a dropped connection on the second call the same way', async () => {
+    mockFetch(jsonResponse(201, { id: 'a-uuid' }), new TypeError('Failed to fetch'));
+
+    const state = await submitShelfPhoto(photo);
+
+    expect(messageOf(state)).toMatch(/connexion/iu);
+  });
+
+  it('never shows the same message for a refusal, a provider failure and a dropped line', async () => {
+    mockFetch(jsonResponse(400, { statusCode: 400 }));
+    const refused = messageOf(await submitShelfPhoto(photo));
+    mockFetch(jsonResponse(201, { id: 'a-uuid' }), jsonResponse(502, { statusCode: 502 }));
+    const upstream = messageOf(await submitShelfPhoto(photo));
+    mockFetch(new TypeError('Failed to fetch'));
+    const dropped = messageOf(await submitShelfPhoto(photo));
+
+    expect(new Set([refused, upstream, dropped]).size).toBe(3);
   });
 });

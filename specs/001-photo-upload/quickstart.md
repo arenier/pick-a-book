@@ -15,6 +15,10 @@ apparaître le sous-dossier correspondant dans le bucket émulé.
 
 ## Lancer les deux services
 
+Postgres et l'émulateur de bucket doivent tourner (`docker compose up -d db bucket`), et le schéma
+être appliqué une fois (`yarn db:migrate`) — les tables `uploads` et `shelf_scans` ne sont pas
+créées au démarrage de l'API (voir `libs/recognition/infrastructure/drizzle.config.ts`).
+
 ```bash
 yarn api     # http://localhost:3000 (POST /shelf-photos, POST /shelf-photos/:id/scan, GET /health)
 yarn web     # http://localhost:4200
@@ -85,6 +89,11 @@ research.md §9.)
 2. **Attendu** : retour à l'état initial, sans rechargement de page, prêt pour un nouvel envoi.
 
 ## Tests automatisés
+
+Les specs des deux adapters ont besoin de la même pile que ci-dessus (`docker compose up -d db
+bucket`) : elles s'exécutent contre Postgres et l'émulateur, pas contre des doubles. Le nom de la
+variable qui pointe vers l'émulateur est `BUCKET_EMULATOR_HOST`, jamais `STORAGE_EMULATOR_HOST`
+(research.md §9).
 
 ```bash
 yarn nx test web                        # specs de la feature (TDD : écrites avant le code, cf. tasks.md)

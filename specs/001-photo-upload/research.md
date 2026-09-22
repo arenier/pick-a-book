@@ -263,8 +263,15 @@ reprend la colonne `type` de la table `uploads`, research.md §8. En local et en
 l'émulateur que `CLAUDE.md` mentionne déjà dans la description de la stack (`docker compose up
 --build # API + front + Postgres + émulateur de bucket`), pas encore présent dans le fichier
 réel : cette feature comble cet écart plutôt que d'en introduire un nouveau. Le client GCS pointe
-vers l'émulateur via une variable d'environnement optionnelle (`STORAGE_EMULATOR_HOST`, absente en
-production — le SDK s'adresse alors à la vraie API GCS).
+vers l'émulateur via une variable d'environnement optionnelle, **`BUCKET_EMULATOR_HOST`** (absente
+en production — le SDK s'adresse alors à la vraie API GCS), passée au SDK comme `apiEndpoint`.
+
+**Amendement du 22/09/2026, constaté à l'implémentation** : la variable ne peut pas s'appeler
+`STORAGE_EMULATOR_HOST`. `@google-cloud/storage` lit ce nom **de lui-même** et l'utilise comme URL
+de base entière (`baseUrl = EMULATOR_HOST || \`${apiEndpoint}/storage/v1\``, `storage.js`), ce qui
+retire le préfixe `/storage/v1` que `fake-gcs-server` sert : tous les appels répondent alors 404.
+Le SDK documente cette variable comme expérimentale et renvoie explicitement vers `apiEndpoint` —
+c'est ce que fait l'adapter, avec un nom de variable qui appartient au projet.
 
 **Rationale**: `@google-cloud/storage` est le SDK officiel du fournisseur déjà choisi (ADR 0004),
 pas un nouvel arbitrage. `fake-gcs-server` est le même choix de catégorie que `db` dans le

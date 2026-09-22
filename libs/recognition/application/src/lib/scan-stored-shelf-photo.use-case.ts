@@ -41,7 +41,18 @@ export class ScanStoredShelfPhotoUseCase {
     }
 
     const photo = await this.storage.retrieve(record.photoBucketKey, record.photoMediaType);
-    const detected = await this.shelfScanner.scan(photo);
+
+    let detected;
+    try {
+      detected = await this.shelfScanner.scan(photo);
+    } catch (error) {
+      // The scan is over either way: the record says so, and the photo stays where it is
+      // (FR-011, US3 scenario 2). The failure is then re-raised untouched — mapping it to a
+      // status code is the controller's business, not this one's.
+      await this.repository.markFailed(record.id);
+      throw error;
+    }
+
     await this.repository.markCompleted(record.id, detected);
 
     return { books: detected.map((book) => toDto(book)) };
