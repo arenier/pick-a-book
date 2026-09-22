@@ -23,7 +23,10 @@
     ]
   },
   "dependencies": {
+    "@google-cloud/storage": "^8.2.0",
     "@pick-a-book/recognition-domain": "workspace:*",
+    "drizzle-orm": "^0.45.3",
+    "pg": "^8.23.0",
     "tslib": "^2.3.0",
     "zod": "^4.5.4"
   }

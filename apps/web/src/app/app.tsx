@@ -1,20 +1,21 @@
+import { PhotoUploadScreen } from '../features/photo-upload/ui/photo-upload-screen';
 import styles from './app.module.css';
 
 /**
  * Frontend shell.
  *
- * The split into feature slices (ADR 0002) starts with the first real feature — uploading a
- * shelf photo. Nothing to extract as long as there is nothing inside.
+ * Holds the page's frame and mounts the feature slices (ADR 0002) — one so far, uploading a
+ * shelf photo. Nothing of the feature leaks up here: the shell does not know what a scan is.
  */
 export function App() {
   return (
     <main className={styles.shell}>
       <h1>pick-a-book</h1>
       <p>
-        Prendre une etagere en photo, en tirer des couples (auteur, titre), les reconcilier contre
-        un referentiel bibliographique.
+        Prendre une étagère en photo, en tirer des couples (auteur, titre), les réconcilier contre
+        un référentiel bibliographique.
       </p>
-      <p className={styles.status}>Interface a construire.</p>
+      <PhotoUploadScreen />
     </main>
   );
 }

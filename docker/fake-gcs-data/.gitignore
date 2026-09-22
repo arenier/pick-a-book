@@ -1,0 +1,8 @@
+# The emulator writes everything uploaded locally straight into this directory: scratch data,
+# never something to commit. The bucket directory itself stays tracked — under the filesystem
+# backend, a directory under the root is what makes a bucket exist, so an empty one is the
+# whole seeding step.
+*
+!.gitignore
+!pick-a-book-photos/
+!pick-a-book-photos/.gitkeep

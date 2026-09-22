@@ -10,10 +10,15 @@ async function bootstrap() {
   const environment = loadEnvironment();
 
   const app = await NestFactory.create(AppModule.withEnvironment(environment));
+  // The frontend is served from a bucket and the API from Cloud Run (ADR 0004), so the two
+  // never share an origin: without this, every browser call fails in the console rather
+  // than in the application.
+  app.enableCors({ origin: environment.webOrigin });
   await app.listen(environment.port, '0.0.0.0');
 
   Logger.log(`API listening on http://localhost:${environment.port} (${environment.nodeEnv})`);
   Logger.log(`Health: http://localhost:${environment.port}/health`);
+  Logger.log(`Accepting browser calls from ${environment.webOrigin}`);
 }
 
 bootstrap().catch((error: unknown) => {

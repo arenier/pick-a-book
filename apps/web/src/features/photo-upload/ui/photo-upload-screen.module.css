@@ -1,0 +1,88 @@
+/*
+ * Laid out for a phone held in one hand in a second-hand shop, which is where this screen is
+ * actually used: a single column, controls wide enough to hit with a thumb, and nothing with
+ * a fixed width that could push the page sideways below 360px (SC-004).
+ */
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+/* A file input carries its own button, whose label the browser sizes as it pleases: without
+   this, a long filename widens the input past the viewport and scrolls the page sideways. */
+.picker input {
+  max-width: 100%;
+}
+
+.submit,
+.restart {
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #2b2b2b;
+  background: #2b2b2b;
+  color: #fff;
+  cursor: pointer;
+}
+
+.restart {
+  background: transparent;
+  color: #2b2b2b;
+}
+
+.submit:disabled {
+  background: #9b9b9b;
+  border-color: #9b9b9b;
+  cursor: not-allowed;
+}
+
+.loading {
+  color: #6b6b6b;
+  font-style: italic;
+}
+
+.error {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #b3261e;
+  color: #b3261e;
+  /* Long words (a URL, a filename) break rather than widen the page. */
+  overflow-wrap: anywhere;
+}
+
+.empty {
+  color: #6b6b6b;
+}
+
+.books {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.book {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e3e3e3;
+  overflow-wrap: anywhere;
+}
+
+.title {
+  font-weight: 600;
+}
+
+.author {
+  color: #6b6b6b;
+}

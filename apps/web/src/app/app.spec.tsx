@@ -15,4 +15,12 @@ describe('App', () => {
 
     expect(screen.getByRole('heading', { name: 'pick-a-book' })).toBeDefined();
   });
+
+  // The shell's only job now: mount the one feature there is (ADR 0002, feature slices).
+  it('mounts the photo upload screen', () => {
+    render(<App />);
+
+    expect(screen.getByLabelText(/photo/iu)).toBeDefined();
+    expect(screen.getByRole('button', { name: /analyser/iu })).toBeDefined();
+  });
 });

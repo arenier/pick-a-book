@@ -20,6 +20,36 @@ export interface Environment {
    * The domain knows nothing about it: only `infrastructure` uses it.
    */
   readonly databaseUrl: string;
+  /**
+   * Bucket the shelf photos are kept in (ADR 0004). Required for the same reason
+   * `DATABASE_URL` is: an upload that lands nowhere is only noticed on the first photo.
+   */
+  readonly bucketName: string;
+  /**
+   * Owner segment of a stored photo's key (research.md §10 of specs/001-photo-upload).
+   *
+   * A fixed value, not an account: this feature introduces no authentication. Laying the
+   * bucket out per owner from the start means real accounts later change where this value
+   * comes from, never the layout of what is already stored.
+   */
+  readonly ownerId: string;
+  /**
+   * Points the bucket client at the local emulator instead of Google's API; absent in
+   * production (ADR 0004).
+   *
+   * Deliberately not named `STORAGE_EMULATOR_HOST`: the Cloud Storage SDK reads that one by
+   * itself and takes it as the whole base URL, dropping the `/storage/v1` prefix the
+   * emulator serves — so every call 404s. The SDK's own documentation calls that variable
+   * experimental and points at `apiEndpoint`, which is what the adapter uses.
+   */
+  readonly bucketEmulatorHost: string | undefined;
+  /**
+   * Origin allowed to call this API from a browser.
+   *
+   * Optional, unlike `DATABASE_URL`: the frontend and the API are served from two separate
+   * origins (ADR 0004), and the local pair is known — `yarn web` on 4200, `yarn api` on 3000.
+   */
+  readonly webOrigin: string;
   /** Which VLM answers a scan, and the key it needs (ADR 0005). */
   readonly shelfScanner: ShelfScannerConfiguration;
 }
@@ -100,6 +130,12 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
     problems.push(`PORT is "${rawPort}" — expected an integer between 1 and 65535`);
   }
 
+  const bucketName = required(source, 'BUCKET_NAME', problems);
+  const ownerId = optional(source, 'OWNER_ID', 'default');
+  const rawBucketEmulatorHost = source.BUCKET_EMULATOR_HOST;
+  const bucketEmulatorHost = isPresent(rawBucketEmulatorHost) ? rawBucketEmulatorHost : undefined;
+  const webOrigin = optional(source, 'WEB_ORIGIN', 'http://localhost:4200');
+
   const shelfScanner = readShelfScanner(source, problems);
 
   if (problems.length > 0) {
@@ -110,6 +146,10 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
     nodeEnv,
     port,
     databaseUrl,
+    bucketName,
+    ownerId,
+    bucketEmulatorHost,
+    webOrigin,
     shelfScanner,
   };
 }
@@ -153,6 +193,13 @@ function required(source: NodeJS.ProcessEnv, name: string, problems: string[]): 
 
   problems.push(`${name} is required and is not set`);
   return '';
+}
+
+/** Same emptiness rule as `required`, but a blank value falls back instead of failing. */
+function optional(source: NodeJS.ProcessEnv, name: string, fallback: string): string {
+  const value = source[name];
+
+  return isPresent(value) ? value : fallback;
 }
 
 function isPresent(value: string | undefined): value is string {
