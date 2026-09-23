@@ -53,61 +53,61 @@ par toutes les stories — aucune n'est testable avant que ce socle existe.
 
 **⚠️ CRITIQUE** : aucune story ne démarre avant la fin de cette phase.
 
-- [ ] T005 [P] Écrire les tests (doivent échouer) dans
+- [X] T005 [P] Écrire les tests (doivent échouer) dans
       `apps/api/src/config/environment.spec.ts` : `BUCKET_NAME` requis (boot échoue et liste la
       variable manquante, comme `DATABASE_URL`) ; `OWNER_ID` absent → `"default"` ; `WEB_ORIGIN`
       absent → `"http://localhost:4200"`
-- [ ] T006 Étendre `apps/api/src/config/environment.ts` (`Environment`, `loadEnvironment`) pour
+- [X] T006 Étendre `apps/api/src/config/environment.ts` (`Environment`, `loadEnvironment`) pour
       lire et valider `BUCKET_NAME`, `OWNER_ID`, `WEB_ORIGIN` et faire passer T005 (dépend de T005)
-- [ ] T007 Appeler `app.enableCors({ origin: environment.webOrigin })` dans `apps/api/src/main.ts`
+- [X] T007 Appeler `app.enableCors({ origin: environment.webOrigin })` dans `apps/api/src/main.ts`
       (dépend de T006)
-- [ ] T008 [P] Écrire `libs/recognition/domain/src/lib/shelf-photo-storage.port.spec.ts` : vérifie
+- [X] T008 [P] Écrire `libs/recognition/domain/src/lib/shelf-photo-storage.port.spec.ts` : vérifie
       la forme de `ShelfPhotoStoragePort` (`store(photo: ShelfPhoto, key: string): Promise<void>`,
       `retrieve(key: string, mediaType: ShelfPhotoMediaType): Promise<ShelfPhoto>`) et de son
       injection token
-- [ ] T009 [P] Créer `libs/recognition/domain/src/lib/shelf-photo-storage.port.ts`
+- [X] T009 [P] Créer `libs/recognition/domain/src/lib/shelf-photo-storage.port.ts`
       (`ShelfPhotoStoragePort`, `SHELF_PHOTO_STORAGE_PORT`) pour faire passer T008 (dépend de T008)
-- [ ] T010 [P] Écrire `libs/recognition/domain/src/lib/shelf-scan-repository.port.spec.ts` :
+- [X] T010 [P] Écrire `libs/recognition/domain/src/lib/shelf-scan-repository.port.spec.ts` :
       vérifie la forme de `ShelfScanId`, `ShelfScanRecord` (`id`, `ownerId`, `photoBucketKey`,
       `photoMediaType`, `photoSizeBytes`, `originalFilename`, `status: 'pending' | 'completed' |
       'failed'`, `detectedBooks: DetectedBook[] | undefined`, `createdAt`,
       data-model.md#ShelfScanRecord) et de `ShelfScanRepositoryPort`
       (`createPending`, `get`, `markCompleted`, `markFailed`)
-- [ ] T011 [P] Créer `libs/recognition/domain/src/lib/shelf-scan-repository.port.ts`
+- [X] T011 [P] Créer `libs/recognition/domain/src/lib/shelf-scan-repository.port.ts`
       (`ShelfScanRepositoryPort`, `SHELF_SCAN_REPOSITORY_PORT`) pour faire passer T010 (dépend de
       T010)
-- [ ] T012 Exporter les deux nouveaux ports depuis `libs/recognition/domain/src/index.ts` (dépend
+- [X] T012 Exporter les deux nouveaux ports depuis `libs/recognition/domain/src/index.ts` (dépend
       de T009, T011)
-- [ ] T013 Créer le schéma Drizzle `libs/recognition/infrastructure/src/lib/drizzle/schema.ts` :
+- [X] T013 Créer le schéma Drizzle `libs/recognition/infrastructure/src/lib/drizzle/schema.ts` :
       table `uploads` (`id uuid PK`, `owner_id text NOT NULL`, `type text NOT NULL`,
       `bucket_key text NOT NULL`, `media_type text NOT NULL`, `size_bytes integer NOT NULL`,
       `original_filename text NOT NULL`, `created_at timestamptz NOT NULL DEFAULT now()`) et table
       `shelf_scans` (`id uuid PK DEFAULT gen_random_uuid()`, `upload_id uuid NOT NULL UNIQUE
       REFERENCES uploads(id)`, `status text NOT NULL`, `detected_books jsonb`) — research.md §8
-- [ ] T014 Générer la migration initiale via `drizzle-kit` pour `uploads` et `shelf_scans` (dépend
+- [X] T014 Générer la migration initiale via `drizzle-kit` pour `uploads` et `shelf_scans` (dépend
       de T013)
-- [ ] T015 [P] Écrire
+- [X] T015 [P] Écrire
       `libs/recognition/infrastructure/src/lib/gcs-shelf-photo-storage.adapter.spec.ts` contre
       l'émulateur de bucket (`docker compose`) : `store(photo, key)` écrit les octets et le type
       MIME en métadonnée à `key` ; `retrieve(key, mediaType)` relit les mêmes octets ; `retrieve`
       sur une clé absente rejette
-- [ ] T016 Implémenter
+- [X] T016 Implémenter
       `libs/recognition/infrastructure/src/lib/gcs-shelf-photo-storage.adapter.ts`
       (`GcsShelfPhotoStorageAdapter`, `@google-cloud/storage`, lit `STORAGE_EMULATOR_HOST` si
       présent) pour faire passer T015 (dépend de T015)
-- [ ] T017 [P] Écrire
+- [X] T017 [P] Écrire
       `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.spec.ts`
       contre le Postgres du `docker-compose.yml` existant : `createPending(photo)` insère
       `uploads` + `shelf_scans` dans une même transaction et renvoie l'`id` (celui de `uploads`,
       research.md §8) ; `get(id)` reconstruit un `ShelfScanRecord` par jointure ; `markCompleted`
       et `markFailed` ne réussissent que depuis `status = 'pending'` et échouent sinon (support du
       409, research.md §7) ; `get` sur un `id` absent renvoie `undefined` (support du 404)
-- [ ] T018 Implémenter
+- [X] T018 Implémenter
       `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.ts`
       (`DrizzleShelfScanRepositoryAdapter`) pour faire passer T017 (dépend de T017)
-- [ ] T019 Exporter les deux nouveaux adapters depuis `libs/recognition/infrastructure/src/index.ts`
+- [X] T019 Exporter les deux nouveaux adapters depuis `libs/recognition/infrastructure/src/index.ts`
       (dépend de T016, T018)
-- [ ] T020 Créer `apps/api/src/recognition/shelf-scan-archive.factory.ts` : construit le client GCS
+- [X] T020 Créer `apps/api/src/recognition/shelf-scan-archive.factory.ts` : construit le client GCS
       (`BUCKET_NAME`, `STORAGE_EMULATOR_HOST`) et le pool Postgres (`DATABASE_URL`) depuis
       `Environment`, retourne les deux adapters instanciés (dépend de T016, T018)
 

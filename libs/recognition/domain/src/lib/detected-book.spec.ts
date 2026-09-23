@@ -4,7 +4,7 @@ import { Author } from './author.js';
 import { BookTitle } from './book-title.js';
 import { Confidence } from './confidence.js';
 import { DetectedBook } from './detected-book.js';
-import { ShelfPhoto } from './shelf-photo.js';
+import { ShelfPhoto, isShelfPhotoMediaType } from './shelf-photo.js';
 
 describe('Author', () => {
   it('normalises whitespace', () => {
@@ -40,6 +40,12 @@ describe('Confidence', () => {
 describe('ShelfPhoto', () => {
   it('rejects an empty image', () => {
     expect(() => ShelfPhoto.of(new Uint8Array(0), 'image/jpeg')).toThrow(/empty/u);
+  });
+
+  // Proves a media type read back from storage, where it is a bare string again.
+  it('tells a supported media type from any other string', () => {
+    expect(isShelfPhotoMediaType('image/heic')).toBe(true);
+    expect(isShelfPhotoMediaType('application/pdf')).toBe(false);
   });
 
   it('rejects an unknown media type', () => {

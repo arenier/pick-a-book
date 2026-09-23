@@ -22,6 +22,20 @@ export interface Environment {
   readonly databaseUrl: string;
   /** Which VLM answers a scan, and the key it needs (ADR 0005). */
   readonly shelfScanner: ShelfScannerConfiguration;
+  /** Bucket that keeps the shelf photos (ADR 0004). */
+  readonly bucketName: string;
+  /**
+   * Development only: where the GCS emulator listens. Absent in production, where the SDK
+   * talks to the real API.
+   */
+  readonly storageEmulatorHost: string | undefined;
+  /**
+   * Owner segment of every bucket key (`{ownerId}/shelf_photo/{id}`). A fixed value until
+   * there are user accounts — changing where it comes from will not move a single object.
+   */
+  readonly ownerId: string;
+  /** Origin of the frontend, the one CORS lets through (ADR 0004: two origins). */
+  readonly webOrigin: string;
 }
 
 /**
@@ -58,6 +72,11 @@ const PROVIDER_KEY_VARIABLES = {
 } as const;
 
 const NODE_ENVIRONMENTS: readonly NodeEnvironment[] = ['development', 'test', 'production'];
+
+const DEFAULT_OWNER_ID = 'default';
+
+/** The port of `yarn web`: the frontend a fresh checkout talks to. */
+const DEFAULT_WEB_ORIGIN = 'http://localhost:4200';
 
 export class InvalidEnvironment extends Error {
   constructor(problems: readonly string[]) {
@@ -102,6 +121,9 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
 
   const shelfScanner = readShelfScanner(source, problems);
 
+  const photoStorage = readPhotoStorage(source, problems);
+  const webOrigin = readWebOrigin(source, problems);
+
   if (problems.length > 0) {
     throw new InvalidEnvironment(problems);
   }
@@ -111,7 +133,34 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
     port,
     databaseUrl,
     shelfScanner,
+    ...photoStorage,
+    webOrigin,
   };
+}
+
+function readPhotoStorage(
+  source: NodeJS.ProcessEnv,
+  problems: string[],
+): Pick<Environment, 'bucketName' | 'storageEmulatorHost' | 'ownerId'> {
+  const bucketName = required(source, 'BUCKET_NAME', problems);
+
+  // The owner id becomes a segment of every bucket key: a slash would add a level to the
+  // layout instead of naming an owner.
+  const ownerId = optional(source, 'OWNER_ID') ?? DEFAULT_OWNER_ID;
+  if (ownerId.includes('/')) {
+    problems.push(`OWNER_ID is "${ownerId}" — expected a single bucket key segment, without "/"`);
+  }
+
+  return { bucketName, storageEmulatorHost: optional(source, 'STORAGE_EMULATOR_HOST'), ownerId };
+}
+
+function readWebOrigin(source: NodeJS.ProcessEnv, problems: string[]): string {
+  const webOrigin = optional(source, 'WEB_ORIGIN') ?? DEFAULT_WEB_ORIGIN;
+  if (!isHttpOrigin(webOrigin)) {
+    problems.push(`WEB_ORIGIN is "${webOrigin}" — expected an http:// or https:// origin`);
+  }
+
+  return webOrigin;
 }
 
 function readShelfScanner(
@@ -155,6 +204,13 @@ function required(source: NodeJS.ProcessEnv, name: string, problems: string[]): 
   return '';
 }
 
+/** An optional variable: absent and blank both read as `undefined`, never as `''`. */
+function optional(source: NodeJS.ProcessEnv, name: string): string | undefined {
+  const value = source[name];
+
+  return isPresent(value) ? value.trim() : undefined;
+}
+
 function isPresent(value: string | undefined): value is string {
   return value !== undefined && value.trim().length > 0;
 }
@@ -168,6 +224,16 @@ function isPostgresUrl(value: string): boolean {
   const parsed = URL.parse(value);
 
   return parsed !== null && (parsed.protocol === 'postgres:' || parsed.protocol === 'postgresql:');
+}
+
+/**
+ * CORS compares the `Origin` header byte for byte: `localhost:4200` without a scheme would
+ * never match, and the frontend would get opaque CORS errors instead of a failed boot.
+ */
+function isHttpOrigin(value: string): boolean {
+  const parsed = URL.parse(value);
+
+  return parsed !== null && (parsed.protocol === 'http:' || parsed.protocol === 'https:');
 }
 
 function isNodeEnvironment(value: string): value is NodeEnvironment {
