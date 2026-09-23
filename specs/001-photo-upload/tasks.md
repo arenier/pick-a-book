@@ -31,15 +31,15 @@ renumérotées en conséquence.
 
 ## Phase 1: Setup
 
-- [ ] T001 Ajouter `@google-cloud/storage`, `drizzle-orm` et `pg` aux `dependencies` de
+- [X] T001 Ajouter `@google-cloud/storage`, `drizzle-orm` et `pg` aux `dependencies` de
       `libs/recognition/infrastructure/package.json` (déjà nommés par ADR 0004/0006, jamais
       installés — research.md §8-9)
-- [ ] T002 [P] Ajouter `drizzle-kit` aux `devDependencies` du `package.json` racine, pour générer
+- [X] T002 [P] Ajouter `drizzle-kit` aux `devDependencies` du `package.json` racine, pour générer
       les migrations
-- [ ] T003 [P] Ajouter un service `bucket` (`fsouza/fake-gcs-server`) à `docker-compose.yml`,
+- [X] T003 [P] Ajouter un service `bucket` (`fsouza/fake-gcs-server`) à `docker-compose.yml`,
       créant un bucket nommé comme `BUCKET_NAME` — comble l'écart avec le commentaire de
       `CLAUDE.md` (« API + front + Postgres + émulateur de bucket », research.md §9)
-- [ ] T004 [P] Documenter dans `.env.example` les nouvelles variables : `BUCKET_NAME` (requis),
+- [X] T004 [P] Documenter dans `.env.example` les nouvelles variables : `BUCKET_NAME` (requis),
       `OWNER_ID` (optionnel, défaut `"default"`), `WEB_ORIGIN` (optionnel, défaut
       `"http://localhost:4200"`), `STORAGE_EMULATOR_HOST` (optionnel, dev uniquement)
 
