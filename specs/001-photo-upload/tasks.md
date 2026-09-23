@@ -16,6 +16,12 @@ d'implémentation est précédée d'une tâche de test qui doit échouer avant e
 Foundational partagé — cette feature n'a qu'un seul flux HTTP (upload + scan) que toutes les
 stories exercent sous des angles différents, d'où un socle commun plus large que d'habitude.
 
+**Révisé le 23/09/2026** (`/speckit-implement`) : ajout de T072 (services Postgres et émulateur
+de bucket dans la CI, sans lesquels les specs d'adapters T015/T017/T060 ne peuvent pas y tourner)
+et T073 (application des migrations Drizzle, qu'aucune tâche ne prévoyait : sans elle, T014
+génère un SQL que rien n'exécute). `STORAGE_EMULATOR_HOST` devient `BUCKET_EMULATOR_HOST` dans
+les tâches ci-dessous — research.md §9 explique pourquoi.
+
 **Révisé le 21/09/2026** (`/speckit-analyze`) : ajout de 5 tâches comblant trois lacunes de
 couverture identifiées par l'analyse croisée spec/plan/tasks — FR-007 (bloquer un envoi concurrent,
 T027/T042), SC-004 (mise en page utilisable dès 360px, T043), et le cas « échec réseau » distinct
@@ -41,7 +47,7 @@ renumérotées en conséquence.
       `CLAUDE.md` (« API + front + Postgres + émulateur de bucket », research.md §9)
 - [X] T004 [P] Documenter dans `.env.example` les nouvelles variables : `BUCKET_NAME` (requis),
       `OWNER_ID` (optionnel, défaut `"default"`), `WEB_ORIGIN` (optionnel, défaut
-      `"http://localhost:4200"`), `STORAGE_EMULATOR_HOST` (optionnel, dev uniquement)
+      `"http://localhost:4200"`), `BUCKET_EMULATOR_HOST` (optionnel, dev uniquement)
 
 ---
 
@@ -93,7 +99,7 @@ par toutes les stories — aucune n'est testable avant que ce socle existe.
       sur une clé absente rejette
 - [X] T016 Implémenter
       `libs/recognition/infrastructure/src/lib/gcs-shelf-photo-storage.adapter.ts`
-      (`GcsShelfPhotoStorageAdapter`, `@google-cloud/storage`, lit `STORAGE_EMULATOR_HOST` si
+      (`GcsShelfPhotoStorageAdapter`, `@google-cloud/storage`, lit `BUCKET_EMULATOR_HOST` si
       présent) pour faire passer T015 (dépend de T015)
 - [X] T017 [P] Écrire
       `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.spec.ts`
@@ -108,7 +114,7 @@ par toutes les stories — aucune n'est testable avant que ce socle existe.
 - [X] T019 Exporter les deux nouveaux adapters depuis `libs/recognition/infrastructure/src/index.ts`
       (dépend de T016, T018)
 - [X] T020 Créer `apps/api/src/recognition/shelf-scan-archive.factory.ts` : construit le client GCS
-      (`BUCKET_NAME`, `STORAGE_EMULATOR_HOST`) et le pool Postgres (`DATABASE_URL`) depuis
+      (`BUCKET_NAME`, `BUCKET_EMULATOR_HOST`) et le pool Postgres (`DATABASE_URL`) depuis
       `Environment`, retourne les deux adapters instanciés (dépend de T016, T018)
 
 **Checkpoint** : le socle est prêt — les user stories peuvent démarrer.
@@ -355,6 +361,15 @@ page.
 - [ ] T071 Relire `CLAUDE.md` (section Commandes) : le commentaire `docker compose up --build`
       décrit désormais un stack réellement conforme (émulateur de bucket présent) — ajuster si un
       détail diverge
+
+- [X] T072 Démarrer, dans le job `check` de `.github/workflows/ci.yml`, un Postgres
+      (`postgres:17.6-alpine`, port 5433, identifiants du `docker-compose.yml`) et
+      `fake-gcs-server` (port 4443, `-scheme http`) — sans eux, les specs d'adapters (T015,
+      T017, T060) échouent en CI ; jamais les sauter
+- [X] T073 Appliquer les migrations au démarrage de l'API (`migrateDatabase`, sous verrou
+      consultatif Postgres pour les démarrages concurrents de Cloud Run), le build de l'API
+      copiant le dossier des migrations à côté du bundle (`apps/api/vite.config.mts`) — l'image
+      qui exécute le code porte ainsi le schéma qu'il attend
 
 ---
 
