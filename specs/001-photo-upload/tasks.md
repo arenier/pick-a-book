@@ -329,13 +329,13 @@ page.
 
 ### Tests pour User Story 4
 
-- [ ] T066 [P] [US4] Étendre `apps/web/src/features/photo-upload/ui/photo-upload-screen.spec.tsx` :
+- [X] T066 [P] [US4] Étendre `apps/web/src/features/photo-upload/ui/photo-upload-screen.spec.tsx` :
       depuis un état `success` ou `error`, déclencher « recommencer » ramène l'écran à l'état
       `idle` sans rechargement de page (US4 scénario 1, FR-008)
 
 ### Implémentation pour User Story 4
 
-- [ ] T067 [US4] Ajouter l'action « recommencer » (bouton + transition vers `idle`) dans
+- [X] T067 [US4] Ajouter l'action « recommencer » (bouton + transition vers `idle`) dans
       `photo-upload-screen.tsx` pour faire passer T066 (dépend de T066)
 
 **Checkpoint**: les quatre user stories sont fonctionnelles indépendamment.

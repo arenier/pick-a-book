@@ -1,11 +1,11 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
 import { submitShelfPhoto } from '../api/scan-shelf-photo';
-import { photoProblem } from '../model/photo-constraints';
 import type { UploadState } from '../model/upload-state';
 import { PhotoPicker } from './photo-picker';
 import styles from './photo-upload-screen.module.css';
 import { ScanResult } from './scan-result';
+import { usePhotoUpload } from './use-photo-upload';
 
 export interface PhotoUploadScreenProps {
   /** Sends the photo; injected by the specs, the real API client otherwise. */
@@ -14,30 +14,11 @@ export interface PhotoUploadScreenProps {
 
 /**
  * The upload screen: choose a shelf photo, send it, read the books found on it
- * (specs/001-photo-upload, US1).
+ * (specs/001-photo-upload, US1, US2, US4).
  */
 export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScreenProps) {
-  const [photo, setPhoto] = useState<File>();
-  const [state, setState] = useState<UploadState>({ status: 'idle' });
-
-  const uploading = state.status === 'uploading';
-
-  // Checked on pick, before any request: a refused file never reaches the network (FR-003).
-  const pick = useCallback((file: File | undefined) => {
-    const problem = file === undefined ? undefined : photoProblem(file);
-    setPhoto(problem === undefined ? file : undefined);
-    setState(problem === undefined ? { status: 'idle' } : { status: 'error', message: problem });
-  }, []);
-
-  const send = useCallback(async () => {
-    // The disabled button already prevents it; this also covers a click that slipped
-    // through before React re-rendered (FR-007).
-    if (photo === undefined || uploading) {
-      return;
-    }
-    setState({ status: 'uploading' });
-    setState(await submit(photo));
-  }, [photo, uploading, submit]);
+  const { state, pickerKey, uploading, canSend, settled, pick, send, startOver } =
+    usePhotoUpload(submit);
 
   const onSend = useCallback(() => {
     void send();
@@ -45,13 +26,8 @@ export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScre
 
   return (
     <section className={styles['screen']}>
-      <PhotoPicker disabled={uploading} onPick={pick} />
-      <button
-        type="button"
-        className={styles['send']}
-        disabled={photo === undefined || uploading}
-        onClick={onSend}
-      >
+      <PhotoPicker key={pickerKey} disabled={uploading} onPick={pick} />
+      <button type="button" className={styles['send']} disabled={!canSend} onClick={onSend}>
         Analyser la photo
       </button>
 
@@ -61,6 +37,11 @@ export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScre
         <p role="alert" className={styles['error']}>
           {state.message}
         </p>
+      )}
+      {settled && (
+        <button type="button" className={styles['send']} onClick={startOver}>
+          Recommencer
+        </button>
       )}
     </section>
   );
