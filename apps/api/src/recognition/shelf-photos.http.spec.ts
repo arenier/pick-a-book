@@ -21,11 +21,11 @@ function idOf(body: unknown): string {
 
 /**
  * The two routes over real HTTP — status codes, multipart parsing by multer — on an
- * ephemeral port, the use cases running over in-memory ports.
+ * ephemeral port, the use cases running over in-memory ports. Called inside a `describe`.
  */
-describe('POST /shelf-photos then POST /shelf-photos/:id/scan', () => {
+function aRunningApi() {
   let app: INestApplication;
-  let baseUrl: string;
+  let baseUrl = '';
 
   beforeAll(async () => {
     const { storeShelfPhoto, scanStoredShelfPhoto } = aShelfPhotosController();
@@ -45,11 +45,18 @@ describe('POST /shelf-photos then POST /shelf-photos/:id/scan', () => {
     await app.close();
   });
 
-  const upload = async (file: Blob, name = 'IMG_0001.jpg') => {
-    const form = new FormData();
-    form.append('photo', file, name);
-    return fetch(`${baseUrl}/shelf-photos`, { method: 'POST', body: form });
+  return {
+    url: (path: string) => `${baseUrl}${path}`,
+    upload: async (file: Blob, name = 'IMG_0001.jpg') => {
+      const form = new FormData();
+      form.append('photo', file, name);
+      return fetch(`${baseUrl}/shelf-photos`, { method: 'POST', body: form });
+    },
   };
+}
+
+describe('POST /shelf-photos then POST /shelf-photos/:id/scan', () => {
+  const { url, upload } = aRunningApi();
 
   // A stored photo is a resource coming into being; a scan creates nothing.
   it('answers 201 with an id, then 200 with the books', async () => {
@@ -59,10 +66,30 @@ describe('POST /shelf-photos then POST /shelf-photos/:id/scan', () => {
     expect(stored.status).toBe(201);
     expect(body).toStrictEqual({ id: idOf(body) });
 
-    const scanned = await fetch(`${baseUrl}/shelf-photos/${idOf(body)}/scan`, { method: 'POST' });
+    const scanned = await fetch(url(`/shelf-photos/${idOf(body)}/scan`), { method: 'POST' });
 
     const result: unknown = await scanned.json();
     expect(scanned.status).toBe(200);
     expect(result).toHaveProperty('books.length', 4);
+  });
+});
+
+describe('POST /shelf-photos, refusing a photo', () => {
+  const { upload } = aRunningApi();
+
+  // multer stops an oversized file before it is buffered whole: 413, the transport's own
+  // answer to a body over its limit (contracts/scan-api.md §1).
+  it('answers 413 to a photo over 20 MB, and stores nothing', async () => {
+    const oversized = new Blob([new Uint8Array(21 * 1024 * 1024)], { type: 'image/jpeg' });
+
+    const response = await upload(oversized);
+
+    expect(response.status).toBe(413);
+  });
+
+  it('answers 400 to a file that is not a supported image', async () => {
+    const response = await upload(new Blob(['%PDF-1.7'], { type: 'application/pdf' }), 'a.pdf');
+
+    expect(response.status).toBe(400);
   });
 });

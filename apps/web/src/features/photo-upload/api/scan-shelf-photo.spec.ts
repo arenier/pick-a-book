@@ -103,3 +103,64 @@ describe('submitShelfPhoto, on success', () => {
     });
   });
 });
+
+const failing = (status: number) => async () => json(status, { statusCode: status, message: 'x' });
+
+const offline = async (): Promise<Response> => {
+  throw new TypeError('Failed to fetch');
+};
+
+const stored = async () => json(201, { id: anId });
+
+const messageOf = async (...responses: (() => Promise<Response>)[]) => {
+  const state = await submitShelfPhoto(aPhoto(), options(aServer(...responses).fetch));
+  expect(state.status).toBe('error');
+  return 'message' in state ? state.message : '';
+};
+
+// FR-006: each failure says what happened, and none reads as "no book detected".
+describe('submitShelfPhoto, on failure', () => {
+  it('blames the photo when the server refuses it', async () => {
+    await expect(messageOf(failing(400))).resolves.toBe(
+      'La photo a été refusée : elle doit être une image JPEG, PNG, WebP ou HEIC de moins de 20 Mo.',
+    );
+    await expect(messageOf(failing(413))).resolves.toBe(await messageOf(failing(400)));
+  });
+
+  it('blames the recognition service when it is down', async () => {
+    await expect(messageOf(stored, failing(502))).resolves.toBe(
+      'Le service de reconnaissance ne répond pas pour le moment. Réessayez dans quelques instants.',
+    );
+  });
+
+  it('falls back to a generic message for anything else', async () => {
+    await expect(messageOf(stored, failing(409))).resolves.toBe(
+      'Une erreur inattendue est survenue. Réessayez dans quelques instants.',
+    );
+    await expect(messageOf(failing(500))).resolves.toBe(await messageOf(stored, failing(409)));
+  });
+});
+
+// contracts/scan-api.md, "Échec réseau": no HTTP answer at all, on either step.
+describe('submitShelfPhoto, without a network', () => {
+  const networkMessage =
+    'Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.';
+
+  it('says the server could not be reached while sending the photo', async () => {
+    await expect(messageOf(offline)).resolves.toBe(networkMessage);
+  });
+
+  it('says the server could not be reached while scanning it', async () => {
+    await expect(messageOf(stored, offline)).resolves.toBe(networkMessage);
+  });
+
+  it('keeps that message apart from every other one', async () => {
+    const others = await Promise.all([
+      messageOf(failing(400)),
+      messageOf(stored, failing(502)),
+      messageOf(stored, failing(409)),
+    ]);
+
+    expect(others).not.toContain(networkMessage);
+  });
+});

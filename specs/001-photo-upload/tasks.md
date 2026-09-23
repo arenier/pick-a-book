@@ -222,45 +222,45 @@ compréhensible, jamais une page blanche.
 
 ### Tests pour User Story 2
 
-- [ ] T044 [P] [US2] Étendre `apps/web/src/features/photo-upload/model/photo-constraints.spec.ts` :
+- [X] T044 [P] [US2] Étendre `apps/web/src/features/photo-upload/model/photo-constraints.spec.ts` :
       un `mediaType` hors de `image/jpeg`, `image/png`, `image/webp`, `image/heic` échoue avec un
       message ; un `sizeInBytes` strictement positif requis, dépassant 20 971 520 octets (20 Mo)
       échoue avec un message (FR-009, data-model.md#SelectedPhoto)
-- [ ] T045 [P] [US2] Étendre `apps/web/src/features/photo-upload/ui/photo-upload-screen.spec.tsx` :
+- [X] T045 [P] [US2] Étendre `apps/web/src/features/photo-upload/ui/photo-upload-screen.spec.tsx` :
       choisir un fichier non-image ou trop volumineux affiche un message d'erreur sans appel
       réseau (US2 scénarios 1–2, FR-003)
-- [ ] T046 [P] [US2] Étendre `apps/api/src/recognition/shelf-photos.controller.spec.ts` :
+- [X] T046 [P] [US2] Étendre `apps/api/src/recognition/shelf-photos.controller.spec.ts` :
       `POST /shelf-photos` avec un fichier absent, vide, de type non supporté ou de plus de 20 Mo
       renvoie `400` (contracts/scan-api.md §1)
-- [ ] T047 [P] [US2] Étendre
+- [X] T047 [P] [US2] Étendre
       `libs/recognition/application/src/lib/scan-stored-shelf-photo.use-case.spec.ts` : quand
       `ShelfScannerPort.scan` rejette avec `ShelfScanFailed`, `execute({ id })` rejette (mappé en
       502 par le contrôleur)
-- [ ] T048 [P] [US2] Étendre `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts` :
+- [X] T048 [P] [US2] Étendre `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts` :
       une réponse 502 de l'étape 2 résout un `UploadState` `error` avec un message distinct de
       « aucun livre détecté » (US2 scénario 3, FR-006)
-- [ ] T049 [P] [US2] Étendre `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts`
+- [X] T049 [P] [US2] Étendre `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts`
       (`/speckit-analyze` G3, contracts/scan-api.md « Échec réseau ») : `fetch` qui rejette sans
       réponse HTTP (coupure réseau) sur l'étape 1 **et** sur l'étape 2 résout chacun un
       `UploadState` `error` avec un message distinct de ceux des cas 400/502/succès
 
 ### Implémentation pour User Story 2
 
-- [ ] T050 [US2] Implémenter
+- [X] T050 [US2] Implémenter
       `apps/web/src/features/photo-upload/model/photo-constraints.ts`
       (`ACCEPTED_MEDIA_TYPES`, `MAX_SIZE_IN_BYTES = 20_971_520`, fonction de validation) pour
       faire passer T044 (dépend de T044)
-- [ ] T051 [US2] Appeler la validation de `photo-constraints.ts` dans `photo-upload-screen.tsx`
+- [X] T051 [US2] Appeler la validation de `photo-constraints.ts` dans `photo-upload-screen.tsx`
       avant tout appel réseau, pour faire passer T045 (dépend de T045, T050)
-- [ ] T052 [US2] Vérifier/compléter le mappage d'erreur dans `shelf-photos.controller.ts`
+- [X] T052 [US2] Vérifier/compléter le mappage d'erreur dans `shelf-photos.controller.ts`
       (`BadRequestException` sur l'échec de `ShelfPhoto.of`) pour faire passer T046 (dépend de
       T046)
-- [ ] T053 [US2] Étendre `scan-stored-shelf-photo.use-case.ts` pour laisser remonter
+- [X] T053 [US2] Étendre `scan-stored-shelf-photo.use-case.ts` pour laisser remonter
       `ShelfScanFailed` telle quelle et `shelf-photos.controller.ts` pour la mapper en
       `BadGatewayException` (502), pour faire passer T047 (dépend de T047)
-- [ ] T054 [US2] Étendre `scan-shelf-photo.ts` pour distinguer le message d'erreur 502 de celui
+- [X] T054 [US2] Étendre `scan-shelf-photo.ts` pour distinguer le message d'erreur 502 de celui
       « aucun livre détecté », pour faire passer T048 (dépend de T048, T053)
-- [ ] T055 [US2] Étendre `scan-shelf-photo.ts` (`/speckit-analyze` G3) : entourer chacun des deux
+- [X] T055 [US2] Étendre `scan-shelf-photo.ts` (`/speckit-analyze` G3) : entourer chacun des deux
       appels `fetch` d'un `catch` distinct qui produit un message d'erreur réseau propre (différent
       des messages 400/502/succès), pour faire passer T049 (dépend de T049, T054)
 

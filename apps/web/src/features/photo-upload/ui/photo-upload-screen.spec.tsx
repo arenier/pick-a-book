@@ -83,3 +83,40 @@ describe('PhotoUploadScreen, while a photo is being analysed', () => {
     expect(submission.submitted).toHaveLength(1);
   });
 });
+
+// US2, FR-003: a file refused before sending never reaches the network.
+describe('PhotoUploadScreen, with a file it cannot send', () => {
+  it('explains why a non-image is refused, without sending it', () => {
+    const submission = aPendingSubmission();
+    render(<PhotoUploadScreen submit={submission.submit} />);
+
+    choose(new File(['%PDF'], 'devis.pdf', { type: 'application/pdf' }));
+
+    expect(screen.getByRole('alert').textContent).toContain('JPEG, PNG, WebP ou HEIC');
+    expect(sendButton()).toHaveProperty('disabled', true);
+    expect(submission.submitted).toHaveLength(0);
+  });
+
+  it('explains why an oversized photo is refused, without sending it', () => {
+    const submission = aPendingSubmission();
+    render(<PhotoUploadScreen submit={submission.submit} />);
+
+    choose(new File([new Uint8Array(20 * 1024 * 1024 + 1)], 'big.jpg', { type: 'image/jpeg' }));
+
+    expect(screen.getByRole('alert').textContent).toContain('20 Mo');
+    expect(sendButton()).toHaveProperty('disabled', true);
+  });
+
+  it('shows the message of a failed submission', async () => {
+    const submission = aPendingSubmission();
+    render(<PhotoUploadScreen submit={submission.submit} />);
+
+    choose(aJpeg());
+    fireEvent.click(sendButton());
+    await act(async () => {
+      submission.settle({ status: 'error', message: 'Le service est indisponible.' });
+    });
+
+    expect(screen.getByRole('alert').textContent).toBe('Le service est indisponible.');
+  });
+});

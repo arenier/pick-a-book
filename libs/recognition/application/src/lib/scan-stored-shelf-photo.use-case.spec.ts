@@ -3,6 +3,7 @@ import {
   BookTitle,
   Confidence,
   DetectedBook,
+  ShelfScanFailed,
   ShelfScanId,
   type ShelfPhoto,
   type ShelfScannerPort,
@@ -91,5 +92,20 @@ describe('ScanStoredShelfPhotoUseCase', () => {
 
     expect(result.books).toStrictEqual([]);
     expect((await repository.get(ShelfScanId.of(id)))?.status).toBe('completed');
+  });
+});
+
+describe('ScanStoredShelfPhotoUseCase, when the scanner fails', () => {
+  const failingScanner: ShelfScannerPort = {
+    scan: async () => {
+      throw new ShelfScanFailed('provider unavailable');
+    },
+  };
+
+  // Passed through as is: HTTP maps it to 502, where "no book detected" would lie (FR-006).
+  it('rejects with the scanner failure', async () => {
+    const { id, useCase } = await aStoredPhoto(failingScanner);
+
+    await expect(useCase.execute({ id })).rejects.toThrow(ShelfScanFailed);
   });
 });

@@ -41,7 +41,13 @@ photo: <fichier image>
 ### 400 — requête refusée
 
 Corps : `{ "message": string, "statusCode": 400 }` (format par défaut de Nest). Causes possibles
-détectées par le serveur : fichier absent, vide, type MIME non supporté, poids supérieur à 20 Mo.
+détectées par le serveur : fichier absent, vide, type MIME non supporté.
+
+**413 — photo trop lourde** *(amendé à l'implémentation, le 23/09/2026)* : au-delà de 20 Mo, le
+fichier est arrêté par multer au niveau transport, avant d'être bufferisé en entier — Nest répond
+alors `413 Payload Too Large`, la réponse HTTP propre à un corps qui dépasse la limite, plutôt que
+le 400 prévu initialement. Le frontend traite 400 et 413 à l'identique (photo refusée), et la
+limite est de toute façon vérifiée côté client avant l'envoi (FR-009).
 Une partie de ces cas est déjà interceptée côté client avant l'envoi (FR-003, FR-009) ; ce statut
 reste le filet de sécurité serveur, et le message affiché à l'utilisateur ne dépend pas du texte
 technique renvoyé (FR-009 : « message compréhensible sans jargon technique »). Rien n'est stocké

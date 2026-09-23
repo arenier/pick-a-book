@@ -1,4 +1,5 @@
 import {
+  BadGatewayException,
   BadRequestException,
   Body,
   Controller,
@@ -16,6 +17,7 @@ import {
   type StoreShelfPhotoCommand,
   type StoreShelfPhotoResult,
 } from '@pick-a-book/recognition-application';
+import { InvalidShelfPhoto, ShelfScanFailed } from '@pick-a-book/recognition-domain';
 
 /**
  * The subset of an uploaded file this controller needs.
@@ -71,9 +73,12 @@ export class ShelfPhotosController {
       const { id } = await this.storeShelfPhoto.execute(command);
       return { id };
     } catch (error) {
-      // At this point, a failure is `ShelfPhoto` refusing the image — an empty body, an
-      // oversized file, an unsupported media type. That is a 400.
-      throw new BadRequestException(describe(error));
+      // `ShelfPhoto` refusing the image — empty, oversized, unsupported — is the caller's
+      // mistake: a 400. Anything else (bucket, database) is ours, and stays a 500.
+      if (error instanceof InvalidShelfPhoto) {
+        throw new BadRequestException(error.message);
+      }
+      throw error;
     }
   }
 
@@ -81,7 +86,16 @@ export class ShelfPhotosController {
   // 200, not the 201 Nest defaults to on a POST: a scan creates nothing.
   @HttpCode(200)
   async scan(@Param('id') id: string): Promise<ScanShelfResult> {
-    return this.scanStoredShelfPhoto.execute({ id });
+    try {
+      return await this.scanStoredShelfPhoto.execute({ id });
+    } catch (error) {
+      // A provider that is down or off-contract is not the caller's mistake: 502 names an
+      // upstream failure, where 400 would blame the photo (FR-006).
+      if (error instanceof ShelfScanFailed) {
+        throw new BadGatewayException(error.message);
+      }
+      throw error;
+    }
   }
 }
 
@@ -122,8 +136,4 @@ function decodeBase64(value: string): Uint8Array {
   }
 
   return new Uint8Array(decoded);
-}
-
-function describe(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
 }
