@@ -87,10 +87,18 @@ describe('loadEnvironment, photo storage (specs/001-photo-upload)', () => {
   });
 
   // Development only: absent in production, where the SDK talks to the real API.
-  it('carries the storage emulator host only when it is set', () => {
-    expect(load().storageEmulatorHost).toBeUndefined();
-    expect(load({ STORAGE_EMULATOR_HOST: 'http://localhost:4443' }).storageEmulatorHost).toBe(
+  it('carries the bucket emulator host only when it is set', () => {
+    expect(load().bucketEmulatorHost).toBeUndefined();
+    expect(load({ BUCKET_EMULATOR_HOST: 'http://localhost:4443' }).bucketEmulatorHost).toBe(
       'http://localhost:4443',
+    );
+  });
+
+  // Regression: the GCS SDK reads STORAGE_EMULATOR_HOST on its own and builds its download
+  // URLs from it without the /storage/v1 prefix — uploads work, every read then 404s.
+  it('refuses STORAGE_EMULATOR_HOST, naming the variable to use instead', () => {
+    expect(() => load({ STORAGE_EMULATOR_HOST: 'http://localhost:4443' })).toThrow(
+      /STORAGE_EMULATOR_HOST[\s\S]*BUCKET_EMULATOR_HOST/u,
     );
   });
 });

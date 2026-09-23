@@ -9,7 +9,7 @@ import { createShelfScanArchive, type ShelfScanArchive } from './shelf-scan-arch
 const configuration = {
   databaseUrl: 'postgresql://pick_a_book:pick_a_book@localhost:5433/pick_a_book',
   bucketName: 'pick-a-book-photos',
-  storageEmulatorHost: undefined,
+  bucketEmulatorHost: undefined,
 };
 
 describe('createShelfScanArchive', () => {
@@ -30,7 +30,7 @@ describe('createShelfScanArchive', () => {
   it('points the storage client at the emulator when one is configured', () => {
     archive = createShelfScanArchive({
       ...configuration,
-      storageEmulatorHost: 'http://localhost:4443',
+      bucketEmulatorHost: 'http://localhost:4443',
     });
 
     expect(archive.bucket.name).toBe('pick-a-book-photos');

@@ -9,7 +9,7 @@ import { GcsShelfPhotoStorageAdapter } from './gcs-shelf-photo-storage.adapter.j
  * are tested against the real technology (CLAUDE.md). `docker compose up bucket` locally; CI
  * starts the same server.
  */
-const emulatorHost = process.env['STORAGE_EMULATOR_HOST'] ?? 'http://localhost:4443';
+const emulatorHost = process.env['BUCKET_EMULATOR_HOST'] ?? 'http://localhost:4443';
 
 const storage = new Storage({ apiEndpoint: emulatorHost, projectId: 'pick-a-book-test' });
 

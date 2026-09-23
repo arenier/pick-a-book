@@ -110,7 +110,7 @@ export class DrizzleShelfScanRepositoryAdapter implements ShelfScanRepositoryPor
 
     const existing = await this.get(id);
     if (existing === undefined) {
-      throw new ShelfScanNotFound(id);
+      throw new ShelfScanNotFound(id.value);
     }
     throw new ShelfScanAlreadyProcessed(id);
   }

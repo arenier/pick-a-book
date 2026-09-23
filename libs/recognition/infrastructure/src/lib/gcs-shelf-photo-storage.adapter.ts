@@ -11,7 +11,7 @@ import { ShelfPhotoStorageFailed } from './shelf-photo-storage-failed.error.js';
  * Keeps shelf photos in a Cloud Storage bucket (ADR 0004).
  *
  * Handed a `Bucket` rather than building one: which bucket, and whether it is the real API
- * or the emulator (`STORAGE_EMULATOR_HOST`), is configuration — the composition root of
+ * or the emulator (`BUCKET_EMULATOR_HOST`), is configuration — the composition root of
  * `apps/api` decides it. The adapter only knows how to write and read an object.
  */
 export class GcsShelfPhotoStorageAdapter implements ShelfPhotoStoragePort {
