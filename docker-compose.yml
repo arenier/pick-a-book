@@ -23,10 +23,10 @@ services:
       SHELF_SCANNER_PROVIDER: ${SHELF_SCANNER_PROVIDER:-stub}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
-      # Shelf photos land in the emulated bucket below. STORAGE_EMULATOR_HOST is what points
+      # Shelf photos land in the emulated bucket below. BUCKET_EMULATOR_HOST is what points
       # the GCS client at it; it is never set in production, where the real API answers.
       BUCKET_NAME: pick-a-book-photos
-      STORAGE_EMULATOR_HOST: http://bucket:4443
+      BUCKET_EMULATOR_HOST: http://bucket:4443
       OWNER_ID: ${OWNER_ID:-default}
       WEB_ORIGIN: http://localhost:4200
     ports:

@@ -28,7 +28,7 @@ export interface Environment {
    * Development only: where the GCS emulator listens. Absent in production, where the SDK
    * talks to the real API.
    */
-  readonly storageEmulatorHost: string | undefined;
+  readonly bucketEmulatorHost: string | undefined;
   /**
    * Owner segment of every bucket key (`{ownerId}/shelf_photo/{id}`). A fixed value until
    * there are user accounts — changing where it comes from will not move a single object.
@@ -141,8 +141,18 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
 function readPhotoStorage(
   source: NodeJS.ProcessEnv,
   problems: string[],
-): Pick<Environment, 'bucketName' | 'storageEmulatorHost' | 'ownerId'> {
+): Pick<Environment, 'bucketName' | 'bucketEmulatorHost' | 'ownerId'> {
   const bucketName = required(source, 'BUCKET_NAME', problems);
+
+  // The name the emulator docs suggest is a trap: the GCS SDK reads it by itself, as an
+  // experimental switch, and builds its download URLs from it without the /storage/v1
+  // prefix — uploads work and every read 404s. Ours is passed explicitly instead.
+  if (optional(source, 'STORAGE_EMULATOR_HOST') !== undefined) {
+    problems.push(
+      'STORAGE_EMULATOR_HOST is set — the GCS SDK reads it on its own and misroutes downloads; ' +
+        'use BUCKET_EMULATOR_HOST instead',
+    );
+  }
 
   // The owner id becomes a segment of every bucket key: a slash would add a level to the
   // layout instead of naming an owner.
@@ -151,7 +161,7 @@ function readPhotoStorage(
     problems.push(`OWNER_ID is "${ownerId}" — expected a single bucket key segment, without "/"`);
   }
 
-  return { bucketName, storageEmulatorHost: optional(source, 'STORAGE_EMULATOR_HOST'), ownerId };
+  return { bucketName, bucketEmulatorHost: optional(source, 'BUCKET_EMULATOR_HOST'), ownerId };
 }
 
 function readWebOrigin(source: NodeJS.ProcessEnv, problems: string[]): string {

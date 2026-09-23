@@ -26,11 +26,11 @@ export interface ShelfScanArchive {
  * configuration, so the adapters never read the environment themselves.
  */
 export function createShelfScanArchive(
-  configuration: Pick<Environment, 'databaseUrl' | 'bucketName' | 'storageEmulatorHost'>,
+  configuration: Pick<Environment, 'databaseUrl' | 'bucketName' | 'bucketEmulatorHost'>,
 ): ShelfScanArchive {
   const bucket = openShelfPhotoBucket({
     bucketName: configuration.bucketName,
-    emulatorHost: configuration.storageEmulatorHost,
+    emulatorHost: configuration.bucketEmulatorHost,
   });
   const pool = new Pool({ connectionString: configuration.databaseUrl });
 

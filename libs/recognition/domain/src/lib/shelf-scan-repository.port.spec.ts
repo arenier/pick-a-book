@@ -95,7 +95,7 @@ describe('shelf scan errors', () => {
   const id = ShelfScanId.of(anId);
 
   it('names the id that matched no scan', () => {
-    const error = new ShelfScanNotFound(id);
+    const error = new ShelfScanNotFound(anId);
 
     expect(error.name).toBe('ShelfScanNotFound');
     expect(error.message).toContain(anId);
