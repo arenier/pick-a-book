@@ -208,7 +208,7 @@ puis le résultat.
 - [X] T042 [US1] Désactiver le déclencheur d'envoi (bouton/input) tant que l'état est `uploading`
       dans `photo-upload-screen.tsx` (FR-007, `/speckit-analyze` G1) pour faire passer T027
       (dépend de T027, T039)
-- [ ] T043 [US1] Mettre en page `photo-upload-screen.tsx` (et son module CSS) pour rester
+- [X] T043 [US1] Mettre en page `photo-upload-screen.tsx` (et son module CSS) pour rester
       utilisable et sans défilement horizontal dès 360px de large (SC-004, `/speckit-analyze` G2)
       — vérifié manuellement via quickstart.md scénario 1 étape 1 : aucun test automatisé de mise
       en page n'existe dans cette stack (jsdom ne rend pas de layout réel), cohérent avec
@@ -350,15 +350,20 @@ page.
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T068 [P] `yarn lint` sur l'ensemble du dépôt — vérifie notamment que `apps/web`
+- [X] T068 [P] `yarn lint` sur l'ensemble du dépôt — vérifie notamment que `apps/web`
       (`scope:web`) n'importe aucun package `scope:api` et que le lint type-aware
       (`no-floating-promises`, etc.) passe sur les nouveaux adapters asynchrones
-- [ ] T069 [P] `yarn nx run-many -t test build` sur tous les projets touchés
+- [X] T069 [P] `yarn nx run-many -t test build` sur tous les projets touchés
       (`web`, `api`, `recognition-domain`, `recognition-application`, `recognition-infrastructure`)
-- [ ] T070 Exécuter manuellement les 4 scénarios de `quickstart.md` contre
+- [X] T070 Exécuter manuellement les 4 scénarios de `quickstart.md` contre
       `docker compose up --build`, y compris la vérification visuelle de SC-004 (largeur ≤ 400px,
       scénario 1 étape 1)
-- [ ] T071 Relire `CLAUDE.md` (section Commandes) : le commentaire `docker compose up --build`
+      — *Exécuté le 23/09/2026* dans Chromium (Playwright) à 360px de large, contre l'API buildée
+      et le serveur Vite, avec Postgres et `fake-gcs-server` lancés hors Docker : Docker Hub
+      était injoignable depuis l'environnement, donc `docker compose up --build` lui-même n'a pas
+      été exercé. Les quatre scénarios passent (scénario 3 via `SHELF_SCANNER_PROVIDER=gemini` et
+      une clé invalide : 502 affiché, ligne `failed`, photo conservée).
+- [X] T071 Relire `CLAUDE.md` (section Commandes) : le commentaire `docker compose up --build`
       décrit désormais un stack réellement conforme (émulateur de bucket présent) — ajuster si un
       détail diverge
 
