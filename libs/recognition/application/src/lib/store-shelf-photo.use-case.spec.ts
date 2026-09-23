@@ -1,4 +1,4 @@
-import { ShelfScanId } from '@pick-a-book/recognition-domain';
+import { InvalidShelfPhoto, ShelfScanId } from '@pick-a-book/recognition-domain';
 import { describe, expect, it } from 'vitest';
 
 import { StoreShelfPhotoUseCase } from './store-shelf-photo.use-case.js';
@@ -61,5 +61,21 @@ describe('StoreShelfPhotoUseCase', () => {
     await useCase.execute({ ...aJpeg, originalFilename: '../../etc/passwd' });
 
     expect([...storage.objects.keys()].some((key) => key.includes('passwd'))).toBe(false);
+  });
+});
+
+// US3, scenario 3 (FR-013): a photo refused before analysis leaves no trace at all.
+describe('StoreShelfPhotoUseCase, with an image it refuses', () => {
+  it.each([
+    ['an empty image', { ...aJpeg, bytes: new Uint8Array(0) }],
+    ['an unsupported media type', { ...aJpeg, mediaType: 'application/pdf' }],
+    ['an image over 20 MB', { ...aJpeg, bytes: new Uint8Array(20 * 1024 * 1024 + 1) }],
+  ])('stores nothing for %s', async (_label, command) => {
+    const { storage, repository, useCase } = aUseCase();
+
+    await expect(useCase.execute(command)).rejects.toThrow(InvalidShelfPhoto);
+
+    expect(storage.objects.size).toBe(0);
+    expect(repository.records.size).toBe(0);
   });
 });

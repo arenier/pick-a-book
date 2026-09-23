@@ -2,8 +2,10 @@ import {
   BadGatewayException,
   BadRequestException,
   Body,
+  ConflictException,
   Controller,
   HttpCode,
+  NotFoundException,
   Param,
   Post,
   UploadedFile,
@@ -17,7 +19,12 @@ import {
   type StoreShelfPhotoCommand,
   type StoreShelfPhotoResult,
 } from '@pick-a-book/recognition-application';
-import { InvalidShelfPhoto, ShelfScanFailed } from '@pick-a-book/recognition-domain';
+import {
+  InvalidShelfPhoto,
+  ShelfScanAlreadyProcessed,
+  ShelfScanFailed,
+  ShelfScanNotFound,
+} from '@pick-a-book/recognition-domain';
 
 /**
  * The subset of an uploaded file this controller needs.
@@ -93,6 +100,14 @@ export class ShelfPhotosController {
       // upstream failure, where 400 would blame the photo (FR-006).
       if (error instanceof ShelfScanFailed) {
         throw new BadGatewayException(error.message);
+      }
+      if (error instanceof ShelfScanNotFound) {
+        throw new NotFoundException(error.message);
+      }
+      // Already completed or failed: scanning again would overwrite a result, or pay for a
+      // VLM call nobody asked for (research.md §7).
+      if (error instanceof ShelfScanAlreadyProcessed) {
+        throw new ConflictException(error.message);
       }
       throw error;
     }

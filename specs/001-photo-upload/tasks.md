@@ -279,21 +279,21 @@ conservé » du scénario 2.
 
 ### Tests pour User Story 3
 
-- [ ] T056 [P] [US3] Étendre
+- [X] T056 [P] [US3] Étendre
       `libs/recognition/application/src/lib/scan-stored-shelf-photo.use-case.spec.ts` : quand
       `ShelfScannerPort.scan` rejette, `repository.markFailed(id)` est appelé (et
       `markCompleted` ne l'est pas) — US3 scénario 2, FR-011
-- [ ] T057 [P] [US3] Étendre
+- [X] T057 [P] [US3] Étendre
       `libs/recognition/application/src/lib/store-shelf-photo.use-case.spec.ts` : quand
       `ShelfPhoto.of` rejette (format/poids), ni `storage.store` ni `repository.createPending` ne
       sont appelés — US3 scénario 3, FR-013
-- [ ] T058 [P] [US3] Étendre `scan-stored-shelf-photo.use-case.spec.ts` : `execute({ id })` sur un
+- [X] T058 [P] [US3] Étendre `scan-stored-shelf-photo.use-case.spec.ts` : `execute({ id })` sur un
       `id` sans enregistrement rejette avec une erreur dédiée (mappée en 404 par le contrôleur,
       contracts/scan-api.md)
-- [ ] T059 [P] [US3] Étendre `scan-stored-shelf-photo.use-case.spec.ts` : `execute({ id })` sur un
+- [X] T059 [P] [US3] Étendre `scan-stored-shelf-photo.use-case.spec.ts` : `execute({ id })` sur un
       enregistrement déjà `completed` ou `failed` rejette avec une erreur dédiée sans rappeler
       `ShelfScannerPort.scan` (mappée en 409, research.md §7)
-- [ ] T060 [P] [US3] Étendre
+- [X] T060 [P] [US3] Étendre
       `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.spec.ts` :
       `createPending` persiste `ownerId`, `photoMediaType`, `photoSizeBytes` et
       `originalFilename` tels quels, relisibles via `get` ; la colonne `uploads.bucket_key`
@@ -301,19 +301,19 @@ conservé » du scénario 2.
 
 ### Implémentation pour User Story 3
 
-- [ ] T061 [US3] Étendre `scan-stored-shelf-photo.use-case.ts` pour appeler
+- [X] T061 [US3] Étendre `scan-stored-shelf-photo.use-case.ts` pour appeler
       `repository.markFailed(id)` avant de relancer l'erreur du scanner, pour faire passer T056
       (dépend de T056)
-- [ ] T062 [US3] Vérifier `store-shelf-photo.use-case.ts` (l'ordre validation → stockage → création
+- [X] T062 [US3] Vérifier `store-shelf-photo.use-case.ts` (l'ordre validation → stockage → création
       déjà écrit en T028 doit satisfaire T057 sans modification ; sinon corriger l'ordre des
       appels) (dépend de T057)
-- [ ] T063 [US3] Ajouter une erreur dédiée (ex. `ShelfScanNotFound`) et l'appel correspondant dans
+- [X] T063 [US3] Ajouter une erreur dédiée (ex. `ShelfScanNotFound`) et l'appel correspondant dans
       `scan-stored-shelf-photo.use-case.ts` + mappage en `NotFoundException` (404) dans
       `shelf-photos.controller.ts`, pour faire passer T058 (dépend de T058)
-- [ ] T064 [US3] Ajouter une erreur dédiée (ex. `ShelfScanAlreadyProcessed`) et l'appel
+- [X] T064 [US3] Ajouter une erreur dédiée (ex. `ShelfScanAlreadyProcessed`) et l'appel
       correspondant dans `scan-stored-shelf-photo.use-case.ts` + mappage en `ConflictException`
       (409) dans `shelf-photos.controller.ts`, pour faire passer T059 (dépend de T059)
-- [ ] T065 [US3] Corriger `drizzle-shelf-scan-repository.adapter.ts` si T060 révèle un écart
+- [X] T065 [US3] Corriger `drizzle-shelf-scan-repository.adapter.ts` si T060 révèle un écart
       (dépend de T060)
 
 **Checkpoint**: User Story 3 fonctionnelle et testable isolément.

@@ -3,8 +3,10 @@ import {
   BookTitle,
   Confidence,
   DetectedBook,
+  ShelfScanAlreadyProcessed,
   ShelfScanFailed,
   ShelfScanId,
+  ShelfScanNotFound,
   type ShelfPhoto,
   type ShelfScannerPort,
 } from '@pick-a-book/recognition-domain';
@@ -95,17 +97,60 @@ describe('ScanStoredShelfPhotoUseCase', () => {
   });
 });
 
-describe('ScanStoredShelfPhotoUseCase, when the scanner fails', () => {
-  const failingScanner: ShelfScannerPort = {
-    scan: async () => {
-      throw new ShelfScanFailed('provider unavailable');
-    },
-  };
+const failingScanner: ShelfScannerPort = {
+  scan: async () => {
+    throw new ShelfScanFailed('provider unavailable');
+  },
+};
 
+describe('ScanStoredShelfPhotoUseCase, when the scanner fails', () => {
   // Passed through as is: HTTP maps it to 502, where "no book detected" would lie (FR-006).
   it('rejects with the scanner failure', async () => {
     const { id, useCase } = await aStoredPhoto(failingScanner);
 
     await expect(useCase.execute({ id })).rejects.toThrow(ShelfScanFailed);
+  });
+
+  // US3, scenario 2: the photo is kept, and its record says the scan failed (FR-011).
+  it('records the scan as failed, never as completed', async () => {
+    const { id, repository, useCase } = await aStoredPhoto(failingScanner);
+
+    await expect(useCase.execute({ id })).rejects.toThrow(ShelfScanFailed);
+
+    const record = await repository.get(ShelfScanId.of(id));
+    expect(record?.status).toBe('failed');
+    expect(record?.detectedBooks).toBeUndefined();
+  });
+});
+
+describe('ScanStoredShelfPhotoUseCase, for an id it cannot scan', () => {
+  // Mapped to 404: an id that is not even a UUID is just as unknown.
+  it.each([
+    ['an unknown UUID', ShelfScanId.generate().value],
+    ['a malformed id', 'not-a-uuid'],
+  ])('rejects %s with ShelfScanNotFound', async (_label, unknownId) => {
+    const scanner = new ShelfScannerStub(books);
+    const { useCase } = await aStoredPhoto(scanner);
+
+    await expect(useCase.execute({ id: unknownId })).rejects.toThrow(ShelfScanNotFound);
+    expect(scanner.seen).toHaveLength(0);
+  });
+
+  // Mapped to 409 (research.md §7): a second scan would overwrite a result, or pay for a
+  // VLM call nobody asked for.
+  it('rejects a scan already completed, without calling the scanner again', async () => {
+    const scanner = new ShelfScannerStub(books);
+    const { id, useCase } = await aStoredPhoto(scanner);
+    await useCase.execute({ id });
+
+    await expect(useCase.execute({ id })).rejects.toThrow(ShelfScanAlreadyProcessed);
+    expect(scanner.seen).toHaveLength(1);
+  });
+
+  it('rejects a scan already failed, without calling the scanner again', async () => {
+    const { id, useCase } = await aStoredPhoto(failingScanner);
+    await expect(useCase.execute({ id })).rejects.toThrow(ShelfScanFailed);
+
+    await expect(useCase.execute({ id })).rejects.toThrow(ShelfScanAlreadyProcessed);
   });
 });
