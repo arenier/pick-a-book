@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 
 import { submitShelfPhoto } from '../api/scan-shelf-photo';
+import { photoProblem } from '../model/photo-constraints';
 import type { UploadState } from '../model/upload-state';
 import { PhotoPicker } from './photo-picker';
 import styles from './photo-upload-screen.module.css';
@@ -21,6 +22,13 @@ export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScre
 
   const uploading = state.status === 'uploading';
 
+  // Checked on pick, before any request: a refused file never reaches the network (FR-003).
+  const pick = useCallback((file: File | undefined) => {
+    const problem = file === undefined ? undefined : photoProblem(file);
+    setPhoto(problem === undefined ? file : undefined);
+    setState(problem === undefined ? { status: 'idle' } : { status: 'error', message: problem });
+  }, []);
+
   const send = useCallback(async () => {
     // The disabled button already prevents it; this also covers a click that slipped
     // through before React re-rendered (FR-007).
@@ -37,7 +45,7 @@ export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScre
 
   return (
     <section className={styles['screen']}>
-      <PhotoPicker disabled={uploading} onPick={setPhoto} />
+      <PhotoPicker disabled={uploading} onPick={pick} />
       <button
         type="button"
         className={styles['send']}
@@ -49,6 +57,11 @@ export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScre
 
       {uploading && <output>Analyse de la photo en cours…</output>}
       {state.status === 'success' && <ScanResult books={state.books} />}
+      {state.status === 'error' && (
+        <p role="alert" className={styles['error']}>
+          {state.message}
+        </p>
+      )}
     </section>
   );
 }

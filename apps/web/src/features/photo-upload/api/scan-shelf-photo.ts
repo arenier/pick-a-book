@@ -7,12 +7,27 @@ import type { UploadState } from '../model/upload-state';
  */
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
 
-const UNEXPECTED_ERROR = 'Une erreur inattendue est survenue. Réessayez dans quelques instants.';
+/**
+ * One message per kind of failure (FR-006): none of them may read like "no book detected",
+ * and none depends on the technical text a response carries.
+ */
+const MESSAGES = {
+  refused:
+    'La photo a été refusée : elle doit être une image JPEG, PNG, WebP ou HEIC de moins de 20 Mo.',
+  upstream:
+    'Le service de reconnaissance ne répond pas pour le moment. Réessayez dans quelques instants.',
+  offline: 'Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.',
+  unexpected: 'Une erreur inattendue est survenue. Réessayez dans quelques instants.',
+} as const;
 
 export interface SubmitOptions {
   readonly baseUrl?: string;
   readonly fetch?: typeof fetch;
 }
+
+type Answer =
+  | { readonly reached: false }
+  | { readonly reached: true; readonly status: number; readonly body: unknown };
 
 /**
  * Sends a shelf photo and resolves with what the screen should show next — never rejects.
@@ -31,21 +46,57 @@ export async function submitShelfPhoto(
   const form = new FormData();
   form.append('photo', photo);
 
-  const stored = await send(`${baseUrl}/shelf-photos`, { method: 'POST', body: form });
-  const storedBody: unknown = await stored.json();
-  if (!stored.ok || !isStoredPhoto(storedBody)) {
-    return { status: 'error', message: UNEXPECTED_ERROR };
+  const stored = await ask(send, `${baseUrl}/shelf-photos`, { method: 'POST', body: form });
+  if (!stored.reached) {
+    return failure('offline');
+  }
+  if (stored.status === 400 || stored.status === 413) {
+    return failure('refused');
+  }
+  if (stored.status !== 201 || !isStoredPhoto(stored.body)) {
+    return failure('unexpected');
   }
 
-  const scanned = await send(`${baseUrl}/shelf-photos/${encodeURIComponent(storedBody.id)}/scan`, {
-    method: 'POST',
-  });
-  const scannedBody: unknown = await scanned.json();
-  if (!scanned.ok || !isScanResult(scannedBody)) {
-    return { status: 'error', message: UNEXPECTED_ERROR };
+  const scanUrl = `${baseUrl}/shelf-photos/${encodeURIComponent(stored.body.id)}/scan`;
+  const scanned = await ask(send, scanUrl, { method: 'POST' });
+  if (!scanned.reached) {
+    return failure('offline');
+  }
+  if (scanned.status === 502) {
+    return failure('upstream');
+  }
+  if (scanned.status !== 200 || !isScanResult(scanned.body)) {
+    return failure('unexpected');
   }
 
-  return { status: 'success', books: scannedBody.books.map((book) => toDetectedBook(book)) };
+  return { status: 'success', books: scanned.body.books.map((book) => toDetectedBook(book)) };
+}
+
+/**
+ * One request, told apart from no answer at all: `fetch` rejects only when nothing came
+ * back — a cut connection, a server out of reach. A body that is not JSON reads as `null`,
+ * which no guard below accepts.
+ */
+async function ask(send: typeof fetch, url: string, init: RequestInit): Promise<Answer> {
+  let response: Response;
+  try {
+    response = await send(url, init);
+  } catch {
+    return { reached: false };
+  }
+
+  let body: unknown = null;
+  try {
+    body = await response.json();
+  } catch {
+    // Not JSON: left as null.
+  }
+
+  return { reached: true, status: response.status, body };
+}
+
+function failure(kind: keyof typeof MESSAGES): UploadState {
+  return { status: 'error', message: MESSAGES[kind] };
 }
 
 interface WireBook {

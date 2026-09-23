@@ -66,8 +66,13 @@ function inMemoryPorts() {
  * mapping, the adapters have their own specs against the real technologies. Excluded from
  * the app build (`tsconfig.app.json`).
  */
-export function aShelfPhotosController(scanner: ShelfScannerPort = new StubShelfScannerAdapter()) {
-  const { objects, records, storage, repository } = inMemoryPorts();
+export function aShelfPhotosController(
+  overrides: { readonly scanner?: ShelfScannerPort; readonly storage?: ShelfPhotoStoragePort } = {},
+) {
+  const ports = inMemoryPorts();
+  const { objects, records, repository } = ports;
+  const storage = overrides.storage ?? ports.storage;
+  const scanner = overrides.scanner ?? new StubShelfScannerAdapter();
   const storeShelfPhoto = new StoreShelfPhotoUseCase('default', storage, repository);
   const scanStoredShelfPhoto = new ScanStoredShelfPhotoUseCase(storage, repository, scanner);
 

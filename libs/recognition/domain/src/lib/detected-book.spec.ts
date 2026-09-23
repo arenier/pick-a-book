@@ -4,6 +4,7 @@ import { Author } from './author.js';
 import { BookTitle } from './book-title.js';
 import { Confidence } from './confidence.js';
 import { DetectedBook } from './detected-book.js';
+import { InvalidShelfPhoto } from './invalid-shelf-photo.error.js';
 import { ShelfPhoto, isShelfPhotoMediaType } from './shelf-photo.js';
 
 describe('Author', () => {
@@ -38,6 +39,15 @@ describe('Confidence', () => {
 });
 
 describe('ShelfPhoto', () => {
+  // A dedicated error, so HTTP can tell a refused photo (400) from a failing bucket (500).
+  it('refuses an off-contract image with InvalidShelfPhoto', () => {
+    expect(() => ShelfPhoto.of(new Uint8Array(0), 'image/jpeg')).toThrow(InvalidShelfPhoto);
+    expect(() => ShelfPhoto.of(new Uint8Array([1]), 'application/pdf')).toThrow(InvalidShelfPhoto);
+    expect(() => ShelfPhoto.of(new Uint8Array(20 * 1024 * 1024 + 1), 'image/jpeg')).toThrow(
+      InvalidShelfPhoto,
+    );
+  });
+
   it('rejects an empty image', () => {
     expect(() => ShelfPhoto.of(new Uint8Array(0), 'image/jpeg')).toThrow(/empty/u);
   });

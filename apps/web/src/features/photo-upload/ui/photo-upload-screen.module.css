@@ -29,3 +29,11 @@
   padding-left: 1.25rem;
   overflow-wrap: anywhere;
 }
+
+.error {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #b3261e;
+  background: #fdecea;
+  color: #5f1410;
+}
