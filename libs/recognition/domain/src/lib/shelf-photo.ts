@@ -31,7 +31,7 @@ export class ShelfPhoto {
         `ShelfPhoto: image too large (${bytes.byteLength} bytes, ${MAX_BYTES} at most)`,
       );
     }
-    if (!isSupported(mediaType)) {
+    if (!isShelfPhotoMediaType(mediaType)) {
       throw new Error(
         `ShelfPhoto: unsupported media type (${mediaType}) — expected ${SUPPORTED_MEDIA_TYPES.join(', ')}`,
       );
@@ -41,6 +41,6 @@ export class ShelfPhoto {
   }
 }
 
-function isSupported(mediaType: string): mediaType is ShelfPhotoMediaType {
+export function isShelfPhotoMediaType(mediaType: string): mediaType is ShelfPhotoMediaType {
   return SUPPORTED_MEDIA_TYPES.some((supported) => supported === mediaType);
 }

@@ -4,3 +4,8 @@ export * from './lib/confidence.js';
 export * from './lib/detected-book.js';
 export * from './lib/shelf-photo.js';
 export * from './lib/shelf-scanner.port.js';
+export * from './lib/shelf-photo-storage.port.js';
+export * from './lib/shelf-scan-repository.port.js';
+export * from './lib/shelf-scan-already-processed.error.js';
+export * from './lib/shelf-scan-id.js';
+export * from './lib/shelf-scan-not-found.error.js';
