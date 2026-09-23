@@ -120,3 +120,37 @@ describe('PhotoUploadScreen, with a file it cannot send', () => {
     expect(screen.getByRole('alert').textContent).toBe('Le service est indisponible.');
   });
 });
+
+// US4, FR-008: back to the start, without reloading the page.
+const startOver = () => screen.getByRole('button', { name: 'Recommencer' });
+
+describe('PhotoUploadScreen, starting over', () => {
+  it.each([
+    ['a result', { status: 'success', books: [] }],
+    ['an error', { status: 'error', message: 'Le service est indisponible.' }],
+  ] satisfies [string, UploadState][])(
+    'comes back to the start after %s',
+    async (_label, outcome) => {
+      const submission = aPendingSubmission();
+      render(<PhotoUploadScreen submit={submission.submit} />);
+      choose(aJpeg());
+      fireEvent.click(sendButton());
+      await act(async () => {
+        submission.settle(outcome);
+      });
+
+      fireEvent.click(startOver());
+
+      expect(screen.queryByRole('alert')).toBeNull();
+      expect(screen.queryByText('Aucun livre détecté sur cette photo.')).toBeNull();
+      expect(sendButton()).toHaveProperty('disabled', true);
+      expect(screen.getByLabelText<HTMLInputElement>('Photo de l’étagère').value).toBe('');
+    },
+  );
+
+  it('offers no way back while nothing has happened yet', () => {
+    render(<PhotoUploadScreen submit={aPendingSubmission().submit} />);
+
+    expect(screen.queryByRole('button', { name: 'Recommencer' })).toBeNull();
+  });
+});
