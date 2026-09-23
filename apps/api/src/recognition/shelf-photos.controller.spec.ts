@@ -111,3 +111,22 @@ describe('ShelfPhotosController blames no photo for a failure of its own', () =>
     await expect(controller.scan(id)).rejects.toMatchObject({ status: 502 });
   });
 });
+
+describe('ShelfPhotosController, scanning an id it cannot scan', () => {
+  it('answers 404 to an unknown id', async () => {
+    const { controller } = aShelfPhotosController();
+
+    await expect(controller.scan('1f9c2e3a-4b5d-4e6f-8a7b-9c0d1e2f3a4b')).rejects.toMatchObject({
+      status: 404,
+    });
+    await expect(controller.scan('not-a-uuid')).rejects.toMatchObject({ status: 404 });
+  });
+
+  it('answers 409 to a second scan of the same photo', async () => {
+    const { controller } = aShelfPhotosController();
+    const { id } = await controller.store(aJpegUpload);
+    await controller.scan(id);
+
+    await expect(controller.scan(id)).rejects.toMatchObject({ status: 409 });
+  });
+});

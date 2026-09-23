@@ -181,3 +181,34 @@ describe('DrizzleShelfScanRepositoryAdapter, recording a result only once', () =
     await expect(repository.markFailed(ShelfScanId.generate())).rejects.toThrow(ShelfScanNotFound);
   });
 });
+
+// US3, FR-015: everything about the stored photo is kept, and the name it came with names
+// nothing.
+describe('DrizzleShelfScanRepositoryAdapter, reference of the stored photo', () => {
+  const { pool, repository } = aMigratedRepository();
+
+  it('keeps the owner, media type, weight and original name as given', async () => {
+    const scan = { ...aNewScan(), ownerId: 'someone', photoMediaType: 'image/heic' as const };
+
+    await repository.createPending(scan);
+
+    await expect(repository.get(scan.id)).resolves.toMatchObject({
+      ownerId: 'someone',
+      photoMediaType: 'image/heic',
+      photoSizeBytes: 2_345_678,
+      originalFilename: 'IMG_0001.jpg',
+    });
+  });
+
+  it('never writes the original name into the bucket key column', async () => {
+    const scan = aNewScan();
+
+    await repository.createPending(scan);
+
+    const { rows } = await pool.query<{ bucket_key: string }>(
+      'select bucket_key from uploads where id = $1',
+      [scan.id.value],
+    );
+    expect(rows[0]?.bucket_key).not.toContain(scan.originalFilename);
+  });
+});
