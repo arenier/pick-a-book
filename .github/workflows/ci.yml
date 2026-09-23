@@ -23,6 +23,23 @@ env:
 jobs:
   check:
     runs-on: ubuntu-latest
+    # The recognition adapters are tested against the real technologies (CLAUDE.md), so the
+    # job runs the same Postgres as docker-compose — same image, same credentials, same host
+    # port — and the specs find it where they find it locally.
+    services:
+      db:
+        image: postgres:17.6-alpine
+        env:
+          POSTGRES_USER: pick_a_book
+          POSTGRES_PASSWORD: pick_a_book
+          POSTGRES_DB: pick_a_book
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U pick_a_book -d pick_a_book"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -115,6 +132,12 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --immutable
+
+      # The GCS emulator the storage adapter specs write to. Not a `services:` entry: those
+      # cannot pass arguments to the image, and the emulator must be told to speak plain HTTP.
+      # Same image and port as docker-compose; each spec run creates its own bucket.
+      - name: Start the bucket emulator
+        run: docker run --detach --name bucket --publish 4443:4443 fsouza/fake-gcs-server:1.52.2 -scheme http -port 4443 -backend memory
 
       # Compute NX_BASE / NX_HEAD for `nx affected`:
       #   PR -> merge-base with main; push to main -> last green commit.
