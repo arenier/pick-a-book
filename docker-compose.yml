@@ -2,8 +2,8 @@
 # image on Cloud Run plus a bucket (ADR 0004).
 #
 # Persistence is Postgres (ADR 0006), so the stack runs one: production is Neon, and
-# developing against the same engine is the whole point. Shelf photos are ephemeral and never
-# stored (ADR 0006), so the stack carries no object storage.
+# developing against the same engine is the whole point. Shelf photos are kept in a bucket
+# (ADR 0004, specs/001-photo-upload), so the stack also runs a GCS emulator.
 #
 # The Dockerfiles live in docker/ and take the repository root as their build context.
 
@@ -23,11 +23,19 @@ services:
       SHELF_SCANNER_PROVIDER: ${SHELF_SCANNER_PROVIDER:-stub}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      # Shelf photos land in the emulated bucket below. STORAGE_EMULATOR_HOST is what points
+      # the GCS client at it; it is never set in production, where the real API answers.
+      BUCKET_NAME: pick-a-book-photos
+      STORAGE_EMULATOR_HOST: http://bucket:4443
+      OWNER_ID: ${OWNER_ID:-default}
+      WEB_ORIGIN: http://localhost:4200
     ports:
       - '3000:3000'
     depends_on:
       db:
         condition: service_healthy
+      bucket:
+        condition: service_started
     healthcheck:
       test:
         [
@@ -73,6 +81,23 @@ services:
       timeout: 3s
       retries: 10
       start_period: 5s
+
+  # Stands in for the GCS bucket that keeps shelf photos (ADR 0004). fake-gcs-server creates
+  # one bucket per directory found under `-data` at startup, so the entrypoint makes the
+  # directory first — the bucket name must match BUCKET_NAME of the api service above.
+  # In-memory backend: photos do not survive a restart, unlike the Postgres rows that point
+  # at them. Acceptable for local development; production is a real, versioned bucket.
+  bucket:
+    image: fsouza/fake-gcs-server:1.52.2
+    entrypoint:
+      - sh
+      - -c
+      - >-
+        mkdir -p /data/pick-a-book-photos &&
+        exec /bin/fake-gcs-server -data /data -backend memory -scheme http -port 4443
+        -public-host localhost:4443
+    ports:
+      - '4443:4443'
 
 volumes:
   db-data:
