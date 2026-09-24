@@ -82,22 +82,25 @@ services:
       retries: 10
       start_period: 5s
 
-  # Stands in for the GCS bucket that keeps shelf photos (ADR 0004). fake-gcs-server creates
-  # one bucket per directory found under `-data` at startup, so the entrypoint makes the
-  # directory first — the bucket name must match BUCKET_NAME of the api service above.
-  # In-memory backend: photos do not survive a restart, unlike the Postgres rows that point
-  # at them. Acceptable for local development; production is a real, versioned bucket.
+  # Stands in for the GCS bucket that keeps shelf photos (ADR 0004). The filesystem backend
+  # serves one bucket per directory under its root, so the entrypoint makes the directory
+  # first — the bucket name must match BUCKET_NAME of the api service above.
+  # Filesystem rather than in-memory, on a volume: the photos survive a restart, like the
+  # Postgres rows that point at them — otherwise every row outlives its photo.
   bucket:
     image: fsouza/fake-gcs-server:1.52.2
     entrypoint:
       - sh
       - -c
       - >-
-        mkdir -p /data/pick-a-book-photos &&
-        exec /bin/fake-gcs-server -data /data -backend memory -scheme http -port 4443
-        -public-host localhost:4443
+        mkdir -p /storage/pick-a-book-photos &&
+        exec /bin/fake-gcs-server -backend filesystem -filesystem-root /storage -scheme http
+        -port 4443 -public-host localhost:4443
+    volumes:
+      - bucket-data:/storage
     ports:
       - '4443:4443'
 
 volumes:
   db-data:
+  bucket-data:
