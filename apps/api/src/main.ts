@@ -10,6 +10,9 @@ async function bootstrap() {
   const environment = loadEnvironment();
 
   const app = await NestFactory.create(AppModule.withEnvironment(environment));
+  // The frontend is served from its own origin (a bucket, ADR 0004): without this, every
+  // call it makes fails in the browser as an opaque CORS error.
+  app.enableCors({ origin: environment.webOrigin });
   await app.listen(environment.port, '0.0.0.0');
 
   Logger.log(`API listening on http://localhost:${environment.port} (${environment.nodeEnv})`);

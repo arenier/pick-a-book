@@ -11,6 +11,8 @@
       "@nx/react/typings/image.d.ts"
     ],
     "jsx": "react-jsx",
+    // The specs run in jsdom and query the DOM: they need its types, as the app does.
+    "lib": ["es2022", "dom"],
     "module": "esnext",
     "moduleResolution": "bundler"
   },

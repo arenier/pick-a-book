@@ -189,7 +189,7 @@ apps/api/src/
     └── shelf-scan-archive.factory.ts       # construit les clients GCS/Postgres depuis Environment
 
 docker-compose.yml                         # + service émulateur de bucket (research.md §9)
-.env.example                                # + BUCKET_NAME, + STORAGE_EMULATOR_HOST (dev), + WEB_ORIGIN, + OWNER_ID
+.env.example                                # + BUCKET_NAME, + BUCKET_EMULATOR_HOST (dev), + WEB_ORIGIN, + OWNER_ID
 ```
 
 **Structure Decision**: feature-slice en dossier sous `apps/web/src/features/photo-upload/`

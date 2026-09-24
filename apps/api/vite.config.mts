@@ -1,5 +1,30 @@
-import { defineConfig } from 'vitest/config';
+import { cpSync } from 'node:fs';
+import { join } from 'node:path';
+
+import { defineConfig, type Plugin } from 'vitest/config';
 import swc from 'unplugin-swc';
+
+/**
+ * Copies the committed Drizzle migrations next to the bundle, where the API applies them at
+ * boot (`recognition.module.ts`). They are SQL files, not code: the bundler would never pick
+ * them up, and an image without them would boot against a schema it cannot create.
+ */
+function copyMigrations(): Plugin {
+  const source = join(
+    import.meta.dirname,
+    '../../libs/recognition/infrastructure/src/lib/drizzle/migrations',
+  );
+
+  return {
+    name: 'copy-migrations',
+    apply: 'build',
+    writeBundle(options) {
+      cpSync(source, join(options.dir ?? join(import.meta.dirname, 'dist'), 'migrations'), {
+        recursive: true,
+      });
+    },
+  };
+}
 
 export default defineConfig({
   root: import.meta.dirname,
@@ -20,6 +45,7 @@ export default defineConfig({
         externalHelpers: true,
       },
     }),
+    copyMigrations(),
   ],
   build: {
     outDir: './dist',

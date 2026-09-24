@@ -4,6 +4,7 @@ import { InvalidEnvironment, loadEnvironment } from './environment';
 
 const complete = {
   DATABASE_URL: 'postgresql://user:secret@db.example.com/neondb?sslmode=require',
+  BUCKET_NAME: 'pick-a-book-photos',
 } satisfies NodeJS.ProcessEnv;
 
 /** Loads a complete environment, with `overrides` applied on top. */
@@ -55,6 +56,66 @@ describe('loadEnvironment', () => {
 
   it('rejects an unknown NODE_ENV', () => {
     expect(() => loadEnvironment({ ...complete, NODE_ENV: 'staging' })).toThrow(/NODE_ENV/u);
+  });
+});
+
+describe('loadEnvironment, photo storage (specs/001-photo-upload)', () => {
+  it('exposes the bucket that keeps the shelf photos', () => {
+    expect(load().bucketName).toBe('pick-a-book-photos');
+  });
+
+  // Same contract as DATABASE_URL: the first upload would otherwise be the one to find out.
+  it('fails when BUCKET_NAME is missing, naming it', () => {
+    expect(() => loadEnvironment({ DATABASE_URL: complete.DATABASE_URL })).toThrow(
+      InvalidEnvironment,
+    );
+    expect(() => loadEnvironment({ DATABASE_URL: complete.DATABASE_URL })).toThrow(/BUCKET_NAME/u);
+  });
+
+  it('defaults OWNER_ID to "default"', () => {
+    expect(load().ownerId).toBe('default');
+    expect(load({ OWNER_ID: '   ' }).ownerId).toBe('default');
+  });
+
+  it('carries a configured OWNER_ID', () => {
+    expect(load({ OWNER_ID: 'someone' }).ownerId).toBe('someone');
+  });
+
+  // The owner segment ends up in a bucket key: a slash would add a level to the layout.
+  it('rejects an OWNER_ID that would not be a single key segment', () => {
+    expect(() => load({ OWNER_ID: 'a/b' })).toThrow(/OWNER_ID/u);
+  });
+
+  // Development only: absent in production, where the SDK talks to the real API.
+  it('carries the bucket emulator host only when it is set', () => {
+    expect(load().bucketEmulatorHost).toBeUndefined();
+    expect(load({ BUCKET_EMULATOR_HOST: 'http://localhost:4443' }).bucketEmulatorHost).toBe(
+      'http://localhost:4443',
+    );
+  });
+
+  // Regression: the GCS SDK reads STORAGE_EMULATOR_HOST on its own and builds its download
+  // URLs from it without the /storage/v1 prefix — uploads work, every read then 404s.
+  it('refuses STORAGE_EMULATOR_HOST, naming the variable to use instead', () => {
+    expect(() => load({ STORAGE_EMULATOR_HOST: 'http://localhost:4443' })).toThrow(
+      /STORAGE_EMULATOR_HOST[\s\S]*BUCKET_EMULATOR_HOST/u,
+    );
+  });
+});
+
+describe('loadEnvironment, CORS origin (ADR 0004: two origins)', () => {
+  it('defaults WEB_ORIGIN to the port of `yarn web`', () => {
+    expect(load().webOrigin).toBe('http://localhost:4200');
+  });
+
+  it('carries a configured WEB_ORIGIN', () => {
+    expect(load({ WEB_ORIGIN: 'https://storage.googleapis.com' }).webOrigin).toBe(
+      'https://storage.googleapis.com',
+    );
+  });
+
+  it('rejects a WEB_ORIGIN that is not an http(s) origin', () => {
+    expect(() => load({ WEB_ORIGIN: 'localhost:4200' })).toThrow(/WEB_ORIGIN/u);
   });
 });
 

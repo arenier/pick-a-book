@@ -1,0 +1,39 @@
+/* Built for a phone first (SC-004): a single column that holds from 360px wide up, with no
+   horizontal scroll — nothing here has a fixed width. */
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.picker input {
+  max-width: 100%;
+  font-weight: normal;
+}
+
+.send {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+}
+
+.books {
+  padding-left: 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+.error {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #b3261e;
+  background: #fdecea;
+  color: #5f1410;
+}

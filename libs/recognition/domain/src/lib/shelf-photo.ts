@@ -1,3 +1,5 @@
+import { InvalidShelfPhoto } from './invalid-shelf-photo.error.js';
+
 /**
  * A shelf photo submitted for recognition.
  *
@@ -24,16 +26,16 @@ export class ShelfPhoto {
 
   static of(bytes: Uint8Array, mediaType: string): ShelfPhoto {
     if (bytes.byteLength === 0) {
-      throw new Error('ShelfPhoto: empty image');
+      throw new InvalidShelfPhoto('empty image');
     }
     if (bytes.byteLength > MAX_BYTES) {
-      throw new Error(
-        `ShelfPhoto: image too large (${bytes.byteLength} bytes, ${MAX_BYTES} at most)`,
+      throw new InvalidShelfPhoto(
+        `image too large (${bytes.byteLength} bytes, ${MAX_BYTES} at most)`,
       );
     }
-    if (!isSupported(mediaType)) {
-      throw new Error(
-        `ShelfPhoto: unsupported media type (${mediaType}) — expected ${SUPPORTED_MEDIA_TYPES.join(', ')}`,
+    if (!isShelfPhotoMediaType(mediaType)) {
+      throw new InvalidShelfPhoto(
+        `unsupported media type (${mediaType}) — expected ${SUPPORTED_MEDIA_TYPES.join(', ')}`,
       );
     }
 
@@ -41,6 +43,6 @@ export class ShelfPhoto {
   }
 }
 
-function isSupported(mediaType: string): mediaType is ShelfPhotoMediaType {
+export function isShelfPhotoMediaType(mediaType: string): mediaType is ShelfPhotoMediaType {
   return SUPPORTED_MEDIA_TYPES.some((supported) => supported === mediaType);
 }
