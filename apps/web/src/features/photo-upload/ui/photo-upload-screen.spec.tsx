@@ -40,7 +40,9 @@ describe('PhotoUploadScreen, happy path', () => {
     choose(aJpeg());
     fireEvent.click(sendButton());
 
-    expect(screen.getByRole('status').textContent).toBe('Analyse de la photo en cours…');
+    expect(screen.getByRole('status').textContent).toBe(
+      'Analyse de la photo en cours, cela peut prendre une trentaine de secondes…',
+    );
 
     await act(async () => {
       submission.settle({

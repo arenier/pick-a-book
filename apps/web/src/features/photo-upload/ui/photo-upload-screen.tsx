@@ -31,7 +31,11 @@ export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScre
         Analyser la photo
       </button>
 
-      {uploading && <output>Analyse de la photo en cours…</output>}
+      {uploading && (
+        // The VLM call takes around 30 s (docs/decisions/0001): saying so up front is what keeps
+        // a user from reading the wait as a hang.
+        <output>Analyse de la photo en cours, cela peut prendre une trentaine de secondes…</output>
+      )}
       {state.status === 'success' && <ScanResult books={state.books} />}
       {state.status === 'error' && (
         <p role="alert" className={styles['error']}>
