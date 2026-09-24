@@ -1,3 +1,7 @@
+import type {
+  ShelfPhotoStoragePort,
+  ShelfScanRepositoryPort,
+} from '@pick-a-book/recognition-domain';
 import {
   DrizzleShelfScanRepositoryAdapter,
   GcsShelfPhotoStorageAdapter,
@@ -8,10 +12,13 @@ import { Pool } from 'pg';
 
 import type { Environment } from '../config/environment';
 
+/**
+ * Returned as ports, never as the adapters behind them: the use cases are handed this and
+ * cannot tell whether they are talking to GCS or to the emulator of the compose stack.
+ */
 export interface ShelfScanArchive {
-  readonly bucket: ReturnType<typeof openShelfPhotoBucket>;
-  readonly storage: GcsShelfPhotoStorageAdapter;
-  readonly repository: DrizzleShelfScanRepositoryAdapter;
+  readonly storage: ShelfPhotoStoragePort;
+  readonly repository: ShelfScanRepositoryPort;
   /** Applies the committed migrations — run once at boot, before any request. */
   migrate(migrationsFolder: string): Promise<void>;
   close(): Promise<void>;
@@ -35,7 +42,6 @@ export function createShelfScanArchive(
   const pool = new Pool({ connectionString: configuration.databaseUrl });
 
   return {
-    bucket,
     storage: new GcsShelfPhotoStorageAdapter(bucket),
     repository: new DrizzleShelfScanRepositoryAdapter(pool),
     migrate: async (migrationsFolder) => migrateDatabase(pool, migrationsFolder),

@@ -2,7 +2,10 @@ import { Storage } from '@google-cloud/storage';
 import { ShelfPhoto } from '@pick-a-book/recognition-domain';
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { GcsShelfPhotoStorageAdapter } from './gcs-shelf-photo-storage.adapter.js';
+import {
+  GcsShelfPhotoStorageAdapter,
+  openShelfPhotoBucket,
+} from './gcs-shelf-photo-storage.adapter.js';
 
 /**
  * Runs against the GCS emulator (fake-gcs-server) of docker-compose, not a double: adapters
@@ -81,5 +84,27 @@ describe('GcsShelfPhotoStorageAdapter, retrieving', () => {
 
   it('rejects the retrieval of a key that holds nothing', async () => {
     await expect(adapter.retrieve(aKey(), 'image/jpeg')).rejects.toThrow(/ShelfPhotoStorage/u);
+  });
+});
+
+// No request is made here: the client only records where it would send one.
+describe('openShelfPhotoBucket', () => {
+  it('points the client at the emulator when one is configured', () => {
+    const bucket = openShelfPhotoBucket({
+      bucketName: 'pick-a-book-photos',
+      emulatorHost: 'http://localhost:4443',
+    });
+
+    expect(bucket.name).toBe('pick-a-book-photos');
+    expect(bucket.storage.apiEndpoint).toBe('http://localhost:4443');
+  });
+
+  it('talks to the real API when no emulator is configured', () => {
+    const bucket = openShelfPhotoBucket({
+      bucketName: 'pick-a-book-photos',
+      emulatorHost: undefined,
+    });
+
+    expect(bucket.storage.apiEndpoint).toBe('https://storage.googleapis.com');
   });
 });
