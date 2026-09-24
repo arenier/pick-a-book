@@ -67,31 +67,38 @@ jobs:
           grep -qE '^[[:space:]]*yarn format:check[[:space:]]*$' .github/workflows/ci.yml || { echo "::error::ci.yml no longer runs 'yarn format:check'"; fail=1; }
           [ "$fail" -eq 0 ] || exit 1
 
-      # docker/api.Dockerfile copies every workspace manifest before `yarn install --immutable`,
-      # so the install resolves the same graph as yarn.lock. A member left off that COPY list
-      # makes the immutable install fail — and only at `docker build` time (yarn deploy:api),
-      # never in the Nx graph this job exercises. This guard catches that drift here. Pure text,
-      # fails cheap, so it sits next to the other target guard rather than waiting on a build.
-      - name: the api image copies every workspace manifest
+      # Both images (docker/api.Dockerfile, docker/web.Dockerfile) copy every workspace manifest
+      # before `yarn install --immutable`, so the install resolves the same graph as yarn.lock. A
+      # member left off a COPY list makes the immutable install fail — and only at `docker build`
+      # time (yarn deploy:api, docker compose up --build), never in the Nx graph this job
+      # exercises. web.Dockerfile drifted exactly that way when #43 added two workspaces while
+      # this guard only read the api image. Pure text, fails cheap, so it sits next to the other
+      # target guard rather than waiting on a build.
+      - name: the images copy every workspace manifest
         run: |
           set -euo pipefail
 
           # Real workspace members — the globs the root package.json declares (apps/*, libs/*/*,
           # tools/*), read from the filesystem rather than re-listed here.
           real=$(for d in apps/* libs/*/* tools/*; do [ -f "$d/package.json" ] && echo "$d"; done | sort)
-          # Members docker/api.Dockerfile copies a manifest for.
-          copied=$(grep -oE '(apps|libs|tools)/[^ ]+/package.json' docker/api.Dockerfile | sed 's#/package.json##' | sort -u)
-
-          # An empty capture means a glob or the Dockerfile's COPY shape moved, not that the two
-          # agree: guard both so the gate never passes having read nothing.
+          # An empty capture means a glob moved, not that everything agrees: guard it so the gate
+          # never passes having read nothing.
           [ -n "$real" ] || { echo "::error::found no workspace members under apps/*, libs/*/*, tools/* — the globs in this guard moved, update it"; exit 1; }
-          [ -n "$copied" ] || { echo "::error::found no 'COPY <workspace>/package.json' lines in docker/api.Dockerfile — the guard's pattern moved, update it"; exit 1; }
 
-          if [ "$real" != "$copied" ]; then
-            echo "::error::docker/api.Dockerfile must COPY exactly the workspace manifests, or 'yarn install --immutable' fails at build time. '<' is a workspace the Dockerfile omits, '>' is a COPY that is not a workspace:"
-            diff <(echo "$real") <(echo "$copied") || true
-            exit 1
-          fi
+          fail=0
+          for dockerfile in docker/api.Dockerfile docker/web.Dockerfile; do
+            # Members this Dockerfile copies a manifest for.
+            copied=$(grep -oE '(apps|libs|tools)/[^ ]+/package.json' "$dockerfile" | sed 's#/package.json##' | sort -u || true)
+            if [ -z "$copied" ]; then
+              echo "::error::found no 'COPY <workspace>/package.json' lines in $dockerfile — the guard's pattern moved, update it"
+              fail=1
+            elif [ "$real" != "$copied" ]; then
+              echo "::error::$dockerfile must COPY exactly the workspace manifests, or 'yarn install --immutable' fails at build time. '<' is a workspace the Dockerfile omits, '>' is a COPY that is not a workspace:"
+              diff <(echo "$real") <(echo "$copied") || true
+              fail=1
+            fi
+          done
+          [ "$fail" -eq 0 ] || exit 1
 
       - uses: actions/setup-node@v4
         with:
