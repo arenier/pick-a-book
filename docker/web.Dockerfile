@@ -9,6 +9,8 @@ WORKDIR /app
 
 RUN npm install -g @yarnpkg/cli-dist@4.18.0
 
+# Every workspace manifest, as in docker/api.Dockerfile: a member missing here makes Yarn
+# resolve a different graph than yarn.lock, and `--immutable` fails. CI checks the list.
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
@@ -16,6 +18,8 @@ COPY libs/recognition/domain/package.json libs/recognition/domain/
 COPY libs/recognition/application/package.json libs/recognition/application/
 COPY libs/recognition/infrastructure/package.json libs/recognition/infrastructure/
 COPY libs/shared/result/package.json libs/shared/result/
+COPY libs/shared/text-match/package.json libs/shared/text-match/
+COPY tools/bench/package.json tools/bench/
 RUN yarn install --immutable
 
 COPY . .
