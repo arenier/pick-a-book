@@ -1,8 +1,12 @@
+import type {
+  ShelfPhotoStoragePort,
+  ShelfScanRepositoryPort,
+} from '@pick-a-book/recognition-domain';
 import {
   DrizzleShelfScanRepositoryAdapter,
   GcsShelfPhotoStorageAdapter,
 } from '@pick-a-book/recognition-infrastructure';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, expectTypeOf, it } from 'vitest';
 
 import { createShelfScanArchive, type ShelfScanArchive } from './shelf-scan-archive.factory';
 
@@ -27,19 +31,13 @@ describe('createShelfScanArchive', () => {
     expect(archive.repository).toBeInstanceOf(DrizzleShelfScanRepositoryAdapter);
   });
 
-  it('points the storage client at the emulator when one is configured', () => {
-    archive = createShelfScanArchive({
-      ...configuration,
-      bucketEmulatorHost: 'http://localhost:4443',
-    });
-
-    expect(archive.bucket.name).toBe('pick-a-book-photos');
-    expect(archive.bucket.storage.apiEndpoint).toBe('http://localhost:4443');
-  });
-
-  it('talks to the real API when no emulator is configured', () => {
+  // The use cases are handed ports: nothing past the composition root may reach for the
+  // adapter behind one, nor for the bucket client it wraps.
+  it('hands out ports, never the adapters or the clients behind them', () => {
     archive = createShelfScanArchive(configuration);
 
-    expect(archive.bucket.storage.apiEndpoint).toBe('https://storage.googleapis.com');
+    expectTypeOf(archive.storage).toEqualTypeOf<ShelfPhotoStoragePort>();
+    expectTypeOf(archive.repository).toEqualTypeOf<ShelfScanRepositoryPort>();
+    expect(Object.keys(archive)).toStrictEqual(['storage', 'repository', 'migrate', 'close']);
   });
 });
