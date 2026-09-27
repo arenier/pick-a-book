@@ -16,9 +16,9 @@ module "artifact_registry" {
   depends_on = [module.project]
 }
 
-# Backups only — the weekly pg_dump snapshots of module.cloud_run_job_db_backup. Strictly private, the exact opposite
-# access policy from module.static_site (the public front): the two are never the same bucket
-# and never share the `bucket`/`static-site` module.
+# Backups only — the weekly pg_dump snapshots of module.cloud_run_job_db_backup. Strictly
+# private, the exact opposite access policy from module.static_site (the public front): the two
+# are never the same bucket and never share the `bucket`/`static-site` module.
 module "bucket" {
   source = "../../modules/bucket"
 
@@ -217,7 +217,9 @@ module "cloud_run_job_db_backup" {
   secret_env            = local.backup_job_secret_env
   schedule              = local.backup_schedule
 
-  depends_on = [module.project]
+  # The email alone only orders the job after the service account, not after its grants:
+  # Cloud Run checks that the identity can read the secrets it references.
+  depends_on = [module.project, module.service_account_db_backup]
 }
 
 module "db_backup_freshness_alert" {
