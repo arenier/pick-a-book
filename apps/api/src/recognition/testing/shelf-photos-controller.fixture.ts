@@ -3,6 +3,7 @@ import {
   StoreShelfPhotoUseCase,
 } from '@pick-a-book/recognition-application';
 import {
+  OwnerId,
   ShelfPhoto,
   ShelfScanAlreadyProcessed,
   ShelfScanNotFound,
@@ -73,7 +74,7 @@ export function aShelfPhotosController(
   const { objects, records, repository } = ports;
   const storage = overrides.storage ?? ports.storage;
   const scanner = overrides.scanner ?? new StubShelfScannerAdapter();
-  const storeShelfPhoto = new StoreShelfPhotoUseCase('default', storage, repository);
+  const storeShelfPhoto = new StoreShelfPhotoUseCase(OwnerId.of('default'), storage, repository);
   const scanStoredShelfPhoto = new ScanStoredShelfPhotoUseCase(storage, repository, scanner);
 
   return {

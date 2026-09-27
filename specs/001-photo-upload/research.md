@@ -166,6 +166,16 @@ clic, requête réseau rejouée) de relancer un appel VLM déjà payé et déjà
 fonctionnalité de nouvelle tentative (voir FR-014 plus bas, qui documente uniquement la garantie de
 non-perte, pas une UX de retry explicite, hors scope de cette feature).
 
+**Limite connue** *(relevée en revue de #55, le 27/09/2026)* : le 409 protège contre un second
+appel **séquentiel**, pas contre deux appels **simultanés**. Deux requêtes qui lisent toutes deux
+l'enregistrement encore `pending` appellent toutes deux le VLM ; seule la première à écrire
+l'emporte (la condition `status = 'pending'` est dans l'`UPDATE` lui-même), la seconde reçoit 409 —
+mais les deux appels ont été payés. Acceptée plutôt que corrigée : il faut deux requêtes quasi
+simultanées sur le même `id`, que le frontend n'émet pas (bouton désactivé pendant l'envoi,
+FR-007), pour un seul utilisateur. La fermer demanderait un état intermédiaire (`scanning`) posé
+avant l'appel, et donc une reprise pour les enregistrements restés bloqués si l'instance tombe
+pendant l'analyse — une complexité que ce volume ne justifie pas.
+
 **Alternatives considered**:
 - Un seul endpoint synchrone (version précédente) — rejeté pour la raison ci-dessus.
 - Un troisième endpoint asynchrone avec file d'attente et statut interrogé par polling (`GET

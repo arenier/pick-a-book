@@ -1,5 +1,6 @@
 import {
   ShelfPhoto,
+  type OwnerId,
   ShelfScanId,
   type ShelfPhotoStoragePort,
   type ShelfScanRepositoryPort,
@@ -17,7 +18,7 @@ import type { StoreShelfPhotoCommand, StoreShelfPhotoResult } from './shelf-phot
  */
 export class StoreShelfPhotoUseCase {
   constructor(
-    private readonly ownerId: string,
+    private readonly ownerId: OwnerId,
     private readonly storage: ShelfPhotoStoragePort,
     private readonly repository: ShelfScanRepositoryPort,
   ) {}
@@ -25,7 +26,7 @@ export class StoreShelfPhotoUseCase {
   async execute(command: StoreShelfPhotoCommand): Promise<StoreShelfPhotoResult> {
     const photo = ShelfPhoto.of(command.bytes, command.mediaType);
     const id = ShelfScanId.generate();
-    const key = `${this.ownerId}/shelf_photo/${id.value}`;
+    const key = `${this.ownerId.value}/shelf_photo/${id.value}`;
 
     await this.storage.store(photo, key);
     await this.repository.createPending({

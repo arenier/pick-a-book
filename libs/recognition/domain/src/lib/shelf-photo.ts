@@ -4,7 +4,8 @@ import { InvalidShelfPhoto } from './invalid-shelf-photo.error.js';
  * A shelf photo submitted for recognition.
  *
  * The domain knows neither the bucket nor the file system: it receives bytes and a media
- * type. The key of the stored object stays an infrastructure concern (ADR 0004, ADR 0006).
+ * type. Where it is kept is `ShelfPhotoStoragePort`'s business, under a key the use case
+ * that stores it decides (`{ownerId}/shelf_photo/{id}`).
  */
 export type ShelfPhotoMediaType = 'image/jpeg' | 'image/png' | 'image/webp' | 'image/heic';
 

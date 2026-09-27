@@ -1,4 +1,4 @@
-import { InvalidShelfPhoto, ShelfScanId } from '@pick-a-book/recognition-domain';
+import { InvalidShelfPhoto, OwnerId, ShelfScanId } from '@pick-a-book/recognition-domain';
 import { describe, expect, it } from 'vitest';
 
 import { StoreShelfPhotoUseCase } from './store-shelf-photo.use-case.js';
@@ -15,7 +15,9 @@ function aUseCase(ownerId = 'default') {
   const storage = new InMemoryShelfPhotoStorage();
   const repository = new InMemoryShelfScanRepository();
 
-  return { storage, repository, useCase: new StoreShelfPhotoUseCase(ownerId, storage, repository) };
+  const useCase = new StoreShelfPhotoUseCase(OwnerId.of(ownerId), storage, repository);
+
+  return { storage, repository, useCase };
 }
 
 describe('StoreShelfPhotoUseCase', () => {
@@ -45,7 +47,7 @@ describe('StoreShelfPhotoUseCase', () => {
 
     const record = await repository.get(ShelfScanId.of(id));
     expect(record).toMatchObject({
-      ownerId: 'someone',
+      ownerId: OwnerId.of('someone'),
       photoBucketKey: `someone/shelf_photo/${id}`,
       photoMediaType: 'image/jpeg',
       photoSizeBytes: 6,

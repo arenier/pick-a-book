@@ -1,3 +1,5 @@
+import { OwnerId } from '@pick-a-book/recognition-domain';
+
 /**
  * Configuration validation at startup.
  *
@@ -33,7 +35,7 @@ export interface Environment {
    * Owner segment of every bucket key (`{ownerId}/shelf_photo/{id}`). A fixed value until
    * there are user accounts — changing where it comes from will not move a single object.
    */
-  readonly ownerId: string;
+  readonly ownerId: OwnerId;
   /** Origin of the frontend, the one CORS lets through (ADR 0004: two origins). */
   readonly webOrigin: string;
 }
@@ -154,14 +156,23 @@ function readPhotoStorage(
     );
   }
 
-  // The owner id becomes a segment of every bucket key: a slash would add a level to the
-  // layout instead of naming an owner.
-  const ownerId = optional(source, 'OWNER_ID') ?? DEFAULT_OWNER_ID;
-  if (ownerId.includes('/')) {
-    problems.push(`OWNER_ID is "${ownerId}" — expected a single bucket key segment, without "/"`);
-  }
+  return {
+    bucketName,
+    bucketEmulatorHost: optional(source, 'BUCKET_EMULATOR_HOST'),
+    ownerId: readOwnerId(source, problems),
+  };
+}
 
-  return { bucketName, bucketEmulatorHost: optional(source, 'BUCKET_EMULATOR_HOST'), ownerId };
+/** What makes a valid owner id is the recognition context's rule (`OwnerId`), not ours. */
+function readOwnerId(source: NodeJS.ProcessEnv, problems: string[]): OwnerId {
+  const raw = optional(source, 'OWNER_ID') ?? DEFAULT_OWNER_ID;
+  try {
+    return OwnerId.of(raw);
+  } catch (error) {
+    problems.push(`OWNER_ID is "${raw}" — ${error instanceof Error ? error.message : 'invalid'}`);
+    // The fallback never escapes: a non-empty `problems` throws before the caller returns.
+    return OwnerId.of(DEFAULT_OWNER_ID);
+  }
 }
 
 function readWebOrigin(source: NodeJS.ProcessEnv, problems: string[]): string {

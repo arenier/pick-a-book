@@ -62,6 +62,34 @@ describe('PhotoUploadScreen, happy path', () => {
   });
 });
 
+// A result is final for that photo: sending it again would create a second record and pay
+// for a second VLM call. After an error, trying again stays possible.
+describe('PhotoUploadScreen, once a photo is settled', () => {
+  it('cannot send the same photo again after a result', async () => {
+    const submission = aPendingSubmission();
+    render(<PhotoUploadScreen submit={submission.submit} />);
+    choose(aJpeg());
+    fireEvent.click(sendButton());
+    await act(async () => {
+      submission.settle({ status: 'success', books: [] });
+    });
+
+    expect(sendButton()).toHaveProperty('disabled', true);
+  });
+
+  it('can try the same photo again after a failure', async () => {
+    const submission = aPendingSubmission();
+    render(<PhotoUploadScreen submit={submission.submit} />);
+    choose(aJpeg());
+    fireEvent.click(sendButton());
+    await act(async () => {
+      submission.settle({ status: 'error', message: 'Le service est indisponible.' });
+    });
+
+    expect(sendButton()).toHaveProperty('disabled', false);
+  });
+});
+
 // FR-007: one submission at a time.
 describe('PhotoUploadScreen, while a photo is being analysed', () => {
   it('disables both the picker and the send button', () => {

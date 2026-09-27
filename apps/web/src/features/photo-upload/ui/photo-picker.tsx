@@ -11,6 +11,9 @@ export interface PhotoPickerProps {
  * The native file input: on a phone it offers the camera as well as the gallery (FR-001),
  * and falls back to a file chooser on a desktop without one (FR-010).
  *
+ * No `capture` attribute: it makes Chrome Android and Safari iOS open the camera straight
+ * away, with no way left to pick an existing photo.
+ *
  * `accept` narrows what the chooser shows, it does not validate: the constraints are checked
  * again before sending, and once more by the server.
  */
@@ -31,7 +34,6 @@ export function PhotoPicker({ disabled, onPick }: PhotoPickerProps) {
       <input
         type="file"
         accept="image/jpeg,image/png,image/webp,image/heic"
-        capture="environment"
         disabled={disabled}
         onChange={pick}
       />

@@ -3,6 +3,7 @@ import {
   BookTitle,
   Confidence,
   DetectedBook,
+  OwnerId,
   ShelfScanAlreadyProcessed,
   ShelfScanId,
   ShelfScanNotFound,
@@ -56,7 +57,7 @@ export class DrizzleShelfScanRepositoryAdapter implements ShelfScanRepositoryPor
     await this.db.transaction(async (tx) => {
       await tx.insert(uploads).values({
         id: scan.id.value,
-        ownerId: scan.ownerId,
+        ownerId: scan.ownerId.value,
         type: SHELF_PHOTO,
         bucketKey: scan.photoBucketKey,
         mediaType: scan.photoMediaType,
@@ -137,7 +138,7 @@ function toRecord({ upload, scan }: Row): ShelfScanRecord {
 
   const reference = {
     id: ShelfScanId.of(upload.id),
-    ownerId: upload.ownerId,
+    ownerId: OwnerId.of(upload.ownerId),
     photoBucketKey: upload.bucketKey,
     photoMediaType: upload.mediaType,
     photoSizeBytes: upload.sizeBytes,

@@ -47,12 +47,25 @@ export class ScanStoredShelfPhotoUseCase {
     } catch (error) {
       // The photo stays, and its record says the scan failed (US3, FR-011) — then the
       // failure goes on up, for HTTP to report it.
-      await this.repository.markFailed(id);
+      await this.recordFailure(id);
       throw error;
     }
     await this.repository.markCompleted(id, books);
 
     return { books: books.map((book) => toDto(book)) };
+  }
+
+  /**
+   * The scanner failure is what the caller must hear about (a 502): a database hiccup while
+   * recording it must not replace it with a generic error. It is logged instead, and the
+   * record stays pending — a state the spec already allows (FR-014).
+   */
+  private async recordFailure(id: ShelfScanId): Promise<void> {
+    try {
+      await this.repository.markFailed(id);
+    } catch (error) {
+      console.error(`Could not record the failed scan of ${id.value}; it stays pending`, error);
+    }
   }
 }
 

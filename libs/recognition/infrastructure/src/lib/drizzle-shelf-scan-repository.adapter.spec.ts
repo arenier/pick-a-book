@@ -3,6 +3,7 @@ import {
   BookTitle,
   Confidence,
   DetectedBook,
+  OwnerId,
   ShelfScanAlreadyProcessed,
   ShelfScanId,
   ShelfScanNotFound,
@@ -40,7 +41,7 @@ const aNewScan = (): NewShelfScan => {
 
   return {
     id,
-    ownerId: 'default',
+    ownerId: OwnerId.of('default'),
     photoBucketKey: `default/shelf_photo/${id.value}`,
     photoMediaType: 'image/jpeg',
     photoSizeBytes: 2_345_678,
@@ -188,12 +189,16 @@ describe('DrizzleShelfScanRepositoryAdapter, reference of the stored photo', () 
   const { pool, repository } = aMigratedRepository();
 
   it('keeps the owner, media type, weight and original name as given', async () => {
-    const scan = { ...aNewScan(), ownerId: 'someone', photoMediaType: 'image/heic' as const };
+    const scan = {
+      ...aNewScan(),
+      ownerId: OwnerId.of('someone'),
+      photoMediaType: 'image/heic' as const,
+    };
 
     await repository.createPending(scan);
 
     await expect(repository.get(scan.id)).resolves.toMatchObject({
-      ownerId: 'someone',
+      ownerId: OwnerId.of('someone'),
       photoMediaType: 'image/heic',
       photoSizeBytes: 2_345_678,
       originalFilename: 'IMG_0001.jpg',

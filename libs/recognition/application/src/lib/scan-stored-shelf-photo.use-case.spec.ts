@@ -3,6 +3,7 @@ import {
   BookTitle,
   Confidence,
   DetectedBook,
+  OwnerId,
   ShelfScanAlreadyProcessed,
   ShelfScanFailed,
   ShelfScanId,
@@ -10,7 +11,7 @@ import {
   type ShelfPhoto,
   type ShelfScannerPort,
 } from '@pick-a-book/recognition-domain';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { ScanStoredShelfPhotoUseCase } from './scan-stored-shelf-photo.use-case.js';
 import { StoreShelfPhotoUseCase } from './store-shelf-photo.use-case.js';
@@ -39,7 +40,11 @@ const aJpeg = {
 async function aStoredPhoto(scanner: ShelfScannerPort) {
   const storage = new InMemoryShelfPhotoStorage();
   const repository = new InMemoryShelfScanRepository();
-  const { id } = await new StoreShelfPhotoUseCase('default', storage, repository).execute(aJpeg);
+  const { id } = await new StoreShelfPhotoUseCase(
+    OwnerId.of('default'),
+    storage,
+    repository,
+  ).execute(aJpeg);
 
   return {
     id,
@@ -120,6 +125,24 @@ describe('ScanStoredShelfPhotoUseCase, when the scanner fails', () => {
     const record = await repository.get(ShelfScanId.of(id));
     expect(record?.status).toBe('failed');
     expect(record?.detectedBooks).toBeUndefined();
+  });
+});
+
+// The scanner failure is what HTTP reports (502): a database hiccup while recording it must
+// not turn it into a generic 500. The record then stays pending — a state the spec allows.
+describe('ScanStoredShelfPhotoUseCase, when recording the failure fails too', () => {
+  it('still rejects with the scanner failure, and logs the one it could not record', async () => {
+    const { id, repository, useCase } = await aStoredPhoto(failingScanner);
+    vi.spyOn(repository, 'markFailed').mockRejectedValue(new Error('database unavailable'));
+    const log = vi.spyOn(console, 'error').mockReturnValue();
+
+    await expect(useCase.execute({ id })).rejects.toThrow(ShelfScanFailed);
+
+    expect(log).toHaveBeenCalledWith(
+      `Could not record the failed scan of ${id}; it stays pending`,
+      new Error('database unavailable'),
+    );
+    log.mockRestore();
   });
 });
 

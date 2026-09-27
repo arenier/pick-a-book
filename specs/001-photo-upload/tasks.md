@@ -195,8 +195,11 @@ puis le résultat.
 - [X] T037 [US1] Implémenter `apps/web/src/features/photo-upload/ui/scan-result.tsx` pour faire
       passer T025 (dépend de T025)
 - [X] T038 [US1] Implémenter `apps/web/src/features/photo-upload/ui/photo-picker.tsx` :
-      `<input type="file" accept="image/jpeg,image/png,image/webp,image/heic"
-      capture="environment">` (FR-001 : prise à l'instant ou fichier existant)
+      `<input type="file" accept="image/jpeg,image/png,image/webp,image/heic">`, **sans**
+      `capture` (FR-001 : prise à l'instant ou fichier existant) — *corrigé le 27/09/2026 en
+      revue de #55* : `capture` fait ouvrir directement l'appareil photo par Chrome Android et
+      Safari iOS, sans proposer la galerie, ce qui rendait le « fichier existant » impossible sur
+      téléphone. Sans lui, le sélecteur natif propose les deux
 - [X] T039 [US1] Implémenter `apps/web/src/features/photo-upload/ui/photo-upload-screen.tsx`
       (assemble `photo-picker`, `scan-shelf-photo`, `scan-result`, `upload-state`) pour faire
       passer T026 (dépend de T026, T036, T037, T038)

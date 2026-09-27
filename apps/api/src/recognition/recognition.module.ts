@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 
-import { Module } from '@nestjs/common';
+import { Inject, Module, type OnApplicationShutdown } from '@nestjs/common';
 import {
   ScanStoredShelfPhotoUseCase,
   StoreShelfPhotoUseCase,
@@ -40,7 +40,16 @@ const MIGRATIONS_FOLDER = join(__dirname, 'migrations');
  * revision never answers a request against a schema it does not know.
  */
 @Module({})
-export class RecognitionModule {
+export class RecognitionModule implements OnApplicationShutdown {
+  constructor(
+    @Inject(SHELF_SCAN_ARCHIVE) private readonly archive: Pick<ShelfScanArchive, 'close'>,
+  ) {}
+
+  /** Releases the Postgres pool when Cloud Run stops the instance (`enableShutdownHooks`). */
+  async onApplicationShutdown(): Promise<void> {
+    await this.archive.close();
+  }
+
   static withEnvironment(environment: Environment) {
     return {
       module: RecognitionModule,

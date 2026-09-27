@@ -1,11 +1,12 @@
 import type { DetectedBook } from './detected-book.js';
+import type { OwnerId } from './owner-id.js';
 import type { ShelfPhotoMediaType } from './shelf-photo.js';
 import type { ShelfScanId } from './shelf-scan-id.js';
 
 interface StoredShelfPhoto {
   readonly id: ShelfScanId;
   /** Owner segment of the bucket key — a fixed value until there are user accounts. */
-  readonly ownerId: string;
+  readonly ownerId: OwnerId;
   readonly photoBucketKey: string;
   readonly photoMediaType: ShelfPhotoMediaType;
   readonly photoSizeBytes: number;

@@ -145,7 +145,7 @@ apps/web/src/
         ├── ui/
         │   ├── photo-upload-screen.tsx    # écran complet : sélection, envoi, résultat
         │   ├── photo-upload-screen.spec.tsx
-        │   ├── photo-picker.tsx           # <input type="file" accept="..." capture="environment">
+        │   ├── photo-picker.tsx           # <input type="file" accept="..."> — sans `capture`, qui fermerait la galerie (FR-001)
         │   ├── scan-result.tsx            # liste des livres / "aucun livre" / message d'erreur
         │   └── scan-result.spec.tsx
         ├── model/

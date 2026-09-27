@@ -73,12 +73,12 @@ describe('loadEnvironment, photo storage (specs/001-photo-upload)', () => {
   });
 
   it('defaults OWNER_ID to "default"', () => {
-    expect(load().ownerId).toBe('default');
-    expect(load({ OWNER_ID: '   ' }).ownerId).toBe('default');
+    expect(load().ownerId.value).toBe('default');
+    expect(load({ OWNER_ID: '   ' }).ownerId.value).toBe('default');
   });
 
   it('carries a configured OWNER_ID', () => {
-    expect(load({ OWNER_ID: 'someone' }).ownerId).toBe('someone');
+    expect(load({ OWNER_ID: 'someone' }).ownerId.value).toBe('someone');
   });
 
   // The owner segment ends up in a bucket key: a slash would add a level to the layout.

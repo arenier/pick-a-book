@@ -43,7 +43,8 @@ export function usePhotoUpload(submit: (photo: File) => Promise<UploadState>) {
     state,
     pickerKey,
     uploading,
-    canSend: photo !== undefined && !uploading,
+    // A result is final for that photo: sending it again would pay for a second VLM call.
+    canSend: photo !== undefined && !uploading && state.status !== 'success',
     settled: state.status === 'success' || state.status === 'error',
     pick,
     send,

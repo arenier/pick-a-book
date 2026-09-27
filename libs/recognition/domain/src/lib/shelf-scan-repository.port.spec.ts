@@ -1,6 +1,7 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import type { DetectedBook } from './detected-book.js';
+import type { OwnerId } from './owner-id.js';
 import type { ShelfPhotoMediaType } from './shelf-photo.js';
 import { ShelfScanAlreadyProcessed } from './shelf-scan-already-processed.error.js';
 import { ShelfScanId } from './shelf-scan-id.js';
@@ -40,7 +41,7 @@ describe('ShelfScanId', () => {
 describe('ShelfScanRecord', () => {
   it('carries the reference of the stored photo', () => {
     expectTypeOf<ShelfScanRecord['id']>().toEqualTypeOf<ShelfScanId>();
-    expectTypeOf<ShelfScanRecord['ownerId']>().toEqualTypeOf<string>();
+    expectTypeOf<ShelfScanRecord['ownerId']>().toEqualTypeOf<OwnerId>();
     expectTypeOf<ShelfScanRecord['photoBucketKey']>().toEqualTypeOf<string>();
     expectTypeOf<ShelfScanRecord['photoMediaType']>().toEqualTypeOf<ShelfPhotoMediaType>();
     expectTypeOf<ShelfScanRecord['photoSizeBytes']>().toEqualTypeOf<number>();
