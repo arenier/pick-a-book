@@ -20,6 +20,7 @@ documentation d'architecture — il ne décrit pas comment le système marche, i
 | [0008](0008-lint-et-format-oxlint-oxfmt.md)         | Lint et format : oxlint + oxfmt, ESLint réduit aux frontières | Accepté  | Socle | 2026-08-14 |
 | [0009](0009-outillage-iac-terraform.md)             | Outillage d'infrastructure as code : Terraform          | Proposé  | 1     | 2026-08-19 |
 | [0010](0010-decoupage-bounded-contexts.md)          | Découpage en bounded contexts                           | Proposé  | —     | 2026-09-07 |
+| [0011](0011-internationalisation-de-l-interface.md) | Internationalisation de l'interface : catalogue typé maison sur `Intl` | Proposé  | —     | 2026-09-27 |
 
 **À écrire** — la source d'enrichissement bibliographique. Elle n'a pas de numéro tant que le
 fichier n'existe pas ; [0005](0005-reconnaissance-livres-photo-etagere.md) et
