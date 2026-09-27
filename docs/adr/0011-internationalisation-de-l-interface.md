@@ -15,10 +15,17 @@ est dans l'issue #58. Trois points y sont déjà tranchés et ne sont pas redisc
 - la reconnaissance des livres, les métadonnées bibliographiques et les préférences en texte libre
   de `curation` sont hors périmètre : l'i18n porte sur l'interface, pas sur les livres.
 
-Le moment est bon : le front ne contient encore qu'un écran d'attente (`app.tsx`), et la première
-feature qui affiche des messages (#23, `specs/001-photo-upload`) n'est pas codée. Aujourd'hui, la
-constitution (§V) et `CLAUDE.md` imposent que le texte de `apps/web` soit **écrit en français dans
-le code**. Rien ne le rend traduisible.
+Le front compte aujourd'hui une slice, `features/photo-upload` (#55, `specs/001-photo-upload`), et
+le shell de l'app. Leur texte est écrit en français directement dans le code, une dizaine de
+chaînes réparties en trois couches :
+- `model/photo-constraints.ts` : refus d'un fichier avant l'envoi ;
+- `api/scan-shelf-photo.ts` : une table `MESSAGES`, un message par type d'échec ;
+- `ui/` : libellés, état de chargement, « aucun livre détecté ».
+
+Les deux premières produisent directement le `message` affiché, porté par `UploadState`. C'est
+conforme à la constitution (§V) et à `CLAUDE.md`, qui imposent un texte **écrit en français dans le
+code**. Mais rien ne le rend traduisible. Migrer maintenant coûte une slice ; chaque nouvelle slice
+en ajoutera une.
 
 Le [README des ADR](README.md) range une « bibliothèque interchangeable » parmi les choix qui ne
 méritent pas d'ADR. Ce qui justifie celui-ci est ailleurs :
@@ -245,11 +252,18 @@ Vite 8 / `@vitejs/plugin-react` 6, contraire au critère 🔴 de compatibilité.
   les réglages mesurés ci-dessus. `<html lang>` suit l'événement `languageChanged`. Le sélecteur
   manuel et la persistance du choix relèvent de la spec ; le détecteur sait déjà lire et écrire
   `localStorage` si elle le demande.
-- **Erreurs de l'API** : l'API renvoie des codes stables. Le front associe chaque code à une clé
-  de son catalogue par une table explicite, plutôt que par une clé construite
-  (`` t(`errors.${code}`) ``) qui échapperait au typage. Un code inconnu donne un message
-  générique. La forme de l'erreur et l'endroit où elle est traduite en HTTP relèvent de #24 et
-  #26.
+- **Erreurs de l'API** : l'API ne renvoie pas de texte destiné à l'utilisateur. Le front le
+  pratique déjà : `scan-shelf-photo.ts` choisit son message d'après le statut HTTP (400 et 413 :
+  photo refusée, 502 : service en panne, réseau coupé, autre : inattendu), jamais d'après le
+  `message` technique de la réponse (FR-009). Cet ADR généralise la règle : si un statut ne suffit
+  plus à distinguer deux cas à afficher différemment, l'API ajoute un **code stable** dans le
+  corps. Le front associe chaque statut ou code à une clé de son catalogue par une table
+  explicite, plutôt que par une clé construite (`` t(`errors.${code}`) ``) qui échapperait au
+  typage. Un code inconnu donne un message générique. La forme de l'erreur et l'endroit où elle
+  est traduite en HTTP relèvent de #24 et #26.
+- **Les messages se traduisent dans l'UI, pas dans `model/` ni `api/`.** Ces couches rendent un
+  type d'échec, que l'UI traduit avec `t()`. Elles ne rendent plus une phrase : sinon, elles
+  devraient connaître la langue active.
 
 ### Garde-fou
 
@@ -312,9 +326,11 @@ précisément ce que ce choix rend simple.
   (`/speckit-constitution`, bump MINOR). Le §V passe de « texte écrit en français dans le code » à
   « texte affiché passant par le catalogue de sa slice, le français étant la langue source ». Les
   identifiants, commentaires et messages d'erreur internes restent en anglais.
-- **`specs/001-photo-upload` à ajuster** quand #23 se code. Le `message: string` de
-  `data-model.md` devient un code, et le plan ne dit plus que le texte est écrit en français dans
-  le code.
+- **La slice `photo-upload` est à migrer**, avec la spec qui la décrit. Le `message: string`
+  d'`UploadState` (et de `data-model.md`) devient un type d'échec. `MESSAGES` et les phrases de
+  `photo-constraints.ts` passent dans `features/photo-upload/i18n/`. Le plan de
+  `specs/001-photo-upload` ne dit plus que le texte est écrit en français dans le code. Ses specs,
+  qui vérifient des textes français, rendent sous la locale `fr` fixée par `test-setup.ts`.
 
 ## Question ouverte
 
