@@ -71,6 +71,13 @@ export default [
                 'type:infrastructure',
                 'type:shared',
               ],
+              // i18next lives behind the facade of libs/shared/i18n (ADR 0011): an app reads its
+              // messages through `useMessages`, never through the library itself.
+              bannedExternalImports: [
+                'i18next',
+                'react-i18next',
+                'i18next-browser-languagedetector',
+              ],
             },
             // -- Bounded contexts ---------------------------------------------
             {

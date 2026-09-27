@@ -19,7 +19,7 @@ export function usePhotoUpload(submit: (photo: File) => Promise<UploadState>) {
   const pick = useCallback((file: File | undefined) => {
     const problem = file === undefined ? undefined : photoProblem(file);
     setPhoto(problem === undefined ? file : undefined);
-    setState(problem === undefined ? { status: 'idle' } : { status: 'error', message: problem });
+    setState(problem === undefined ? { status: 'idle' } : { status: 'error', failure: problem });
   }, []);
 
   const send = useCallback(async () => {

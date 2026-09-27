@@ -27,6 +27,9 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
 - **Lint et format** — **oxlint** (strict) + **oxfmt**, écosystème Oxc. ESLint conservé pour les
   seules frontières de modules Nx · [0008](docs/adr/0008-lint-et-format-oxlint-oxfmt.md)
 - **Enrichissement bibliographique** — ADR à écrire, contraint par 0005
+- **Internationalisation** de `apps/web` — **i18next** + react-i18next, français (source) et anglais,
+  langue du navigateur avec repli sur le français, un catalogue par slice. L'API ne renvoie jamais
+  de texte destiné à l'utilisateur · [0011](docs/adr/0011-internationalisation-de-l-interface.md)
 - **Découpage en bounded contexts** — `recognition` (reconnaissance depuis une photo),
   `bibliography` (réconciliation + enrichissement, un seul contexte pour l'instant) et `curation`
   (correspondance avec la bibliothèque, la liste de souhaits et les préférences de l'utilisateur) ·
@@ -102,11 +105,12 @@ asynchrone, ou deux `it` de même titre dans un `describe`, et constater que `ya
 
 ```bash
 yarn install                       # installe le workspace
-yarn check                         # lint + format + typecheck + test + build sur tous les projets
+yarn check                         # lint + format + typecheck + test + build + translations, tous projets
 yarn lint                          # oxlint puis nx run-many -t lint (ESLint : frontières)
 yarn test                          # nx run-many -t test
 yarn build                         # nx run-many -t build
 yarn typecheck                     # nx run-many -t typecheck
+yarn nx translations web           # i18next-cli status + lint : traduction absente, texte en dur
 yarn format                        # oxfmt          (yarn format:check pour vérifier sans écrire)
 
 yarn api                           # démarre l'API   (http://localhost:3000/health)
@@ -128,7 +132,7 @@ les migrations au démarrage, et les specs des adapters de `recognition-infrastr
 contre ces deux mêmes services (la CI les démarre aussi).
 
 La **CI** (GitHub Actions, `.github/workflows/ci.yml`) tourne sur chaque PR et push `main` : oxlint
-et oxfmt sur tout le dépôt, puis `nx affected -t lint typecheck test build` sur les projets touchés
+et oxfmt sur tout le dépôt, puis `nx affected -t lint typecheck test build translations` sur les projets touchés
 (base calculée par `nrwl/nx-set-shas`). Node 26 n'ayant pas Corepack, elle installe Yarn avec
 `@yarnpkg/cli-dist@4.18.0` — comme les images Docker.
 
@@ -149,6 +153,7 @@ libs/recognition/application/    # use cases, parlent aux ports
 libs/recognition/infrastructure/ # adapters (Gemini, Qwen, stub) derrière ShelfScannerPort
 libs/shared/result/              # contenu partagé, une lib par sujet nommé
 libs/shared/text-match/          # normalisation + comparaison floue de chaînes (bench, réconciliation)
+libs/shared/i18n/                # façade i18next du front (useMessages, createI18n) — seule à importer i18next
 tools/bench/                     # départage manuel des adapters VLM sur photos réelles (#10) — hors CI
 docker/                          # Dockerfile des deux apps — contexte de build : la racine
 docs/adr/
@@ -223,8 +228,17 @@ d'`apps/api`, via des DTO de frontière.
   réelles est un test séparé et manuel.
 - Le SQL, le schéma et les migrations restent dans `infrastructure`.
 - **Français dans la doc et les ADR, anglais dans le code** — commentaires, messages d'erreur,
-  logs, descriptions de tests (`it('rejects an empty image')`) et commits inclus. Le texte affiché
-  à l'utilisateur dans `apps/web` reste en français : c'est du produit, pas du code.
+  logs, descriptions de tests (`it('rejects an empty image')`) et commits inclus.
+- **Le texte affiché à l'utilisateur dans `apps/web` n'est jamais écrit dans le code** : il passe
+  par le catalogue i18next de sa slice, `features/<slice>/i18n/{fr,en}.json` (celui du shell dans
+  `app/i18n/`), le français étant la langue source
+  ([0011](docs/adr/0011-internationalisation-de-l-interface.md)). Une clé s'ajoute **dans les deux
+  langues du même commit**. Une slice lit ses messages par `useMessages('<slice>')`, la façade de
+  `libs/shared/i18n` : **seule cette lib importe `i18next`, `react-i18next` et
+  `i18next-browser-languagedetector`** (`bannedExternalImports` sur `type:app`). `model/` et `api/` rendent un type d'échec, jamais une phrase : l'UI le
+  traduit par une table explicite, jamais par une clé construite (`` t(`failure.${kind}`) ``), qui
+  échapperait au typage. Les specs lisent le français, fixé par `test-setup.ts` (jsdom annonce
+  `en-US`) ; une clé inconnue ou un paramètre d'interpolation manquant y fait échouer le test.
 - **Le titre d'une PR est un message de commit, donc en anglais.** Le merge est un squash et ce
   titre devient le sujet du commit sur `main` — un titre français y laisse une trace définitive.
   Le **corps** de la PR, lui, est de la doc : en français. La règle vaut même quand le skill

@@ -1,3 +1,5 @@
+import { useMessages } from '@pick-a-book/shared-i18n';
+
 import type { DetectedBook } from '../model/detected-book';
 import styles from './photo-upload-screen.module.css';
 
@@ -7,8 +9,10 @@ export interface ScanResultProps {
 
 /** The books read off the shelf — title first, then the author when the spine showed one. */
 export function ScanResult({ books }: ScanResultProps) {
+  const { t } = useMessages('photo-upload');
+
   if (books.length === 0) {
-    return <p>Aucun livre détecté sur cette photo.</p>;
+    return <p>{t('result.none')}</p>;
   }
 
   return (
@@ -17,7 +21,9 @@ export function ScanResult({ books }: ScanResultProps) {
         // Two spines can carry the same title: the position is the only stable identity.
         // oxlint-disable-next-line react/no-array-index-key
         <li key={index}>
-          {book.author === undefined ? book.title : `${book.title} — ${book.author}`}
+          {book.author === undefined
+            ? book.title
+            : t('result.book', { title: book.title, author: book.author })}
         </li>
       ))}
     </ul>

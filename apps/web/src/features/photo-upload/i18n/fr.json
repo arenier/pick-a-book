@@ -1,0 +1,25 @@
+{
+  "picker": {
+    "label": "Photo de l’étagère"
+  },
+  "preview": {
+    "alt": "Aperçu de l’étagère choisie",
+    "unavailable": "Aperçu indisponible pour ce format : la photo peut tout de même être analysée."
+  },
+  "send": "Analyser la photo",
+  "uploading": "Analyse de la photo en cours, cela peut prendre une trentaine de secondes…",
+  "startOver": "Recommencer",
+  "result": {
+    "none": "Aucun livre détecté sur cette photo.",
+    "book": "{{title}} — {{author}}"
+  },
+  "failure": {
+    "unsupportedType": "Ce fichier n’est pas une photo prise en charge : choisissez une image JPEG, PNG, WebP ou HEIC.",
+    "empty": "Ce fichier est vide.",
+    "tooLarge": "Cette photo dépasse 20 Mo : choisissez-en une plus légère.",
+    "refused": "La photo a été refusée : elle doit être une image JPEG, PNG, WebP ou HEIC de moins de 20 Mo.",
+    "upstream": "Le service de reconnaissance ne répond pas pour le moment. Réessayez dans quelques instants.",
+    "offline": "Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.",
+    "unexpected": "Une erreur inattendue est survenue. Réessayez dans quelques instants."
+  }
+}

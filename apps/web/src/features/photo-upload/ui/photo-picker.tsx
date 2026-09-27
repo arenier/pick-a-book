@@ -1,4 +1,5 @@
 import { useCallback, type ChangeEvent } from 'react';
+import { useMessages } from '@pick-a-book/shared-i18n';
 
 import styles from './photo-upload-screen.module.css';
 
@@ -18,6 +19,7 @@ export interface PhotoPickerProps {
  * again before sending, and once more by the server.
  */
 export function PhotoPicker({ disabled, onPick }: PhotoPickerProps) {
+  const { t } = useMessages('photo-upload');
   const pick = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       // Indexed rather than `.item(0)`: a `FileList` is indexable, and so is what tests put
@@ -30,7 +32,7 @@ export function PhotoPicker({ disabled, onPick }: PhotoPickerProps) {
 
   return (
     <label className={styles['picker']}>
-      <span>Photo de l’étagère</span>
+      <span>{t('picker.label')}</span>
       <input
         type="file"
         accept="image/jpeg,image/png,image/webp,image/heic"
