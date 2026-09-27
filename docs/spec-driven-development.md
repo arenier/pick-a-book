@@ -45,6 +45,10 @@ Prend une description en langage naturel de la feature et écrit ou met à jour
 `specs/NNN-nom-feature/spec.md` : comportement attendu, scope, critères d'acceptation. C'est la
 **source de vérité** du *quoi* — pas du *comment*, ni du *pourquoi transverse* (ça, c'est un ADR).
 
+Ce que la spec met hors scope sans qu'une issue ou un ADR le porte déjà s'ajoute au parking,
+[`docs/parking.md`](parking.md), dans le même commit : une idée reportée ne doit pas se perdre dans
+les *Assumptions* d'une spec que personne ne relira.
+
 Si la feature bute sur une décision d'architecture non tranchée (un nouveau choix de stockage, un
 changement de bounded context...), la spec ne tranche pas à sa place : elle le signale, et un ADR se
 rédige séparément (voir [`docs/adr/README.md`](adr/README.md)) — le plan qui suit vérifie ensuite sa

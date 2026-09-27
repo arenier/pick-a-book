@@ -77,7 +77,7 @@ par plusieurs œuvres d'auteurs différents, en constatant que les candidats s'a
 3. **Given** un livre marqué ambigu, **When** l'utilisateur indique qu'aucun candidat ne
    correspond, **Then** le livre devient non trouvé, et ce résultat est conservé avec l'analyse.
 4. **Given** un livre marqué ambigu, **When** l'utilisateur ne fait rien, **Then** le livre reste
-   ambigu, y compris quand il revient plus tard sur l'analyse.
+   ambigu, et c'est ce statut qui est conservé avec l'analyse.
 
 ---
 
@@ -110,7 +110,9 @@ son statut de réconciliation et, s'il est confirmé, l'identifiant stable de la
 ### User Story 4 - Relancer la vérification quand le référentiel était indisponible (Priority: P3)
 
 L'utilisateur dont les livres sont restés « non vérifiés » (référentiel en panne, réseau coupé)
-peut relancer la réconciliation plus tard, sans renvoyer la photo ni refaire la reconnaissance.
+peut relancer la réconciliation depuis l'écran de résultat, tant qu'il est affiché, sans renvoyer
+la photo ni refaire la reconnaissance. Revenir sur une analyse passée une fois l'écran quitté
+suppose un historique des analyses, qui n'existe pas encore (hors scope, voir Assumptions).
 
 **Why this priority**: Confort de récupération sur erreur. La reconnaissance est l'étape lente et
 coûteuse (de l'ordre de 27 s, `docs/decisions/0001`) : la refaire pour une panne survenue après
@@ -127,6 +129,41 @@ analyse, puis disponible, et en constatant que la relance fait passer les livres
    ambigu ou non trouvé, et les livres qui avaient déjà un statut définitif ne changent pas.
 2. **Given** une analyse dont tous les livres ont un statut définitif, **When** l'utilisateur la
    consulte, **Then** aucune relance n'est proposée.
+
+---
+
+### User Story 5 - Garder de quoi comprendre où le système se trompe (Priority: P2)
+
+Le porteur du projet veut pouvoir, à terme, analyser où l'interprétation d'une photo se trompe le
+plus — lecture de la tranche, auteur manquant, ambiguïté, classement des candidats, couverture du
+référentiel — pour savoir quoi corriger. Cette feature ne produit pas cette analyse, mais conserve
+dès maintenant, pour chaque livre, les faits qui la rendront possible : ils naissent au moment de la
+réconciliation et ne pourraient pas être reconstitués après coup (la reconnaissance ne relit pas deux
+fois une photo de la même façon, et le référentiel évolue).
+
+**Why this priority**: Invisible pour l'utilisateur et sans effet sur le parcours, mais c'est le seul
+moment où ces faits existent : chaque analyse faite sans les conserver est perdue pour l'analyse
+d'erreurs. Le coût est marginal, puisque ces faits sont déjà produits par la réconciliation (US1,
+US2) — il s'agit de ne pas les jeter.
+
+**Independent Test**: Peut être testée seule en réalisant un lot d'analyses couvrant chaque statut
+(dont un ambigu levé par l'utilisateur, un ambigu rejeté et un non vérifié), puis en constatant,
+à partir des seules données conservées et sans rappeler ni la reconnaissance ni le référentiel,
+que chaque livre peut être rangé dans une catégorie d'écart (SC-007).
+
+**Acceptance Scenarios**:
+
+1. **Given** un livre confirmé dont la forme lue diffère de la forme de référence, **When** on
+   consulte son enregistrement, **Then** on y trouve les deux formes et leur degré de
+   correspondance.
+2. **Given** un livre ambigu que l'utilisateur a levé en choisissant un candidat, **When** on
+   consulte son enregistrement, **Then** on y trouve le résultat automatique d'origine (ambigu, avec
+   ses candidats classés et leur degré de correspondance) **et** le choix de l'utilisateur, datés
+   chacun — le rang du candidat choisi en découle.
+3. **Given** un livre ambigu pour lequel l'utilisateur a indiqué qu'aucun candidat ne correspond,
+   **When** on consulte son enregistrement, **Then** on y trouve l'ambiguïté d'origine et ce rejet.
+4. **Given** un livre non vérifié, **When** on consulte son enregistrement, **Then** on y trouve la
+   cause (référentiel indisponible, délai dépassé, réponse inexploitable).
 
 ### Edge Cases
 
@@ -199,6 +236,17 @@ analyse, puis disponible, et en constatant que la relance fait passer les livres
 - **FR-014**: Le système DOIT permettre de relancer la réconciliation des livres « non vérifiés »
   d'une analyse conservée, sans renvoyer la photo ni refaire la reconnaissance ; la relance ne
   touche pas les livres ayant déjà un statut définitif.
+- **FR-015**: Le système DOIT conserver, pour chaque livre, le degré de correspondance entre ce qui a
+  été lu et la notice retenue, et entre ce qui a été lu et chaque candidat d'un livre ambigu, sur
+  une même échelle pour tous les livres.
+- **FR-016**: Une décision de l'utilisateur sur un livre ambigu (choix d'un candidat, aucun ne
+  correspond) NE DOIT PAS effacer le résultat automatique qui la précédait : les deux sont conservés
+  et datés.
+- **FR-017**: Le système DOIT conserver quel référentiel a été interrogé pour chaque livre et, pour
+  un livre non vérifié, la cause (référentiel indisponible, délai dépassé, réponse inexploitable).
+- **FR-018**: Les informations conservées pour l'analyse des erreurs (FR-015 à FR-017) NE SONT PAS
+  affichées à l'utilisateur par cette feature : leur exploitation (rapport, tableau de bord) est une
+  feature ultérieure.
 
 ### Key Entities
 
@@ -214,7 +262,10 @@ analyse, puis disponible, et en constatant que la relance fait passer les livres
 - **Résultat de réconciliation** : pour un livre détecté, son statut (confirmé, ambigu, non trouvé,
   non vérifié), la notice retenue s'il est confirmé, les candidats s'il est ambigu, et la date de la
   réconciliation, et pour un livre confirmé l'origine de la confirmation (automatique ou choix de
-  l'utilisateur, US2). Conservé avec l'analyse (US3).
+  l'utilisateur, US2). Conservé avec l'analyse (US3), avec de quoi analyser les erreurs (US5) : le
+  degré de correspondance de la notice retenue et de chaque candidat, le référentiel interrogé, la
+  cause d'un « non vérifié », et, quand l'utilisateur a levé une ambiguïté, le résultat automatique
+  d'origine à côté de sa décision.
 - **Candidat** : une notice plausible pour un livre ambigu, avec sa place dans le classement de
   vraisemblance.
 
@@ -237,6 +288,11 @@ analyse, puis disponible, et en constatant que la relance fait passer les livres
   sans nouvelle interrogation du référentiel.
 - **SC-006**: Sur un écran de téléphone (largeur 360px et plus), l'utilisateur distingue d'un coup
   d'œil les quatre statuts, sans défilement horizontal.
+- **SC-007**: À partir des seules données conservées, sans rappeler ni la reconnaissance ni le
+  référentiel, 100 % des livres d'un lot d'analyses peuvent être rangés dans une catégorie d'écart :
+  lu tel quel, lecture corrigée par le référentiel, auteur complété par le référentiel, ambiguïté
+  levée par l'utilisateur (avec le rang du candidat choisi), ambiguïté rejetée, inconnu du
+  référentiel, non vérifié (avec sa cause).
 
 ## Assumptions
 
@@ -266,6 +322,16 @@ analyse, puis disponible, et en constatant que la relance fait passer les livres
 - **Les livres non trouvés restent dans la liste** — décision actée avec le porteur du projet le
   27/09/2026 (FR-011) : les masquer ferait disparaître sans trace un livre réel absent du
   référentiel.
+- **Conserver maintenant, analyser plus tard** — décision actée avec le porteur du projet le
+  27/09/2026 (US5, FR-015 à FR-018) : les faits utiles à l'analyse des erreurs sont conservés dès
+  cette feature, parce qu'ils ne se reconstituent pas après coup ; leur exploitation est reportée.
+  Limite assumée : sans retour explicite de l'utilisateur sur un livre confirmé ou non trouvé
+  (« ce livre n'est pas sur l'étagère », « ce livre existe bien »), ces données ne distinguent pas
+  une hallucination confirmée à tort d'un vrai livre, ni un titre halluciné d'un livre absent du
+  référentiel — ce retour est au parking (`docs/parking.md`).
+- **Pas d'historique des analyses** : l'utilisateur ne peut pas rouvrir une analyse passée une fois
+  l'écran de résultat quitté ; la relance (US4) et la levée d'ambiguïté (US2) se font donc depuis
+  l'écran de résultat, tant qu'il est affiché. Un historique consultable est au parking.
 - **Les analyses conservées avant cette feature ne sont pas réconciliées rétroactivement** : pas de
   reprise en masse de l'historique dans ce scope.
 - Usage mono-utilisateur, sans compte, isolé par l'identifiant technique fixe déjà en place

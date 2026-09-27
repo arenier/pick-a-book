@@ -47,3 +47,9 @@
   trouvés restent dans la liste, marqués (FR-011) ; (3) la correction manuelle d'un livre non
   trouvé est hors scope (Assumptions).
 - Validation : une seule itération, tous les points passent après intégration des réponses.
+- Mise à jour du 27/09/2026 : le porteur du projet veut pouvoir, à terme, analyser où
+  l'interprétation se trompe le plus. Décision : conserver les faits dès cette feature (US5,
+  FR-015 à FR-018, SC-007), reporter leur exploitation. Au passage, US2 et US4 supposaient de
+  « revenir plus tard » sur une analyse alors qu'aucun historique n'existe : elles sont bornées à
+  l'écran de résultat affiché, l'historique étant mis au parking. Les hors-scope de la spec sans
+  issue ni ADR sont reportés dans `docs/parking.md`.
