@@ -4,7 +4,8 @@ import { Author } from './author.js';
 import { BookTitle } from './book-title.js';
 import { Confidence } from './confidence.js';
 import { DetectedBook } from './detected-book.js';
-import { ShelfPhoto } from './shelf-photo.js';
+import { InvalidShelfPhoto } from './invalid-shelf-photo.error.js';
+import { ShelfPhoto, isShelfPhotoMediaType } from './shelf-photo.js';
 
 describe('Author', () => {
   it('normalises whitespace', () => {
@@ -38,8 +39,23 @@ describe('Confidence', () => {
 });
 
 describe('ShelfPhoto', () => {
+  // A dedicated error, so HTTP can tell a refused photo (400) from a failing bucket (500).
+  it('refuses an off-contract image with InvalidShelfPhoto', () => {
+    expect(() => ShelfPhoto.of(new Uint8Array(0), 'image/jpeg')).toThrow(InvalidShelfPhoto);
+    expect(() => ShelfPhoto.of(new Uint8Array([1]), 'application/pdf')).toThrow(InvalidShelfPhoto);
+    expect(() => ShelfPhoto.of(new Uint8Array(20 * 1024 * 1024 + 1), 'image/jpeg')).toThrow(
+      InvalidShelfPhoto,
+    );
+  });
+
   it('rejects an empty image', () => {
     expect(() => ShelfPhoto.of(new Uint8Array(0), 'image/jpeg')).toThrow(/empty/u);
+  });
+
+  // Proves a media type read back from storage, where it is a bare string again.
+  it('tells a supported media type from any other string', () => {
+    expect(isShelfPhotoMediaType('image/heic')).toBe(true);
+    expect(isShelfPhotoMediaType('application/pdf')).toBe(false);
   });
 
   it('rejects an unknown media type', () => {

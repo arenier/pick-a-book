@@ -112,6 +112,7 @@ yarn format                        # oxfmt          (yarn format:check pour vér
 yarn api                           # démarre l'API   (http://localhost:3000/health)
 yarn web                           # démarre le front (http://localhost:4200)
 yarn bench                         # départage les adapters VLM (appels live, hors CI) — voir tools/bench/README.md
+yarn db:generate                   # génère une migration Drizzle depuis le schéma de recognition-infrastructure
 docker compose up --build          # API + front + Postgres + émulateur de bucket
 
 yarn nx run-many -t lint -p api    # cibler un projet
@@ -121,7 +122,10 @@ yarn nx graph                      # visualise le graphe de dépendances
 ```
 
 Avant de démarrer l'API : `cp .env.example .env`. Une variable requise manquante fait échouer le
-démarrage avec la liste de ce qui manque — c'est voulu, ne pas la contourner.
+démarrage avec la liste de ce qui manque — c'est voulu, ne pas la contourner. `yarn api` a besoin
+du Postgres et de l'émulateur de bucket de la stack (`docker compose up db bucket`) : l'API applique
+les migrations au démarrage, et les specs des adapters de `recognition-infrastructure` tournent
+contre ces deux mêmes services (la CI les démarre aussi).
 
 La **CI** (GitHub Actions, `.github/workflows/ci.yml`) tourne sur chaque PR et push `main` : oxlint
 et oxfmt sur tout le dépôt, puis `nx affected -t lint typecheck test build` sur les projets touchés

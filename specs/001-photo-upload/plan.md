@@ -145,7 +145,7 @@ apps/web/src/
         ├── ui/
         │   ├── photo-upload-screen.tsx    # écran complet : sélection, envoi, résultat
         │   ├── photo-upload-screen.spec.tsx
-        │   ├── photo-picker.tsx           # <input type="file" accept="..." capture="environment">
+        │   ├── photo-picker.tsx           # <input type="file" accept="..."> — sans `capture`, qui fermerait la galerie (FR-001)
         │   ├── scan-result.tsx            # liste des livres / "aucun livre" / message d'erreur
         │   └── scan-result.spec.tsx
         ├── model/
@@ -189,7 +189,7 @@ apps/api/src/
     └── shelf-scan-archive.factory.ts       # construit les clients GCS/Postgres depuis Environment
 
 docker-compose.yml                         # + service émulateur de bucket (research.md §9)
-.env.example                                # + BUCKET_NAME, + STORAGE_EMULATOR_HOST (dev), + WEB_ORIGIN, + OWNER_ID
+.env.example                                # + BUCKET_NAME, + BUCKET_EMULATOR_HOST (dev), + WEB_ORIGIN, + OWNER_ID
 ```
 
 **Structure Decision**: feature-slice en dossier sous `apps/web/src/features/photo-upload/`

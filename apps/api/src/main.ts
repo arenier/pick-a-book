@@ -10,6 +10,12 @@ async function bootstrap() {
   const environment = loadEnvironment();
 
   const app = await NestFactory.create(AppModule.withEnvironment(environment));
+  // The frontend is served from its own origin (a bucket, ADR 0004): without this, every
+  // call it makes fails in the browser as an opaque CORS error.
+  app.enableCors({ origin: environment.webOrigin });
+  // SIGTERM (how Cloud Run stops an instance) runs the shutdown hooks: the Postgres pool is
+  // released instead of dropped.
+  app.enableShutdownHooks();
   await app.listen(environment.port, '0.0.0.0');
 
   Logger.log(`API listening on http://localhost:${environment.port} (${environment.nodeEnv})`);

@@ -21,6 +21,11 @@ photo: <fichier image>
 
 - Champ `photo`, un seul fichier (le port de reconnaissance ne traite qu'une image à la fois,
   FR-002).
+- **Multipart uniquement** *(amendé le 27/09/2026, revue de #55)* : le repli JSON base64
+  (`{"image": "<base64>", "mediaType": ...}`) hérité de l'ancien `POST /scan` est supprimé. Il
+  n'avait aucun appelant, et le parseur JSON de Nest le limitait de fait à ~75 Ko d'image (100 Ko
+  de corps, base64 compris) — inutilisable pour une vraie photo. Un corps sans fichier `photo`
+  reçoit 400.
 - Type MIME et poids validés côté client avant envoi (voir `data-model.md#SelectedPhoto`), puis
   revalidés côté serveur (`ShelfPhoto`, réponse 400 sinon) — le client ne fait pas confiance à sa
   propre validation pour la sécurité, seulement pour l'ergonomie (retour immédiat, FR-003).
@@ -41,7 +46,13 @@ photo: <fichier image>
 ### 400 — requête refusée
 
 Corps : `{ "message": string, "statusCode": 400 }` (format par défaut de Nest). Causes possibles
-détectées par le serveur : fichier absent, vide, type MIME non supporté, poids supérieur à 20 Mo.
+détectées par le serveur : fichier absent, vide, type MIME non supporté.
+
+**413 — photo trop lourde** *(amendé à l'implémentation, le 23/09/2026)* : au-delà de 20 Mo, le
+fichier est arrêté par multer au niveau transport, avant d'être bufferisé en entier — Nest répond
+alors `413 Payload Too Large`, la réponse HTTP propre à un corps qui dépasse la limite, plutôt que
+le 400 prévu initialement. Le frontend traite 400 et 413 à l'identique (photo refusée), et la
+limite est de toute façon vérifiée côté client avant l'envoi (FR-009).
 Une partie de ces cas est déjà interceptée côté client avant l'envoi (FR-003, FR-009) ; ce statut
 reste le filet de sécurité serveur, et le message affiché à l'utilisateur ne dépend pas du texte
 technique renvoyé (FR-009 : « message compréhensible sans jargon technique »). Rien n'est stocké
@@ -109,8 +120,6 @@ son propre message (Edge case de `spec.md` : coupure réseau) — que la coupure
 
 ## Ce que le frontend n'utilise pas
 
-- Le repli JSON base64 de l'étape 1 (`{"image": "<base64>", "mediaType": ...}`) — prévu pour
-  d'autres appelants, pas pour cette UI (research.md §3).
 - Le champ `confidence` n'est pas affiché (voir `data-model.md#DetectedBook`), seulement transporté.
 - Aucune UX de reprise manuelle sur un `ShelfScanRecord` resté `pending` ou passé `failed` — cette
   feature ne relance jamais l'étape 2 de son propre chef (research.md §7, alternative rejetée).
