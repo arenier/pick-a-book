@@ -1,0 +1,19 @@
+{
+  "name": "@pick-a-book/db-backup",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/main.js",
+  "nx": {
+    "name": "db-backup",
+    "tags": [
+      "type:app",
+      "context:none",
+      "scope:api"
+    ]
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^8.2.0",
+    "tslib": "^2.3.0"
+  }
+}

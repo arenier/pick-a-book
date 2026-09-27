@@ -26,6 +26,9 @@
     },
     {
       "path": "./tools/bench"
+    },
+    {
+      "path": "./tools/db-backup"
     }
   ],
   "compilerOptions": {}
