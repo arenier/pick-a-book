@@ -34,10 +34,14 @@ second outil de build, de test ou de lint pour un besoin ponctuel : le désaccor
 acté passe par un nouvel ADR, pas par une exception locale.
 
 ### V. Français dans la doc, anglais dans le code
-Commentaires, messages d'erreur, logs, descriptions de tests et commits : en anglais. Documentation,
-ADR, et texte affiché à l'utilisateur dans `apps/web` : en français. Le titre d'une PR est un
-message de commit (squash sur `main`) : toujours en anglais ; son corps, doc de revue, reste en
-français.
+Commentaires, messages d'erreur, logs, descriptions de tests et commits : en anglais. Documentation
+et ADR : en français. Le texte affiché à l'utilisateur dans `apps/web` n'est jamais écrit dans le
+code : il passe par le catalogue i18next de la slice qui l'affiche
+(`features/<slice>/i18n/{fr,en}.json`, celui du shell dans `app/i18n/`), le français étant la langue
+source et l'anglais la seconde langue ([ADR 0011](../../docs/adr/0011-internationalisation-de-l-interface.md)).
+`model/` et `api/` rendent un type d'échec, jamais une phrase : l'UI le traduit. Le titre d'une PR
+est un message de commit (squash sur `main`) : toujours en anglais ; son corps, doc de revue, reste
+en français.
 
 ## Contraintes techniques
 
@@ -68,4 +72,4 @@ jour pour refléter la décision. Toute modification de cette constitution est u
 MINOR : ajout de principe ; PATCH : clarification). `/speckit-plan` et `/speckit-implement` vérifient
 la conformité à ces principes avant de produire ou d'exécuter un plan.
 
-**Version**: 1.0.0 | **Ratified**: 2026-09-12 | **Last Amended**: 2026-09-12
+**Version**: 1.1.0 | **Ratified**: 2026-09-12 | **Last Amended**: 2026-09-27

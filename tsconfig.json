@@ -26,6 +26,9 @@
     },
     {
       "path": "./tools/bench"
+    },
+    {
+      "path": "./libs/shared/i18n"
     }
   ],
   "compilerOptions": {}

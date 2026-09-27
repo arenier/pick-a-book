@@ -28,6 +28,7 @@ COPY libs/recognition/application/package.json libs/recognition/application/
 COPY libs/recognition/infrastructure/package.json libs/recognition/infrastructure/
 COPY libs/shared/result/package.json libs/shared/result/
 COPY libs/shared/text-match/package.json libs/shared/text-match/
+COPY libs/shared/i18n/package.json libs/shared/i18n/
 COPY tools/bench/package.json tools/bench/
 RUN yarn install --immutable
 
