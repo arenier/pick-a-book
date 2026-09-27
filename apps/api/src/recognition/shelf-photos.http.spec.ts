@@ -1,11 +1,14 @@
 import type { INestApplication } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import {
   ScanStoredShelfPhotoUseCase,
   StoreShelfPhotoUseCase,
 } from '@pick-a-book/recognition-application';
+import { ShelfScanFailed, type ShelfScannerPort } from '@pick-a-book/recognition-domain';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import { RecognitionExceptionFilter } from './recognition-exception.filter';
 import { ShelfPhotosController } from './shelf-photos.controller';
 import { aShelfPhotosController } from './testing/shelf-photos-controller.fixture';
 
@@ -23,17 +26,19 @@ function idOf(body: unknown): string {
  * The two routes over real HTTP — status codes, multipart parsing by multer — on an
  * ephemeral port, the use cases running over in-memory ports. Called inside a `describe`.
  */
-function aRunningApi() {
+function aRunningApi(scanner?: ShelfScannerPort) {
   let app: INestApplication;
   let baseUrl = '';
 
   beforeAll(async () => {
-    const { storeShelfPhoto, scanStoredShelfPhoto } = aShelfPhotosController();
+    const { storeShelfPhoto, scanStoredShelfPhoto } = aShelfPhotosController({ scanner });
     const moduleRef = await Test.createTestingModule({
       controllers: [ShelfPhotosController],
       providers: [
         { provide: StoreShelfPhotoUseCase, useValue: storeShelfPhoto },
         { provide: ScanStoredShelfPhotoUseCase, useValue: scanStoredShelfPhoto },
+        // Registered as RecognitionModule registers it: the status codes below are its work.
+        { provide: APP_FILTER, useClass: RecognitionExceptionFilter },
       ],
     }).compile();
     app = moduleRef.createNestApplication();
@@ -45,8 +50,11 @@ function aRunningApi() {
     await app.close();
   });
 
+  const url = (path: string) => `${baseUrl}${path}`;
+
   return {
-    url: (path: string) => `${baseUrl}${path}`,
+    url,
+    scan: async (id: string) => fetch(url(`/shelf-photos/${id}/scan`), { method: 'POST' }),
     upload: async (file: Blob, name = 'IMG_0001.jpg') => {
       const form = new FormData();
       form.append('photo', file, name);
@@ -101,9 +109,55 @@ describe('POST /shelf-photos, refusing a photo', () => {
     expect(response.status).toBe(400);
   });
 
+  it('answers 400 to an empty file', async () => {
+    const response = await upload(new Blob([], { type: 'image/jpeg' }));
+
+    expect(response.status).toBe(400);
+  });
+
   it('answers 400 to a file that is not a supported image', async () => {
     const response = await upload(new Blob(['%PDF-1.7'], { type: 'application/pdf' }), 'a.pdf');
 
     expect(response.status).toBe(400);
+  });
+});
+
+const failingScanner: ShelfScannerPort = {
+  scan: async () => {
+    throw new ShelfScanFailed('provider unavailable');
+  },
+};
+
+// Domain errors of the scan, as HTTP says them (contracts/scan-api.md §2).
+describe('POST /shelf-photos/:id/scan, for a photo it cannot scan', () => {
+  const { upload, scan } = aRunningApi();
+
+  it('answers 404 to an unknown id, well-formed or not', async () => {
+    expect((await scan('1f9c2e3a-4b5d-4e6f-8a7b-9c0d1e2f3a4b')).status).toBe(404);
+    expect((await scan('not-a-uuid')).status).toBe(404);
+  });
+
+  it('answers 409 to a second scan of the same photo', async () => {
+    const id = idOf(await (await upload(aJpeg())).json());
+    await scan(id);
+
+    expect((await scan(id)).status).toBe(409);
+  });
+});
+
+describe('POST /shelf-photos/:id/scan, when the recognition service fails', () => {
+  const { upload, scan } = aRunningApi(failingScanner);
+
+  it('answers 502, with the Nest error body', async () => {
+    const id = idOf(await (await upload(aJpeg())).json());
+
+    const response = await scan(id);
+
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toStrictEqual({
+      statusCode: 502,
+      message: 'Shelf scan failed: provider unavailable',
+      error: 'Bad Gateway',
+    });
   });
 });

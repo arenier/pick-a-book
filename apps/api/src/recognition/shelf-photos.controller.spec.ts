@@ -1,4 +1,10 @@
-import { ShelfScanFailed, type ShelfPhotoStoragePort } from '@pick-a-book/recognition-domain';
+import {
+  InvalidShelfPhoto,
+  ShelfScanAlreadyProcessed,
+  ShelfScanFailed,
+  ShelfScanNotFound,
+  type ShelfPhotoStoragePort,
+} from '@pick-a-book/recognition-domain';
 import { describe, expect, it } from 'vitest';
 
 import { aShelfPhotosController } from './testing/shelf-photos-controller.fixture';
@@ -40,42 +46,61 @@ describe('ShelfPhotosController', () => {
   });
 });
 
-describe('ShelfPhotosController refuses a photo with 400 (contracts/scan-api.md §1)', () => {
-  it('when no file is given', async () => {
+// Only the missing file is the controller's to refuse: it is a matter of HTTP form.
+describe('ShelfPhotosController, without a file', () => {
+  it('answers 400', async () => {
     await expect(aShelfPhotosController().controller.store()).rejects.toMatchObject({
-      status: 400,
-    });
-  });
-
-  it('when the file is empty', async () => {
-    const empty = { ...aJpegUpload, buffer: Buffer.alloc(0) };
-
-    await expect(aShelfPhotosController().controller.store(empty)).rejects.toMatchObject({
-      status: 400,
-    });
-  });
-
-  it('when the media type is not a supported image', async () => {
-    const pdf = { ...aJpegUpload, mimetype: 'application/pdf' };
-
-    await expect(aShelfPhotosController().controller.store(pdf)).rejects.toMatchObject({
-      status: 400,
-    });
-  });
-
-  // multer stops anything larger at the transport; one byte over reaches the domain rule.
-  it('when the image is over 20 MB', async () => {
-    const oversized = { ...aJpegUpload, buffer: Buffer.alloc(20 * 1024 * 1024 + 1) };
-
-    await expect(aShelfPhotosController().controller.store(oversized)).rejects.toMatchObject({
       status: 400,
     });
   });
 });
 
-describe('ShelfPhotosController blames no photo for a failure of its own', () => {
-  // A bucket that fails is not the caller's mistake: it must not read as a 400.
-  it('lets a storage failure through as a server error', async () => {
+// Domain errors cross the controller untranslated: `RecognitionExceptionFilter` says them
+// in HTTP, once for every route (shelf-photos.http.spec.ts proves the status codes).
+describe('ShelfPhotosController lets domain errors through', () => {
+  it.each([
+    ['an empty file', { ...aJpegUpload, buffer: Buffer.alloc(0) }],
+    ['an unsupported media type', { ...aJpegUpload, mimetype: 'application/pdf' }],
+    ['an image over 20 MB', { ...aJpegUpload, buffer: Buffer.alloc(20 * 1024 * 1024 + 1) }],
+  ])('InvalidShelfPhoto, for %s', async (_label, upload) => {
+    await expect(aShelfPhotosController().controller.store(upload)).rejects.toThrow(
+      InvalidShelfPhoto,
+    );
+  });
+
+  it('ShelfScanFailed', async () => {
+    const { controller } = aShelfPhotosController({
+      scanner: {
+        scan: async () => {
+          throw new ShelfScanFailed('provider unavailable');
+        },
+      },
+    });
+    const { id } = await controller.store(aJpegUpload);
+
+    await expect(controller.scan(id)).rejects.toThrow(ShelfScanFailed);
+  });
+});
+
+describe('ShelfPhotosController lets scan errors through', () => {
+  it('ShelfScanNotFound', async () => {
+    await expect(aShelfPhotosController().controller.scan('not-a-uuid')).rejects.toThrow(
+      ShelfScanNotFound,
+    );
+  });
+
+  it('ShelfScanAlreadyProcessed', async () => {
+    const { controller } = aShelfPhotosController();
+    const { id } = await controller.store(aJpegUpload);
+    await controller.scan(id);
+
+    await expect(controller.scan(id)).rejects.toThrow(ShelfScanAlreadyProcessed);
+  });
+});
+
+describe('ShelfPhotosController lets infrastructure failures through', () => {
+  // A bucket that fails is not the caller's mistake: nothing turns it into a 4xx.
+  it('and a storage failure, as is', async () => {
     const failingStorage: ShelfPhotoStoragePort = {
       store: async () => {
         throw new Error('bucket unavailable');
@@ -87,38 +112,5 @@ describe('ShelfPhotosController blames no photo for a failure of its own', () =>
     const { controller } = aShelfPhotosController({ storage: failingStorage });
 
     await expect(controller.store(aJpegUpload)).rejects.not.toHaveProperty('status');
-  });
-
-  // A provider that is down is an upstream dependency failing, which is what 502 says.
-  it('maps a scan failure to 502', async () => {
-    const { controller } = aShelfPhotosController({
-      scanner: {
-        scan: async () => {
-          throw new ShelfScanFailed('provider unavailable');
-        },
-      },
-    });
-    const { id } = await controller.store(aJpegUpload);
-
-    await expect(controller.scan(id)).rejects.toMatchObject({ status: 502 });
-  });
-});
-
-describe('ShelfPhotosController, scanning an id it cannot scan', () => {
-  it('answers 404 to an unknown id', async () => {
-    const { controller } = aShelfPhotosController();
-
-    await expect(controller.scan('1f9c2e3a-4b5d-4e6f-8a7b-9c0d1e2f3a4b')).rejects.toMatchObject({
-      status: 404,
-    });
-    await expect(controller.scan('not-a-uuid')).rejects.toMatchObject({ status: 404 });
-  });
-
-  it('answers 409 to a second scan of the same photo', async () => {
-    const { controller } = aShelfPhotosController();
-    const { id } = await controller.store(aJpegUpload);
-    await controller.scan(id);
-
-    await expect(controller.scan(id)).rejects.toMatchObject({ status: 409 });
   });
 });

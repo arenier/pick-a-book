@@ -1,10 +1,7 @@
 import {
-  BadGatewayException,
   BadRequestException,
-  ConflictException,
   Controller,
   HttpCode,
-  NotFoundException,
   Param,
   Post,
   UploadedFile,
@@ -18,12 +15,6 @@ import {
   type StoreShelfPhotoCommand,
   type StoreShelfPhotoResult,
 } from '@pick-a-book/recognition-application';
-import {
-  InvalidShelfPhoto,
-  ShelfScanAlreadyProcessed,
-  ShelfScanFailed,
-  ShelfScanNotFound,
-} from '@pick-a-book/recognition-domain';
 
 /**
  * The subset of an uploaded file this controller needs.
@@ -49,6 +40,9 @@ const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
  *
  * Two steps so that the photo is safe before the longest and most failure-prone call of the
  * chain (FR-014). Handles boundary DTOs only, never a domain object (ADR 0003).
+ *
+ * The errors of the context cross it untranslated: `RecognitionExceptionFilter` says them in
+ * HTTP, for every route at once.
  */
 @Controller('shelf-photos')
 export class ShelfPhotosController {
@@ -63,43 +57,17 @@ export class ShelfPhotosController {
   async store(@UploadedFile() file?: UploadedImage): Promise<StoreShelfPhotoResult> {
     const command = readImage(file);
 
-    try {
-      // Rebuilt field by field: whatever else the use case may one day return, the id is
-      // the only thing that leaves (FR-015).
-      const { id } = await this.storeShelfPhoto.execute(command);
-      return { id };
-    } catch (error) {
-      // `ShelfPhoto` refusing the image — empty, oversized, unsupported — is the caller's
-      // mistake: a 400. Anything else (bucket, database) is ours, and stays a 500.
-      if (error instanceof InvalidShelfPhoto) {
-        throw new BadRequestException(error.message);
-      }
-      throw error;
-    }
+    // Rebuilt field by field: whatever else the use case may one day return, the id is the
+    // only thing that leaves (FR-015).
+    const { id } = await this.storeShelfPhoto.execute(command);
+    return { id };
   }
 
   @Post(':id/scan')
   // 200, not the 201 Nest defaults to on a POST: a scan creates nothing.
   @HttpCode(200)
   async scan(@Param('id') id: string): Promise<ScanShelfResult> {
-    try {
-      return await this.scanStoredShelfPhoto.execute({ id });
-    } catch (error) {
-      // A provider that is down or off-contract is not the caller's mistake: 502 names an
-      // upstream failure, where 400 would blame the photo (FR-006).
-      if (error instanceof ShelfScanFailed) {
-        throw new BadGatewayException(error.message);
-      }
-      if (error instanceof ShelfScanNotFound) {
-        throw new NotFoundException(error.message);
-      }
-      // Already completed or failed: scanning again would overwrite a result, or pay for a
-      // VLM call nobody asked for (research.md §7).
-      if (error instanceof ShelfScanAlreadyProcessed) {
-        throw new ConflictException(error.message);
-      }
-      throw error;
-    }
+    return this.scanStoredShelfPhoto.execute({ id });
   }
 }
 
