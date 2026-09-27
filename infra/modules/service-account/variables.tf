@@ -30,8 +30,8 @@ variable "bucket_grants" {
   validation {
     condition = alltrue([
       for grant in values(var.bucket_grants) :
-      contains(["roles/storage.objectCreator", "roles/storage.objectViewer"], grant.role)
+      contains(["roles/storage.objectCreator", "roles/storage.objectViewer", "roles/storage.objectUser"], grant.role)
     ])
-    error_message = "bucket_grants only accepts roles/storage.objectCreator or roles/storage.objectViewer — objectAdmin and the legacy/bucket roles can change IAM policies."
+    error_message = "bucket_grants only accepts roles/storage.objectCreator, roles/storage.objectViewer or roles/storage.objectUser — objectAdmin and the legacy/bucket roles can change IAM policies."
   }
 }

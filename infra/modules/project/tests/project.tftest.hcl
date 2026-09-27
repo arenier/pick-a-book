@@ -28,9 +28,11 @@ run "enables_the_apis_this_project_actually_needs" {
         "storage.googleapis.com",
         "iam.googleapis.com",
         "cloudresourcemanager.googleapis.com",
+        "cloudscheduler.googleapis.com",
+        "monitoring.googleapis.com",
       ] : contains([for s in google_project_service.this : s.service], api)
     ])
-    error_message = "Default API list must cover Cloud Run, Artifact Registry, Cloud Build, Secret Manager, GCS, IAM and Resource Manager"
+    error_message = "Default API list must cover Cloud Run, Artifact Registry, Cloud Build, Secret Manager, GCS, IAM, Resource Manager, and Cloud Scheduler + Monitoring for the weekly backup job and its freshness alert (issue #22)"
   }
 }
 
