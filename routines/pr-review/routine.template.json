@@ -12,6 +12,11 @@
             "git_repository": {
               "url": "https://github.com/arenier/pick-a-book"
             }
+          },
+          {
+            "git_repository": {
+              "url": "https://github.com/arenier/claude-skills"
+            }
           }
         ],
         "allowed_tools": ["Bash", "Read", "Write", "Edit", "Glob", "Grep", "WebFetch", "WebSearch"],
