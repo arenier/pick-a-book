@@ -5,11 +5,6 @@
  * that rule, an internal reshuffle of the domain breaks the orchestrator — exactly the
  * coupling ADR 0002 sets out to prevent.
  */
-export interface ScanShelfCommand {
-  readonly bytes: Uint8Array;
-  readonly mediaType: string;
-}
-
 export interface DetectedBookDto {
   /** Absent when the spine carried no readable author (ADR 0005, 2026-09-04 amendment). */
   readonly author?: string;
