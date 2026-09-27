@@ -61,7 +61,7 @@ quels livres ont été détectés) et en constatant que la photo et la liste des
 **Acceptance Scenarios**:
 
 1. **Given** un envoi dont l'analyse a détecté des livres, **When** l'utilisateur l'ouvre, **Then**
-   il voit la photo et la liste des livres détectés, sans doublon d'affichage, dans le même ordre
+   il voit la photo et la liste des livres détectés, avec les mêmes entrées et dans le même ordre
    qu'à l'écran de résultat.
 2. **Given** un envoi dont l'analyse n'a détecté aucun livre, **When** l'utilisateur l'ouvre,
    **Then** il voit la photo et un message indiquant qu'aucun livre n'avait été détecté.
@@ -106,10 +106,11 @@ désormais la liste des livres détectés, dans le détail comme dans l'historiq
 ### Edge Cases
 
 - Un envoi dont l'analyse est **en cours** au moment où l'historique est ouvert (depuis un autre
-  onglet, par exemple) ne se distingue pas, pour le système, d'un envoi dont l'analyse n'a jamais
-  été lancée : il est présenté comme « analyse non lancée » (FR-005). S'il est relancé (US3)
-  pendant que la première analyse tourne encore, une seule des deux aboutit — jamais deux résultats
-  pour la même photo (FR-011).
+  onglet, par exemple) est présenté comme « analyse non lancée » (FR-005) : l'historique n'affiche
+  pas d'état « en cours ». Le système, lui, sait qu'une analyse tourne : s'il est relancé (US3)
+  pendant ce temps, la relance est refusée avec un message indiquant qu'une analyse de cette photo
+  est déjà en cours, sans nouvel appel au service de reconnaissance — jamais deux résultats pour la
+  même photo (FR-011). *(Précisé le 27/09/2026, après `/speckit-analyze`.)*
 - Une photo dont l'image ne peut plus être affichée (format que le navigateur ne sait pas montrer,
   comme HEIC hors Safari ; photo introuvable côté stockage) : l'entrée reste listée avec sa date et
   son résumé, la vignette est remplacée par un indicateur neutre (FR-008).
@@ -185,9 +186,11 @@ désormais la liste des livres détectés, dans le détail comme dans l'historiq
 
 - **SC-001**: Un utilisateur retrouve les livres détectés sur une photo envoyée plusieurs jours plus
   tôt en moins de 20 secondes depuis l'ouverture de l'application, sans avoir à renvoyer la photo.
-- **SC-002**: L'historique affiche ses premières entrées en moins de 2 secondes, y compris quand il
-  compte plusieurs centaines d'envois (soit plus d'un an d'usage au rythme de 20 à 200 photos par
-  mois), et sans charger plus de 5 Mo de données pour une page de vignettes.
+- **SC-002**: À chaud (service déjà démarré), l'historique affiche ses premières entrées en moins de
+  2 secondes, y compris quand il compte plusieurs centaines d'envois (soit plus d'un an d'usage au
+  rythme de 20 à 200 photos par mois), et sans charger plus de 5 Mo de données pour une page de
+  vignettes. Le premier affichage après une période d'inactivité (démarrage à froid du service et
+  de la base) n'est pas couvert par ce critère : il relève de l'hébergement (ADR 0004).
 - **SC-003**: 100 % des envois acceptés figurent dans l'historique, avec une issue affichée conforme
   à celle réellement obtenue (aucun envoi manquant, aucun envoi en double).
 - **SC-004**: L'historique et le détail d'un envoi restent utilisables sur un écran de téléphone

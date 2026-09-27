@@ -35,7 +35,7 @@ par un petit hook maison (`useHashRoute`, qui écoute `hashchange`) :
 | `#/historique` | historique (slice `upload-history`) |
 | `#/historique/{id}` | détail d'un envoi (slice `upload-history`) |
 
-Le shell porte la navigation entre les deux slices (lien « Mes envois » / « Nouvelle photo ») :
+Le shell porte la navigation entre les deux slices (lien « Historique » / « Nouvelle photo ») :
 aucune slice n'importe l'autre (ADR 0002).
 
 **Raison** :
@@ -200,9 +200,15 @@ du domaine. À revoir si la mémoire de l'instance (512 Mo) devient un souci.
 
   La tentative est ensuite insérée, puis refermée (`finished_at`) par `markCompleted` ou
   `markFailed`.
-- **Pas de nouveau statut.** L'envoi reste `pending` ou `failed` pendant son analyse, et la spec
-  l'affiche comme tel (Edge Cases : une analyse en cours « ne se distingue pas » d'une analyse non
-  lancée).
+- **Toute erreur après la réservation referme la tentative** *(ajouté le 27/09/2026, après
+  `/speckit-analyze`)*. Une photo introuvable dans le bucket, ou une erreur de lecture, passe
+  l'envoi en `failed`, comme un échec du scanner, et referme la tentative. Sinon, la tentative
+  resterait ouverte 5 minutes, compterait dans le plafond et bloquerait l'envoi en
+  `ShelfScanInProgress`. Pour l'utilisateur, c'est une analyse qui a échoué et qu'il peut relancer.
+  L'erreur remonte telle quelle au HTTP (502).
+- **Pas de nouveau statut.** L'envoi reste `pending` ou `failed` pendant son analyse. L'historique
+  l'affiche comme tel, mais le système refuse une relance concurrente (`SCAN_IN_PROGRESS`, spec,
+  *Edge Cases*).
 
 **Raison** :
 - **Le plafond compte les tentatives, pas les résultats.** Une analyse qui échoue chez le

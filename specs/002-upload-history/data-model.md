@@ -110,6 +110,9 @@ interface ScanAttemptPolicy {
 - `markCompleted` et `markFailed` referment la tentative ouverte et ne bougent qu'un envoi non
   `completed`. Un envoi `completed` produit `ShelfScanAlreadyProcessed`, comme aujourd'hui pour un
   envoi non `pending`.
+- `ScanStoredShelfPhotoUseCase` appelle `markFailed` pour **toute** erreur survenue après
+  `startAttempt`, qu'elle vienne du stockage ou du scanner, puis la laisse remonter. Aucune
+  tentative ne reste ouverte par une erreur du code (research.md §8).
 - `list` filtre sur `ownerId`. `get` reste par id seul, et le use case compare l'`ownerId` du
   résultat à celui de la configuration (voir plus bas).
 

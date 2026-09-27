@@ -53,7 +53,7 @@ panne.
 1. Dans l'historique, défiler jusqu'à la deuxième page, puis ouvrir une entrée.
    **Attendu** : l'URL devient `#/historique/{id}`. La photo est affichée en grand et les livres
    détectés dans le même ordre qu'à l'écran de résultat. Le score de confiance n'est pas affiché.
-2. Revenir en arrière (bouton du navigateur ou lien « Mes envois »).
+2. Revenir en arrière (bouton du navigateur ou lien « Historique »).
    **Attendu** : la liste est au même endroit, sans nouvelle requête de liste.
 3. Ouvrir `#/historique/00000000-0000-4000-8000-000000000000`.
    **Attendu** : un message « envoi introuvable » avec un retour à l'historique.
