@@ -38,7 +38,8 @@ front.
 **Primary Dependencies**: NestJS, Drizzle + `pg`, `@google-cloud/storage`, déjà en place. Une seule
 dépendance nouvelle : **`@nestjs/throttler`** dans `apps/api` (research.md §9). Côté web, aucune :
 routage par hash maison (research.md §2), vignettes par `createImageBitmap` et canvas (research.md §5),
-`fetch` natif.
+`fetch` natif. Les textes passent par la façade i18next déjà en place, `@pick-a-book/shared-i18n`
+(ADR 0011, research.md §12).
 
 **Storage**: Postgres (Neon) et bucket, déjà câblés par la spec 001. Il faut une migration :
 - `uploads.source_upload_id` et `original_filename` nullable, pour les vignettes ;
@@ -90,7 +91,7 @@ quelques années. Deux écrans nouveaux, une retouche de l'écran d'envoi.
 | II. Hexagonal et bounded contexts étanches | Rien ne sort de `recognition` : pas d'orchestrateur (ADR 0003), pas de nouveau contexte (research.md §1). Les nouveaux ports restent dans `domain` (`list`, `startAttempt`, `storeThumbnail`, `retrieveThumbnail`). Le SQL (verrou consultatif, curseur, `jsonb_array_length`) reste dans `infrastructure`. Le contrôleur ne manipule que des DTO de frontière (data-model.md). La limite de requêtes est une préoccupation HTTP d'`apps/api`, hors des contextes. Côté web, les deux slices ne s'importent pas : le shell porte la navigation, et la slice historique a ses copies locales du contrat (research.md §11). |
 | III. Typage prouvé, jamais affirmé | Pas de `as`. Chaque réponse JSON est vérifiée par un type guard côté front. Le curseur est décodé et validé, jamais supposé bien formé (400 sinon). La vignette est prouvée par le value object `ShelfPhotoThumbnail` avant tout stockage. `outcome` est une union fermée, avec `bookCount` et `books` présents si et seulement si `completed`, comme `detectedBooks` aujourd'hui. Les nouveaux paramètres de requête (`limit`) sont validés, pas convertis à l'aveugle. |
 | IV. Outillage unique | Aucun outil de build, de test ou de lint nouveau. `@nestjs/throttler` est une dépendance d'exécution de l'écosystème Nest déjà acté, pas un outillage concurrent. Aucune dépendance native (`sharp` écarté, research.md §5) et aucun routeur (research.md §2). |
-| V. Français dans la doc, anglais dans le code | Textes affichés en français dans `apps/web`. Identifiants, commentaires, logs, erreurs et descriptions de tests en anglais. Les codes d'erreur stables (`DAILY_SCAN_QUOTA_EXCEEDED`…) sont du code, donc en anglais (research.md §10). |
+| V. Français dans la doc, anglais dans le code *(constitution 1.1.0)* | Aucun texte affiché dans le code : la slice `upload-history` a son catalogue `i18n/{fr,en}.json`, le shell ajoute ses liens à `app/i18n/`. `model/` et `api/` rendent des types d'échec (`HistoryFailure`, `RescanFailure`, et `dailyQuota` / `rateLimited` pour `photo-upload`), que l'UI formule par une table explicite (research.md §12). Identifiants, commentaires, logs, erreurs et descriptions de tests en anglais. Les codes d'erreur stables (`DAILY_SCAN_QUOTA_EXCEEDED`…) sont du code, donc en anglais (research.md §10). |
 
 Aucune violation, donc pas d'entrée dans Complexity Tracking.
 
@@ -164,18 +165,24 @@ apps/api/src/
     └── recognition.module.ts              # + trois use cases, politique de tentative
 
 apps/web/src/
+├── i18n/resources.ts                      # + namespace upload-history (fr, en)
 ├── app/
+│   ├── i18n/{fr,en}.json                  # + liens « Historique », « Nouvelle photo »
 │   ├── app.tsx                            # shell : routage, navigation entre slices, historique gardé monté
 │   ├── use-hash-route.ts                  # + spec
 │   └── routes.ts                          # #/, #/historique, #/historique/{id}
 └── features/
     ├── photo-upload/
     │   ├── model/make-thumbnail.ts        # createImageBitmap → canvas → JPEG 480 px ; undefined si échec
-    │   └── api/scan-shelf-photo.ts        # + champ thumbnail ; 429 distingués par code (+ spec)
+    │   ├── model/upload-failure.ts        # + dailyQuota, rateLimited
+    │   ├── api/scan-shelf-photo.ts        # + champ thumbnail ; 429 distingués par code (+ spec)
+    │   ├── ui/failure-message.tsx         # + deux formulations
+    │   └── i18n/{fr,en}.json              # + failure.dailyQuota, failure.rateLimited
     └── upload-history/                    # nouvelle slice
         ├── api/history-api.ts             # listShelfScans, getShelfScan, rescanShelfScan, URLs d'images (+ spec)
         ├── model/history-entry.ts         # HistoryEntry, issues FR-005, gardes de type
-        ├── model/history-state.ts         # HistoryState, EntryDetailState
+        ├── model/history-state.ts         # HistoryState, EntryDetailState, HistoryFailure, RescanFailure
+        ├── i18n/{fr,en}.json              # catalogue de la slice (ADR 0011)
         └── ui/
             ├── history-screen.tsx         # liste, défilement infini + « Afficher plus », restauration de position (+ spec)
             ├── history-entry-card.tsx     # vignette ou indicateur neutre, date, issue (+ spec)
@@ -198,8 +205,8 @@ entre slices, puisqu'aucune slice n'importe l'autre.
 
 ## Prérequis hors scope, à signaler
 
-1. **ADR 0011 et 0012 proposés.** S'ils sont acceptés avant l'implémentation, les nouveaux écrans
-   passent par i18next et le design system (research.md §12).
+1. **ADR 0012 proposé.** L'ADR 0011 est accepté et intégré au plan (research.md §12). Si l'ADR 0012
+   est accepté avant l'implémentation, les nouveaux écrans passent par le design system.
 2. **Relance après passage de minuit.** Une photo refusée pour quota reste `pending`. Rien ne la
    relance d'elle-même : la relance est manuelle, depuis l'historique (spec, FR-015).
 3. **La prod ne peut pas encore conserver de photos.** `infra/envs/prod/main.tf` ne crée pas de

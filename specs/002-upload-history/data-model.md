@@ -207,7 +207,14 @@ Migration Drizzle `0001_upload_history` (générée par `yarn db:generate`, rese
 
 ## Front — slice `upload-history` (`apps/web/src/features/upload-history/`)
 
-Formes locales à la slice, copies volontaires du contrat (research.md §11).
+Formes locales à la slice, copies volontaires du contrat (research.md §11). Comme dans
+`photo-upload`, `model/` et `api/` ne portent **aucun texte** : un échec est un type, que l'UI
+formule depuis le catalogue `upload-history` (ADR 0011, research.md §12).
+
+### HistoryFailure
+
+`'offline' | 'rateLimited' | 'unexpected'`. Il couvre un échec de chargement de la liste, d'une page
+suivante ou d'un détail. Un 404 n'est pas un échec : c'est l'état `notFound` du détail.
 
 ### HistoryEntry
 
@@ -226,17 +233,20 @@ Union discriminée, comme `UploadState` de la spec 001 :
 |---|---|
 | `loading` | Première page en cours. |
 | `empty` | Aucun envoi (US1, scénario 2). |
-| `loaded` | `entries: HistoryEntry[]`, `next: string \| null`, `loadingMore: boolean`, `moreError?: string`. |
-| `error` | `message` : l'historique n'a pas pu être chargé. **Jamais confondu avec `empty`** (FR-010). |
+| `loaded` | `entries: HistoryEntry[]`, `next: string \| null`, `loadingMore: boolean`, `moreFailure?: HistoryFailure`. |
+| `error` | `failure: HistoryFailure` : l'historique n'a pas pu être chargé. **Jamais confondu avec `empty`** (FR-010). |
 
 ### EntryDetailState
 
 | État | Contenu |
 |---|---|
 | `loading` | — |
-| `loaded` | `entry: HistoryEntry`, `books?: DetectedBook[]`, `rescan: 'idle' \| 'running' \| { error: string }` |
+| `loaded` | `entry: HistoryEntry`, `books?: DetectedBook[]`, `rescan: 'idle' \| 'running' \| { failure: RescanFailure }` |
 | `notFound` | Lien obsolète ou erroné (Edge Cases). |
-| `error` | Échec réseau ou serveur. |
+| `error` | `failure: HistoryFailure` : échec réseau ou serveur. |
+
+`RescanFailure` = `'upstream' | 'dailyQuota' | 'rateLimited' | 'inProgress' | 'offline' | 'unexpected'`.
+`alreadyCompleted` n'est pas un échec affiché : le détail se recharge.
 
 La relance n'est offerte que si `outcome.kind` vaut `failed` ou `notStarted` (FR-011, US3 scénario 4).
 Pendant `running`, le bouton est désactivé (US3, scénario 2). Au succès, le détail et l'entrée
@@ -245,5 +255,7 @@ correspondante de l'historique chargé sont mis à jour sans recharger la liste.
 ## Front — slice `photo-upload` *(retouche)*
 
 - L'envoi joint la vignette produite par `makeThumbnail(file)` quand elle réussit (research.md §5).
-- `scan-shelf-photo.ts` distingue les deux 429 par leur `code` (research.md §10). Le message du
-  plafond indique que la photo est conservée et peut être relancée demain depuis l'historique.
+- `UPLOAD_FAILURES` (`model/upload-failure.ts`) gagne `dailyQuota` et `rateLimited`.
+  `scan-shelf-photo.ts` les rend d'après le `code` des 429 (research.md §10), et
+  `ui/failure-message.tsx` les formule depuis le catalogue `photo-upload`. Le texte du plafond
+  indique que la photo est conservée et peut être relancée demain depuis l'historique.

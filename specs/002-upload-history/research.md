@@ -290,8 +290,10 @@ différemment, le corps porte un champ `code` stable. Deux 429 et deux 409 sont 
 | 409 | `SCAN_ALREADY_COMPLETED` | envoi déjà analysé avec succès |
 | 409 | `SCAN_IN_PROGRESS` | une analyse de cet envoi est en cours |
 
-Le front choisit son message d'après le couple (statut, `code`), jamais d'après le `message`
-technique (spec 001, FR-009). Un code inconnu donne le message générique.
+Le module `api/` du front traduit le couple (statut, `code`) en **type d'échec**
+(`dailyQuota`, `rateLimited`…), jamais d'après le `message` technique (spec 001, FR-009). L'UI le
+formule par une table explicite vers son catalogue i18next (ADR 0011). Un code inconnu donne
+l'échec générique `unexpected`.
 
 **Raison** : c'est la règle que l'[ADR 0011](../../docs/adr/0011-internationalisation-de-l-interface.md)
 (proposé) généralise. L'adopter maintenant ne dépend pas de son acceptation.
@@ -314,10 +316,29 @@ de `bibliography`, justifiera l'extraction.
 plus, ses tags, son `vitest.config.mts` et une ligne dans le Dockerfile (qui doit lister chaque
 manifeste), pour vingt lignes.
 
-## 12. Hors de cette feature : ADR 0011 et 0012
+## 12. Textes de l'interface (ADR 0011) et design system (ADR 0012)
 
-L'[ADR 0011](../../docs/adr/0011-internationalisation-de-l-interface.md) (i18next) et
-l'[ADR 0012](../../docs/adr/0012-design-system-de-l-interface.md) (shadcn/ui, Tailwind) sont
-**proposés**, pas acceptés. Le plan suit donc la pratique actuelle de `apps/web` : textes français
-dans le code, CSS Modules. Si l'un d'eux est accepté avant l'implémentation, les nouveaux écrans
-suivent l'ADR, sans que le comportement décrit ici change. `tasks.md` le rappellera en tête.
+*Révisé le 28/09/2026* : l'[ADR 0011](../../docs/adr/0011-internationalisation-de-l-interface.md)
+est **accepté et implémenté** sur `main` (#64). La constitution suit, en version 1.1.0, principe V.
+Conséquences pour cette feature :
+
+- **Aucun texte affiché dans le code.** La slice `upload-history` a son propre namespace i18next,
+  `features/upload-history/i18n/{fr,en}.json`, le français étant la langue source et l'anglais la
+  seconde langue. Il est déclaré dans `apps/web/src/i18n/resources.ts`, seul module à connaître
+  tous les catalogues. Les liens de navigation du shell (« Historique », « Nouvelle photo ») vont
+  dans `app/i18n/`.
+- **`model/` et `api/` rendent un type d'échec, jamais une phrase.** L'UI le formule par une table
+  explicite (`Record<Failure, () => string>`), sur le modèle de `photo-upload/ui/failure-message.tsx`.
+  Une clé construite dynamiquement échapperait au typage.
+- **Les slices passent par `useMessages`** de `@pick-a-book/shared-i18n`. Jamais d'import direct
+  d'i18next (`bannedExternalImports`).
+- **Les gardes existants s'appliquent.** La cible `translations` refuse une traduction absente ou un
+  texte en dur dans le JSX. Le test de parité des catalogues vérifie les formes plurielles CLDR
+  (« 1 livre détecté » et « 12 livres détectés » sont une clé plurielle, `count`) et les
+  paramètres.
+- **Les tests restent lisibles en français.** La configuration de test épingle la langue sur le
+  français, donc les textes cités dans `tasks.md` sont les valeurs françaises attendues.
+
+L'[ADR 0012](../../docs/adr/0012-design-system-de-l-interface.md) (shadcn/ui, Tailwind) reste
+**proposé**. Les nouveaux écrans suivent donc la pratique actuelle, les CSS Modules. S'il est
+accepté avant l'implémentation, ils suivent l'ADR, sans que le comportement décrit ici change.

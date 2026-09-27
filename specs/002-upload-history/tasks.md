@@ -22,15 +22,20 @@ testent contre le Postgres et l'émulateur de bucket du `docker-compose.yml`, qu
 - **I1, A1, A2** : la spec est précisée (analyse en cours, SC-002 à chaud, US2 scénario 1) ;
 - **G1, G2** : la consultation ne modifie rien, et le 429 a un message distinct dans l'historique ;
 - **T1** : le lien de navigation s'appelle « Historique » ;
-- **T3** : T049 et T050 sont scindées.
+- **T3** : T050 et T051 sont scindées.
 
-Les tâches sont renumérotées en conséquence : il y en a 77.
+Les tâches sont renumérotées en conséquence : il y en a 77, puis 78 après l'alignement sur l'ADR 0011 (nouvelle T028).
 
-**Avant de commencer** : l'[ADR 0011](../../docs/adr/0011-internationalisation-de-l-interface.md)
-(i18next) et l'[ADR 0012](../../docs/adr/0012-design-system-de-l-interface.md) (shadcn/ui,
-Tailwind) sont **proposés**. S'ils sont acceptés avant l'implémentation des tâches front, les
-textes passent par `t()` et les composants par le design system. Le comportement décrit ici ne
-change pas (research.md §12).
+**Textes de l'interface** *(révisé le 28/09/2026, ADR 0011 accepté sur `main`)* : aucun texte
+affiché n'est écrit dans le code (constitution 1.1.0, principe V, research.md §12).
+- Chaque texte cité ci-dessous est une **clé** du catalogue de la slice qui l'affiche
+  (`features/<slice>/i18n/{fr,en}.json`, le shell dans `app/i18n/`), en français **et** en anglais.
+  La cible `translations` et le test de parité échouent sinon.
+- Les textes cités dans les tests sont les **valeurs françaises attendues** : la configuration de
+  test épingle la langue sur le français.
+- `model/` et `api/` rendent des types d'échec, formulés par l'UI via une table explicite.
+- L'[ADR 0012](../../docs/adr/0012-design-system-de-l-interface.md) (design system) reste
+  **proposé** : CSS Modules tant qu'il ne l'est pas.
 
 **Organisation** :
 - Un socle commun (Phases 1 et 2) : la migration, les garde-fous contre l'abus et la facturation
@@ -92,7 +97,7 @@ cette phase.
   - ajouter `ScanAttemptPolicy { readonly dailyLimit: number; readonly timeZone: 'Europe/Paris'; readonly lease: number }`, avec `lease` en millisecondes ;
   - documenter l'ordre de vérification : `ShelfScanNotFound`, puis `ShelfScanAlreadyProcessed`, puis `ShelfScanInProgress`, puis `DailyScanQuotaExceeded`.
 
-  Dans cette phase, l'envoi doit encore être `pending` : US3 élargit à `failed` (T067). Dépend de T007.
+  Dans cette phase, l'envoi doit encore être `pending` : US3 élargit à `failed` (T068). Dépend de T007.
 - [ ] T009 Étendre les doubles en mémoire avec `startAttempt` (plafond compté sur un tableau de tentatives, bail, fermeture de la tentative par `markCompleted` et `markFailed`) et une horloge injectable, dans `libs/recognition/application/src/lib/testing/in-memory-shelf-scan-repository.ts` et `apps/api/src/recognition/testing/shelf-photos-controller.fixture.ts`. Dépend de T008.
 - [ ] T010 Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/scan-stored-shelf-photo.use-case.spec.ts` :
   - `startAttempt` est appelé avant `storage.retrieve` et avant `scanner.scan` ;
@@ -176,11 +181,10 @@ visible et modifiable là où la prod se configure, sans redéploiement de code.
 
 ### Écran d'envoi : distinguer les deux 429 (spec FR-014, FR-015)
 
-- [ ] T024 [P] Écrire les tests (doivent échouer) dans `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts` :
-  - scan 429 avec `code: "DAILY_SCAN_QUOTA_EXCEEDED"` : message « Limite d'analyses du jour atteinte. Votre photo est conservée : vous pourrez relancer l'analyse demain depuis l'historique. » ;
-  - 429 avec `code: "TOO_MANY_REQUESTS"`, sur l'envoi ou sur le scan : message « Trop de demandes en peu de temps. Patientez une minute puis réessayez. » ;
-  - 429 sans code ou avec un code inconnu : message `unexpected`.
-- [ ] T025 Implémenter la distinction dans `apps/web/src/features/photo-upload/api/scan-shelf-photo.ts` : un garde de type `hasErrorCode(body): body is { code: string }`, sans `as`, et deux clés de plus dans `MESSAGES`. Fait passer T024. Dépend de T024.
+- [ ] T024 [P] Écrire les tests (doivent échouer) :
+  - dans `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts` : un scan 429 avec `code: "DAILY_SCAN_QUOTA_EXCEEDED"` rend l'échec `dailyQuota` ; un 429 avec `code: "TOO_MANY_REQUESTS"`, sur l'envoi ou sur le scan, rend `rateLimited` ; un 429 sans code ou avec un code inconnu rend `unexpected` ;
+  - dans `apps/web/src/features/photo-upload/ui/failure-message.spec.tsx` : `dailyQuota` affiche « Limite d'analyses du jour atteinte. Votre photo est conservée : vous pourrez relancer l'analyse demain depuis l'historique. », et `rateLimited` affiche « Trop de demandes en peu de temps. Patientez une minute puis réessayez. ».
+- [ ] T025 Ajouter `dailyQuota` et `rateLimited` à `UPLOAD_FAILURES` dans `apps/web/src/features/photo-upload/model/upload-failure.ts`. Les rendre depuis `apps/web/src/features/photo-upload/api/scan-shelf-photo.ts`, avec un garde de type `hasErrorCode(body): body is { code: string }`, sans `as`. Ajouter les deux formulations à la table de `apps/web/src/features/photo-upload/ui/failure-message.tsx` et les clés `failure.dailyQuota` et `failure.rateLimited` à `apps/web/src/features/photo-upload/i18n/fr.json` et `en.json`. Fait passer T024. Dépend de T024.
 
 ### Routage du front (research.md §2, §3)
 
@@ -192,7 +196,8 @@ visible et modifiable là où la prod se configure, sans redéploiement de code.
   - le hook suit `hashchange` et se désabonne au démontage ;
   - `hrefFor(route)` produit le fragment inverse.
 - [ ] T027 Créer `apps/web/src/app/routes.ts` (union `Route`, `parseRoute`, `hrefFor`) et `apps/web/src/app/use-hash-route.ts`, un hook fondé sur `useSyncExternalStore` et `hashchange`. Fait passer T026. Dépend de T026.
-- [ ] T028 Écrire le test (doit échouer) dans `apps/web/src/app/app.spec.tsx` : sur `#/`, l'écran d'envoi est affiché avec un lien « Historique » vers `#/historique` (FR-001). Puis modifier `apps/web/src/app/app.tsx` pour monter l'écran selon la route, en gardant l'écran d'envoi inchangé sur `upload`. Les écrans d'historique et de détail sont des emplacements vides jusqu'à US1 et US2. Dépend de T027.
+- [ ] T028 Créer le namespace de la slice : `apps/web/src/features/upload-history/i18n/fr.json` et `en.json`, déclarés dans `apps/web/src/i18n/resources.ts` sous la clé `'upload-history'`. Ajouter au catalogue du shell (`apps/web/src/app/i18n/fr.json` et `en.json`) les clés `nav.history` (« Historique » / « History ») et `nav.newPhoto` (« Nouvelle photo » / « New photo »). Le test de parité existant (`apps/web/src/i18n/catalogs.spec.ts`) et la cible `translations` servent de test : ils doivent passer. Les clés de la slice arrivent avec les tâches d'UI qui les affichent.
+- [ ] T029 Écrire le test (doit échouer) dans `apps/web/src/app/app.spec.tsx` : sur `#/`, l'écran d'envoi est affiché avec un lien « Historique » vers `#/historique` (FR-001). Puis modifier `apps/web/src/app/app.tsx` pour monter l'écran selon la route, en gardant l'écran d'envoi inchangé sur `upload`. Les écrans d'historique et de détail sont des emplacements vides jusqu'à US1 et US2. Dépend de T027 et T028.
 
 **Checkpoint** : `yarn check` passe. L'écran d'envoi existant fonctionne, plafonné et limité, et
 affiche les nouveaux messages de 429. Le routage est en place.
@@ -210,34 +215,34 @@ le bon résumé (quickstart, scénarios 1 et 2).
 
 ### Domaine : vignette et lecture paginée
 
-- [ ] T029 [P] [US1] Écrire les tests (doivent échouer) dans `libs/recognition/domain/src/lib/shelf-photo-thumbnail.spec.ts` :
+- [ ] T030 [P] [US1] Écrire les tests (doivent échouer) dans `libs/recognition/domain/src/lib/shelf-photo-thumbnail.spec.ts` :
   - `ShelfPhotoThumbnail.of(bytes, mediaType)` accepte `'image/jpeg' | 'image/png' | 'image/webp'` jusqu'à **262 144 octets** (256 Ko) inclus ;
   - il rejette un contenu vide, 262 145 octets, `image/heic` et tout autre type, avec `InvalidShelfPhotoThumbnail`.
-- [ ] T030 [US1] Créer `libs/recognition/domain/src/lib/shelf-photo-thumbnail.ts` (avec le type `ThumbnailMediaType`) et `libs/recognition/domain/src/lib/invalid-shelf-photo-thumbnail.error.ts`, puis les exporter. Fait passer T029. Dépend de T029.
-- [ ] T031 [US1] Étendre `libs/recognition/domain/src/lib/shelf-scan-repository.port.spec.ts` (test d'abord) puis `shelf-scan-repository.port.ts` :
+- [ ] T031 [US1] Créer `libs/recognition/domain/src/lib/shelf-photo-thumbnail.ts` (avec le type `ThumbnailMediaType`) et `libs/recognition/domain/src/lib/invalid-shelf-photo-thumbnail.error.ts`, puis les exporter. Fait passer T030. Dépend de T030.
+- [ ] T032 [US1] Étendre `libs/recognition/domain/src/lib/shelf-scan-repository.port.spec.ts` (test d'abord) puis `shelf-scan-repository.port.ts` :
   - `StoredThumbnail { bucketKey: string; mediaType: ThumbnailMediaType; sizeBytes: number }` ;
   - `ShelfScanRecord.thumbnail: StoredThumbnail | undefined` et `NewShelfScan.thumbnail?: StoredThumbnail` ;
   - `ShelfScanCursor { createdAt: Date; id: ShelfScanId }` et `ShelfScanPageQuery { ownerId: OwnerId; limit: number; after: ShelfScanCursor | undefined }` ;
   - `ShelfScanPage { records: readonly ShelfScanRecord[]; next: ShelfScanCursor | undefined }` ;
   - `list(query): Promise<ShelfScanPage>`, trié `created_at desc, id desc`.
 
-  Dépend de T030.
-- [ ] T032 [US1] Étendre `libs/recognition/domain/src/lib/shelf-photo-storage.port.spec.ts` (test d'abord) puis `shelf-photo-storage.port.ts` : `storeThumbnail(thumbnail: ShelfPhotoThumbnail, key: string): Promise<void>` et `retrieveThumbnail(key: string, mediaType: ThumbnailMediaType): Promise<ShelfPhotoThumbnail>`. Ajouter l'erreur `ShelfPhotoThumbnailNotFound(id)` dans `libs/recognition/domain/src/lib/shelf-photo-thumbnail-not-found.error.ts`. Dépend de T030.
-- [ ] T033 [US1] Étendre les doubles en mémoire pour `list`, en respectant l'ordre et le curseur, pour `thumbnail`, `storeThumbnail` et `retrieveThumbnail`, dans `libs/recognition/application/src/lib/testing/in-memory-shelf-scan-repository.ts`, `libs/recognition/application/src/lib/testing/in-memory-shelf-photo-storage.ts` et `apps/api/src/recognition/testing/shelf-photos-controller.fixture.ts`. Dépend de T031 et T032.
+  Dépend de T031.
+- [ ] T033 [US1] Étendre `libs/recognition/domain/src/lib/shelf-photo-storage.port.spec.ts` (test d'abord) puis `shelf-photo-storage.port.ts` : `storeThumbnail(thumbnail: ShelfPhotoThumbnail, key: string): Promise<void>` et `retrieveThumbnail(key: string, mediaType: ThumbnailMediaType): Promise<ShelfPhotoThumbnail>`. Ajouter l'erreur `ShelfPhotoThumbnailNotFound(id)` dans `libs/recognition/domain/src/lib/shelf-photo-thumbnail-not-found.error.ts`. Dépend de T031.
+- [ ] T034 [US1] Étendre les doubles en mémoire pour `list`, en respectant l'ordre et le curseur, pour `thumbnail`, `storeThumbnail` et `retrieveThumbnail`, dans `libs/recognition/application/src/lib/testing/in-memory-shelf-scan-repository.ts`, `libs/recognition/application/src/lib/testing/in-memory-shelf-photo-storage.ts` et `apps/api/src/recognition/testing/shelf-photos-controller.fixture.ts`. Dépend de T032 et T033.
 
 ### Application : envoi avec vignette, liste, lecture de la vignette
 
-- [ ] T034 [P] [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/store-shelf-photo.use-case.spec.ts` :
+- [ ] T035 [P] [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/store-shelf-photo.use-case.spec.ts` :
   - avec une vignette valide, elle est stockée sous `{ownerId}/shelf_photo_thumbnail/{id}` après la photo, et `createPending` reçoit `thumbnail: { bucketKey, mediaType, sizeBytes }` ;
   - avec une vignette invalide (HEIC, 300 Ko, vide), l'envoi réussit **sans** vignette, et un avertissement est journalisé (logger injecté) ;
   - sans vignette, le comportement de la spec 001 est inchangé ;
   - une photo invalide ne stocke ni photo ni vignette (spec 001, FR-013).
 
-  Dépend de T033.
-- [ ] T035 [US1] Étendre `StoreShelfPhotoCommand` avec `thumbnail?: { bytes: Uint8Array; mediaType: string }` dans `libs/recognition/application/src/lib/shelf-photo.dto.ts`, et `libs/recognition/application/src/lib/store-shelf-photo.use-case.ts` en conséquence. Fait passer T034. Dépend de T034.
-- [ ] T036 [P] [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/shelf-scan-cursor.spec.ts` : aller-retour `encodeCursor` / `decodeCursor` en base64url de `createdAt ISO|uuid`. `decodeCursor` lève `InvalidShelfScanCursor` sur une chaîne non base64url, un séparateur absent, une date invalide ou un id qui n'est pas un UUID.
-- [ ] T037 [US1] Créer `libs/recognition/application/src/lib/shelf-scan-cursor.ts` et `libs/recognition/application/src/lib/invalid-shelf-scan-cursor.error.ts`. Fait passer T036. Dépend de T036.
-- [ ] T038 [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/list-shelf-scans.use-case.spec.ts` :
+  Dépend de T034.
+- [ ] T036 [US1] Étendre `StoreShelfPhotoCommand` avec `thumbnail?: { bytes: Uint8Array; mediaType: string }` dans `libs/recognition/application/src/lib/shelf-photo.dto.ts`, et `libs/recognition/application/src/lib/store-shelf-photo.use-case.ts` en conséquence. Fait passer T035. Dépend de T035.
+- [ ] T037 [P] [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/shelf-scan-cursor.spec.ts` : aller-retour `encodeCursor` / `decodeCursor` en base64url de `createdAt ISO|uuid`. `decodeCursor` lève `InvalidShelfScanCursor` sur une chaîne non base64url, un séparateur absent, une date invalide ou un id qui n'est pas un UUID.
+- [ ] T038 [US1] Créer `libs/recognition/application/src/lib/shelf-scan-cursor.ts` et `libs/recognition/application/src/lib/invalid-shelf-scan-cursor.error.ts`. Fait passer T037. Dépend de T037.
+- [ ] T039 [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/list-shelf-scans.use-case.spec.ts` :
   - `limit` absent donne 20 ; `limit` hors de 1..50 ou non entier donne `InvalidShelfScanPageSize` ;
   - `list` reçoit l'`ownerId` configuré ;
   - chaque `ShelfScanSummaryDto` vaut `{ id, createdAt (ISO), outcome, bookCount?, hasThumbnail }`, avec `bookCount` présent si et seulement si `outcome === 'completed'` (0 pour une liste vide) ;
@@ -245,21 +250,21 @@ le bon résumé (quickstart, scénarios 1 et 2).
   - aucun DTO ne contient `originalFilename`, `photoBucketKey` ou `ownerId` (FR-009) ;
   - trois pages successives couvrent 45 envois sans doublon ni trou.
 
-  Dépend de T033 et T037.
-- [ ] T039 [US1] Créer `libs/recognition/application/src/lib/shelf-scan-history.dto.ts` avec `ShelfScanOutcomeDto`, `ShelfScanSummaryDto`, `ShelfScanPageDto`, `ShelfScanDetailDto` et `StoredImageDto`, en reprenant les formes de data-model.md mot pour mot. Créer aussi `libs/recognition/application/src/lib/list-shelf-scans.use-case.ts` et `InvalidShelfScanPageSize`, puis exporter le tout depuis `libs/recognition/application/src/index.ts`. Fait passer T038. Dépend de T038.
-- [ ] T040 [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.spec.ts`, pour le type `'thumbnail'` :
+  Dépend de T034 et T038.
+- [ ] T040 [US1] Créer `libs/recognition/application/src/lib/shelf-scan-history.dto.ts` avec `ShelfScanOutcomeDto`, `ShelfScanSummaryDto`, `ShelfScanPageDto`, `ShelfScanDetailDto` et `StoredImageDto`, en reprenant les formes de data-model.md mot pour mot. Créer aussi `libs/recognition/application/src/lib/list-shelf-scans.use-case.ts` et `InvalidShelfScanPageSize`, puis exporter le tout depuis `libs/recognition/application/src/index.ts`. Fait passer T039. Dépend de T039.
+- [ ] T041 [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.spec.ts`, pour le type `'thumbnail'` :
   - rend `{ bytes, mediaType }` ;
   - un envoi sans vignette donne `ShelfPhotoThumbnailNotFound` ;
   - un id inconnu, malformé ou d'un autre propriétaire donne `ShelfScanNotFound`.
 
-  Dépend de T033.
-- [ ] T041 [US1] Créer `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.ts`, avec `execute({ id, kind: 'thumbnail' })` pour l'instant ; US2 ajoute `'photo'` (T059). Fait passer T040. Dépend de T040.
+  Dépend de T034.
+- [ ] T042 [US1] Créer `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.ts`, avec `execute({ id, kind: 'thumbnail' })` pour l'instant ; US2 ajoute `'photo'` (T060). Fait passer T041. Dépend de T041.
 
 ### Infrastructure : vignette dans le bucket et en base, page par curseur
 
-- [ ] T042 [P] [US1] Écrire les tests (doivent échouer), contre l'émulateur, dans `libs/recognition/infrastructure/src/lib/gcs-shelf-photo-storage.adapter.spec.ts` : `storeThumbnail` puis `retrieveThumbnail` rendent les mêmes octets, un second `storeThumbnail` sur la même clé échoue (`ifGenerationMatch: 0`), et une clé absente donne `ShelfPhotoStorageFailed`.
-- [ ] T043 [US1] Implémenter `storeThumbnail` et `retrieveThumbnail` dans `libs/recognition/infrastructure/src/lib/gcs-shelf-photo-storage.adapter.ts`. Fait passer T042. Dépend de T042.
-- [ ] T044 [US1] Écrire les tests (doivent échouer), contre Postgres, dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.spec.ts` :
+- [ ] T043 [P] [US1] Écrire les tests (doivent échouer), contre l'émulateur, dans `libs/recognition/infrastructure/src/lib/gcs-shelf-photo-storage.adapter.spec.ts` : `storeThumbnail` puis `retrieveThumbnail` rendent les mêmes octets, un second `storeThumbnail` sur la même clé échoue (`ifGenerationMatch: 0`), et une clé absente donne `ShelfPhotoStorageFailed`.
+- [ ] T044 [US1] Implémenter `storeThumbnail` et `retrieveThumbnail` dans `libs/recognition/infrastructure/src/lib/gcs-shelf-photo-storage.adapter.ts`. Fait passer T043. Dépend de T043.
+- [ ] T045 [US1] Écrire les tests (doivent échouer), contre Postgres, dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.spec.ts` :
   - `createPending` avec vignette écrit **deux** lignes `uploads` dans la même transaction. La vignette a `type = 'shelf_photo_thumbnail'`, `original_filename` null et `source_upload_id` égal à l'id de la photo ;
   - `get` rend `thumbnail` (et `undefined` sans vignette) ;
   - `list` ne rend que `type = 'shelf_photo'` du bon `owner_id`, triés `created_at desc, id desc` ;
@@ -267,17 +272,17 @@ le bon résumé (quickstart, scénarios 1 et 2).
   - `next` est absent sur la dernière page ;
   - un envoi inséré entre deux pages n'en décale aucune.
 
-  Dépend de T005 et T031.
-- [ ] T045 [US1] Implémenter dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.ts` :
+  Dépend de T005 et T032.
+- [ ] T046 [US1] Implémenter dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.ts` :
   - l'écriture de la ligne vignette dans `createPending` ;
   - la lecture de la vignette par une auto-jointure `left join` d'`uploads` sur `source_upload_id`, dans `get` et `list` ;
   - la pagination de `list` par comparaison du couple `(created_at, id)`, en lisant `limit + 1` lignes pour savoir s'il reste une page.
 
-  Fait passer T044. Dépend de T044.
+  Fait passer T045. Dépend de T045.
 
 ### API : `GET /shelf-photos`, `GET …/thumbnail`, champ multipart `thumbnail`
 
-- [ ] T046 [US1] Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` :
+- [ ] T047 [US1] Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` :
   - `GET /shelf-photos` renvoie 200 et `{ items, nextCursor }` (contrat §1) ;
   - `?limit=51`, `?limit=abc` et `?cursor=abc` renvoient **400** ;
   - `GET /shelf-photos/{id}/thumbnail` renvoie 200 avec le bon `Content-Type` et `Cache-Control: private, max-age=31536000, immutable` ;
@@ -287,52 +292,52 @@ le bon résumé (quickstart, scénarios 1 et 2).
   - aucun corps ne contient `originalFilename` ni `bucket` (FR-009) ;
   - après `GET /shelf-photos` et `GET …/thumbnail`, l'état des doubles (enregistrements, tentatives, objets stockés) est identique à celui d'avant : la consultation ne modifie rien (FR-013, analyse G1).
 
-  Dépend de T033, T035, T039 et T041.
-- [ ] T047 [US1] Modifier `apps/api/src/recognition/shelf-photos.controller.ts` :
+  Dépend de T034, T036, T040 et T042.
+- [ ] T048 [US1] Modifier `apps/api/src/recognition/shelf-photos.controller.ts` :
   - `FileFieldsInterceptor([{ name: 'photo', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }])`, la limite de 20 Mo restant celle de `photo` ;
   - la route `@Get()`, qui lit `limit` et `cursor` depuis la query string ;
   - la route `@Get(':id/thumbnail')`, qui répond via `@Res({ passthrough: true })` avec `Content-Type` et `Cache-Control` ;
   - `@SkipThrottle({ write: true })` sur les deux routes de lecture.
 
-  Étendre `apps/api/src/recognition/recognition-exception.filter.ts` : `InvalidShelfScanCursor` et `InvalidShelfScanPageSize` donnent 400, `ShelfPhotoThumbnailNotFound` donne 404. Enregistrer `ListShelfScansUseCase` et `GetShelfPhotoImageUseCase` (avec `environment.ownerId`) dans `apps/api/src/recognition/recognition.module.ts`. Fait passer T046. Dépend de T046.
+  Étendre `apps/api/src/recognition/recognition-exception.filter.ts` : `InvalidShelfScanCursor` et `InvalidShelfScanPageSize` donnent 400, `ShelfPhotoThumbnailNotFound` donne 404. Enregistrer `ListShelfScansUseCase` et `GetShelfPhotoImageUseCase` (avec `environment.ownerId`) dans `apps/api/src/recognition/recognition.module.ts`. Fait passer T047. Dépend de T047.
 
 ### Front : vignette à l'envoi
 
-- [ ] T048 [P] [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/photo-upload/model/make-thumbnail.spec.ts`, avec `createImageBitmap` et le canvas injectés :
+- [ ] T049 [P] [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/photo-upload/model/make-thumbnail.spec.ts`, avec `createImageBitmap` et le canvas injectés :
   - la largeur cible vaut 480 px, ratio conservé, sans agrandir une image plus petite ;
   - l'export est en `image/jpeg`, qualité 0,7 ;
   - `imageOrientation: 'from-image'` est demandé ;
   - un échec de décodage rend `undefined` (pas d'exception) ;
   - un résultat de plus de 262 144 octets rend `undefined`.
-- [ ] T049 [US1] Créer `apps/web/src/features/photo-upload/model/make-thumbnail.ts`. Fait passer T048. Dépend de T048.
-- [ ] T050 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts` : le `FormData` porte `thumbnail` quand la vignette existe, et ne le porte pas sinon ; l'envoi part dans les deux cas. Puis modifier `apps/web/src/features/photo-upload/api/scan-shelf-photo.ts` pour recevoir un `makeThumbnail` injectable (par défaut celui du module) et joindre la vignette. Dépend de T049.
+- [ ] T050 [US1] Créer `apps/web/src/features/photo-upload/model/make-thumbnail.ts`. Fait passer T049. Dépend de T049.
+- [ ] T051 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts` : le `FormData` porte `thumbnail` quand la vignette existe, et ne le porte pas sinon ; l'envoi part dans les deux cas. Puis modifier `apps/web/src/features/photo-upload/api/scan-shelf-photo.ts` pour recevoir un `makeThumbnail` injectable (par défaut celui du module) et joindre la vignette. Dépend de T050.
 
 ### Front : slice `upload-history`, liste
 
-- [ ] T051 [P] [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/model/history-entry.spec.ts`, pour les gardes de type sur `unknown` (sans `as`) et la conversion du résumé en `HistoryEntry` :
+- [ ] T052 [P] [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/model/history-entry.spec.ts`, pour les gardes de type sur `unknown` (sans `as`) et la conversion du résumé en `HistoryEntry` :
   - `completed` avec `bookCount > 0` donne `{ kind: 'books', count }` ;
   - `completed` avec 0 donne `{ kind: 'none' }` ;
   - `failed` donne `{ kind: 'failed' }` ;
   - `pending` donne `{ kind: 'notStarted' }` ;
   - un corps mal formé est rejeté.
 
-  Créer ensuite `apps/web/src/features/upload-history/model/history-entry.ts` et `apps/web/src/features/upload-history/model/history-state.ts`, avec l'union `loading | empty | loaded { entries, next, loadingMore, moreError? } | error` de data-model.md.
-- [ ] T052 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/api/history-api.spec.ts`, avec `fetch` injecté :
+  Créer ensuite `apps/web/src/features/upload-history/model/history-entry.ts` et `apps/web/src/features/upload-history/model/history-state.ts`, avec l'union `loading | empty | loaded { entries, next, loadingMore, moreFailure? } | error { failure }` et le type `HistoryFailure` de data-model.md.
+- [ ] T053 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/api/history-api.spec.ts`, avec `fetch` injecté :
   - `listShelfScans({ cursor? })` appelle `GET {base}/shelf-photos?limit=20[&cursor=…]` ;
   - un échec réseau, un 5xx et un corps invalide donnent chacun un échec typé ;
   - un 429 avec `TOO_MANY_REQUESTS` donne son propre échec ;
   - `thumbnailUrl(id)` encode l'id.
 
-  Créer ensuite `apps/web/src/features/upload-history/api/history-api.ts`, qui lit `VITE_API_BASE_URL` comme `scan-shelf-photo.ts`. Dépend de T051.
-- [ ] T053 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/history-entry-card.spec.tsx` :
+  Créer ensuite `apps/web/src/features/upload-history/api/history-api.ts`, qui lit `VITE_API_BASE_URL` comme `scan-shelf-photo.ts`. Dépend de T052.
+- [ ] T054 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/history-entry-card.spec.tsx` :
   - la date et l'heure locales s'affichent ;
-  - les libellés sont « 12 livres détectés », « 1 livre détecté », « Aucun livre détecté », « Analyse en échec » et « Analyse non lancée » (FR-005) ;
+  - les libellés sont « 12 livres détectés », « 1 livre détecté », « Aucun livre détecté », « Analyse en échec » et « Analyse non lancée » (FR-005). Le nombre de livres est **une clé plurielle** (`outcome.books`, avec `count`), pas deux clés, pour que le test de parité vérifie les formes CLDR de chaque langue ;
   - la vignette est un `<img loading="lazy">` vers `thumbnailUrl(id)` si `hasThumbnail`, et un indicateur neutre sans requête sinon ;
   - `onError` de l'image affiche l'indicateur neutre (FR-008) ;
   - la carte est un lien vers `#/historique/{id}`.
 
-  Créer ensuite `apps/web/src/features/upload-history/ui/history-entry-card.tsx`. Dépend de T051 et T052.
-- [ ] T054 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/history-screen.spec.tsx` :
+  Créer ensuite `apps/web/src/features/upload-history/ui/history-entry-card.tsx`. Dépend de T052 et T053.
+- [ ] T055 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/history-screen.spec.tsx` :
   - un chargement s'affiche d'abord ;
   - un historique vide affiche « Vous n'avez encore envoyé aucune photo. » avec un lien vers `#/` (US1, scénario 2) ;
   - un échec affiche un message d'erreur, **pas** l'état vide (FR-010), avec un bouton « Réessayer » ;
@@ -343,8 +348,8 @@ le bon résumé (quickstart, scénarios 1 et 2).
   - un échec de page suivante garde les entrées et affiche un « Réessayer » local ;
   - un 429 `TOO_MANY_REQUESTS`, sur la première page comme sur une suivante, affiche « Trop de demandes en peu de temps. Patientez une minute puis réessayez. », distinct du message de panne (FR-014, analyse G2).
 
-  Créer ensuite `apps/web/src/features/upload-history/ui/history-screen.tsx` et `apps/web/src/features/upload-history/ui/upload-history.module.css`. Dépend de T053.
-- [ ] T055 [US1] Brancher la route `history` sur `HistoryScreen` dans `apps/web/src/app/app.tsx`, avec un lien « Nouvelle photo » vers `#/`. Compléter `apps/web/src/app/app.spec.tsx` (test d'abord) : `#/historique` affiche l'historique, et le lien ramène à l'écran d'envoi. Dépend de T028 et T054.
+  Créer ensuite `apps/web/src/features/upload-history/ui/history-screen.tsx` et `apps/web/src/features/upload-history/ui/upload-history.module.css`. Dépend de T054.
+- [ ] T056 [US1] Brancher la route `history` sur `HistoryScreen` dans `apps/web/src/app/app.tsx`, avec un lien « Nouvelle photo » vers `#/`. Compléter `apps/web/src/app/app.spec.tsx` (test d'abord) : `#/historique` affiche l'historique, et le lien ramène à l'écran d'envoi. Dépend de T029 et T055.
 
 **Checkpoint** : US1 est livrable seule (quickstart, scénarios 1, 2 et 6). La liste, les vignettes
 et la pagination fonctionnent, et le détail n'est encore qu'un emplacement vide.
@@ -360,24 +365,24 @@ et la pagination fonctionnent, et le détail n'est encore qu'un emplacement vide
 photo et ses livres s'affichent. Ouvrir un id inconnu et constater le message « introuvable »
 (quickstart, scénario 3).
 
-- [ ] T056 [P] [US2] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/get-shelf-scan.use-case.spec.ts` :
+- [ ] T057 [P] [US2] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/get-shelf-scan.use-case.spec.ts` :
   - `ShelfScanDetailDto` vaut `{ id, createdAt, outcome, books?, hasThumbnail }`, avec `books` présent si et seulement si `completed`, dans l'ordre stocké et `author` absent quand inconnu ;
   - un id inconnu, malformé ou d'un autre `ownerId` donne `ShelfScanNotFound` ;
   - pas de `originalFilename` (FR-009).
-- [ ] T057 [US2] Créer `libs/recognition/application/src/lib/get-shelf-scan.use-case.ts` et l'exporter. Fait passer T056. Dépend de T056.
-- [ ] T058 [P] [US2] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.spec.ts`, pour le type `'photo'` : rend les octets et le `mediaType` conservé. Une erreur de stockage (`ShelfPhotoStorageFailed`) remonte telle quelle.
-- [ ] T059 [US2] Ajouter le type `'photo'` à `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.ts`. Fait passer T058. Dépend de T058 et T041.
-- [ ] T060 [US2] Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` :
+- [ ] T058 [US2] Créer `libs/recognition/application/src/lib/get-shelf-scan.use-case.ts` et l'exporter. Fait passer T057. Dépend de T057.
+- [ ] T059 [P] [US2] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.spec.ts`, pour le type `'photo'` : rend les octets et le `mediaType` conservé. Une erreur de stockage (`ShelfPhotoStorageFailed`) remonte telle quelle.
+- [ ] T060 [US2] Ajouter le type `'photo'` à `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.ts`. Fait passer T059. Dépend de T059 et T042.
+- [ ] T061 [US2] Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` :
   - `GET /shelf-photos/{id}` renvoie 200 avec le corps du contrat §2 ;
   - un id inconnu ou non-UUID renvoie 404 ;
   - `GET /shelf-photos/{id}/photo` renvoie 200 avec le `Content-Type` du type conservé et `Cache-Control: private, max-age=31536000, immutable` ;
   - une photo absente du bucket alors que l'envoi existe renvoie **502** ;
   - après `GET /shelf-photos/{id}` et `GET …/photo`, l'état des doubles est inchangé (FR-013).
 
-  Puis ajouter les deux routes à `apps/api/src/recognition/shelf-photos.controller.ts`, avec `@SkipThrottle({ write: true })`. Traduire `ShelfPhotoStorageFailed` en 502 dans `apps/api/src/recognition/recognition-exception.filter.ts` si ce n'est pas déjà le cas. Enregistrer `GetShelfScanUseCase` dans `apps/api/src/recognition/recognition.module.ts`. Dépend de T057 et T059.
-- [ ] T061 [P] [US2] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/api/history-api.spec.ts` : `getShelfScan(id)` rend `found`, `notFound` (404) ou un échec typé, et valide le corps par garde de type ; `photoUrl(id)` encode l'id. Puis étendre `apps/web/src/features/upload-history/api/history-api.ts`.
-- [ ] T062 [US2] Créer `apps/web/src/features/upload-history/ui/detected-books-list.tsx`, une copie locale de l'affichage de `photo-upload/ui/scan-result.tsx` (titre, puis « — auteur » si connu ; « Aucun livre détecté sur cette photo. » si vide), accompagnée de `detected-books-list.spec.tsx` écrit d'abord (research.md §11).
-- [ ] T063 [US2] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/entry-detail-screen.spec.tsx` :
+  Puis ajouter les deux routes à `apps/api/src/recognition/shelf-photos.controller.ts`, avec `@SkipThrottle({ write: true })`. Traduire `ShelfPhotoStorageFailed` en 502 dans `apps/api/src/recognition/recognition-exception.filter.ts` si ce n'est pas déjà le cas. Enregistrer `GetShelfScanUseCase` dans `apps/api/src/recognition/recognition.module.ts`. Dépend de T058 et T060.
+- [ ] T062 [P] [US2] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/api/history-api.spec.ts` : `getShelfScan(id)` rend `found`, `notFound` (404) ou un échec typé, et valide le corps par garde de type ; `photoUrl(id)` encode l'id. Puis étendre `apps/web/src/features/upload-history/api/history-api.ts`.
+- [ ] T063 [US2] Créer `apps/web/src/features/upload-history/ui/detected-books-list.tsx`, une copie locale de l'affichage de `photo-upload/ui/scan-result.tsx` (titre, puis « — auteur » si connu ; « Aucun livre détecté sur cette photo. » si vide), accompagnée de `detected-books-list.spec.tsx` écrit d'abord (research.md §11).
+- [ ] T064 [US2] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/entry-detail-screen.spec.tsx` :
   - un chargement s'affiche d'abord ;
   - `completed` affiche la photo (`<img src={photoUrl}>`) et la liste des livres ;
   - `completed` vide affiche « Aucun livre détecté » ;
@@ -389,14 +394,14 @@ photo et ses livres s'affichent. Ouvrir un id inconnu et constater le message «
   - un lien « Historique » ramène à `#/historique` ;
   - un 429 `TOO_MANY_REQUESTS` affiche « Trop de demandes en peu de temps. Patientez une minute puis réessayez. », distinct du message de panne (FR-014, analyse G2).
 
-  Créer ensuite `apps/web/src/features/upload-history/ui/entry-detail-screen.tsx`. Dépend de T061 et T062.
-- [ ] T064 [US2] Brancher la route `entry` dans `apps/web/src/app/app.tsx`. `HistoryScreen` reste **monté** (masqué par l'attribut `hidden`) quand le détail est affiché, et la slice mémorise `window.scrollY` au départ vers un détail pour le restaurer au retour (research.md §3). Tests d'abord dans `apps/web/src/app/app.spec.tsx` et `apps/web/src/features/upload-history/ui/history-screen.spec.tsx` :
+  Créer ensuite `apps/web/src/features/upload-history/ui/entry-detail-screen.tsx`. Dépend de T062 et T063.
+- [ ] T065 [US2] Brancher la route `entry` dans `apps/web/src/app/app.tsx`. `HistoryScreen` reste **monté** (masqué par l'attribut `hidden`) quand le détail est affiché, et la slice mémorise `window.scrollY` au départ vers un détail pour le restaurer au retour (research.md §3). Tests d'abord dans `apps/web/src/app/app.spec.tsx` et `apps/web/src/features/upload-history/ui/history-screen.spec.tsx` :
   - aller de `#/historique` à `#/historique/{id}` puis revenir ne refait **aucune** requête de liste ;
   - les entrées déjà chargées, y compris la deuxième page, sont toujours là ;
   - la position de défilement est restaurée.
 
-  Dépend de T055 et T063.
-- [ ] T065 [US2] Vérifier la mise en page à 360 px (SC-004) dans `apps/web/src/features/upload-history/ui/upload-history.module.css` : la photo du détail tient en `max-width: 100%`, et ni la liste ni le détail ne défilent à l'horizontale. Le vérifier dans le navigateur en émulation mobile (quickstart, scénario 8). Dépend de T063.
+  Dépend de T056 et T064.
+- [ ] T066 [US2] Vérifier la mise en page à 360 px (SC-004) dans `apps/web/src/features/upload-history/ui/upload-history.module.css` : la photo du détail tient en `max-width: 100%`, et ni la liste ni le détail ne défilent à l'horizontale. Le vérifier dans le navigateur en émulation mobile (quickstart, scénario 8). Dépend de T064.
 
 **Checkpoint** : US1 et US2 forment ensemble le minimum utile. On peut retrouver les livres d'un
 envoi ancien sans renvoyer la photo (SC-001).
@@ -412,19 +417,19 @@ reprendre la photo, dans la limite du plafond quotidien.
 et constater que les livres apparaissent, dans le détail comme dans la liste (quickstart,
 scénario 4).
 
-- [ ] T066 [US3] Écrire les tests (doivent échouer) :
+- [ ] T067 [US3] Écrire les tests (doivent échouer) :
   - dans `libs/recognition/application/src/lib/scan-stored-shelf-photo.use-case.spec.ts` : un envoi `failed` est relançable et passe `completed` (livres) ou reste `failed` (nouvel échec) ; un envoi `completed` donne `ShelfScanAlreadyProcessed` sans appel au scanner (FR-011) ;
   - dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.spec.ts` : `startAttempt` accepte `failed` ; `markCompleted` et `markFailed` passent un `failed` en `completed` ou `failed` ; un `completed` est définitif ;
   - deux relances concurrentes : une seule tentative réservée, l'autre reçoit `ShelfScanInProgress`.
-- [ ] T067 [US3] Élargir la règle « analysable » de `pending` à `pending | failed`, dans cet ordre :
+- [ ] T068 [US3] Élargir la règle « analysable » de `pending` à `pending | failed`, dans cet ordre :
   1. documenter la nouvelle transition dans `libs/recognition/domain/src/lib/shelf-scan-repository.port.ts` ;
   2. changer la condition de `startAttempt` et du `where` de `settle` en `status in ('pending','failed')` dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.ts` ;
   3. faire de même dans les deux doubles en mémoire (`libs/recognition/application/src/lib/testing/in-memory-shelf-scan-repository.ts`, `apps/api/src/recognition/testing/shelf-photos-controller.fixture.ts`) ;
   4. mettre à jour le commentaire de `libs/recognition/domain/src/lib/shelf-scan-already-processed.error.ts` : l'erreur signifie désormais « déjà `completed` ».
 
-  Fait passer T066. Dépend de T066.
-- [ ] T068 [US3] Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` : `POST /shelf-photos/{id}/scan` sur un envoi `failed` renvoie 200 avec les livres, puis `GET /shelf-photos/{id}` donne `outcome: "completed"`, et un second POST renvoie 409 `SCAN_ALREADY_COMPLETED`. Aucune modification du contrôleur n'est attendue : si le test passe déjà après T067, le noter et passer à la suite. Dépend de T067.
-- [ ] T069 [P] [US3] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/api/history-api.spec.ts`. `rescanShelfScan(id)` appelle `POST {base}/shelf-photos/{id}/scan` et rend l'une de ces issues :
+  Fait passer T067. Dépend de T067.
+- [ ] T069 [US3] Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` : `POST /shelf-photos/{id}/scan` sur un envoi `failed` renvoie 200 avec les livres, puis `GET /shelf-photos/{id}` donne `outcome: "completed"`, et un second POST renvoie 409 `SCAN_ALREADY_COMPLETED`. Aucune modification du contrôleur n'est attendue : si le test passe déjà après T068, le noter et passer à la suite. Dépend de T068.
+- [ ] T070 [P] [US3] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/api/history-api.spec.ts`. `rescanShelfScan(id)` appelle `POST {base}/shelf-photos/{id}/scan` et rend l'une de ces issues :
 
   | Réponse | Issue |
   |---|---|
@@ -437,7 +442,7 @@ scénario 4).
   | échec réseau | `offline` |
 
   Puis étendre `apps/web/src/features/upload-history/api/history-api.ts`.
-- [ ] T070 [US3] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/entry-detail-screen.spec.tsx` :
+- [ ] T071 [US3] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/entry-detail-screen.spec.tsx` :
   - un bouton « Relancer l'analyse » n'apparaît que pour `failed` et `pending` (US3, scénario 4) ;
   - pendant la relance, un chargement s'affiche et le bouton est désactivé (US3, scénario 2) ;
   - au succès, les livres s'affichent et le bouton disparaît ;
@@ -446,8 +451,8 @@ scénario 4).
   - `inProgress` affiche « Une analyse de cette photo est déjà en cours. » ;
   - `alreadyCompleted` recharge le détail.
 
-  Implémenter ensuite dans `apps/web/src/features/upload-history/ui/entry-detail-screen.tsx`. Dépend de T069.
-- [ ] T071 [US3] Faire refléter une relance réussie dans l'entrée correspondante de l'historique déjà chargé, sans recharger la liste (US3, scénario 1). Par exemple, `HistoryScreen` expose un `updateEntry(id, outcome)` que le shell passe au détail : le shell compose, aucune slice n'importe l'autre. Test d'abord dans `apps/web/src/app/app.spec.tsx`, puis modifier `apps/web/src/app/app.tsx` et `apps/web/src/features/upload-history/ui/history-screen.tsx`. Dépend de T064 et T070.
+  Implémenter ensuite dans `apps/web/src/features/upload-history/ui/entry-detail-screen.tsx`. Dépend de T070.
+- [ ] T072 [US3] Faire refléter une relance réussie dans l'entrée correspondante de l'historique déjà chargé, sans recharger la liste (US3, scénario 1). Par exemple, `HistoryScreen` expose un `updateEntry(id, outcome)` que le shell passe au détail : le shell compose, aucune slice n'importe l'autre. Test d'abord dans `apps/web/src/app/app.spec.tsx`, puis modifier `apps/web/src/app/app.tsx` et `apps/web/src/features/upload-history/ui/history-screen.tsx`. Dépend de T065 et T071.
 
 **Checkpoint** : les trois stories fonctionnent. Un envoi en échec peut être ramené à un résultat en
 une seule action (SC-005), dans la limite du plafond quotidien (SC-006).
@@ -456,12 +461,12 @@ une seule action (SC-005), dans la limite du plafond quotidien (SC-006).
 
 ## Phase 6 : Polish et points transverses
 
-- [ ] T072 [P] Ajouter, en tête de `specs/001-photo-upload/contracts/scan-api.md`, une note datée qui renvoie aux amendements de `specs/002-upload-history/contracts/shelf-photos-history-api.md` §5 : champ `thumbnail`, relance depuis `failed`, codes des 409 et 429.
-- [ ] T073 [P] Mettre à jour `CLAUDE.md`, section *Commandes* ou *Architecture*, seulement si une commande ou un emplacement change. Le routage par hash d'`apps/web/src/app/` mérite une ligne dans l'arborescence.
-- [ ] T074 Ouvrir une issue GitHub pour le prérequis de déploiement hors scope (plan.md, *Prérequis hors scope*, point 3) : bucket privé de photos dans `infra/envs/prod/main.tf`, droit `roles/storage.objectAdmin` du compte de service de l'API sur ce bucket, variable `BUCKET_NAME` sur `cloud_run_api` (`DAILY_SCAN_LIMIT` y est déjà, T018). L'issue référence les specs 001 et 002.
-- [ ] T075 Vérification manuelle sur un iPhone (Safari), à tracer dans la PR : une photo portrait HEIC produit une vignette **droite** (orientation EXIF, research.md §5), et l'historique l'affiche.
-- [ ] T076 Dérouler `specs/002-upload-history/quickstart.md`, scénarios 1 à 8, et noter les écarts dans la PR.
-- [ ] T077 Faire passer `yarn check` : lint (oxlint type-aware et frontières ESLint), format, typecheck, test et build, sur tous les projets.
+- [ ] T073 [P] Ajouter, en tête de `specs/001-photo-upload/contracts/scan-api.md`, une note datée qui renvoie aux amendements de `specs/002-upload-history/contracts/shelf-photos-history-api.md` §5 : champ `thumbnail`, relance depuis `failed`, codes des 409 et 429.
+- [ ] T074 [P] Mettre à jour `CLAUDE.md`, section *Commandes* ou *Architecture*, seulement si une commande ou un emplacement change. Le routage par hash d'`apps/web/src/app/` mérite une ligne dans l'arborescence.
+- [ ] T075 Ouvrir une issue GitHub pour le prérequis de déploiement hors scope (plan.md, *Prérequis hors scope*, point 3) : bucket privé de photos dans `infra/envs/prod/main.tf`, droit `roles/storage.objectAdmin` du compte de service de l'API sur ce bucket, variable `BUCKET_NAME` sur `cloud_run_api` (`DAILY_SCAN_LIMIT` y est déjà, T018). L'issue référence les specs 001 et 002.
+- [ ] T076 Vérification manuelle sur un iPhone (Safari), à tracer dans la PR : une photo portrait HEIC produit une vignette **droite** (orientation EXIF, research.md §5), et l'historique l'affiche.
+- [ ] T077 Dérouler `specs/002-upload-history/quickstart.md`, scénarios 1 à 8, et noter les écarts dans la PR.
+- [ ] T078 Faire passer `yarn check` : lint (oxlint type-aware et frontières ESLint), format, typecheck, test et build, sur tous les projets.
 
 ---
 
@@ -472,19 +477,19 @@ une seule action (SC-005), dans la limite du plafond quotidien (SC-006).
 - **Setup (Phase 1)** : aucune dépendance.
 - **Foundational (Phase 2)** : dépend de la Phase 1. **Bloque toutes les stories.**
 - **US1 (Phase 3)** : dépend de la Phase 2.
-- **US2 (Phase 4)** : dépend de la Phase 2. Côté back, il est indépendant d'US1, sauf T059, qui étend le use case de T041. Côté front, le branchement du shell (T064) suppose l'écran d'historique de T055.
-- **US3 (Phase 5)** : dépend de la Phase 2 (tentatives et plafond) et, côté front, du détail d'US2 (T063, T064).
+- **US2 (Phase 4)** : dépend de la Phase 2. Côté back, il est indépendant d'US1, sauf T060, qui étend le use case de T042. Côté front, le branchement du shell (T065) suppose l'écran d'historique de T056.
+- **US3 (Phase 5)** : dépend de la Phase 2 (tentatives et plafond) et, côté front, du détail d'US2 (T064, T065).
 - **Polish (Phase 6)** : après les stories livrées.
 
 ### Enchaînements clés
 
-- T003 → T004 → T005 → (T012, T044) : le schéma est testé d'abord, puis les specs d'adapter tournent sur le schéma migré.
+- T003 → T004 → T005 → (T012, T045) : le schéma est testé d'abord, puis les specs d'adapter tournent sur le schéma migré.
 - T008 → T009 → T010 → T011 → T016 → T019 → T020 : la réservation de tentative, du port jusqu'au HTTP.
 - T021 → T022 → T023 : la limite de requêtes.
 - T017 → T018 : `DAILY_SCAN_LIMIT` en Terraform, indépendant du code applicatif. Il se fait en parallèle de T014 → T015.
-- T029 → T030 → (T031, T032) → T033 : la fondation domaine d'US1.
-- T046 → T047 : les routes de lecture d'US1.
-- T066 → T067 → T068 : la relance côté back.
+- T030 → T031 → (T032, T033) → T034 : la fondation domaine d'US1.
+- T047 → T048 : les routes de lecture d'US1.
+- T067 → T068 → T069 : la relance côté back.
 
 ### Dans chaque story
 
@@ -508,19 +513,19 @@ Task: "T026 hash route tests in apps/web/src/app/use-hash-route.spec.ts"
 
 ```bash
 # Tests indépendants, fichiers distincts :
-Task: "T029 ShelfPhotoThumbnail tests"
-Task: "T036 cursor encode/decode tests"
-Task: "T042 GCS thumbnail adapter tests"
-Task: "T048 makeThumbnail tests"
-Task: "T051 history-entry guards tests"
+Task: "T030 ShelfPhotoThumbnail tests"
+Task: "T037 cursor encode/decode tests"
+Task: "T043 GCS thumbnail adapter tests"
+Task: "T049 makeThumbnail tests"
+Task: "T052 history-entry guards tests"
 ```
 
 ## Parallel Example: User Story 2
 
 ```bash
-Task: "T056 GetShelfScanUseCase tests"
-Task: "T058 GetShelfPhotoImageUseCase 'photo' tests"
-Task: "T061 getShelfScan / photoUrl tests"
+Task: "T057 GetShelfScanUseCase tests"
+Task: "T059 GetShelfPhotoImageUseCase 'photo' tests"
+Task: "T062 getShelfScan / photoUrl tests"
 ```
 
 ---
@@ -533,7 +538,7 @@ Task: "T061 getShelfScan / photoUrl tests"
 2. Phase 3 (US1) : valider seule avec les scénarios 1, 2 et 6 du quickstart.
 3. Phase 4 (US2) : valider avec le scénario 3. **US1 et US2 forment le minimum utile** : la spec
    les classe toutes deux P1.
-4. Livrer (PR) si le déploiement le permet (T074).
+4. Livrer (PR) si le déploiement le permet (T075).
 
 ### Incrémental
 
