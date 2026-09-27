@@ -1,8 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
+    // Not `dist`: `vite build` empties it, and the typecheck of the specs reads these declarations.
+    // Sharing the folder let a parallel build delete them mid-typecheck (TS6305 in CI).
+    "outDir": "out-tsc/app",
+    "tsBuildInfoFile": "out-tsc/app/tsconfig.app.tsbuildinfo",
     "jsx": "react-jsx",
     "lib": ["dom"],
     "types": [
