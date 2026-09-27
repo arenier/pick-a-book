@@ -24,7 +24,7 @@ output "region" {
 }
 
 output "backups_bucket_name" {
-  description = "Bucket the pg_dump job (out of scope here, lives in `infrastructure`) writes to."
+  description = "Bucket the weekly pg_dump job writes its snapshots to."
   value       = module.bucket.bucket_name
 }
 
@@ -39,6 +39,11 @@ output "shelf_photos_bucket_name" {
 }
 
 output "api_service_account_email" {
-  description = "Runtime identity the API service runs as — the only service account in this env, holding the Secret Manager and bucket grants."
+  description = "Runtime identity the API service runs as, holding its Secret Manager and shelf-photos bucket grants. The backup job has its own."
   value       = module.service_account_api.email
+}
+
+output "backup_job_name" {
+  description = "The backup Cloud Run Job — what `yarn deploy:db-backup` updates and `gcloud run jobs execute` runs."
+  value       = module.cloud_run_job_db_backup.name
 }

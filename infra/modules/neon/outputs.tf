@@ -3,3 +3,9 @@ output "database_url" {
   value       = neon_project.this.connection_uri_pooler
   sensitive   = true
 }
+
+output "direct_database_url" {
+  description = "Direct (unpooled) Postgres connection URI, for the backup job only: pg_dump needs one session for the whole dump, which PgBouncer's transaction mode does not give. Never for the API — its bursty serverless connections are what the pooler is for."
+  value       = neon_project.this.connection_uri
+  sensitive   = true
+}

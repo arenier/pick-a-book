@@ -118,3 +118,23 @@ run "postgres_major_version_is_pinned_to_the_one_prod_runs" {
     error_message = "pg_version must be pinned to 18, the major the prod project runs — the backup job's pg_dump and the docker-compose/CI Postgres images are aligned on it"
   }
 }
+
+run "direct_database_url_output_bypasses_the_pooler" {
+  command = plan
+
+  override_resource {
+    target          = neon_project.this
+    override_during = plan
+    values = {
+      connection_uri        = "postgresql://direct-not-pooled/db"
+      connection_uri_pooler = "postgresql://pooled/db"
+    }
+  }
+
+  # pg_dump needs a session of its own for the whole dump: PgBouncer in transaction mode hands
+  # each statement to whichever server connection is free, which a dump cannot survive.
+  assert {
+    condition     = output.direct_database_url == "postgresql://direct-not-pooled/db"
+    error_message = "direct_database_url must be the direct connection_uri, not the pooler — the backup job's pg_dump cannot run through PgBouncer's transaction mode"
+  }
+}

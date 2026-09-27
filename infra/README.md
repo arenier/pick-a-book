@@ -98,6 +98,14 @@ par là : `NEON_API_KEY` est lu dans l'environnement par le provider `neon` (voi
 donc il **faut** l'avoir exporté, sans quoi `plan`/`apply` échoue sur `authorization key must be
 provided` — tous les providers se chargent, même pour un `apply` qui ne toucherait que du GCP.
 
+Même chose pour l'adresse de l'alerte de sauvegarde : c'est une donnée personnelle dans un dépôt
+public, elle n'est donc pas dans `prod.auto.tfvars`. Sans `TF_VAR_alert_email`, Terraform la demande
+en prompt interactif.
+
+```bash
+export TF_VAR_alert_email=…
+```
+
 **Pas de sandbox GCP** (décision figée de l'issue #12) : `plan` est le seul filet avant un `apply`
 qui touche directement la prod. Toujours relire un `plan` avant d'`apply`er :
 
@@ -132,7 +140,7 @@ module sans test passerait inaperçu. Elle compte les blocs `run`, pas les fichi
 ```
 infra/modules/           un module par ressource : project, bucket, static-site,
                           secret-manager, service-account, artifact-registry,
-                          cloud-run-service, neon
+                          cloud-run-service, cloud-run-job, job-freshness-alert, neon
 infra/modules/*/tests/   *.tftest.hcl — mock_provider, hermétique
 infra/envs/prod/         seul environnement à ce jour ; assemble les modules
 infra/envs/*/tests/      *.tftest.hcl — tests de câblage entre modules
@@ -213,6 +221,78 @@ build ne peut pas écrire dans le bucket de logs par défaut, il envoie ses logs
 Build de l'image **en local** (Docker Desktop lancé), push vers Artifact Registry, puis
 `gcloud run deploy`. Aucune permission Cloud Build en jeu — utile si le SA build n'est pas encore
 en place, ou pour builder hors ligne. Même dérivation `terraform output`, rien codé en dur.
+
+## Sauvegarde de la base — `pg_dump` hebdomadaire (ADR 0006, issue #22)
+
+Le job `pick-a-book-db-backup` (Cloud Run Job, code dans [`tools/db-backup`](../tools/db-backup))
+tourne **chaque lundi à 3 h 17, heure de Paris**. Il fait un `pg_dump --format=custom` de la base
+Neon par sa connexion directe (`DATABASE_URL_DIRECT`), **prouve** le fichier (`pg_restore --list`
+lisible, au moins une table avec des données), l'envoie dans `${project_id}-backups` sous
+`postgres/AAAAMMJJTHHMMSSZ.dump`, **puis seulement** élague pour ne garder que les 8 derniers.
+Une exécution qui échoue ne touche à rien. Un snapshot élagué reste récupérable 30 jours grâce au
+versioning du bucket.
+
+L'alerte `pick-a-book-db-backup — backup not fresh` envoie un email à `TF_VAR_alert_email` si
+aucune exécution n'a réussi depuis 8 jours, ou dès qu'une exécution échoue.
+
+### Mise en service (une fois)
+
+```bash
+export NEON_API_KEY=… TF_VAR_alert_email=…
+cd infra/envs/prod && terraform plan && terraform apply && cd -
+yarn deploy:db-backup
+gcloud run jobs execute pick-a-book-db-backup --region=europe-west1 --wait
+gsutil ls "gs://$(terraform -chdir=infra/envs/prod output -raw backups_bucket_name)/postgres/"
+```
+
+- Ce que le `plan` doit montrer : les APIs Cloud Scheduler et Monitoring ; le secret
+  `DATABASE_URL_DIRECT` et sa version ; le compte `pick-a-book-db-backup` avec ses deux droits (ce
+  secret, `objectUser` sur le bucket de sauvegardes) ; le job, son droit `run.invoker`, son
+  planning ; le canal email et la politique d'alerte ; le **retrait** du droit de l'API sur le
+  bucket de sauvegardes.
+- Lancer la première exécution **juste après** l'`apply` : tant qu'aucune exécution n'a réussi, la
+  condition « aucune réussite depuis 8 jours » est vraie, et l'alerte part.
+- Si l'`apply` échoue sur `iam.serviceAccounts.actAs`, le compte qui applique Terraform doit porter
+  `roles/iam.serviceAccountUser` sur `pick-a-book-db-backup` : créer un job ou un planning qui
+  s'exécute sous une identité, c'est agir en son nom.
+
+### Vérifier que l'alerte arrive
+
+Une exécution volontairement cassée doit produire un email dans les minutes qui suivent. La
+surcharge ne vaut que pour cette exécution :
+
+```bash
+gcloud run jobs execute pick-a-book-db-backup --region=europe-west1 --wait \
+  --update-env-vars=BACKUP_GENERATIONS=0
+```
+
+### Restaurer
+
+On ne restaure **jamais directement sur la base de prod** : d'abord dans une base vide, qu'on
+vérifie, puis on bascule `DATABASE_URL` si c'est un vrai sinistre. `--no-owner --no-privileges` :
+les rôles de Neon ne sont pas ceux de la base cible. Il faut `pg_restore` 18 ou plus (`brew install
+libpq`, ou l'image `postgres:18.6`).
+
+```bash
+BUCKET=$(terraform -chdir=infra/envs/prod output -raw backups_bucket_name)
+gsutil ls "gs://${BUCKET}/postgres/"                       # le plus récent est le dernier
+gsutil cp "gs://${BUCKET}/postgres/<snapshot>.dump" ./restore.dump
+
+# Essai de restauration, dans le Postgres local (docker compose up db)
+psql postgresql://pick_a_book:pick_a_book@localhost:5433/pick_a_book -c 'CREATE DATABASE restore_check'
+pg_restore --no-owner --no-privileges --exit-on-error \
+  --dbname=postgresql://pick_a_book:pick_a_book@localhost:5433/restore_check ./restore.dump
+psql postgresql://pick_a_book:pick_a_book@localhost:5433/restore_check \
+  -c 'SELECT status, count(*) FROM shelf_scans GROUP BY status'
+```
+
+En cas de sinistre réel, même commande vers une base Neon **vide** : une branche Neon neuve, ou un
+nouveau projet recréé par `terraform apply`, puis `DATABASE_URL` mis à jour. La table des migrations
+Drizzle fait partie du dump : au démarrage, l'API trouve le schéma à jour et ne rejoue rien.
+
+L'aller-retour dump → restauration est couvert par les specs de `tools/db-backup`. **La procédure
+ci-dessus doit quand même avoir été jouée une fois sur un vrai snapshot de prod** (critère
+d'acceptation de #22) : c'est ce qui prouve qu'elle fonctionne contre Neon.
 
 ## Bucket des photos de référence (bench reconnaissance, issue #10)
 

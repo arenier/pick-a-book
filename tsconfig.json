@@ -29,6 +29,9 @@
     },
     {
       "path": "./libs/shared/i18n"
+    },
+    {
+      "path": "./tools/db-backup"
     }
   ],
   "compilerOptions": {}

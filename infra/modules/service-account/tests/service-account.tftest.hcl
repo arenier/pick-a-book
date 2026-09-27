@@ -57,6 +57,24 @@ run "grants_exactly_the_given_bucket_roles_and_nothing_else" {
   }
 }
 
+run "accepts_object_user_for_an_identity_that_prunes_its_own_objects" {
+  command = plan
+
+  # The backup job lists and deletes old snapshots after each successful run (issue #22):
+  # objectUser is the narrowest predefined role with list + delete, and it still cannot touch
+  # an IAM policy.
+  variables {
+    bucket_grants = {
+      backups = { bucket = "pick-a-book-backups-test", role = "roles/storage.objectUser" }
+    }
+  }
+
+  assert {
+    condition     = google_storage_bucket_iam_member.bucket_grant["backups"].role == "roles/storage.objectUser"
+    error_message = "objectUser must be an accepted bucket role — the backup job needs list and delete to prune"
+  }
+}
+
 run "refuses_a_bucket_role_that_could_hand_out_access" {
   command = plan
 
