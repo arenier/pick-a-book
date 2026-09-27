@@ -75,7 +75,7 @@ describe('POST /shelf-photos then POST /shelf-photos/:id/scan', () => {
 });
 
 describe('POST /shelf-photos, refusing a photo', () => {
-  const { upload } = aRunningApi();
+  const { url, upload } = aRunningApi();
 
   // multer stops an oversized file before it is buffered whole: 413, the transport's own
   // answer to a body over its limit (contracts/scan-api.md §1).
@@ -85,6 +85,20 @@ describe('POST /shelf-photos, refusing a photo', () => {
     const response = await upload(oversized);
 
     expect(response.status).toBe(413);
+  });
+
+  // Multipart only (contracts/scan-api.md §1): the base64 JSON fallback had no caller, and
+  // Nest's JSON body limit capped it at ~75 KB of image anyway.
+  it('answers 400 to a JSON body, which carries no photo field', async () => {
+    const image = Buffer.from([0xff, 0xd8, 0xff, 0xe0]).toString('base64');
+
+    const response = await fetch(url('/shelf-photos'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image, mediaType: 'image/jpeg' }),
+    });
+
+    expect(response.status).toBe(400);
   });
 
   it('answers 400 to a file that is not a supported image', async () => {

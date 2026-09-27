@@ -21,6 +21,11 @@ photo: <fichier image>
 
 - Champ `photo`, un seul fichier (le port de reconnaissance ne traite qu'une image à la fois,
   FR-002).
+- **Multipart uniquement** *(amendé le 27/09/2026, revue de #55)* : le repli JSON base64
+  (`{"image": "<base64>", "mediaType": ...}`) hérité de l'ancien `POST /scan` est supprimé. Il
+  n'avait aucun appelant, et le parseur JSON de Nest le limitait de fait à ~75 Ko d'image (100 Ko
+  de corps, base64 compris) — inutilisable pour une vraie photo. Un corps sans fichier `photo`
+  reçoit 400.
 - Type MIME et poids validés côté client avant envoi (voir `data-model.md#SelectedPhoto`), puis
   revalidés côté serveur (`ShelfPhoto`, réponse 400 sinon) — le client ne fait pas confiance à sa
   propre validation pour la sécurité, seulement pour l'ergonomie (retour immédiat, FR-003).
@@ -115,8 +120,6 @@ son propre message (Edge case de `spec.md` : coupure réseau) — que la coupure
 
 ## Ce que le frontend n'utilise pas
 
-- Le repli JSON base64 de l'étape 1 (`{"image": "<base64>", "mediaType": ...}`) — prévu pour
-  d'autres appelants, pas pour cette UI (research.md §3).
 - Le champ `confidence` n'est pas affiché (voir `data-model.md#DetectedBook`), seulement transporté.
 - Aucune UX de reprise manuelle sur un `ShelfScanRecord` resté `pending` ou passé `failed` — cette
   feature ne relance jamais l'étape 2 de son propre chef (research.md §7, alternative rejetée).

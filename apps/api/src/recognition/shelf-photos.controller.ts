@@ -1,7 +1,6 @@
 import {
   BadGatewayException,
   BadRequestException,
-  Body,
   ConflictException,
   Controller,
   HttpCode,
@@ -39,13 +38,6 @@ export interface UploadedImage {
   readonly originalname: string;
 }
 
-/** JSON alternative to multipart, for callers that would rather post base64. */
-export interface StoreShelfPhotoRequestBody {
-  readonly image: string;
-  readonly mediaType: string;
-  readonly filename?: string;
-}
-
 /** 20 MB, matching what `ShelfPhoto` accepts — rejected by multer before reaching us. */
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 
@@ -68,11 +60,8 @@ export class ShelfPhotosController {
   @Post()
   @HttpCode(201)
   @UseInterceptors(FileInterceptor('photo', { limits: { fileSize: MAX_UPLOAD_BYTES } }))
-  async store(
-    @UploadedFile() file?: UploadedImage,
-    @Body() body?: StoreShelfPhotoRequestBody,
-  ): Promise<StoreShelfPhotoResult> {
-    const command = readImage(file, body);
+  async store(@UploadedFile() file?: UploadedImage): Promise<StoreShelfPhotoResult> {
+    const command = readImage(file);
 
     try {
       // Rebuilt field by field: whatever else the use case may one day return, the id is
@@ -114,41 +103,18 @@ export class ShelfPhotosController {
   }
 }
 
-function readImage(
-  file: UploadedImage | undefined,
-  body: StoreShelfPhotoRequestBody | undefined,
-): StoreShelfPhotoCommand {
-  if (file !== undefined) {
-    return {
-      bytes: new Uint8Array(file.buffer),
-      mediaType: file.mimetype,
-      originalFilename: file.originalname,
-    };
-  }
-
-  if (body === undefined || typeof body.image !== 'string' || typeof body.mediaType !== 'string') {
-    throw new BadRequestException(
-      'Send a photo, either as multipart field "photo" or as JSON {"image": "<base64>", "mediaType": "image/jpeg"}',
-    );
+/**
+ * Multipart only (contracts/scan-api.md §1). No file means nothing to store: a 400, whatever
+ * else the body carries.
+ */
+function readImage(file: UploadedImage | undefined): StoreShelfPhotoCommand {
+  if (file === undefined) {
+    throw new BadRequestException('Send the photo as the multipart field "photo"');
   }
 
   return {
-    bytes: decodeBase64(body.image),
-    mediaType: body.mediaType,
-    originalFilename: typeof body.filename === 'string' ? body.filename : '',
+    bytes: new Uint8Array(file.buffer),
+    mediaType: file.mimetype,
+    originalFilename: file.originalname,
   };
-}
-
-/**
- * `Buffer.from(…, 'base64')` never throws: it drops whatever it cannot decode, so garbage in
- * gives a short buffer rather than an error. Re-encoding and comparing is what turns that
- * silence into a 400.
- */
-function decodeBase64(value: string): Uint8Array {
-  const decoded = Buffer.from(value, 'base64');
-  if (decoded.toString('base64') !== value.replaceAll(/\s/gu, '')) {
-    throw new BadRequestException('The "image" field is not valid base64');
-  }
-
-  return new Uint8Array(decoded);
 }

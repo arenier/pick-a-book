@@ -71,14 +71,6 @@ describe('ShelfPhotosController refuses a photo with 400 (contracts/scan-api.md 
       status: 400,
     });
   });
-
-  it('when the base64 payload is not valid base64', async () => {
-    const body = { image: '!!!not base64!!!', mediaType: 'image/jpeg' };
-
-    await expect(aShelfPhotosController().controller.store(undefined, body)).rejects.toMatchObject({
-      status: 400,
-    });
-  });
 });
 
 describe('ShelfPhotosController blames no photo for a failure of its own', () => {

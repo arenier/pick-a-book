@@ -55,7 +55,8 @@ n'expose qu'une seule fonction à l'écran (`submitShelfPhoto`) : l'UI ignore qu
 
 **Rationale**: `ScanController` (devenu, avec le découpage de §7, un contrôleur en deux routes)
 accepte déjà le multipart (`FileInterceptor('photo', …)`) — c'est le chemin le plus direct, et il
-évite l'inflation ~33 % du repli JSON+base64 (`ScanRequestBody`, prévu pour d'autres appelants).
+évite l'inflation ~33 % du repli JSON+base64 (`ScanRequestBody`, prévu pour d'autres appelants —
+supprimé depuis, faute d'appelant : contracts/scan-api.md §1).
 Deux requêtes vers deux endpoints ne justifient pas plus une dépendance HTTP dédiée (axios,
 react-query) qu'une seule n'en justifiait : le projet n'en a aucune aujourd'hui, et
 `require-await`/`promise-function-async` (ADR 0008) couvrent déjà la rigueur asynchrone que ces
