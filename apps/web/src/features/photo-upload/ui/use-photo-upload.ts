@@ -40,6 +40,8 @@ export function usePhotoUpload(submit: (photo: File) => Promise<UploadState>) {
   }, []);
 
   return {
+    // The accepted photo, if any: a refused one is never kept, so never shown (FR-016).
+    photo,
     state,
     pickerKey,
     uploading,

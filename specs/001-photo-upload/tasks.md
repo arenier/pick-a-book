@@ -28,12 +28,15 @@ T027/T042), SC-004 (mise en page utilisable dès 360px, T043), et le cas « éch
 du 400/502 (T049/T055, contracts/scan-api.md). Toutes les tâches à partir de T027 ont été
 renumérotées en conséquence.
 
+**Révisé le 27/09/2026** : ajout de la Phase 8 (US5, aperçu de la photo choisie, T074–T079),
+après l'ajout d'US5, FR-016, FR-017 et SC-006 dans `spec.md`.
+
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Peut s'exécuter en parallèle (fichiers différents, aucune dépendance sur une tâche non
   terminée)
 - **[Story]**: US1 (chemin heureux), US2 (photo refusée / échec serveur), US3 (conservation),
-  US4 (recommencer)
+  US4 (recommencer), US5 (voir la photo choisie)
 
 ## Phase 1: Setup
 
@@ -381,6 +384,35 @@ page.
 
 ---
 
+## Phase 8: User Story 5 - Voir la photo choisie (Priority: P3)
+
+**Goal**: la photo choisie s'affiche dès sa sélection et le reste jusqu'au retour à l'état
+initial, sans aller-retour réseau.
+
+**Independent Test**: quickstart.md scénario 5.
+
+### Tests pour User Story 5
+
+- [X] T074 [P] [US5] Créer `apps/web/src/features/photo-upload/ui/photo-preview.spec.tsx` : affiche
+      la photo par une URL locale, révoque l'URL quand la photo change et au démontage, remplace
+      l'image par un message si le navigateur ne sait pas l'afficher (FR-017, US5 scénario 5)
+- [X] T075 [P] [US5] Étendre `apps/web/src/features/photo-upload/ui/photo-upload-screen.spec.tsx` :
+      aperçu affiché dès le choix, conservé pendant l'analyse et avec le résultat, absent pour un
+      fichier refusé, retiré par « recommencer » (FR-016, US5 scénarios 1 à 4)
+
+### Implémentation pour User Story 5
+
+- [X] T076 [US5] Créer `photo-preview.tsx` pour faire passer T074 (dépend de T074)
+- [X] T077 [US5] Exposer la photo retenue depuis `use-photo-upload.ts` et monter `PhotoPreview` dans
+      `photo-upload-screen.tsx` pour faire passer T075 (dépend de T075, T076)
+- [X] T078 [US5] Contraindre l'aperçu à la largeur de l'écran et à une hauteur bornée dans
+      `photo-upload-screen.module.css`, pour que le bouton d'envoi reste atteignable (SC-006)
+- [X] T079 [US5] `yarn check` — lint type-aware, format, typecheck, tests et build
+
+**Checkpoint**: les cinq user stories sont fonctionnelles indépendamment.
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
@@ -404,6 +436,8 @@ page.
   `shelf-photos.controller.ts`). Chevauche US2 sur le déclencheur (échec 502) mais teste une
   observation différente (persistance vs message affiché) — les deux phases restent nécessaires.
 - **US4 (P3)** : étend uniquement `photo-upload-screen.tsx`, indépendante de US2/US3.
+- **US5 (P3)** : purement frontend ; étend `use-photo-upload.ts` et `photo-upload-screen.tsx`, et
+  ajoute `photo-preview.tsx`. Ses tests supposent US2 (fichier refusé) et US4 (recommencer) posées.
 
 ### Parallel Opportunities
 

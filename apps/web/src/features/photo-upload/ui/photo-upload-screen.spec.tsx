@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { UploadState } from '../model/upload-state';
 import { PhotoUploadScreen } from './photo-upload-screen';
@@ -182,5 +182,95 @@ describe('PhotoUploadScreen, starting over', () => {
     render(<PhotoUploadScreen submit={aPendingSubmission().submit} />);
 
     expect(screen.queryByRole('button', { name: 'Recommencer' })).toBeNull();
+  });
+});
+
+// US5, FR-016: the chosen photo stays on screen until another one replaces it or the user starts
+// over.
+const preview = () => screen.queryByRole('img', { name: 'Aperçu de l’étagère choisie' });
+
+/** jsdom has no image to decode: the preview only needs an URL to point at. */
+function stubObjectUrls() {
+  beforeEach(() => {
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:preview');
+    vi.spyOn(URL, 'revokeObjectURL').mockReturnValue();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+}
+
+describe('PhotoUploadScreen, showing the chosen photo', () => {
+  stubObjectUrls();
+
+  it('shows nothing before a photo is chosen', () => {
+    render(<PhotoUploadScreen submit={aPendingSubmission().submit} />);
+
+    expect(preview()).toBeNull();
+  });
+
+  it('shows the photo as soon as it is chosen, before sending it', () => {
+    const submission = aPendingSubmission();
+    render(<PhotoUploadScreen submit={submission.submit} />);
+
+    choose(aJpeg());
+
+    expect(preview()?.getAttribute('src')).toBe('blob:preview');
+    expect(submission.submitted).toHaveLength(0);
+  });
+
+  it('shows no photo once a refused file replaces it', () => {
+    render(<PhotoUploadScreen submit={aPendingSubmission().submit} />);
+    choose(aJpeg());
+
+    choose(new File(['%PDF'], 'devis.pdf', { type: 'application/pdf' }));
+
+    expect(preview()).toBeNull();
+  });
+});
+
+describe('PhotoUploadScreen, once the chosen photo is sent', () => {
+  stubObjectUrls();
+
+  it('keeps showing it while it is analysed, then next to the result', async () => {
+    const submission = aPendingSubmission();
+    render(<PhotoUploadScreen submit={submission.submit} />);
+    choose(aJpeg());
+
+    fireEvent.click(sendButton());
+    expect(preview()).not.toBeNull();
+
+    await act(async () => {
+      submission.settle({ status: 'success', books: [] });
+    });
+    expect(preview()).not.toBeNull();
+  });
+
+  it('keeps showing it next to a failure', async () => {
+    const submission = aPendingSubmission();
+    render(<PhotoUploadScreen submit={submission.submit} />);
+    choose(aJpeg());
+    fireEvent.click(sendButton());
+
+    await act(async () => {
+      submission.settle({ status: 'error', message: 'Le service est indisponible.' });
+    });
+
+    expect(preview()).not.toBeNull();
+  });
+
+  it('removes the photo on starting over', async () => {
+    const submission = aPendingSubmission();
+    render(<PhotoUploadScreen submit={submission.submit} />);
+    choose(aJpeg());
+    fireEvent.click(sendButton());
+    await act(async () => {
+      submission.settle({ status: 'success', books: [] });
+    });
+
+    fireEvent.click(startOver());
+
+    expect(preview()).toBeNull();
   });
 });
