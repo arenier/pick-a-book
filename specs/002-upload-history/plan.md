@@ -69,7 +69,8 @@ de 20 s (SC-001).
 
 **Constraints**:
 - **Coût borné** : au plus `DAILY_SCAN_LIMIT` analyses par jour, envois et relances confondus
-  (FR-015, SC-006).
+  (FR-015, SC-006). La valeur de prod est passée explicitement par Terraform
+  (`var.daily_scan_limit`, défaut 50), avec la même validation que l'API.
 - **Limite par source** : 300 req/min en lecture, 10 req/min en écriture (FR-014).
 - **Aucune fuite** du nom de fichier d'origine, de la clé du bucket ni du propriétaire (FR-009).
 - **Au plus un résultat abouti par photo** (FR-011).
@@ -183,6 +184,11 @@ apps/web/src/
             └── upload-history.module.css
 
 .env.example                               # + DAILY_SCAN_LIMIT
+
+infra/envs/prod/
+├── variables.tf                           # + daily_scan_limit (number, défaut 50, entier ≥ 1)
+├── main.tf                                # + local.api_env { NODE_ENV, DAILY_SCAN_LIMIT } → cloud_run_api.env
+└── tests/prod.tftest.hcl                  # + défaut, surcharge, rejet de 0 et de 1.5
 ```
 
 **Structure Decision** : le monorepo reste tel quel, sans nouveau projet Nx. Le back étend les trois
@@ -200,9 +206,10 @@ entre slices, puisqu'aucune slice n'importe l'autre.
    bucket de photos et ne passe pas `BUCKET_NAME` à l'API. Or l'API l'exige au démarrage depuis la
    spec 001. Ce manque vient de la spec 001, pas de celle-ci, mais il bloque aussi le déploiement de
    l'historique. Il faut une issue dédiée pour : le bucket privé de photos, le droit
-   `objectAdmin` (lecture et écriture) du compte de service de l'API, et les variables `BUCKET_NAME`
-   et `DAILY_SCAN_LIMIT`. Le compte de service n'a aujourd'hui que `objectCreator` sur le bucket de
-   sauvegardes.
+   `objectAdmin` (lecture et écriture) du compte de service de l'API, et la variable `BUCKET_NAME`.
+   Le compte de service n'a aujourd'hui que `objectCreator` sur le bucket de sauvegardes.
+   `DAILY_SCAN_LIMIT`, lui, est introduit par cette feature et câblé par elle en Terraform
+   (`infra/envs/prod`, tâches T016-T017).
 
 ## Complexity Tracking
 
