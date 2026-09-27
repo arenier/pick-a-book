@@ -31,3 +31,29 @@ export function createShelfScanner(configuration: ShelfScannerConfiguration): Sh
 
   return new StubShelfScannerAdapter();
 }
+
+export interface ShelfScannerDescription {
+  readonly level: 'log' | 'warn';
+  readonly message: string;
+}
+
+/**
+ * Says at startup which provider answers scans — the key never appears.
+ *
+ * The stub is the default (`.env.example`), and its answers look like a real reading: without
+ * this line, an API left on it passes for a VLM that sees the same four books on every photo.
+ */
+export function describeShelfScanner(
+  configuration: ShelfScannerConfiguration,
+): ShelfScannerDescription {
+  if (configuration.provider === 'stub') {
+    return {
+      level: 'warn',
+      message:
+        'Shelf scanner: stub — every scan answers the same sample books, whatever the photo. ' +
+        'Set SHELF_SCANNER_PROVIDER=gemini and GEMINI_API_KEY to read real photos.',
+    };
+  }
+
+  return { level: 'log', message: `Shelf scanner: ${configuration.provider}` };
+}

@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app/app.module';
 import { InvalidEnvironment, loadEnvironment } from './config/environment';
+import { describeShelfScanner } from './recognition/shelf-scanner.factory';
 
 async function bootstrap() {
   // Configuration is validated before anything is constructed: a missing required variable
@@ -20,6 +21,13 @@ async function bootstrap() {
 
   Logger.log(`API listening on http://localhost:${environment.port} (${environment.nodeEnv})`);
   Logger.log(`Health: http://localhost:${environment.port}/health`);
+
+  const shelfScanner = describeShelfScanner(environment.shelfScanner);
+  if (shelfScanner.level === 'warn') {
+    Logger.warn(shelfScanner.message);
+  } else {
+    Logger.log(shelfScanner.message);
+  }
 }
 
 bootstrap().catch((error: unknown) => {
