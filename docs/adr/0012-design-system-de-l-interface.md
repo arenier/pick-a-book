@@ -1,4 +1,4 @@
-# ADR 0012 — Design system de l'interface : MUI, encapsulé dans `libs/shared/ui`
+# ADR 0012 — Design system de l'interface : shadcn/ui et Tailwind, dans `libs/shared/ui`
 
 Statut : proposé · Date : 2026-09-27 · Phase 1 · Couplé aux ADR [0002](0002-ddd-et-architecture-hexagonale.md) (feature-slice), [0007](0007-vite-et-vitest-outillage-unique.md) (outillage), [0008](0008-lint-et-format-oxlint-oxfmt.md) (lint) et à l'ADR d'internationalisation de l'interface (#58)
 
@@ -12,7 +12,7 @@ fenêtre de détail. Le cadrage est dans l'issue #59. Plusieurs points y sont d�
 pas rediscutés ici :
 
 - on **adopte** un design system publié et maintenu, on n'en conçoit pas un. Notre travail se
-  limite à le thémer et à l'encapsuler ;
+  limite à le thémer, à l'encapsuler et, pour un système copié, à le mettre aux normes du dépôt ;
 - les **bibliothèques headless** (React Aria Components, Radix Primitives, Base UI, Ark UI) sont
   **écartées** : elles apportent le comportement et l'accessibilité mais aucun style, et tout
   repasser par-dessus coûte trop cher pour un seul mainteneur ;
@@ -52,6 +52,7 @@ Légende : 🔴 fort · 🟠 moyen · 🟢 faible · ⚪ à clarifier
 | Typage des props | 🟠 | Une variante, une taille ou une couleur hors du thème échoue au typecheck. |
 | Cibles tactiles | 🟠 | Au moins 24 px (WCAG 2.5.8, AA), 44 px visés pour les actions principales. |
 | Nombre de dépendances | 🟢 | Surface de mise à jour et de chaîne d'approvisionnement. |
+| Identité visuelle propre | 🟢 | `pick-a-book` n'a pas de charte. Pouvoir en poser une par les tokens, sans subir l'esthétique d'un éditeur, est un plus. |
 | Mode sombre | 🟢 | Tous les candidats l'offrent, le critère ne départage personne. |
 
 ## Mesurer avant de choisir
@@ -198,32 +199,66 @@ C'est ce qui s'affiche ou s'annonce sans que nous l'ayons écrit, un critère �
   MUI, Chakra, Ant Design, shadcn/ui et Spectrum (une fois configuré) n'en demandent aucun sur cet
   écran.
 
+### shadcn/ui retouché : ce que coûte la mise en conformité
+
+Le code de shadcn/ui étant le nôtre, il a été repris une seconde fois, avec les retouches qu'exige
+le dépôt, puis mesuré de nouveau avec les mêmes outils :
+
+- boutons à `h-11` (44 px) au lieu de `h-9`, et boutons-icônes à `size-11` ;
+- `Spinner` en `aria-hidden` : c'est l'`<output>` qui l'entoure qui porte le texte, et ni
+  `role="status"` ni `aria-label="Loading"` ne sont plus en dur ;
+- croix de fermeture de `DialogContent` rendue à 44 px, et nom accessible fourni par une prop
+  `closeLabel: string` **obligatoire** à la place de l'`sr-only` « Close » en dur ;
+- token `--destructive` assombri, de `oklch(0.577 …)` à `oklch(0.5 …)` ;
+- fenêtre ouverte par `DialogTrigger` et fermée par `DialogClose`, pour que Radix rende le focus au
+  déclencheur ;
+- `shadcn/tailwind.css` (16 ko de CSS, licence MIT) **copié** dans le code, et le paquet `shadcn`
+  désinstallé.
+
+| Mesure | shadcn/ui tel que copié | shadcn/ui retouché |
+|---|---|---|
+| JS / CSS gzip ajoutés | +24,5 / +5,2 ko | +24,5 / +7,0 ko |
+| Paquets installés | 404 | **98** |
+| Lint strict sur le code copié | 1 | **0** |
+| Sondes de typage | 5/5 | 5/5 |
+| Specs dans jsdom | 2/2 | 2/2, sans polyfill |
+| axe, écran et fenêtre | 1 contraste (4,49:1) | **0** |
+| Plus petite cible | 36 px | **44 px** |
+| Focus : piégé, Échap, rendu | oui, oui, non | **oui, oui, oui** |
+| Chaînes anglaises injectées | « Loading », « Close » | **aucune** |
+
+Il reste une seule friction de lint : l'import de la feuille CSS déclenche
+`import/no-unassigned-import`. Elle se lève par l'option `allow: ['**/*.css']` de la règle, qui
+continue de viser tout import non CSS (vérifié sur un import `.js` témoin). Les retouches touchent
+une vingtaine de lignes sur les quelque 440 du code copié.
+
 ## Solutions proposées
 
-**A — MUI (Material UI) 9, avec Emotion.**
-- Pour : typage le plus strict des bibliothèques installées (5 sondes sur 5). Rien à ajouter à la
-  chaîne : ni plugin, ni polyfill. Chaînes intégrées remplaçables par prop ou par thème, avec des
-  packs `frFR` et `enUS` fournis. Fenêtre de dialogue correcte (focus, Échap, retour du focus).
-  Bibliothèque la plus répandue du lot, mise à jour par npm.
-- Contre : +54 ko gzip, c'est le double de shadcn/ui. Styles calculés au runtime par Emotion. Le
-  style idiomatique (`sx` inline) heurte `react-perf/jsx-no-new-object-as-prop`. Palette par défaut
-  imparfaite : chip `warning` à 3,11:1. Boutons à 37 px et croix d'alerte à 30 px. Esthétique
-  Material marquée.
+**A — shadcn/ui : composants copiés dans le dépôt, sur Radix et Tailwind 4.**
+- Pour : le plus léger (+31,5 ko après retouches). Typage parfait (5 sondes sur 5). Code copié
+  propre, aucun `as`, 0 erreur de lint après retouches. Après une vingtaine de lignes retouchées :
+  0 violation axe, cibles de 44 px, focus rendu. Le code est à nous, donc chaque chaîne l'est
+  aussi, et un libellé oublié devient une **erreur de typecheck** (prop obligatoire), là où une
+  bibliothèque retombe en silence sur son anglais par défaut. Pas de CSS-in-JS au runtime.
+  Identité visuelle entièrement à nous, par les tokens.
+- Contre : le code copié devient notre code de production, à tester et à maintenir. Les mises à
+  jour se font à la main, en comparant avec le registre. Tailwind entre dans la chaîne (un plugin
+  Vite) et devient la façon d'écrire le style. Le CLI dépend du réseau (ui.shadcn.com), mais
+  seulement au moment d'ajouter un composant, jamais au build.
 
-**B — shadcn/ui : composants copiés dans le dépôt, sur Radix et Tailwind 4.**
-- Pour : le plus léger (+30 ko). Typage parfait (5 sur 5). Code copié propre : 1 erreur de lint
-  strict en 439 lignes, aucun `as`. Le code est à nous, donc chaque chaîne l'est aussi. Pas de
-  CSS-in-JS au runtime.
-- Contre : **le code copié devient notre code de production.** Or la convention exige que tout
-  code de production soit motivé par un test écrit d'abord ; 439 lignes arrivent sans test, et
-  chaque composant ajouté en apporte d'autres. Mises à jour à la main, en recopiant. Le CLI dépend
-  du réseau. Tailwind entre dans la chaîne, avec un plugin Vite et une seconde façon d'écrire le
-  style à côté des CSS Modules. Le paquet `shadcn` tire 300 paquets de plus pour une seule feuille
-  CSS. Les chaînes en dur sont à reprendre avant #58.
+**B — MUI (Material UI) 9, avec Emotion.**
+- Pour : rien à ajouter à la chaîne, ni plugin ni polyfill. 5 sondes sur 5. Chaînes intégrées
+  remplaçables par prop ou par thème, avec un pack `frFR` fourni. Aucune ligne tierce dans le
+  dépôt : on met à jour par `yarn up`.
+- Contre : +54 ko gzip, c'est-à-dire +22 ko par rapport à A. Styles calculés au runtime par
+  Emotion. Le style idiomatique (`sx` inline) heurte `react-perf/jsx-no-new-object-as-prop`.
+  Palette par défaut imparfaite (chip `warning` à 3,11:1). Boutons à 37 px. Un `closeText` oublié
+  s'affiche en anglais sans que rien ne le signale. Esthétique Material marquée.
 
 **C — React Spectrum 2 (Adobe).**
-- Pour : meilleure accessibilité mesurée (0 violation axe, fenêtre de dialogue irréprochable).
-  **Chaînes intégrées déjà traduites** en français et en anglais selon la locale. Typage à 5 sur 5.
+- Pour : meilleure accessibilité mesurée sans retouche (0 violation axe, fenêtre de dialogue
+  irréprochable). **Chaînes intégrées déjà traduites** en français et en anglais selon la locale.
+  Typage à 5 sur 5.
 - Contre : police chargée depuis un CDN tiers au runtime, avec une licence à vérifier. Personnaliser
   les composants demande un plugin de macros. Config Vitest particulière. Identité visuelle d'Adobe
   très marquée. 151 Mo de `node_modules`.
@@ -256,88 +291,128 @@ fenêtre de dialogue ni alerte interactive. On retrouve le travail du headless.
 
 ## Solution retenue
 
-**Solution A : MUI 9 avec Emotion**, encapsulé dans `libs/shared/ui`.
+**Solution A : shadcn/ui, sur Radix et Tailwind 4**, dont le code copié vit dans
+`libs/shared/ui`.
 
-1. **Composants finis (🔴)** : alerte refermable, fenêtre de dialogue, indicateur de
-   progression, chip et bouton porteur d'un `<input type="file">` sont livrés stylés et utilisables
-   tels quels. Il n'y a ni code à copier ni composant à repasser par-dessus.
-2. **Compatibilité avec la chaîne (🔴)** : rien n'est ajouté. Pas de plugin Vite, pas de Tailwind,
-   pas de polyfill jsdom, pas de config Vitest particulière, pas d'accès réseau au build ni au
-   runtime. Les deux specs passent sans aménagement, et le typecheck sans `as`.
-3. **i18n (🔴)** : les chaînes intégrées se remplacent par prop et, globalement, par le thème.
-   Le pack `frFR` fournit déjà `closeText: 'Fermer'` pour `Alert`, ainsi que les textes de
-   Pagination, Autocomplete, Rating et Breadcrumbs. Les textes de #58 s'y branchent par le thème,
-   sans toucher chaque appel.
-4. **Accessibilité (🔴)** : la fenêtre de dialogue piège le focus, se ferme par Échap et rend le
-   focus au déclencheur. Les deux violations relevées se corrigent dans `shared/ui` : le nom de la
-   barre de progression devient une prop obligatoire du wrapper, et la couleur `warning` s'ajuste
-   dans le thème.
-5. **Typage (🟠)** : 5 sondes sur 5, seul avec shadcn/ui et Spectrum. Une variante, une taille ou
-   une couleur hors du thème échoue au typecheck.
+1. **Composants finis (🔴)** : alerte, fenêtre de dialogue, indicateur de chargement, badge,
+   carte et bouton arrivent stylés. On ne repasse pas le style par-dessus : les retouches mesurées
+   tiennent en une vingtaine de lignes, et elles portent sur l'accessibilité et les chaînes, pas
+   sur l'apparence.
+2. **Accessibilité (🔴)** : le comportement vient de Radix (focus piégé, Échap, rôles). Après
+   retouches : 0 violation axe, cibles de 44 px partout, focus rendu au déclencheur.
+3. **Compatibilité avec la chaîne (🔴)** : un seul ajout, `@tailwindcss/vite`, qui est un plugin
+   Vite. L'ADR 0007 n'est donc pas rouvert. Pas de polyfill jsdom, pas de config Vitest
+   particulière, aucun `as`, 0 erreur de lint strict sur le code copié. Le build ne dépend pas du
+   réseau.
+4. **i18n (🔴)** : aucune chaîne n'est imposée par une bibliothèque. Chaque libellé que les
+   composants exigent (croix de fermeture, par exemple) est une **prop obligatoire**, si bien
+   qu'un oubli fait échouer le typecheck. C'est le même garde-fou que le catalogue de #58, et c'est
+   plus strict que MUI, dont le `closeText` retombe en silence sur « Close ».
+5. **Poids (🟠)** : le plus léger des candidats, +31,5 ko contre +54 ko pour MUI.
 
-shadcn/ui gagne sur le poids (🟠), de 24 ko. Mais il le paie par du code de production non testé,
-qui contredit la convention TDD, et par des mises à jour à la main : c'est précisément le travail
-de maintenance qu'exclut le refus du headless. React Spectrum 2 gagne sur l'accessibilité et
-l'i18n, mais fait dépendre chaque affichage d'un CDN tiers.
+MUI reste l'alternative documentée : il gagne sur un seul point, l'absence de code tiers à
+maintenir. Ce coût est chiffré plus bas, et il a une condition de bascule.
+
+### Trois points tranchés
+
+**Le code copié et le TDD.** Aucune exemption à la convention : le code copié entre par un cycle
+rouge/vert comme le reste.
+- **Rouge** : avant de copier un composant, on écrit sa spec, qui fixe **notre contrat**. Elle
+  vérifie le rôle, le nom accessible, les libellés obligatoires, la taille tactile, le clavier
+  (Échap, retour du focus) et les variantes utilisées. Elle échoue, puisque le composant
+  n'existe pas.
+- **Vert** : on copie le composant par le CLI, puis on fait les retouches minimales qui font
+  passer la spec (tailles, labels, tokens).
+- **Refactor**, puis toute modification ultérieure : TDD habituel.
+
+Ces specs portent sur notre contrat, pas sur l'implémentation de Radix. Ce sont elles qui
+détectent une régression quand on reprend une nouvelle version d'un composant.
+
+**Tailwind et les CSS Modules.** Tailwind devient la **seule** façon d'écrire le style dans
+`apps/web` et `libs/shared/ui`, au lieu de s'ajouter à côté des CSS Modules : deux façons de
+faire, c'est deux choses à connaître pour un seul mainteneur. `app.module.css` migre quand
+`shared/ui` arrive, et aucun nouveau `*.module.css` ne s'écrit. Les couleurs, rayons et
+espacements sont les variables CSS du thème (`--primary`, `--destructive`, `--radius`…),
+déclarées une fois dans la feuille globale de `shared/ui`. Aucune couleur en dur dans une classe
+arbitraire (`bg-[#…]`) : c'est à la revue d'y veiller, comme pour les textes laissés à la revue
+par l'ADR d'i18n.
+
+**`shadcn/tailwind.css` et le CLI.** La feuille est copiée dans `libs/shared/ui`, comme le reste
+du code. Le paquet `shadcn` n'est **jamais une dépendance** du workspace. Le CLI s'utilise
+ponctuellement, par `yarn dlx shadcn@<version exacte> add <composant>`, épinglé à l'exact comme le
+reste de l'outillage, pour ajouter un composant ou comparer avec une nouvelle version. Le build et
+la CI n'en dépendent pas, ce qui épargne 306 paquets.
 
 ### Organisation
 
-- **`libs/shared/ui`**, avec les tags `type:shared`, `context:none` et `scope:web`, porte le thème
-  (palette, typographie, formes, `components.*.defaultProps`) et des **wrappers fins**, un par
-  composant utilisé, qui fixent nos règles : nom accessible obligatoire sur l'indicateur de
-  progression et la croix de fermeture, taille tactile minimale, variantes restreintes à celles
-  que nous utilisons.
-- **Seule `libs/shared/ui` importe `@mui/*` et `@emotion/*`.** Les slices, qui sont des dossiers
-  de `apps/web` (`specs/001-photo-upload/research.md` §1), importent la lib partagée. La règle
-  passe par le graphe Nx, comme les autres frontières : `bannedExternalImports: ['@mui/*',
-  '@emotion/*']` sur la contrainte `type:app` de `@nx/enforce-module-boundaries`
-  (`eslint.config.mjs`). On vérifie qu'elle opère comme les autres garde-fous : un import direct de
-  `@mui/material` depuis `apps/web` doit faire échouer `yarn lint`.
-- **Le style passe par le thème**, puis par `styled()` ou par des constantes `sx` hors du rendu,
-  jamais par un objet `sx` inline : `react-perf/jsx-no-new-object-as-prop` reste active.
-- **Les CSS Modules restent** pour la mise en page propre à une slice. Leurs couleurs et
-  espacements viennent des variables CSS du thème MUI (`cssVariables: true`), jamais d'une valeur
-  en dur.
+- **`libs/shared/ui`**, avec les tags `type:shared`, `context:none` et `scope:web`, contient :
+  - `components.json`, la config du CLI, avec ses alias pointant dans la lib ;
+  - `src/components/` : les composants copiés et retouchés, chacun accompagné de sa spec ;
+  - `src/lib/utils.ts` : `cn()` ;
+  - `src/styles/globals.css` : `@import "tailwindcss"`, `tw-animate-css`, la copie de
+    `shadcn/tailwind.css` et les tokens du thème, en mode clair et en mode sombre ;
+  - un `README.md` qui tient, pour chaque composant, la version du registre d'où il vient et la
+    liste de nos retouches. C'est ce qui permet une mise à jour à la main sans rien perdre.
+- **`apps/web`** ajoute `@tailwindcss/vite` à son `vite.config.mts`, importe la feuille globale de
+  `shared/ui`, et déclare `@source` sur les sources de `libs/shared/ui`. Sans ce `@source`,
+  Tailwind ne génère pas les classes utilisées dans la lib.
+- **Les slices** importent les composants depuis la lib partagée. Elles écrivent leur mise en page
+  en classes Tailwind.
+- **Seule `libs/shared/ui` importe `radix-ui`** (et `@radix-ui/*`). La règle passe par le graphe
+  Nx, comme les autres frontières : `bannedExternalImports: ['radix-ui', '@radix-ui/*']` sur la
+  contrainte `type:app` de `@nx/enforce-module-boundaries` (`eslint.config.mjs`). On vérifie
+  qu'elle opère comme les autres garde-fous : un import direct de `radix-ui` depuis `apps/web`
+  doit faire échouer `yarn lint`.
+- **`.oxlintrc.json`** : `import/no-unassigned-import` reçoit `allow: ['**/*.css']`. C'est la
+  seule règle touchée.
+- **`.oxfmtrc.json`** : `sortTailwindcss` est activé, avec `stylesheet` pointant sur la feuille
+  globale de `shared/ui` et `functions: ['cn', 'cva']`. oxfmt 0.63 trie alors les classes avec
+  l'algorithme de `prettier-plugin-tailwindcss` (vérifié : `p-4 flex text-red-500 mx-auto`
+  devient `mx-auto flex p-4 text-red-500`). Un ordre non trié fait échouer `yarn format:check`,
+  donc la CI. On n'ajoute pas d'outil : c'est le formateur déjà en place (ADR 0008).
+- **Dépendances** : à l'exécution, `radix-ui`, `class-variance-authority`, `clsx`,
+  `tailwind-merge` et `lucide-react` ; au build, `tailwindcss`, `@tailwindcss/vite` et
+  `tw-animate-css`. Elles se déclarent dans le `package.json` de la lib qui les importe
+  (`@nx/dependency-checks`).
 
 ### Conditions de bascule
 
-- **Le JS gzip de `apps/web` dépasse 200 ko**, ou le premier affichage sur un téléphone d'entrée
-  de gamme en 4G dépasse 3 s (mesure à instrumenter quand #23 sera déployée) : on essaie d'abord
-  la variante sans Emotion au runtime (`@mui/material-pigment-css`, non mesurée ici), puis on
-  bascule vers shadcn/ui. Grâce à l'encapsulation, seule `libs/shared/ui` change.
-- **La convention TDD accepte du code vendu non testé** (un dossier `vendor/` exempté, par
-  exemple) : l'argument principal contre shadcn/ui tombe, et la question se rouvre sur le poids.
-- **React Spectrum 2 permet d'héberger sa police nous-mêmes**, et la licence le permet : il redevient
-  candidat, puisqu'il gagne sur l'accessibilité et l'i18n.
-- **MUI cesse d'être maintenu pour la version de React en cours** plus de six mois après sa
-  sortie : on bascule, par le même chemin que pour le poids.
+- **Plus de 20 composants copiés**, ou **plus de deux correctifs** d'accessibilité ou de sécurité
+  à reporter à la main depuis le registre sur un semestre : la maintenance du code copié dépasse
+  ce qu'un seul mainteneur absorbe, et on bascule vers **MUI**. Les specs de contrat de
+  `shared/ui` servent alors de filet de migration, et seule la lib change.
+- **Radix cesse d'être maintenu** : shadcn/ui publie aussi ses composants sur Base UI. On reprend
+  les composants depuis ce registre, sans changer d'ADR, et les specs de contrat valident le
+  remplacement.
+- **Une version majeure de Tailwind** qui casse la syntaxe de la feuille globale ou du code
+  copié : on la mesure avant d'y passer. Rester sur la version en cours est une option tant
+  qu'elle est maintenue.
+- **React Spectrum 2 permet d'héberger sa police nous-mêmes**, et la licence le permet : il
+  redevient candidat, puisqu'il gagne sur l'accessibilité et l'i18n sans retouche.
 
 ### Conséquences
 
-- **Emotion au runtime.** Les styles se calculent au rendu. C'est acceptable pour quelques écrans ;
-  c'est aussi la première piste si le poids ou la fluidité deviennent un problème.
-- **Une nouvelle règle de frontière** : l'interdiction d'importer MUI hors de `shared/ui`. Elle
-  s'ajoute à `CLAUDE.md` › Architecture et à la constitution (`/speckit-constitution`), à
-  l'acceptation de cet ADR. Elle ne couvre que `type:app`. Si une autre lib `scope:web` (autre que
-  `shared/ui`) voulait importer MUI, il faudrait l'étendre par un tag dédié. Aucune n'est prévue.
-- **`import/no-unassigned-import`** n'est pas touchée : MUI ne demande aucun import de feuille
-  CSS.
-- **Les wrappers de `shared/ui` s'écrivent en TDD**, comme le reste. Leurs specs vérifient les
-  noms accessibles et les tailles, pas le rendu de MUI.
-- **Cibles tactiles à relever dans le thème** : les boutons font 37 px par défaut et la croix
-  d'alerte 30 px. Le thème fixe une hauteur minimale de 44 px pour les actions principales et au
-  moins 24 px partout.
-- **La palette par défaut n'est pas acceptée telle quelle** : `warning` (3,11:1) est ajustée dans le
-  thème. Un test axe sur l'écran de #23 empêche la régression.
-- **Esthétique Material** : c'est le prix accepté. L'identité visuelle propre à `pick-a-book`
-  passe par le thème, pas par la réécriture des composants.
+- **Nous possédons ce code.** Chaque composant ajouté coûte une spec, une copie, des retouches et
+  une ligne de `README`. C'est le prix accepté, et c'est la première condition de bascule.
+- **oxfmt reformate le code copié** : guillemets simples, points-virgules, largeur de 100. La
+  comparaison avec le registre se fait donc sur le fond et non ligne à ligne, d'où le `README` des
+  retouches.
+- **Retouches systématiques à l'import** : taille tactile de 44 px, libellés en props obligatoires
+  (aucune chaîne en dur), `Spinner` décoratif, contraste des tokens vérifié. Les specs de contrat
+  les rendent vérifiables, et un test axe sur l'écran de #23 empêche la régression.
+- **Fenêtres de dialogue par `DialogTrigger`** : c'est ce qui permet à Radix de rendre le focus au
+  déclencheur. Une fenêtre pilotée uniquement par état doit gérer `onCloseAutoFocus` elle-même.
+- **Nouvelle règle de frontière et nouvelle façon d'écrire le style**, à reporter dans `CLAUDE.md` ›
+  Architecture et Conventions, et dans la constitution (`/speckit-constitution`), à l'acceptation
+  de cet ADR : « Radix ne s'importe que depuis `shared/ui` » ; « le style s'écrit en classes
+  Tailwind sur les tokens du thème, pas de nouveau CSS Module ».
+- **`specs/001-photo-upload/plan.md`** mentionne des composants en CSS Modules : il faudra
+  l'ajuster quand #23 se code.
 
 ## Question ouverte
 
-- **Pigment CSS** (MUI sans Emotion au runtime) : non mesuré. On le mesure si la première condition
-  de bascule approche.
 - **Ordre avec #23 et #58** : si #23 passe avant #58, ses textes s'écrivent en attendant dans un
-  module unique par slice, pour que la migration vers le catalogue reste mécanique. Le thème
-  branche les chaînes intégrées de MUI sur la locale active dès que #58 existe.
-- **Identité visuelle** (palette, typographie) : c'est un choix de produit, pas d'architecture. Il
-  se règle dans le thème et se documente dans `libs/shared/ui`.
+  module unique par slice, pour que la migration vers le catalogue reste mécanique. Les props de
+  libellé des composants de `shared/ui` reçoivent alors directement les messages du catalogue.
+- **Identité visuelle** (palette, typographie, rayons) : c'est un choix de produit. Il se règle
+  dans les tokens de la feuille globale, pas dans le code des composants.
