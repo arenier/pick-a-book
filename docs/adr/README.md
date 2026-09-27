@@ -20,7 +20,8 @@ documentation d'architecture — il ne décrit pas comment le système marche, i
 | [0008](0008-lint-et-format-oxlint-oxfmt.md)         | Lint et format : oxlint + oxfmt, ESLint réduit aux frontières | Accepté  | Socle | 2026-08-14 |
 | [0009](0009-outillage-iac-terraform.md)             | Outillage d'infrastructure as code : Terraform          | Proposé  | 1     | 2026-08-19 |
 | [0010](0010-decoupage-bounded-contexts.md)          | Découpage en bounded contexts                           | Proposé  | —     | 2026-09-07 |
-| [0011](0011-internationalisation-de-l-interface.md) | Internationalisation de l'interface : i18next | Accepté  | —     | 2026-09-27 |
+| [0011](0011-internationalisation-de-l-interface.md) | Internationalisation de l'interface : i18next | Proposé  | —     | 2026-09-27 |
+| [0012](0012-design-system-de-l-interface.md)       | Design system de l'interface : shadcn/ui et Tailwind, dans `libs/shared/ui` | Proposé  | 1     | 2026-09-27 |
 
 **À écrire** — la source d'enrichissement bibliographique. Elle n'a pas de numéro tant que le
 fichier n'existe pas ; [0005](0005-reconnaissance-livres-photo-etagere.md) et
@@ -42,9 +43,17 @@ reconstitution du raisonnement, à valider.
    Un numéro annoncé avant l'écriture devient faux dès que l'ordre change.
 3. Le rédiger au présent, en énonçant la décision — pas « on pourrait », mais « nous faisons ».
 4. Pondérer les critères, et rattacher chaque raison de la solution retenue à un critère fort.
-5. Donner les **conditions de bascule** : le seuil mesurable qui rouvrirait la décision.
-6. Ajouter la ligne dans l'index ci-dessus.
-7. Le faire passer en PR, comme le code. La discussion a lieu dans la PR ; l'ADR mergé en est
+5. **Mettre l'étude des candidats dans l'issue, pas dans l'ADR.** L'issue qui porte la décision
+   rassemble les options examinées, la méthode, les mesures, les constats et l'analyse de chaque
+   candidat. L'ADR résume la démarche en quelques lignes et renvoie à l'issue. Il ne garde que ce
+   qui fonde la décision : la solution retenue, ses raisons, et les alternatives que nomment ses
+   conditions de bascule. Un ADR se lit ainsi comme une décision, et non comme un rapport
+   d'étude. La règle vaut à partir de l'ADR
+   [0011](0011-internationalisation-de-l-interface.md). Les ADR antérieurs gardent leur étude,
+   puisqu'un ADR accepté ne se réécrit pas.
+6. Donner les **conditions de bascule** : le seuil mesurable qui rouvrirait la décision.
+7. Ajouter la ligne dans l'index ci-dessus.
+8. Le faire passer en PR, comme le code. La discussion a lieu dans la PR ; l'ADR mergé en est
    le résultat.
 
 ## Statuts

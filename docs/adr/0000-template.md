@@ -24,23 +24,20 @@ Légende : 🔴 fort · 🟠 moyen · 🟢 faible · ⚪ à clarifier
 |---|---|---|
 |  |  |  |
 
-## Solutions proposées
+## Étude des candidats
 
-**A — Nom de l'option.**
-- Pour : …
-- Contre : …
-
-**B — Nom de l'option.**
-- Pour : …
-- Contre : …
-
-**C — Option écartée d'emblée.** Écartée : motif en une phrase.
+Deux ou trois lignes : quelles options ont été examinées, et comment elles ont été départagées
+(mesures, banc, sondes). L'étude elle-même vit dans l'issue qui porte la décision : options,
+méthode, mesures, constats, analyse de chaque candidat. Cette section se contente d'y renvoyer
+(« consignée dans l'issue #NN »).
 
 ## Solution retenue
 
 L'option, et le périmètre exact dans lequel elle est retenue (MVP, phase, réversibilité prévue).
 
 Les raisons, numérotées, chacune rattachée à un critère 🔴.
+
+L'alternative de repli, s'il y en a une : nommée ici parce qu'une condition de bascule y mène.
 
 ### Conditions de bascule
 
