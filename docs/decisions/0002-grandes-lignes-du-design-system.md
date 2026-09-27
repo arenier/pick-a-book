@@ -14,9 +14,9 @@
 - **mode sombre dès le MVP**, qui suit le réglage du système.
 
 Le reste en découle : c'est le contexte d'usage et WCAG 2.2 AA qui le fixent. Chaque valeur de
-cette note a été **mesurée** sur l'écran de #23, sur le même banc que l'ADR 0012 : Chromium en
-360 × 740, axe-core 4.11, en clair et en sombre. Résultat : **0 violation dans les deux thèmes**,
-écran et fenêtre de dialogue ouverte.
+cette note a été **mesurée** sur l'écran de #23, sur le banc de l'ADR 0012 (décrit dans l'issue
+#59) : Chromium en 360 × 740, axe-core 4.11, en clair et en sombre. Résultat : **0 violation dans
+les deux thèmes**, écran et fenêtre de dialogue ouverte.
 
 ## Le contexte qui dicte les règles
 

@@ -13,9 +13,9 @@ pas rediscutés ici :
 
 - on **adopte** un design system publié et maintenu, on n'en conçoit pas un. Notre travail se
   limite à le thémer, à l'encapsuler et, pour un système copié, à le mettre aux normes du dépôt ;
-- les **bibliothèques headless** (React Aria Components, Radix Primitives, Base UI, Ark UI) sont
-  **écartées** : elles apportent le comportement et l'accessibilité mais aucun style, et tout
-  repasser par-dessus coûte trop cher pour un seul mainteneur ;
+- les **bibliothèques headless** sont **écartées** : elles apportent le comportement et
+  l'accessibilité mais aucun style, et tout repasser par-dessus coûte trop cher pour un seul
+  mainteneur ;
 - le **DSFR** est écarté : son usage est réservé aux sites de l'État.
 
 L'usage se fait au téléphone, en ressourcerie, sur un réseau quelconque (Safari iOS et Chrome
@@ -53,241 +53,21 @@ Légende : 🔴 fort · 🟠 moyen · 🟢 faible · ⚪ à clarifier
 | Cibles tactiles | 🟠 | Au moins 24 px (WCAG 2.5.8, AA), 44 px visés pour les actions principales. |
 | Nombre de dépendances | 🟢 | Surface de mise à jour et de chaîne d'approvisionnement. |
 | Identité visuelle propre | 🟢 | `pick-a-book` n'a pas de charte. Pouvoir en poser une par les tokens, sans subir l'esthétique d'un éditeur, est un plus. |
-| Mode sombre | 🟢 | Tous les candidats l'offrent, le critère ne départage personne. |
+| Mode sombre | 🟢 | Tous les candidats mesurés l'offrent : le critère ne départage personne. |
 
-## Mesurer avant de choisir
+## Étude des candidats
 
-Même méthode que pour l'[ADR 0008](0008-lint-et-format-oxlint-oxfmt.md) et l'ADR
-d'internationalisation : les candidats ne sont pas jugés sur leur documentation. Chacun implémente
-**le même écran**, dans un bac à sable hors du repo, avec les versions du repo : React 19.2.8,
-Vite 8.1.5, `@vitejs/plugin-react` 6.0.4, TypeScript 6.0.3, Vitest 4.1.10, jsdom 27.4.0, Testing
-Library 16.3, oxlint 1.78 avec `oxlint-tsgolint`.
+Huit bibliothèques stylées ont implémenté **le même écran**, celui de #23, avec les versions
+d'outils du repo. Pour chacune, on a mesuré :
+- le poids gzip ;
+- des sondes de typage ;
+- le lint strict type-aware ;
+- les specs Vitest dans jsdom ;
+- dans Chromium à 360 px : axe-core, le comportement de la fenêtre de dialogue, les cibles
+  tactiles et les chaînes injectées.
 
-L'écran est celui de #23 : titre ; bouton de capture (`accept="image/*"`,
-`capture="environment"`) ; aperçu ; bouton d'analyse ; indicateur « Analyse en cours… » ; alerte
-d'erreur refermable ; liste de trois livres, chacun avec son titre, son auteur, un badge de
-confiance et un bouton « Détails » ; fenêtre de détail avec un bouton « Fermer ». Une **version de
-référence** en HTML natif et CSS Modules sert d'étalon. Elle passe le lint strict avec 0 erreur,
-et chaque candidat reprend sa structure (composants courts, gestionnaires en `useCallback`), si
-bien que ce que le lint relève ensuite est imputable à la bibliothèque.
-
-Mesures relevées pour chaque candidat :
-
-- **poids** : JS et CSS de production, gzip -9, en écart à la référence (60,3 ko de JS, presque
-  entièrement React) ;
-- **dépendances** : paquets installés par la bibliothèque, React étant fourni à part ;
-- **typage** : cinq sondes, chacune étant une erreur introduite délibérément dont on relève si
-  `tsc` la détecte ;
-- **lint** : la config `.oxlintrc.json` du repo, `--type-aware`, sur le code de l'écran (et sur le
-  code copié quand il y en a) ;
-- **tests** : deux specs Vitest et Testing Library, identiques pour tous : la liste s'affiche ; la
-  fenêtre s'ouvre, puis se ferme par notre bouton ;
-- **navigateur** : Chromium en 360 × 740, mode mobile tactile. On relève le débordement
-  horizontal, la plus petite cible tactile, les violations axe-core 4.11 (règles WCAG 2.0 à
-  2.2 A et AA) sur l'écran et fenêtre ouverte, le focus à l'ouverture de la fenêtre, la fermeture
-  par Échap et le retour du focus, ainsi que les chaînes injectées par la bibliothèque et non par
-  nous.
-
-### Poids et dépendances
-
-| Candidat | Version | JS gzip | CSS gzip | Total | Paquets |
-|---|---|---|---|---|---|
-| shadcn/ui (Radix + Tailwind 4) | sources du 2026-09-27 | +24,5 ko | +5,2 ko | **+29,7 ko** | 98 ¹ |
-| MUI (Material UI) + Emotion | 9.4.0 | +54,4 ko | 0 ² | **+53,9 ko** | 80 |
-| Konsta UI (Tailwind 4) | 5.4.0 | +42,3 ko | +13,7 ko | +56,0 ko | 21 |
-| React Spectrum 2 | 1.7.1 | +57,5 ko | +7,2 ko | +64,7 ko | 15 |
-| Mantine | 9.6.3 | +32,1 ko | +33,3 ko ³ | +65,4 ko | 20 |
-| Chakra UI | 3.37.0 | +88,7 ko | 0 ² | +88,2 ko | 152 |
-| Ant Design | 6.6.5 | +148,4 ko | 0 ² | +147,9 ko | 67 |
-| Ionic React | 9.0.5 | +234,8 ko | +2,9 ko | +237,7 ko | 33 |
-
-1. 98 paquets pour les dépendances du code copié (`radix-ui`, `class-variance-authority`, `clsx`,
-   `tailwind-merge`, `lucide-react`) et pour Tailwind et son plugin Vite. Le thème par défaut
-   importe aussi `shadcn/tailwind.css`, ce qui oblige à installer le paquet `shadcn`, qui est le CLI :
-   on monte alors à **404 paquets**.
-2. Styles injectés au runtime par du CSS-in-JS (Emotion pour MUI et Chakra, `@ant-design/cssinjs`
-   pour Ant Design). Le CSS de la référence disparaît, d'où le léger négatif.
-3. Mantine importe ici sa feuille globale `styles.css`. L'import composant par composant la
-   réduirait, mais n'a pas été mesuré.
-
-### Typage
-
-✅ : `tsc` échoue sur l'erreur introduite. ❌ : l'erreur passe.
-
-| Sonde | shadcn/ui | MUI | React Spectrum 2 | Chakra | Ant Design | Konsta | Ionic | Mantine |
-|---|---|---|---|---|---|---|---|---|
-| Variante inconnue (`variant="nope"`) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Prop inconnue (`colour="red"`) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Gestionnaire mal typé (`(n: number) => n`) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Couleur hors du thème | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Taille inconnue (`size="huge"`) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-
-Aucun candidat n'a demandé de `as` pour que l'écran passe le typecheck. Chez Mantine, `variant`,
-`size` et `color` acceptent n'importe quelle chaîne. Chez MUI, les props système supprimées en v9
-(`fontWeight` posé directement sur `Typography`) font échouer le typecheck : il faut passer par
-`sx`.
-
-### Lint, tests, navigateur
-
-| Candidat | Lint strict, hors frictions d'usage ³ | Specs dans jsdom | axe (écran + fenêtre) | Fenêtre : focus, Échap, retour | Plus petite cible |
-|---|---|---|---|---|---|
-| shadcn/ui | 1 dans les 439 lignes copiées ¹ | 2/2 | 1 contraste (4,49:1) | oui, oui, **non** ² | 36 px |
-| MUI | 0 | 2/2 | barre de progression sans nom ⁴, 1 contraste | oui, oui, oui | 30 px |
-| React Spectrum 2 | 0 | 2/2 après config ⁵ | **0** | oui, oui, oui | 32 px |
-| Chakra UI | 0 | 2/2 | **0** | oui, oui, oui | 40 px |
-| Mantine | 0 | 2/2 **avec polyfill** `matchMedia` | 5 contrastes ⁶ | oui, oui, oui | **20 px** |
-| Ant Design | 0 | 2/2 | 5 contrastes | oui, oui, oui | **12 × 13 px** |
-| Konsta UI | 0 | **1/2** ⁷ | élément interactif imbriqué | **non, non**, oui ⁷ | 34 px |
-| Ionic React | 0 | **1/2** ⁸ | barre de progression sans nom | **non**, oui, non | non mesurable ⁸ |
-
-Aucun candidat ne déborde à 360 px : le critère ne départage personne. Aucun n'atteint 44 px par
-défaut sur ses boutons, sauf Konsta en taille `large`.
-
-1. `prefer-tag-over-role` sur `spinner.tsx`. Aucun `as` dans le code copié.
-2. La fenêtre pilotée par état, sans `DialogTrigger`, ne rend pas le focus au bouton qui l'a
-   ouverte.
-3. Des frictions, dues à l'usage idiomatique de la bibliothèque et non à un défaut, sont
-   comptées à part. Notre code les contourne quand c'est possible (constantes hors du rendu) :
-   l'import de feuille CSS (`import '…/styles.css'`) déclenche
-   `import/no-unassigned-import` (Mantine, Ionic, Konsta, Spectrum, shadcn/ui) ; les objets
-   inline du style MUI (`sx={{ … }}`) et des props de Mantine et Ant Design déclenchent
-   `react-perf/jsx-no-new-object-as-prop` ; les props qui attendent du JSX (`footer` d'Ant
-   Design, `content` de Konsta) déclenchent `react-perf/jsx-no-jsx-as-prop`. Chez Konsta enfin,
-   le `role="dialog"` ajouté pour compenser la bibliothèque déclenche
-   `jsx-a11y/prefer-tag-over-role`.
-4. `CircularProgress` porte `role="progressbar"` sans nom par défaut. C'est à nous de lui donner un
-   `aria-label`.
-5. Il faut `test.server.deps.inline` pour `@react-spectrum`, `react-aria` et `react-stately`, sans
-   quoi Vitest refuse les `.css` importés depuis `node_modules`.
-6. Texte blanc sur le bleu primaire (3,55:1) et sur les badges (1,86 à 3,28:1). `primaryShade: 8`
-   corrige les boutons, pas les badges : un réglage du thème est nécessaire, il n'y a pas de
-   correction automatique.
-7. Le `Dialog` de Konsta n'a ni rôle `dialog`, ni piège de focus, ni fermeture par Échap. Une fois
-   fermé, il reste dans le DOM, simplement masqué.
-8. Des web components (Stencil, shadow DOM) : dans jsdom, `ion-button` n'expose pas de rôle
-   `button`. Nos sélecteurs ne traversent pas le shadow DOM, d'où la mesure impossible des cibles.
-
-### Chaînes intégrées
-
-C'est ce qui s'affiche ou s'annonce sans que nous l'ayons écrit, un critère 🔴 au regard de #58.
-
-| Candidat | Relevé | Remplaçable |
-|---|---|---|
-| React Spectrum 2 | « Erreur » (icône d'alerte), « Rejeter » (fermeture de fenêtre) | **Traduit d'office** selon la `locale` du `Provider`, français et anglais compris |
-| MUI | `closeText="Close"` par défaut sur `Alert` | Oui : par prop, ou globalement par le thème, avec des packs `frFR` et `enUS` fournis |
-| Chakra UI | `aria-label="Close"` sur `CloseButton` | Oui, par prop |
-| Mantine | **Aucune chaîne**, donc boutons de fermeture **sans nom** (axe `button-name`) si on oublie `closeButtonLabel` | Oui, par prop, mais l'oubli n'est détecté ni au typecheck ni au lint |
-| shadcn/ui | « Close » et « Loading » en dur dans le code copié | Oui : c'est notre code |
-| Ant Design | `aria-label="close"` et `"close-circle"` sur les icônes | **Non** : les noms d'icônes sont figés, en anglais |
-| Konsta, Ionic | aucune relevée sur cet écran | — |
-
-### Quatre constats que la documentation ne donnait pas
-
-- **Le CLI de shadcn/ui dépend du réseau.** `shadcn add` télécharge les composants depuis
-  ui.shadcn.com, que le proxy de l'environnement de mesure bloque. Les sources ont été reprises
-  du dépôt `shadcn-ui/ui` (registre `new-york-v4`). Les alias d'import, `utils.ts` et le thème ont
-  été réécrits à la main, comme le CLI l'aurait fait. Le build, lui, ne dépend pas du réseau.
-- **React Spectrum 2 charge sa police depuis Adobe Typekit au runtime** (`use.typekit.net`), depuis
-  le téléphone de l'utilisateur. Hors ligne ou derrière un proxy, la police ne se charge pas et
-  l'interface retombe sur une police système. La police Adobe Clean n'est pas couverte par la
-  licence Apache-2.0 du code, et son usage hors produits Adobe n'a pas été vérifié. Par ailleurs, la
-  prop `styles` n'accepte que la sortie de la macro `style()`, qui demande un plugin de build
-  (`unplugin-parcel-macros`) : on peut s'en passer tant qu'on ne personnalise pas les composants.
-- **`Dialog isDismissible` de Spectrum masque les boutons du pied de fenêtre** : la fenêtre ne garde
-  que sa croix. Un « Fermer » explicite suppose de renoncer à la croix.
-- **jsdom n'implémente pas `window.matchMedia`** : Mantine échoue au premier rendu sans polyfill.
-  MUI, Chakra, Ant Design, shadcn/ui et Spectrum (une fois configuré) n'en demandent aucun sur cet
-  écran.
-
-### shadcn/ui retouché : ce que coûte la mise en conformité
-
-Le code de shadcn/ui étant le nôtre, il a été repris une seconde fois, avec les retouches qu'exige
-le dépôt, puis mesuré de nouveau avec les mêmes outils :
-
-- boutons à `h-11` (44 px) au lieu de `h-9`, et boutons-icônes à `size-11` ;
-- `Spinner` en `aria-hidden` : c'est l'`<output>` qui l'entoure qui porte le texte, et ni
-  `role="status"` ni `aria-label="Loading"` ne sont plus en dur ;
-- croix de fermeture de `DialogContent` rendue à 44 px, et nom accessible fourni par une prop
-  `closeLabel: string` **obligatoire** à la place de l'`sr-only` « Close » en dur ;
-- token `--destructive` assombri, de `oklch(0.577 …)` à `oklch(0.5 …)` ;
-- fenêtre ouverte par `DialogTrigger` et fermée par `DialogClose`, pour que Radix rende le focus au
-  déclencheur ;
-- `shadcn/tailwind.css` (16 ko de CSS, licence MIT) **copié** dans le code, et le paquet `shadcn`
-  désinstallé.
-
-| Mesure | shadcn/ui tel que copié | shadcn/ui retouché |
-|---|---|---|
-| JS / CSS gzip ajoutés | +24,5 / +5,2 ko | +24,5 / +7,0 ko |
-| Paquets installés | 404 | **98** |
-| Lint strict sur le code copié | 1 | **0** |
-| Sondes de typage | 5/5 | 5/5 |
-| Specs dans jsdom | 2/2 | 2/2, sans polyfill |
-| axe, écran et fenêtre | 1 contraste (4,49:1) | **0** |
-| Plus petite cible | 36 px | **44 px** |
-| Focus : piégé, Échap, rendu | oui, oui, non | **oui, oui, oui** |
-| Chaînes anglaises injectées | « Loading », « Close » | **aucune** |
-
-Il reste une seule friction de lint : l'import de la feuille CSS déclenche
-`import/no-unassigned-import`. Elle se lève par l'option `allow: ['**/*.css']` de la règle, qui
-continue de viser tout import non CSS (vérifié sur un import `.js` témoin). Les retouches touchent
-une vingtaine de lignes sur les quelque 440 du code copié.
-
-## Solutions proposées
-
-**A — shadcn/ui : composants copiés dans le dépôt, sur Radix et Tailwind 4.**
-- Pour : le plus léger (+31,5 ko après retouches). Typage parfait (5 sondes sur 5). Code copié
-  propre, aucun `as`, 0 erreur de lint après retouches. Après une vingtaine de lignes retouchées :
-  0 violation axe, cibles de 44 px, focus rendu. Le code est à nous, donc chaque chaîne l'est
-  aussi, et un libellé oublié devient une **erreur de typecheck** (prop obligatoire), là où une
-  bibliothèque retombe en silence sur son anglais par défaut. Pas de CSS-in-JS au runtime.
-  Identité visuelle entièrement à nous, par les tokens.
-- Contre : le code copié devient notre code de production, à tester et à maintenir. Les mises à
-  jour se font à la main, en comparant avec le registre. Tailwind entre dans la chaîne (un plugin
-  Vite) et devient la façon d'écrire le style. Le CLI dépend du réseau (ui.shadcn.com), mais
-  seulement au moment d'ajouter un composant, jamais au build.
-
-**B — MUI (Material UI) 9, avec Emotion.**
-- Pour : rien à ajouter à la chaîne, ni plugin ni polyfill. 5 sondes sur 5. Chaînes intégrées
-  remplaçables par prop ou par thème, avec un pack `frFR` fourni. Aucune ligne tierce dans le
-  dépôt : on met à jour par `yarn up`.
-- Contre : +54 ko gzip, c'est-à-dire +22 ko par rapport à A. Styles calculés au runtime par
-  Emotion. Le style idiomatique (`sx` inline) heurte `react-perf/jsx-no-new-object-as-prop`.
-  Palette par défaut imparfaite (chip `warning` à 3,11:1). Boutons à 37 px. Un `closeText` oublié
-  s'affiche en anglais sans que rien ne le signale. Esthétique Material marquée.
-
-**C — React Spectrum 2 (Adobe).**
-- Pour : meilleure accessibilité mesurée sans retouche (0 violation axe, fenêtre de dialogue
-  irréprochable). **Chaînes intégrées déjà traduites** en français et en anglais selon la locale.
-  Typage à 5 sur 5.
-- Contre : police chargée depuis un CDN tiers au runtime, avec une licence à vérifier. Personnaliser
-  les composants demande un plugin de macros. Config Vitest particulière. Identité visuelle d'Adobe
-  très marquée. 151 Mo de `node_modules`.
-
-**D — Chakra UI 3.**
-- Pour : 0 violation axe, specs vertes sans polyfill, lint propre, typage à 4 sur 5, boutons à
-  40 px.
-- Contre : le plus lourd des candidats viables (+88 ko) et le plus de dépendances (152 paquets),
-  avec lui aussi du CSS-in-JS au runtime.
-
-**E — Mantine 9.**
-- Pour : styles statiques (CSS), aucune chaîne anglaise, peu de dépendances (20 paquets).
-- Contre : typage lâche (2 sur 5) ; polyfill `matchMedia` obligatoire dans jsdom ; contrastes
-  WCAG en échec par défaut ; croix de fermeture à 20 px, sous le seuil AA ; boutons de fermeture
-  sans nom si on oublie leur libellé.
-
-**F — Ant Design 6.** Écartée : c'est le plus lourd des candidats de bureau (+148 ko), ses icônes
-annoncent des `aria-label` anglais impossibles à remplacer (critère 🔴 i18n), et sa croix
-d'alerte mesure 12 × 13 px.
-
-**G — Ionic React 9.** Écartée : +238 ko, et des web components que jsdom ne rend pas, ce qui fait
-échouer les specs et casse le critère 🔴 de chaîne.
-
-**H — Konsta UI 5.** Écartée : sa fenêtre de dialogue n'a ni rôle, ni piège de focus, ni fermeture
-par Échap, ce qui casse le critère 🔴 d'accessibilité. C'est pourtant le seul candidat avec des
-cibles de 44 px par défaut.
-
-**I — Pico CSS ou Open Props (feuille sans classes, ou tokens seuls).** Écartée sans mesure : ni
-fenêtre de dialogue ni alerte interactive. On retrouve le travail du headless.
+La méthode, les mesures et l'analyse de chaque candidat sont consignées dans l'issue **#59**. Cet
+ADR n'en retient que ce qui fonde la décision.
 
 ## Solution retenue
 
@@ -296,8 +76,8 @@ fenêtre de dialogue ni alerte interactive. On retrouve le travail du headless.
 
 1. **Composants finis (🔴)** : alerte, fenêtre de dialogue, indicateur de chargement, badge,
    carte et bouton arrivent stylés. On ne repasse pas le style par-dessus : les retouches mesurées
-   tiennent en une vingtaine de lignes, et elles portent sur l'accessibilité et les chaînes, pas
-   sur l'apparence.
+   tiennent en une vingtaine de lignes sur les quelque 440 copiées. Elles portent sur
+   l'accessibilité et les chaînes, pas sur l'apparence.
 2. **Accessibilité (🔴)** : le comportement vient de Radix (focus piégé, Échap, rôles). Après
    retouches : 0 violation axe, cibles de 44 px partout, focus rendu au déclencheur.
 3. **Compatibilité avec la chaîne (🔴)** : un seul ajout, `@tailwindcss/vite`, qui est un plugin
@@ -307,11 +87,11 @@ fenêtre de dialogue ni alerte interactive. On retrouve le travail du headless.
 4. **i18n (🔴)** : aucune chaîne n'est imposée par une bibliothèque. Chaque libellé que les
    composants exigent (croix de fermeture, par exemple) est une **prop obligatoire**, si bien
    qu'un oubli fait échouer le typecheck. C'est le même garde-fou que le catalogue de #58, et c'est
-   plus strict que MUI, dont le `closeText` retombe en silence sur « Close ».
-5. **Poids (🟠)** : le plus léger des candidats, +31,5 ko contre +54 ko pour MUI.
+   plus strict qu'une bibliothèque dont le libellé par défaut retombe en silence sur l'anglais.
+5. **Poids (🟠)** : +31,5 ko gzip, le plus léger des candidats mesurés.
 
-MUI reste l'alternative documentée : il gagne sur un seul point, l'absence de code tiers à
-maintenir. Ce coût est chiffré plus bas, et il a une condition de bascule.
+**Alternative de repli : MUI 9.** Elle gagne sur un seul point, l'absence de code tiers à
+maintenir. Ce coût a sa condition de bascule, plus bas.
 
 ### Trois points tranchés
 
@@ -342,6 +122,25 @@ du code. Le paquet `shadcn` n'est **jamais une dépendance** du workspace. Le CL
 ponctuellement, par `yarn dlx shadcn@<version exacte> add <composant>`, épinglé à l'exact comme le
 reste de l'outillage, pour ajouter un composant ou comparer avec une nouvelle version. Le build et
 la CI n'en dépendent pas, ce qui épargne 306 paquets.
+
+### Retouches à l'import
+
+Le code copié est le nôtre : chaque composant est mis aux normes du dépôt en entrant. Les retouches
+suivantes ont été appliquées et mesurées sur l'écran de #23 (détail dans #59) :
+
+- **Boutons à `h-11` (44 px)** au lieu de `h-9`, et boutons-icônes à `size-11`.
+- **`Spinner` en `aria-hidden`** : c'est l'`<output>` qui l'entoure qui porte le texte. Plus de
+  `role="status"` ni d'`aria-label="Loading"` en dur.
+- **Croix de fermeture de `DialogContent`** : 44 px, et nom accessible fourni par une prop
+  `closeLabel: string` **obligatoire**, à la place du « Close » en dur.
+- **Token `--destructive` assombri**, plus les autres tokens corrigés par la note
+  [`docs/decisions/0002`](../decisions/0002-grandes-lignes-du-design-system.md).
+- **Fenêtres ouvertes par `DialogTrigger`** et fermées par `DialogClose`, pour que Radix rende le
+  focus au déclencheur.
+- **`shadcn/tailwind.css` (MIT) copié**, sans installer le paquet `shadcn`.
+
+**Résultat** : 0 violation axe, cibles de 44 px, focus rendu, aucune chaîne anglaise, 0 erreur de
+lint strict sur le code copié, 98 paquets, +24,5 ko de JS et +7,0 ko de CSS gzip.
 
 ### Organisation
 
