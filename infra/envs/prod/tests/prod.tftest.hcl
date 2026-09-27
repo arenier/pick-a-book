@@ -94,3 +94,51 @@ run "the_front_is_a_public_bucket_distinct_from_the_private_backups_bucket" {
     error_message = "web_url must be the storage.googleapis.com HTTPS endpoint for the front bucket — the static-site decision serves the front there, with no CDN or load balancer"
   }
 }
+
+run "shelf_photos_have_their_own_private_bucket" {
+  command = plan
+
+  # specs/001-photo-upload keeps every submitted photo: they need a bucket of their own —
+  # never the backups bucket (a dump restore must not drag user photos along, and the photos
+  # must not share the backups' retention), never the public front.
+  assert {
+    condition     = output.shelf_photos_bucket_name == "pick-a-book-test-shelf-photos"
+    error_message = "The shelf-photos bucket name must derive from project_id — GCS bucket names are globally unique"
+  }
+
+  assert {
+    condition     = !contains([output.backups_bucket_name, output.web_bucket_name, output.reference_photos_bucket_name], output.shelf_photos_bucket_name)
+    error_message = "Shelf photos must live in a bucket of their own, distinct from backups, the public front and the bench's reference photos"
+  }
+}
+
+run "the_api_boots_with_the_photo_bucket_and_the_front_origin" {
+  command = plan
+
+  # The API's boot contract (apps/api/src/config/environment.ts): BUCKET_NAME is required, and
+  # WEB_ORIGIN is the one origin CORS lets through. Without them the service fails at boot, or
+  # the front gets opaque CORS errors — both only visible after a deploy.
+  assert {
+    condition     = local.api_env.BUCKET_NAME == output.shelf_photos_bucket_name
+    error_message = "The API must be pointed at the shelf-photos bucket through BUCKET_NAME — the variable is required at boot"
+  }
+
+  assert {
+    condition     = local.api_env.WEB_ORIGIN == "https://storage.googleapis.com"
+    error_message = "WEB_ORIGIN must be the front's origin — scheme and host only, no bucket path: CORS compares it byte for byte with the browser's Origin header"
+  }
+}
+
+run "the_api_can_write_and_read_shelf_photos_and_nothing_more" {
+  command = plan
+
+  assert {
+    condition = toset([
+      for grant in values(local.api_bucket_grants) : "${grant.bucket}:${grant.role}" if grant.bucket == output.shelf_photos_bucket_name
+      ]) == toset([
+      "pick-a-book-test-shelf-photos:roles/storage.objectCreator",
+      "pick-a-book-test-shelf-photos:roles/storage.objectViewer",
+    ])
+    error_message = "On the shelf-photos bucket the API needs exactly create (store) and read (scan) — no delete: a stored photo is never replaced (ifGenerationMatch: 0)"
+  }
+}
