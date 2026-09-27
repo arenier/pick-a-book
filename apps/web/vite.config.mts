@@ -1,3 +1,4 @@
+import { defaultClientConditions } from 'vite';
 import { defineConfig } from 'vitest/config';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
@@ -18,6 +19,12 @@ export default defineConfig({
   preview: {
     port: webPort,
     host: 'localhost',
+  },
+  // The workspace libs are read from their sources (the `@org/source` export condition, the one
+  // tsconfig.base.json declares), not from a `dist` that `serve` does not build: without it, a fresh
+  // clone fails to resolve @pick-a-book/shared-i18n, and a change in a lib needs a rebuild.
+  resolve: {
+    conditions: ['@org/source', ...defaultClientConditions],
   },
   // Tailwind 4 through its Vite plugin: the stylesheet comes from @pick-a-book/shared-ui (ADR 0012).
   plugins: [react(), tailwindcss()],
