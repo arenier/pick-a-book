@@ -47,8 +47,8 @@ reconstitution du raisonnement, à valider.
    candidat. L'ADR résume la démarche en quelques lignes et renvoie à l'issue. Il ne garde que ce
    qui fonde la décision : la solution retenue, ses raisons, et les alternatives que nomment ses
    conditions de bascule. Un ADR se lit ainsi comme une décision, et non comme un rapport
-   d'étude. La règle vaut à partir de l'ADR [0012](0012-design-system-de-l-interface.md). Les ADR
-   antérieurs gardent leur étude, puisqu'un ADR accepté ne se réécrit pas.
+   d'étude. La règle vaut à partir de l'ADR 0011. Les ADR antérieurs gardent leur étude,
+   puisqu'un ADR accepté ne se réécrit pas.
 6. Donner les **conditions de bascule** : le seuil mesurable qui rouvrirait la décision.
 7. Ajouter la ligne dans l'index ci-dessus.
 8. Le faire passer en PR, comme le code. La discussion a lieu dans la PR ; l'ADR mergé en est
