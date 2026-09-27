@@ -33,6 +33,11 @@ output "reference_photos_bucket_name" {
   value       = module.bucket_reference_photos.bucket_name
 }
 
+output "shelf_photos_bucket_name" {
+  description = "Bucket the API keeps shelf photos in (specs/001-photo-upload), wired into its BUCKET_NAME."
+  value       = module.bucket_shelf_photos.bucket_name
+}
+
 output "api_service_account_email" {
   description = "Runtime identity the API service runs as — the only service account in this env, holding the Secret Manager and bucket grants."
   value       = module.service_account_api.email

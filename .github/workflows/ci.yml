@@ -28,7 +28,7 @@ jobs:
     # port — and the specs find it where they find it locally.
     services:
       db:
-        image: postgres:17.6-alpine
+        image: postgres:18.6-alpine
         env:
           POSTGRES_USER: pick_a_book
           POSTGRES_PASSWORD: pick_a_book

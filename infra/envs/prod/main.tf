@@ -44,6 +44,20 @@ module "bucket_reference_photos" {
   depends_on = [module.project]
 }
 
+# Shelf photos (specs/001-photo-upload): every submitted photo is kept, keyed
+# `{ownerId}/shelf_photo/{id}`. A bucket of its own rather than a prefix in the backups one:
+# the photos are user data read back by the API, not dumps, and must share neither the backups'
+# retention nor their restore.
+module "bucket_shelf_photos" {
+  source = "../../modules/bucket"
+
+  project_id = var.project_id
+  name       = "${var.project_id}-shelf-photos"
+  location   = var.region
+
+  depends_on = [module.project]
+}
+
 # Independent of the GCP project: Neon is a separate provider/account entirely, provisioned
 # in parallel rather than depending on module.project.
 module "neon" {
@@ -68,23 +82,49 @@ module "secret_manager" {
   depends_on = [module.project]
 }
 
-# The API is the only service that touches Secret Manager and the backups bucket, so it gets
-# its own dedicated, narrower service account rather than sharing one with the front — a
-# service account with grants it never uses is not least privilege.
+locals {
+  # On the shelf-photos bucket, create (store) and read (scan), no delete: a stored photo is
+  # never replaced — the adapter writes with ifGenerationMatch: 0.
+  api_bucket_grants = {
+    backups_write = { bucket = module.bucket.bucket_name, role = "roles/storage.objectCreator" }
+    photos_write  = { bucket = module.bucket_shelf_photos.bucket_name, role = "roles/storage.objectCreator" }
+    photos_read   = { bucket = module.bucket_shelf_photos.bucket_name, role = "roles/storage.objectViewer" }
+  }
+
+  # The API's plain (non-secret) boot contract — apps/api/src/config/environment.ts. OWNER_ID
+  # is left to its default until there are user accounts. WEB_ORIGIN is the front's origin
+  # only (scheme + host): CORS compares it byte for byte with the browser's Origin header,
+  # which never carries the bucket path of public_base_url.
+  api_env = {
+    NODE_ENV    = "production"
+    BUCKET_NAME = module.bucket_shelf_photos.bucket_name
+    WEB_ORIGIN  = regex("^https://[^/]+", module.static_site.public_base_url)
+  }
+}
+
+# The API is the only service that touches Secret Manager and the buckets, so it gets its own
+# dedicated, narrower service account rather than sharing one with the front — a service
+# account with grants it never uses is not least privilege.
 module "service_account_api" {
   source = "../../modules/service-account"
 
-  project_id   = var.project_id
-  account_id   = "pick-a-book-api"
-  display_name = "pick-a-book API runtime"
-  secret_ids   = module.secret_manager.secret_ids
-  bucket_name  = module.bucket.bucket_name
+  project_id    = var.project_id
+  account_id    = "pick-a-book-api"
+  display_name  = "pick-a-book API runtime"
+  secret_ids    = module.secret_manager.secret_ids
+  bucket_grants = local.api_bucket_grants
 }
 
-# apps/api. NODE_ENV is the only plain env var: the rest of the boot contract is DATABASE_URL
-# and the VLM keys, all injected as secrets below. There is no STORAGE_BUCKET — the app
-# dropped the leftover object-storage config once it caught up to the "shelf photos are
-# ephemeral, not stored" decision (ADR 0006), so nothing else needs wiring here.
+# The backups grant predates bucket_grants. Without this, Terraform would destroy the old
+# address and create the new one — the same IAM binding under two addresses, in no guaranteed
+# order: a create that lands first is then undone by the destroy.
+moved {
+  from = module.service_account_api.google_storage_bucket_iam_member.bucket_writer[0]
+  to   = module.service_account_api.google_storage_bucket_iam_member.bucket_grant["backups_write"]
+}
+
+# apps/api. Plain variables in local.api_env; DATABASE_URL and the VLM keys are injected as
+# secrets below.
 module "cloud_run_api" {
   source = "../../modules/cloud-run-service"
 
@@ -98,9 +138,7 @@ module "cloud_run_api" {
   # the first request after scale-to-zero.
   startup_probe_failure_threshold = 10
 
-  env = {
-    NODE_ENV = "production"
-  }
+  env = local.api_env
 
   secret_env = {
     DATABASE_URL       = "DATABASE_URL"

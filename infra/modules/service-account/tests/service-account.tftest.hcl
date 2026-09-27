@@ -5,7 +5,10 @@ variables {
   account_id   = "pick-a-book-api"
   display_name = "pick-a-book API runtime"
   secret_ids   = ["DATABASE_URL", "GEMINI_API_KEY", "OPENROUTER_API_KEY"]
-  bucket_name  = "pick-a-book-backups-test"
+  bucket_grants = {
+    photos_write = { bucket = "pick-a-book-shelf-photos-test", role = "roles/storage.objectCreator" }
+    photos_read  = { bucket = "pick-a-book-shelf-photos-test", role = "roles/storage.objectViewer" }
+  }
 }
 
 run "creates_a_dedicated_service_account" {
@@ -36,18 +39,34 @@ run "grants_secret_accessor_on_every_given_secret_and_nothing_else" {
   }
 }
 
-run "grants_object_creator_on_the_backups_bucket_and_nothing_else" {
+run "grants_exactly_the_given_bucket_roles_and_nothing_else" {
   command = plan
 
   assert {
-    condition     = google_storage_bucket_iam_member.bucket_writer[0].role == "roles/storage.objectCreator"
-    error_message = "objectCreator is the least-privilege role for writing pg_dump snapshots: it does not grant delete, list or read of other objects"
+    condition     = length(google_storage_bucket_iam_member.bucket_grant) == length(var.bucket_grants)
+    error_message = "Expected exactly one bucket IAM binding per entry of var.bucket_grants — nothing implicit, nothing broader"
   }
 
   assert {
-    condition     = google_storage_bucket_iam_member.bucket_writer[0].bucket == var.bucket_name
-    error_message = "The write grant must target the given backups bucket"
+    condition = alltrue([
+      for key, grant in var.bucket_grants :
+      google_storage_bucket_iam_member.bucket_grant[key].bucket == grant.bucket &&
+      google_storage_bucket_iam_member.bucket_grant[key].role == grant.role
+    ])
+    error_message = "Each binding must carry exactly the bucket and role of its bucket_grants entry — a role granted on the wrong bucket is how a narrow identity quietly widens"
   }
+}
+
+run "refuses_a_bucket_role_that_could_hand_out_access" {
+  command = plan
+
+  variables {
+    bucket_grants = {
+      too_wide = { bucket = "pick-a-book-shelf-photos-test", role = "roles/storage.objectAdmin" }
+    }
+  }
+
+  expect_failures = [var.bucket_grants]
 }
 
 # "No project-level role" is not asserted by a `run` block: this module declares no
@@ -68,8 +87,8 @@ run "member_reference_is_the_service_account_itself" {
   }
 
   assert {
-    condition     = startswith(google_storage_bucket_iam_member.bucket_writer[0].member, "serviceAccount:")
-    error_message = "The bucket IAM member must reference a service account principal, built from this module's own service account"
+    condition     = alltrue([for b in google_storage_bucket_iam_member.bucket_grant : startswith(b.member, "serviceAccount:")])
+    error_message = "Every bucket IAM member must reference a service account principal, built from this module's own service account"
   }
 }
 
@@ -77,11 +96,11 @@ run "a_service_account_with_no_secrets_and_no_bucket_gets_no_grants" {
   command = plan
 
   variables {
-    project_id   = "pick-a-book-test"
-    account_id   = "pick-a-book-web"
-    display_name = "pick-a-book web runtime"
-    secret_ids   = []
-    bucket_name  = null
+    project_id    = "pick-a-book-test"
+    account_id    = "pick-a-book-web"
+    display_name  = "pick-a-book web runtime"
+    secret_ids    = []
+    bucket_grants = {}
   }
 
   assert {
@@ -90,7 +109,7 @@ run "a_service_account_with_no_secrets_and_no_bucket_gets_no_grants" {
   }
 
   assert {
-    condition     = length(google_storage_bucket_iam_member.bucket_writer) == 0
-    error_message = "A service account passed no bucket_name must get no bucket IAM binding at all"
+    condition     = length(google_storage_bucket_iam_member.bucket_grant) == 0
+    error_message = "A service account passed no bucket_grants must get no bucket IAM binding at all"
   }
 }

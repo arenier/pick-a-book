@@ -105,3 +105,16 @@ run "history_retention_is_overridable" {
     error_message = "history_retention_seconds must be overridable, so a paid plan can raise the PITR window without editing the module"
   }
 }
+
+run "postgres_major_version_is_pinned_to_the_one_prod_runs" {
+  command = plan
+
+  # Pinned, not left to Neon's current default: pg_dump must be at least the server's major
+  # version, and the local stack and CI test against this same major. The live project was
+  # created on 18 — read back from the Neon API before pinning, since changing pg_version on
+  # an existing project replaces it.
+  assert {
+    condition     = neon_project.this.pg_version == 18
+    error_message = "pg_version must be pinned to 18, the major the prod project runs — the backup job's pg_dump and the docker-compose/CI Postgres images are aligned on it"
+  }
+}

@@ -10,4 +10,7 @@ resource "neon_project" "this" {
   # Never leave this to the provider: its default is 86400 s, which the Neon API rejects on a
   # Free plan (max 21600 s). See the variable's description.
   history_retention_seconds = var.history_retention_seconds
+  # Pinned rather than left to Neon's default of the day. Changing it on an existing project
+  # REPLACES the project (and its data): only ever set it to the major the live project runs.
+  pg_version = var.pg_version
 }
