@@ -12,6 +12,9 @@ export default [
             '{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}',
             '{projectRoot}/vitest.config.{js,cjs,mjs,ts,cts,mts}',
           ],
+          // Imported by src/styles/globals.css (`@import`), which the check does not read: it only
+          // sees JavaScript imports, and would report them as unused.
+          ignoredDependencies: ['@fontsource/literata', 'tailwindcss', 'tw-animate-css'],
         },
       ],
     },

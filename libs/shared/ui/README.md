@@ -5,9 +5,11 @@ les composants de [shadcn/ui](https://ui.shadcn.com), **copiés dans cette lib e
 dépôt**, et la feuille globale qui porte Tailwind 4 et les tokens de la note
 [`docs/decisions/0002`](../../../docs/decisions/0002-grandes-lignes-du-design-system.md).
 
-Lib partagée (`type:shared`, `context:none`, `scope:web`). **C'est la seule du dépôt qui importe
-Radix** : une app qui importerait `radix-ui` directement fait échouer `yarn lint`
-(`bannedExternalImports` sur `type:app`, `eslint.config.mjs`).
+Lib partagée (`type:shared`, `context:none`, `scope:web`). **C'est la seule du dépôt autorisée à
+importer Radix** : une app qui importerait `radix-ui` directement fait échouer `yarn lint`
+(`bannedExternalImports` sur `type:app`, `eslint.config.mjs`). Aucun composant actuel n'en a
+besoin, et `radix-ui` n'est donc pas encore une dépendance : il le deviendra avec le premier
+composant qui l'importe (une fenêtre de dialogue, par exemple).
 
 ## Contenu
 

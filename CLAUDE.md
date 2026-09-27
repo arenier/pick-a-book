@@ -158,7 +158,7 @@ libs/recognition/infrastructure/ # adapters (Gemini, Qwen, stub) derrière Shelf
 libs/shared/result/              # contenu partagé, une lib par sujet nommé
 libs/shared/text-match/          # normalisation + comparaison floue de chaînes (bench, réconciliation)
 libs/shared/i18n/                # façade i18next du front (useMessages, createI18n) — seule à importer i18next
-libs/shared/ui/                  # design system du front : composants shadcn/ui, Tailwind, tokens — seule à importer Radix
+libs/shared/ui/                  # design system du front : composants shadcn/ui, Tailwind, tokens — seule autorisée à importer Radix
 tools/bench/                     # départage manuel des adapters VLM sur photos réelles (#10) — hors CI
 docker/                          # Dockerfile des deux apps — contexte de build : la racine
 docs/adr/
