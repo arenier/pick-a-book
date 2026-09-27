@@ -414,5 +414,7 @@ la CI n'en dépendent pas, ce qui épargne 306 paquets.
 - **Ordre avec #23 et #58** : si #23 passe avant #58, ses textes s'écrivent en attendant dans un
   module unique par slice, pour que la migration vers le catalogue reste mécanique. Les props de
   libellé des composants de `shared/ui` reçoivent alors directement les messages du catalogue.
-- **Identité visuelle** (palette, typographie, rayons) : c'est un choix de produit. Il se règle
-  dans les tokens de la feuille globale, pas dans le code des composants.
+- ~~**Identité visuelle**~~ : tranchée dans la note de niveau inférieur
+  [`docs/decisions/0002`](../decisions/0002-grandes-lignes-du-design-system.md). Elle retient la
+  palette neutre corrigée pour AA, Literata pour les titres de livres, et un mode sombre qui suit
+  le système. La note se révise sans nouvel ADR.
