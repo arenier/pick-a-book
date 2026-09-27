@@ -1,3 +1,5 @@
+import type { PhotoProblem } from './upload-failure';
+
 /**
  * What the API accepts as a shelf photo, checked before sending so a refusal is immediate
  * (specs/001-photo-upload, FR-003, FR-009).
@@ -18,20 +20,14 @@ export const MAX_SIZE_IN_BYTES = 20_971_520;
 
 type Photo = { readonly type: string; readonly size: number };
 
-/** Checked in order: the first rule a file breaks is the one the user is told about. */
-const RULES: readonly (readonly [(photo: Photo) => boolean, string])[] = [
-  [
-    (photo) => !ACCEPTED_MEDIA_TYPES.includes(photo.type),
-    'Ce fichier n’est pas une photo prise en charge : choisissez une image JPEG, PNG, WebP ou HEIC.',
-  ],
-  [(photo) => photo.size === 0, 'Ce fichier est vide.'],
-  [
-    (photo) => photo.size > MAX_SIZE_IN_BYTES,
-    'Cette photo dépasse 20 Mo : choisissez-en une plus légère.',
-  ],
+/** Checked in the order of `PHOTO_PROBLEMS`: the first rule a file breaks is the one reported. */
+const RULES: readonly (readonly [(photo: Photo) => boolean, PhotoProblem])[] = [
+  [(photo) => !ACCEPTED_MEDIA_TYPES.includes(photo.type), 'unsupportedType'],
+  [(photo) => photo.size === 0, 'empty'],
+  [(photo) => photo.size > MAX_SIZE_IN_BYTES, 'tooLarge'],
 ];
 
-/** Why this file cannot be sent, in words for the user — or `undefined` when it can. */
-export function photoProblem(photo: Photo): string | undefined {
+/** Why this file cannot be sent — or `undefined` when it can. The screen words it for the user. */
+export function photoProblem(photo: Photo): PhotoProblem | undefined {
   return RULES.find(([breaks]) => breaks(photo))?.[1];
 }

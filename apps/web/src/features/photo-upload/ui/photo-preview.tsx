@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import styles from './photo-upload-screen.module.css';
 
@@ -15,6 +16,7 @@ export interface PhotoPreviewProps {
  * it is revoked as soon as the photo changes, not to keep every photo tried on a phone.
  */
 export function PhotoPreview({ photo }: PhotoPreviewProps) {
+  const { t } = useTranslation('photo-upload');
   const [url, setUrl] = useState<string>();
   // Tied to a URL rather than a flag: a photo that cannot be displayed says nothing of the next.
   const [unreadableUrl, setUnreadableUrl] = useState<string>();
@@ -37,15 +39,8 @@ export function PhotoPreview({ photo }: PhotoPreviewProps) {
 
   // Accepted but not displayable (HEIC outside Safari): the recognition still reads it (FR-017).
   if (unreadableUrl === url) {
-    return <p>Aperçu indisponible pour ce format : la photo peut tout de même être analysée.</p>;
+    return <p>{t('preview.unavailable')}</p>;
   }
 
-  return (
-    <img
-      className={styles['preview']}
-      src={url}
-      alt="Aperçu de l’étagère choisie"
-      onError={onError}
-    />
-  );
+  return <img className={styles['preview']} src={url} alt={t('preview.alt')} onError={onError} />;
 }

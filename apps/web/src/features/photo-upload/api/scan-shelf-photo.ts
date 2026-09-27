@@ -1,4 +1,5 @@
 import type { DetectedBook } from '../model/detected-book';
+import type { UploadFailure } from '../model/upload-failure';
 import type { UploadState } from '../model/upload-state';
 
 /**
@@ -6,19 +7,6 @@ import type { UploadState } from '../model/upload-state';
  * from a bucket (ADR 0004), with no server left to proxy anything at runtime.
  */
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000';
-
-/**
- * One message per kind of failure (FR-006): none of them may read like "no book detected",
- * and none depends on the technical text a response carries.
- */
-const MESSAGES = {
-  refused:
-    'La photo a été refusée : elle doit être une image JPEG, PNG, WebP ou HEIC de moins de 20 Mo.',
-  upstream:
-    'Le service de reconnaissance ne répond pas pour le moment. Réessayez dans quelques instants.',
-  offline: 'Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.',
-  unexpected: 'Une erreur inattendue est survenue. Réessayez dans quelques instants.',
-} as const;
 
 export interface SubmitOptions {
   readonly baseUrl?: string;
@@ -34,7 +22,8 @@ type Answer =
  *
  * Two requests behind one call (research.md §7): `POST /shelf-photos` keeps the photo and
  * answers with its id, then `POST /shelf-photos/{id}/scan` reads it. The screen does not
- * know there are two; it gets a result or a message.
+ * know there are two; it gets a result or the kind of failure, which it words itself (FR-006):
+ * none depends on the technical text a response carries.
  */
 export async function submitShelfPhoto(
   photo: File,
@@ -95,8 +84,8 @@ async function ask(send: typeof fetch, url: string, init: RequestInit): Promise<
   return { reached: true, status: response.status, body };
 }
 
-function failure(kind: keyof typeof MESSAGES): UploadState {
-  return { status: 'error', message: MESSAGES[kind] };
+function failure(kind: UploadFailure): UploadState {
+  return { status: 'error', failure: kind };
 }
 
 interface WireBook {

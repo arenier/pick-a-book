@@ -1,4 +1,5 @@
 import type { DetectedBook } from './detected-book';
+import type { UploadFailure } from './upload-failure';
 
 /**
  * What the upload screen shows — one state at a time, never two true at once
@@ -11,4 +12,4 @@ export type UploadState =
   | { readonly status: 'idle' }
   | { readonly status: 'uploading' }
   | { readonly status: 'success'; readonly books: readonly DetectedBook[] }
-  | { readonly status: 'error'; readonly message: string };
+  | { readonly status: 'error'; readonly failure: UploadFailure };

@@ -1,6 +1,6 @@
 # ADR 0011 — Internationalisation de l'interface : i18next
 
-Statut : proposé · Date : 2026-09-27 · Couplé aux ADR [0002](0002-ddd-et-architecture-hexagonale.md) (feature-slice), [0007](0007-vite-et-vitest-outillage-unique.md) (outillage) et [0008](0008-lint-et-format-oxlint-oxfmt.md) (lint)
+Statut : accepté · Date : 2026-09-27 · Couplé aux ADR [0002](0002-ddd-et-architecture-hexagonale.md) (feature-slice), [0007](0007-vite-et-vitest-outillage-unique.md) (outillage) et [0008](0008-lint-et-format-oxlint-oxfmt.md) (lint)
 
 ## Contexte
 

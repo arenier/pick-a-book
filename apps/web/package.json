@@ -18,6 +18,27 @@
             "env": "VITE_API_BASE_URL"
           }
         ]
+      },
+      "translations": {
+        "executor": "nx:run-commands",
+        "options": {
+          "cwd": "{projectRoot}",
+          "commands": [
+            "i18next-cli status",
+            "i18next-cli lint"
+          ],
+          "parallel": false
+        },
+        "cache": true,
+        "inputs": [
+          "{projectRoot}/src/**/*",
+          "{projectRoot}/i18next.config.ts",
+          {
+            "externalDependencies": [
+              "i18next-cli"
+            ]
+          }
+        ]
       }
     },
     "tags": [

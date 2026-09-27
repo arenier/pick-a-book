@@ -1,7 +1,9 @@
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { submitShelfPhoto } from '../api/scan-shelf-photo';
 import type { UploadState } from '../model/upload-state';
+import { FailureMessage } from './failure-message';
 import { PhotoPicker } from './photo-picker';
 import { PhotoPreview } from './photo-preview';
 import styles from './photo-upload-screen.module.css';
@@ -18,6 +20,7 @@ export interface PhotoUploadScreenProps {
  * (specs/001-photo-upload, US1, US2, US4, US5).
  */
 export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScreenProps) {
+  const { t } = useTranslation('photo-upload');
   const { photo, state, pickerKey, uploading, canSend, settled, pick, send, startOver } =
     usePhotoUpload(submit);
 
@@ -30,23 +33,19 @@ export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScre
       <PhotoPicker key={pickerKey} disabled={uploading} onPick={pick} />
       {photo !== undefined && <PhotoPreview photo={photo} />}
       <button type="button" className={styles['send']} disabled={!canSend} onClick={onSend}>
-        Analyser la photo
+        {t('send')}
       </button>
 
       {uploading && (
         // The VLM call takes around 30 s (docs/decisions/0001): saying so up front is what keeps
         // a user from reading the wait as a hang.
-        <output>Analyse de la photo en cours, cela peut prendre une trentaine de secondes…</output>
+        <output>{t('uploading')}</output>
       )}
       {state.status === 'success' && <ScanResult books={state.books} />}
-      {state.status === 'error' && (
-        <p role="alert" className={styles['error']}>
-          {state.message}
-        </p>
-      )}
+      {state.status === 'error' && <FailureMessage failure={state.failure} />}
       {settled && (
         <button type="button" className={styles['send']} onClick={startOver}>
-          Recommencer
+          {t('startOver')}
         </button>
       )}
     </section>
