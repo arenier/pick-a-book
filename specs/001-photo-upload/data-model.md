@@ -21,6 +21,13 @@ La photo choisie par l'utilisateur avant envoi (prise à l'instant ou existante)
 - `sizeInBytes` DOIT être strictement positif et ne pas dépasser 20 971 520 octets (20 Mo).
 - Une violation produit un message d'erreur affichable, sans appel réseau (FR-003).
 
+**Aperçu** (US5, ajouté le 27/09/2026) : une photo retenue est affichée par une URL locale
+(`URL.createObjectURL(file)`), dérivée du `File` et jamais stockée à côté de lui — elle naît quand
+la photo est retenue et est révoquée quand la photo change (autre choix, fichier refusé,
+« recommencer ») ou que l'écran se démonte. L'aperçu est indépendant d'`UploadState` : il reste
+affiché pendant `uploading` puis en `success` comme en `error`, tant que la photo retenue ne change
+pas.
+
 ## UploadState
 
 L'état affiché à l'écran — une union discriminée, jamais plusieurs branches vraies à la fois

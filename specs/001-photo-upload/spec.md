@@ -115,6 +115,37 @@ puis en vérifiant qu'un bouton ou une action ramène à l'état initial prêt p
    recommencer, **Then** l'application revient à l'état initial, prête à recevoir une nouvelle
    photo.
 
+---
+
+### User Story 5 - Voir la photo choisie (Priority: P3)
+
+*Ajoutée le 27/09/2026.* Dès qu'il a choisi une photo, l'utilisateur la voit s'afficher à l'écran :
+il vérifie avant d'envoyer que c'est la bonne photo et qu'elle est exploitable (nette, étagère
+entière), et garde sous les yeux, pendant l'analyse puis à côté du résultat, l'étagère dont les
+livres sont listés.
+
+**Why this priority**: Confort d'usage — sans aperçu, l'outil reste utilisable, mais l'utilisateur
+envoie à l'aveugle et ne peut pas rapprocher la liste des livres de l'étagère photographiée sans
+changer d'application.
+
+**Independent Test**: Peut être testée seule en choisissant une photo, sans l'envoyer, et en
+constatant qu'elle s'affiche à l'écran ; puis en l'envoyant et en constatant qu'elle reste affichée
+avec le résultat.
+
+**Acceptance Scenarios**:
+
+1. **Given** l'utilisateur est sur l'écran d'accueil, **When** il choisit ou prend une photo
+   acceptée, **Then** l'application l'affiche aussitôt, avant tout envoi.
+2. **Given** une photo affichée, **When** l'utilisateur l'envoie, **Then** elle reste affichée
+   pendant l'analyse puis avec le résultat (livres détectés, aucun livre ou erreur).
+3. **Given** une photo affichée, **When** l'utilisateur en choisit une autre, **Then** la nouvelle
+   remplace l'ancienne ; si la nouvelle est refusée (US2), plus aucune photo n'est affichée.
+4. **Given** une photo affichée, **When** l'utilisateur choisit de recommencer (US4), **Then**
+   l'aperçu disparaît avec le reste.
+5. **Given** une photo acceptée que le navigateur ne sait pas afficher (HEIC hors Safari, fichier
+   corrompu), **When** elle est choisie, **Then** un court message indique que l'aperçu est
+   indisponible, et l'envoi reste possible.
+
 ### Edge Cases
 
 - Que se passe-t-il si l'utilisateur envoie une photo alors qu'une analyse précédente est encore en
@@ -129,6 +160,9 @@ puis en vérifiant qu'un bouton ou une action ramène à l'état initial prêt p
   l'analyse elle-même ait pu être lancée ? La photo déjà soumise reste conservée (FR-014) ; côté
   écran, ce cas se présente comme les autres coupures réseau, sans distinction visible pour
   l'utilisateur.
+- Que se passe-t-il si le navigateur ne sait pas afficher la photo choisie alors qu'elle est
+  acceptée ? (HEIC n'est affichable que par Safari) — l'aperçu est remplacé par un message, l'envoi
+  n'est pas bloqué : la reconnaissance, elle, sait lire le format (FR-017).
 
 ## Requirements *(mandatory)*
 
@@ -175,12 +209,21 @@ puis en vérifiant qu'un bouton ou une action ramène à l'état initial prêt p
   l'utilisateur uniquement à des fins de référence en base de données — ce nom ne DOIT jamais
   apparaître tel quel dans l'endroit où la photo est effectivement stockée, ni être exposé par une
   réponse du système.
+- **FR-016**: Le système DOIT afficher la photo acceptée dès qu'elle est choisie, avant tout envoi,
+  et la garder affichée pendant l'analyse puis avec son résultat, jusqu'au choix d'une autre photo
+  ou au retour à l'état initial (US5). Une photo refusée avant envoi (FR-009) n'est pas affichée.
+- **FR-017**: L'affichage de la photo DOIT se faire sur l'appareil, sans aller-retour réseau ni
+  conservation supplémentaire (FR-013 reste vrai pour une photo affichée puis jamais envoyée) ; une
+  photo que le navigateur ne sait pas afficher DOIT être signalée par un message sans jargon
+  technique, sans empêcher son envoi.
 
 ### Key Entities
 
 - **Photo soumise** : la photo d'étagère fournie par l'utilisateur pour un envoi — ses attributs
   significatifs pour cette feature sont son format et son poids ; son contenu visuel est traité
   par la reconnaissance (hors scope de cette spec).
+- **Aperçu de la photo** : l'image de la photo choisie, affichée sur l'appareil tant qu'elle est la
+  photo en cours (US5) — n'existe que dans l'écran, jamais transmise ni conservée en tant que telle.
 - **Résultat d'analyse** : ce que l'utilisateur voit après un envoi — une liste de livres détectés
   (auteur optionnel, titre), ou l'indication qu'aucun livre n'a été détecté, ou un message d'échec.
 - **Scan conservé** : l'enregistrement durable d'une photo soumise et de ce qui en a été tiré —
@@ -208,6 +251,8 @@ puis en vérifiant qu'un bouton ou une action ramène à l'état initial prêt p
 - **SC-005**: 100 % des analyses qui obtiennent une réponse du service de reconnaissance (livres
   détectés, aucun livre, ou échec) laissent une photo et un enregistrement retrouvables après coup,
   sans action supplémentaire de l'utilisateur ni ressaisie de la photo.
+- **SC-006**: L'aperçu de la photo choisie tient dans la largeur d'un écran de téléphone (360px et
+  plus), sans défilement horizontal et sans repousser le bouton d'envoi hors de l'écran.
 
 ## Assumptions
 
@@ -234,6 +279,10 @@ puis en vérifiant qu'un bouton ou une action ramène à l'état initial prêt p
   plus faillible échoue. Une photo soumise dont l'analyse n'a jamais pu être déclenchée (coupure
   entre les deux) reste dans un état intermédiaire, sans reprise automatique ni notion d'expiration
   dans le scope de cette feature — cohérent avec l'absence de politique de rétention ci-dessus.
+- La photo choisie est affichée à l'écran dès sa sélection et jusqu'au retour à l'état initial —
+  décision actée avec le porteur du projet le 27/09/2026 (US5). L'aperçu est construit sur
+  l'appareil à partir du fichier choisi : il ne change rien au contrat de l'API ni à ce qui est
+  conservé (US3).
 - Les formats acceptés et la taille maximale (JPEG/PNG/WebP/HEIC, 20 Mo) reprennent une contrainte
   déjà actée côté domaine (`ShelfPhoto`, contexte `recognition`) plutôt que d'en introduire une
   nouvelle pour cette feature.

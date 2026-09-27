@@ -48,6 +48,14 @@ dupliquer ces colonnes dans chaque table métier. Entièrement un détail d'`inf
 (research.md §8) : `ShelfScanRecord` (`data-model.md`) garde la même forme qu'avant pour
 `domain`/`application`, c'est l'adapter Drizzle qui fait le lien entre les deux tables.
 
+**Extension du 27/09/2026** (US5) : la photo choisie s'affiche à l'écran, de la sélection jusqu'au
+retour à l'état initial. Entièrement dans `apps/web` : l'aperçu est un `<img>` dont la source est
+une URL locale (`URL.createObjectURL`) sur le `File` choisi — ni lecture en data URL (une photo de
+20 Mo deviendrait une chaîne base64 d'environ 27 Mo en mémoire), ni aller-retour réseau (FR-017).
+L'URL est révoquée dès que la photo change ou que l'écran se démonte, pour ne pas garder en mémoire
+chaque photo essayée sur un téléphone. Un `<img>` en erreur (HEIC hors Safari) cède la place à un
+message sans bloquer l'envoi. Aucun changement d'API, de contrat ni de persistance.
+
 ## Technical Context
 
 **Language/Version**: TypeScript strict (voir `tsconfig.base.json`), Node.js 26.5.1 / cible
@@ -146,6 +154,8 @@ apps/web/src/
         │   ├── photo-upload-screen.tsx    # écran complet : sélection, envoi, résultat
         │   ├── photo-upload-screen.spec.tsx
         │   ├── photo-picker.tsx           # <input type="file" accept="..."> — sans `capture`, qui fermerait la galerie (FR-001)
+        │   ├── photo-preview.tsx          # aperçu de la photo choisie, URL locale révoquée au changement (US5)
+        │   ├── photo-preview.spec.tsx
         │   ├── scan-result.tsx            # liste des livres / "aucun livre" / message d'erreur
         │   └── scan-result.spec.tsx
         ├── model/
