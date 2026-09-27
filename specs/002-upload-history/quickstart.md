@@ -20,10 +20,10 @@ panne.
 ## Scénario 1 : historique vide, puis alimenté (US1)
 
 1. Sur une base neuve (`docker compose down -v` puis `up -d db bucket`), ouvrir
-   `http://localhost:4200/#/envois`.
+   `http://localhost:4200/#/historique`.
    **Attendu** : un message « aucun envoi » avec un lien vers la prise de photo (US1, scénario 2).
 2. Revenir à l'envoi (`#/`), envoyer trois photos : deux JPEG et un PNG.
-3. Rouvrir `#/envois`.
+3. Rouvrir `#/historique`.
    **Attendu** : trois entrées, la plus récente en tête. Chacune a sa date, une vignette et
    « N livres détectés » (nombre de livres du stub).
 4. Vérifier la vignette en base et dans le bucket :
@@ -41,7 +41,7 @@ panne.
    `POST /shelf-photos` suivi de `POST /shelf-photos/{id}/scan`.
    Attention : au-delà de 50 analyses dans la journée, le plafond s'applique, ce qui est aussi le
    scénario 5. Pour ce scénario-ci, fixer `DAILY_SCAN_LIMIT=500` dans `.env`.
-2. Ouvrir `#/envois`, outils de développement ouverts, onglet Réseau.
+2. Ouvrir `#/historique`, outils de développement ouverts, onglet Réseau.
    **Attendu** : la première page (20 entrées) s'affiche en moins de 2 s, et ses vignettes pèsent
    moins de 5 Mo au total. Faire défiler charge les pages suivantes jusqu'à la toute première
    photo. Aucune entrée n'est en double, aucune ne manque.
@@ -51,11 +51,11 @@ panne.
 ## Scénario 3 : détail et retour (US2)
 
 1. Dans l'historique, défiler jusqu'à la deuxième page, puis ouvrir une entrée.
-   **Attendu** : l'URL devient `#/envois/{id}`. La photo est affichée en grand et les livres
+   **Attendu** : l'URL devient `#/historique/{id}`. La photo est affichée en grand et les livres
    détectés dans le même ordre qu'à l'écran de résultat. Le score de confiance n'est pas affiché.
 2. Revenir en arrière (bouton du navigateur ou lien « Mes envois »).
    **Attendu** : la liste est au même endroit, sans nouvelle requête de liste.
-3. Ouvrir `#/envois/00000000-0000-4000-8000-000000000000`.
+3. Ouvrir `#/historique/00000000-0000-4000-8000-000000000000`.
    **Attendu** : un message « envoi introuvable » avec un retour à l'historique.
 4. Confirmer qu'aucune réponse ne divulgue le nom de fichier d'origine (FR-009) :
    ```bash

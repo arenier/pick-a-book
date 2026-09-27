@@ -32,8 +32,8 @@ par un petit hook maison (`useHashRoute`, qui écoute `hashchange`) :
 | Fragment | Écran |
 |---|---|
 | `#/` (ou vide) | envoi d'une photo (slice `photo-upload`, inchangée) |
-| `#/envois` | historique (slice `upload-history`) |
-| `#/envois/{id}` | détail d'un envoi (slice `upload-history`) |
+| `#/historique` | historique (slice `upload-history`) |
+| `#/historique/{id}` | détail d'un envoi (slice `upload-history`) |
 
 Le shell porte la navigation entre les deux slices (lien « Mes envois » / « Nouvelle photo ») :
 aucune slice n'importe l'autre (ADR 0002).

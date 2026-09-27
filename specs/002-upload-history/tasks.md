@@ -164,13 +164,13 @@ visible et modifiable là où la prod se configure, sans redéploiement de code.
 
 - [ ] T025 [P] Écrire les tests (doivent échouer) dans `apps/web/src/app/use-hash-route.spec.ts` et `apps/web/src/app/routes.spec.ts` :
   - `''`, `#` et `#/` donnent `{ name: 'upload' }` ;
-  - `#/envois` donne `{ name: 'history' }` ;
-  - `#/envois/<uuid>` donne `{ name: 'entry', id }` ;
+  - `#/historique` donne `{ name: 'history' }` ;
+  - `#/historique/<uuid>` donne `{ name: 'entry', id }` ;
   - tout autre fragment donne `{ name: 'upload' }` ;
   - le hook suit `hashchange` et se désabonne au démontage ;
   - `hrefFor(route)` produit le fragment inverse.
 - [ ] T026 [P] Créer `apps/web/src/app/routes.ts` (union `Route`, `parseRoute`, `hrefFor`) et `apps/web/src/app/use-hash-route.ts`, un hook fondé sur `useSyncExternalStore` et `hashchange`. Fait passer T025. Dépend de T025.
-- [ ] T027 Écrire le test (doit échouer) dans `apps/web/src/app/app.spec.tsx` : sur `#/`, l'écran d'envoi est affiché avec un lien « Mes envois » vers `#/envois` (FR-001). Puis modifier `apps/web/src/app/app.tsx` pour monter l'écran selon la route, en gardant l'écran d'envoi inchangé sur `upload`. Les écrans d'historique et de détail sont des emplacements vides jusqu'à US1 et US2. Dépend de T026.
+- [ ] T027 Écrire le test (doit échouer) dans `apps/web/src/app/app.spec.tsx` : sur `#/`, l'écran d'envoi est affiché avec un lien « Mes envois » vers `#/historique` (FR-001). Puis modifier `apps/web/src/app/app.tsx` pour monter l'écran selon la route, en gardant l'écran d'envoi inchangé sur `upload`. Les écrans d'historique et de détail sont des emplacements vides jusqu'à US1 et US2. Dépend de T026.
 
 **Checkpoint** : `yarn check` passe. L'écran d'envoi existant fonctionne, plafonné et limité, et
 affiche les nouveaux messages de 429. Le routage est en place.
@@ -183,7 +183,7 @@ affiche les nouveaux messages de 429. Le routage est en place.
 accessible jusqu'au tout premier envoi.
 
 **Independent Test** : envoyer quelques photos aux issues différentes (livres, aucun livre, échec,
-analyse jamais lancée), ouvrir `#/envois` et constater qu'elles y sont toutes, dans l'ordre, avec
+analyse jamais lancée), ouvrir `#/historique` et constater qu'elles y sont toutes, dans l'ordre, avec
 le bon résumé (quickstart, scénarios 1 et 2).
 
 ### Domaine : vignette et lecture paginée
@@ -305,7 +305,7 @@ le bon résumé (quickstart, scénarios 1 et 2).
   - les libellés sont « 12 livres détectés », « 1 livre détecté », « Aucun livre détecté », « Analyse en échec » et « Analyse non lancée » (FR-005) ;
   - la vignette est un `<img loading="lazy">` vers `thumbnailUrl(id)` si `hasThumbnail`, et un indicateur neutre sans requête sinon ;
   - `onError` de l'image affiche l'indicateur neutre (FR-008) ;
-  - la carte est un lien vers `#/envois/{id}`.
+  - la carte est un lien vers `#/historique/{id}`.
 
   Créer ensuite `apps/web/src/features/upload-history/ui/history-entry-card.tsx`. Dépend de T049 et T050.
 - [ ] T052 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/history-screen.spec.tsx` :
@@ -319,7 +319,7 @@ le bon résumé (quickstart, scénarios 1 et 2).
   - un échec de page suivante garde les entrées et affiche un « Réessayer » local.
 
   Créer ensuite `apps/web/src/features/upload-history/ui/history-screen.tsx` et `apps/web/src/features/upload-history/ui/upload-history.module.css`. Dépend de T051.
-- [ ] T053 [US1] Brancher la route `history` sur `HistoryScreen` dans `apps/web/src/app/app.tsx`, avec un lien « Nouvelle photo » vers `#/`. Compléter `apps/web/src/app/app.spec.tsx` (test d'abord) : `#/envois` affiche l'historique, et le lien ramène à l'écran d'envoi. Dépend de T027 et T052.
+- [ ] T053 [US1] Brancher la route `history` sur `HistoryScreen` dans `apps/web/src/app/app.tsx`, avec un lien « Nouvelle photo » vers `#/`. Compléter `apps/web/src/app/app.spec.tsx` (test d'abord) : `#/historique` affiche l'historique, et le lien ramène à l'écran d'envoi. Dépend de T027 et T052.
 
 **Checkpoint** : US1 est livrable seule (quickstart, scénarios 1, 2 et 6). La liste, les vignettes
 et la pagination fonctionnent, et le détail n'est encore qu'un emplacement vide.
@@ -331,7 +331,7 @@ et la pagination fonctionnent, et le détail n'est encore qu'un emplacement vide
 **But** : ouvrir un envoi et voir la photo en grand, avec les livres détectés tels qu'ils avaient
 été obtenus, puis revenir à la liste là où on l'avait quittée.
 
-**Independent Test** : ouvrir directement `#/envois/{id}` pour un envoi connu et constater que la
+**Independent Test** : ouvrir directement `#/historique/{id}` pour un envoi connu et constater que la
 photo et ses livres s'affichent. Ouvrir un id inconnu et constater le message « introuvable »
 (quickstart, scénario 3).
 
@@ -358,13 +358,13 @@ photo et ses livres s'affichent. Ouvrir un id inconnu et constater le message «
   - `failed` affiche « L'analyse de cette photo a échoué. » ;
   - `pending` affiche « L'analyse de cette photo n'a pas été lancée. » (US2, scénario 3) ;
   - `onError` de la photo bascule sur la vignette si `hasThumbnail`, sinon sur l'indicateur neutre, et les livres restent affichés (FR-008) ;
-  - `notFound` affiche « Cet envoi est introuvable. » avec un lien vers `#/envois` ;
+  - `notFound` affiche « Cet envoi est introuvable. » avec un lien vers `#/historique` ;
   - un échec réseau affiche un message distinct avec « Réessayer » ;
-  - un lien « Mes envois » ramène à `#/envois`.
+  - un lien « Mes envois » ramène à `#/historique`.
 
   Créer ensuite `apps/web/src/features/upload-history/ui/entry-detail-screen.tsx`. Dépend de T059 et T060.
 - [ ] T062 [US2] Brancher la route `entry` dans `apps/web/src/app/app.tsx`. `HistoryScreen` reste **monté** (masqué par l'attribut `hidden`) quand le détail est affiché, et la slice mémorise `window.scrollY` au départ vers un détail pour le restaurer au retour (research.md §3). Tests d'abord dans `apps/web/src/app/app.spec.tsx` et `apps/web/src/features/upload-history/ui/history-screen.spec.tsx` :
-  - aller de `#/envois` à `#/envois/{id}` puis revenir ne refait **aucune** requête de liste ;
+  - aller de `#/historique` à `#/historique/{id}` puis revenir ne refait **aucune** requête de liste ;
   - les entrées déjà chargées, y compris la deuxième page, sont toujours là ;
   - la position de défilement est restaurée.
 

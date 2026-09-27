@@ -210,7 +210,7 @@ Formes locales à la slice, copies volontaires du contrat (research.md §11).
 
 | Champ | Type | Note |
 |---|---|---|
-| `id` | `string` | Sert à construire `#/envois/{id}` et les URL d'image. |
+| `id` | `string` | Sert à construire `#/historique/{id}` et les URL d'image. |
 | `sentAt` | `Date` | Parsée depuis `createdAt`, affichée en date et heure locales. |
 | `outcome` | `{ kind: 'books'; count: number } \| { kind: 'none' } \| { kind: 'failed' } \| { kind: 'notStarted' }` | Les quatre issues de FR-005. `completed` avec `bookCount = 0` donne `none`. |
 | `hasThumbnail` | `boolean` | `false` : indicateur neutre sans requête (FR-008). |

@@ -26,8 +26,8 @@ Approche technique :
 - **Vignettes** : produites par le navigateur à l'envoi (480 px, JPEG), jointes au `POST /shelf-photos`,
   validées, stockées et référencées dans `uploads` comme tout fichier du bucket (research.md §5, §6).
   Ce choix couvre le HEIC des iPhone, sans dépendance native ni calcul serveur.
-- **Front** : nouvelle slice `upload-history`, et routage par fragment d'URL (`#/envois`,
-  `#/envois/{id}`) dans le shell. C'est la seule forme de routage compatible avec le bucket statique
+- **Front** : nouvelle slice `upload-history`, et routage par fragment d'URL (`#/historique`,
+  `#/historique/{id}`) dans le shell. C'est la seule forme de routage compatible avec le bucket statique
   qui sert le front (research.md §2).
 
 ## Technical Context
@@ -167,7 +167,7 @@ apps/web/src/
 ├── app/
 │   ├── app.tsx                            # shell : routage, navigation entre slices, historique gardé monté
 │   ├── use-hash-route.ts                  # + spec
-│   └── routes.ts                          # #/, #/envois, #/envois/{id}
+│   └── routes.ts                          # #/, #/historique, #/historique/{id}
 └── features/
     ├── photo-upload/
     │   ├── model/make-thumbnail.ts        # createImageBitmap → canvas → JPEG 480 px ; undefined si échec
