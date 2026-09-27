@@ -106,7 +106,9 @@ traité comme une erreur générique, pas comme un succès silencieux.
 ### 502 — échec en amont
 
 Corps : `{ "message": string, "statusCode": 502 }`. Le service de reconnaissance (VLM) est en
-panne ou hors contrat (`ShelfScanFailed`). Distinct du 400 de l'étape 1 : ce n'est pas la photo qui
+panne ou hors contrat (`ShelfScanFailed`). Le `message` est **générique** — il ne reprend jamais la
+réponse du fournisseur, qui peut parler de clé d'API, de quota ou de modèle — et le détail est
+journalisé côté serveur *(amendé le 27/09/2026)*. Distinct du 400 de l'étape 1 : ce n'est pas la photo qui
 est en cause (FR-006, US2 scénario 3). **Effet de bord serveur (US3)** : le `ShelfScanRecord` passe
 de `pending` à `failed` — la photo reste conservée, prête pour un traitement ultérieur (FR-011,
 scénario 2), même si aucune UX de nouvelle tentative n'est exposée par cette feature.

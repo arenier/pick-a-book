@@ -6,7 +6,8 @@ import {
   StoreShelfPhotoUseCase,
 } from '@pick-a-book/recognition-application';
 import { ShelfScanFailed, type ShelfScannerPort } from '@pick-a-book/recognition-domain';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { Logger } from '@nestjs/common';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { RecognitionExceptionFilter } from './recognition-exception.filter';
 import { ShelfPhotosController } from './shelf-photos.controller';
@@ -122,9 +123,14 @@ describe('POST /shelf-photos, refusing a photo', () => {
   });
 });
 
+/** What a provider says when it refuses: nothing the caller should read. */
+const providerAnswer = 'Gemini answered 400 (API key not valid. Please pass a valid API key.)';
+
+const scanFailure = new ShelfScanFailed(providerAnswer);
+
 const failingScanner: ShelfScannerPort = {
   scan: async () => {
-    throw new ShelfScanFailed('provider unavailable');
+    throw scanFailure;
   },
 };
 
@@ -148,7 +154,9 @@ describe('POST /shelf-photos/:id/scan, for a photo it cannot scan', () => {
 describe('POST /shelf-photos/:id/scan, when the recognition service fails', () => {
   const { upload, scan } = aRunningApi(failingScanner);
 
-  it('answers 502, with the Nest error body', async () => {
+  // The provider's answer can name keys, quotas or models: it goes to the logs, never out.
+  it('answers 502 with a generic message, and logs what the provider said', async () => {
+    const log = vi.spyOn(Logger.prototype, 'error').mockReturnValue();
     const id = idOf(await (await upload(aJpeg())).json());
 
     const response = await scan(id);
@@ -156,8 +164,10 @@ describe('POST /shelf-photos/:id/scan, when the recognition service fails', () =
     expect(response.status).toBe(502);
     await expect(response.json()).resolves.toStrictEqual({
       statusCode: 502,
-      message: 'Shelf scan failed: provider unavailable',
+      message: 'The recognition service is unavailable',
       error: 'Bad Gateway',
     });
+    expect(log).toHaveBeenCalledWith(scanFailure.message, scanFailure.stack);
+    log.mockRestore();
   });
 });

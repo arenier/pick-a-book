@@ -6,6 +6,7 @@ import {
   ConflictException,
   type ExceptionFilter,
   type HttpException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
@@ -31,7 +32,9 @@ type RecognitionError =
  * - `ShelfScanAlreadyProcessed` → 409: scanning again would overwrite a result, or pay for a
  *   VLM call nobody asked for (research.md §7);
  * - `ShelfScanFailed` → 502: the provider is down or off-contract — an upstream failure,
- *   where a 4xx would blame the photo (FR-006).
+ *   where a 4xx would blame the photo (FR-006). Its message is the provider's own answer,
+ *   which can name an API key, a quota or a model: it is logged, and the caller only gets a
+ *   generic message (contracts/scan-api.md §2).
  *
  * Anything else is not caught here and stays a 500. Lives in the composition root, the only
  * place that knows both the domain and HTTP: one filter per bounded context, so no single
@@ -42,9 +45,14 @@ type RecognitionError =
  */
 @Catch(InvalidShelfPhoto, ShelfScanAlreadyProcessed, ShelfScanFailed, ShelfScanNotFound)
 export class RecognitionExceptionFilter implements ExceptionFilter<RecognitionError> {
+  private readonly logger = new Logger(RecognitionExceptionFilter.name);
+
   constructor(private readonly adapterHost: HttpAdapterHost) {}
 
   catch(error: RecognitionError, host: ArgumentsHost): void {
+    if (error instanceof ShelfScanFailed) {
+      this.logger.error(error.message, error.stack);
+    }
     const http = toHttp(error);
     const response = host.switchToHttp().getResponse<unknown>();
 
@@ -62,5 +70,5 @@ function toHttp(error: RecognitionError): HttpException {
   if (error instanceof ShelfScanAlreadyProcessed) {
     return new ConflictException(error.message);
   }
-  return new BadGatewayException(error.message);
+  return new BadGatewayException('The recognition service is unavailable');
 }
