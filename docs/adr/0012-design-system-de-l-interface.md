@@ -14,8 +14,8 @@ interface repose sur des **éléments HTML natifs** stylés à la main :
 - un paragraphe `role="alert"` pour l'erreur ;
 - une liste des livres détectés, avec leur titre et leur auteur.
 
-La PR #63, en revue, y ajoute l'aperçu de la photo choisie. La confiance de chaque livre est
-reçue de l'API, mais elle n'est pas affichée (`data-model.md`).
+#63 y a ajouté l'aperçu de la photo choisie. La confiance de chaque livre est reçue de l'API,
+mais elle n'est pas affichée (`data-model.md`).
 
 Le style tient en une feuille globale et deux CSS Modules :
 - `styles.css` fixe une pile de polices `system-ui` ;

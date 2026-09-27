@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { submitShelfPhoto } from '../api/scan-shelf-photo';
 import type { UploadState } from '../model/upload-state';
 import { PhotoPicker } from './photo-picker';
+import { PhotoPreview } from './photo-preview';
 import styles from './photo-upload-screen.module.css';
 import { ScanResult } from './scan-result';
 import { usePhotoUpload } from './use-photo-upload';
@@ -14,10 +15,10 @@ export interface PhotoUploadScreenProps {
 
 /**
  * The upload screen: choose a shelf photo, send it, read the books found on it
- * (specs/001-photo-upload, US1, US2, US4).
+ * (specs/001-photo-upload, US1, US2, US4, US5).
  */
 export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScreenProps) {
-  const { state, pickerKey, uploading, canSend, settled, pick, send, startOver } =
+  const { photo, state, pickerKey, uploading, canSend, settled, pick, send, startOver } =
     usePhotoUpload(submit);
 
   const onSend = useCallback(() => {
@@ -27,6 +28,7 @@ export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScre
   return (
     <section className={styles['screen']}>
       <PhotoPicker key={pickerKey} disabled={uploading} onPick={pick} />
+      {photo !== undefined && <PhotoPreview photo={photo} />}
       <button type="button" className={styles['send']} disabled={!canSend} onClick={onSend}>
         Analyser la photo
       </button>

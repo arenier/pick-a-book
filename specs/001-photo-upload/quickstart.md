@@ -84,6 +84,17 @@ research.md §9.)
 1. Après un résultat (succès ou erreur), déclencher l'action « recommencer ».
 2. **Attendu** : retour à l'état initial, sans rechargement de page, prêt pour un nouvel envoi.
 
+## Scénario 5 — voir la photo choisie (US5)
+
+1. Choisir une photo JPEG, sans l'envoyer.
+2. **Attendu** : la photo s'affiche aussitôt sous le sélecteur, dans la largeur de l'écran
+   (360px, sans défilement horizontal — SC-006), le bouton d'envoi restant accessible.
+3. Envoyer : la photo reste affichée pendant l'analyse, puis au-dessus du résultat.
+4. « Recommencer » : l'aperçu disparaît. Choisir ensuite un PDF : aucun aperçu, seulement le
+   message de refus.
+5. Hors Safari, choisir une photo HEIC : un message « aperçu indisponible » remplace l'image, et
+   l'envoi reste possible.
+
 ## Tests automatisés
 
 ```bash
