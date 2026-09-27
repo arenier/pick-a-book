@@ -91,11 +91,17 @@ GET /shelf-photos?limit=20&cursor=<opaque>
   `image/png`, `image/webp`, `image/heic`) et `Cache-Control: private, max-age=31536000, immutable`.
 - 404 si l'envoi n'existe pas.
 - 502 si la photo est introuvable ou illisible dans le bucket alors que l'envoi existe
-  (`ShelfPhotoStorageFailed`). Le front affiche l'indicateur neutre (FR-008).
+  (`ShelfPhotoStorageFailed`). Pour le `<img>`, c'est un échec de chargement comme un autre : même
+  repli que ci-dessous.
 
-Le front charge cette image dans un `<img>`, ce qui ne demande pas de CORS. Un HEIC que le
-navigateur ne sait pas afficher déclenche `onerror` : le front affiche alors l'indicateur neutre, et
-à défaut la vignette si elle existe (FR-008).
+Le front charge cette image dans un `<img>`, ce qui ne demande pas de CORS. Quand elle ne peut pas
+s'afficher (un HEIC que le navigateur ne sait pas lire, ou une réponse 502), `onerror` se déclenche
+et le front se replie, dans cet ordre (FR-008) :
+
+1. **la vignette**, si `hasThumbnail` vaut `true` : elle montre encore l'étagère ;
+2. **l'indicateur neutre** sinon, ou si la vignette échoue à son tour.
+
+Les livres détectés restent affichés dans tous les cas.
 
 ## 4. `GET /shelf-photos/{id}/thumbnail` : la vignette
 

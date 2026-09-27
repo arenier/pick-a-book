@@ -388,7 +388,7 @@ photo et ses livres s'affichent. Ouvrir un id inconnu et constater le message «
   - `completed` vide affiche « Aucun livre détecté » ;
   - `failed` affiche « L'analyse de cette photo a échoué. » ;
   - `pending` affiche « L'analyse de cette photo n'a pas été lancée. » (US2, scénario 3) ;
-  - `onError` de la photo bascule sur la vignette si `hasThumbnail`, sinon sur l'indicateur neutre, et les livres restent affichés (FR-008) ;
+  - `onError` de la photo bascule sur la vignette si `hasThumbnail`, sinon sur l'indicateur neutre ; un `onError` de la vignette bascule à son tour sur l'indicateur neutre ; les livres restent affichés dans tous les cas (FR-008, contrat §3) ;
   - `notFound` affiche « Cet envoi est introuvable. » avec un lien vers `#/historique` ;
   - un échec réseau affiche un message distinct avec « Réessayer » ;
   - un lien « Historique » ramène à `#/historique` ;

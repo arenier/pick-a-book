@@ -248,6 +248,10 @@ Union discriminée, comme `UploadState` de la spec 001 :
 `RescanFailure` = `'upstream' | 'dailyQuota' | 'rateLimited' | 'inProgress' | 'offline' | 'unexpected'`.
 `alreadyCompleted` n'est pas un échec affiché : le détail se recharge.
 
+**Photo non affichable** (FR-008) : le détail se replie sur la vignette si `hasThumbnail`, puis sur
+l'indicateur neutre si la vignette manque ou échoue à son tour. Les livres restent affichés
+(contrat §3).
+
 La relance n'est offerte que si `outcome.kind` vaut `failed` ou `notStarted` (FR-011, US3 scénario 4).
 Pendant `running`, le bouton est désactivé (US3, scénario 2). Au succès, le détail et l'entrée
 correspondante de l'historique chargé sont mis à jour sans recharger la liste.
