@@ -66,159 +66,17 @@ Légende : 🔴 fort · 🟠 moyen · 🟢 faible · ⚪ à clarifier
 | Typage des paramètres à l'appel | 🟠 | Un paramètre oublié affiche un texte troué. C'est grave, mais les tests l'attrapent quand le chemin est exercé (voir *Garde-fou*). |
 | Poids du bundle | 🟢 | React pèse déjà 67 ko gzip. Quelques kilo-octets de plus ne changent rien de mesurable pour une app personnelle à 20–200 photos par mois. |
 
-## Mesurer avant de choisir
+## Étude des candidats
 
-Même méthode que pour l'[ADR 0008](0008-lint-et-format-oxlint-oxfmt.md) : les candidats ne sont pas
-jugés sur leur documentation. Chacun est monté sur la **même mini-app**, dans un bac à sable hors
-du repo, avec les versions du repo (Vite 8, `@vitejs/plugin-react` 6, React 19, TypeScript 6.0).
-La mini-app contient trois messages : un libellé, un pluriel et un message à paramètre, en deux
-locales.
+Six options ont été montées sur la **même mini-app**, avec les versions d'outils du repo : un
+libellé, un pluriel et un message à paramètre, en deux locales. On a mesuré pour chacune :
+- le poids gzip ;
+- des sondes de typage ;
+- le comportement à l'exécution ;
+- les outils de contrôle des catalogues et du texte en dur.
 
-### Poids
-
-Chunk JS de production, compressé en gzip -9. L'écart est mesuré par rapport à la même app sans
-i18n (67 461 o).
-
-| Candidat | Écart gzip |
-|---|---|
-| Catalogue typé maison sur `Intl` | +0,3 ko |
-| Paraglide JS 2.25 (messages compilés) | +1,3 ko |
-| Lingui 6.8 (runtime seul, catalogue précompilé chargé à la main) | +2,4 ko |
-| react-intl 12.1 (FormatJS, messages ICU analysés au runtime) | +14,0 ko |
-| i18next 26.4 + react-i18next 17.0 | +15,8 ko |
-| **i18next + react-i18next + i18next-browser-languagedetector 8.2** | **+17,7 ko** |
-
-Lingui est mesuré **sans ses macros** : c'est son poids minimal. Les macros apportent l'extraction
-des messages, mais demandent un plugin Babel ou SWC en plus de la chaîne de build.
-
-### Typage
-
-Chaque ligne est une sonde : une erreur est introduite délibérément, et on relève si `tsc` échoue.
-Toutes les variantes passent `tsc` avant les sondes.
-
-| Sonde | Maison | i18next | react-intl | Paraglide | Lingui (sans macro) |
-|---|---|---|---|---|---|
-| Clé absente du catalogue anglais | ✅ | ✅ ¹ | ✅ ¹ | ❌ ² | — |
-| Clé mal orthographiée à l'appel | ✅ | ✅ ³ | ❌, ✅ ⁴ | ✅ | ❌ |
-| Paramètre oublié | ✅ | ❌ | ❌ | ✅ | non mesuré |
-| Paramètre mal typé (`count: 'x'`) | ✅ | non mesuré | non mesuré | ❌ ⁵ | non mesuré |
-
-1. Détecté grâce à notre propre typage du catalogue (`satisfies` sur les clés du catalogue
-   français), pas grâce à la librairie.
-2. **Repli silencieux sur le français** : le code généré contient `en_unsupported =
-   fr_unsupported`, sans aucun avertissement du compilateur.
-3. Avec la déclaration de module `CustomTypeOptions`.
-4. Non détecté par défaut ; détecté si on déclare les identifiants dans
-   `FormatjsIntl.Message`.
-5. Le paramètre est typé `NonNullable<unknown>` dans le code généré.
-
-Pour i18next, le typage a ensuite été sondé dans la forme retenue : **un namespace par slice, des
-catalogues en JSON**, et `CustomTypeOptions` qui tire ses types de l'import des JSON français. Trois
-erreurs échouent au typecheck :
-- une clé mal orthographiée (`t('unsuported')`) ;
-- un namespace mal orthographié (`useTranslation('photoUplod')`) ;
-- une clé d'un autre namespace préfixée (`t('photoUpload:detected')`) depuis un composant qui ne
-  l'a pas déclaré.
-
-La clé de pluriel s'écrit sans suffixe (`t('detected', { count })`), et i18next en connaît les
-variantes.
-
-### Comportement d'i18next à l'exécution
-
-| Situation | Résultat observé |
-|---|---|
-| `navigator.languages` = `["en-US","en"]`, `["de-DE","en-GB"]` | `en` |
-| `navigator.languages` = `["de-DE"]`, `["fr-CA"]`, `["pt-BR","fr-FR","en"]` | `fr` |
-| Traduction anglaise absente | **La phrase française s'affiche**, et `missingKeyHandler` n'est **pas** appelé |
-| Clé inconnue | La clé brute (`nope`) s'affiche ; `missingKeyHandler` est appelé |
-| Paramètre oublié | « Format  non pris en charge » (trou) ; `missingInterpolationHandler` est appelé |
-| Français, `count` = 1 000 000, sans clé `_many` | **La clé brute (`detected`) s'affiche**, sans repli sur `_other` |
-
-La détection est configurée ainsi : `order: ['navigator']`, `supportedLngs: ['fr','en']`,
-`nonExplicitSupportedLngs`, `load: 'languageOnly'` et `fallbackLng: 'fr'`. Elle fait exactement ce
-que demande #58.
-
-Les deux lignes en gras sont les pièges. Une traduction manquante ne se voit pas à l'exécution. Et
-en français, un pluriel exige **trois** formes (`_one`, `_many`, `_other`), puisque le CLDR attribue
-`many` aux multiples exacts du million. Aucun des deux n'est attrapé par la librairie elle-même.
-
-### Outillage de contrôle
-
-**`i18next-cli` 1.74** est l'outil en ligne de commande du projet i18next, par les mêmes
-mainteneurs. Il est sondé sur des catalogues rangés dans chaque slice
-(`src/features/{{namespace}}/i18n/{{language}}.json`), un chemin qu'il gère.
-
-| Sonde | `i18next-cli status` |
-|---|---|
-| Clé absente du catalogue anglais | ✅ code de sortie 1, clé nommée |
-| Formes de pluriel attendues en anglais (`_one`, `_other`, sans `_many`) | ✅ comptées juste |
-| Forme `_many` absente du catalogue **français** (langue source) | ❌ non vérifiée |
-| Placeholder mal orthographié en anglais (`{{fromat}}`) | ❌ non vérifié |
-
-Texte en dur, même fichier sondé par trois outils :
-
-| Cas | oxlint `react/jsx-no-literals` | `i18next-cli lint` | eslint-plugin-i18next (`jsx-only` + gabarits) |
-|---|---|---|---|
-| Texte nu dans le JSX | ✅ | ✅ | ✅ |
-| `{'…'}` | ❌ | ✅ | ✅ |
-| `alt`, `aria-label` | ❌ | ✅ | ✅ |
-| Gabarit de chaîne `` {`${n} livres`} `` | ❌ | ❌ | ✅ |
-| `className`, `data-testid` (à ignorer) | ✅ ignoré | ✅ ignoré | ✅ ignoré |
-
-Deux détails ont faussé une première lecture, et l'expliquent :
-- **eslint-plugin-i18next ignore les composants dont le nom est tout en capitales.** Une première
-  sonde, avec des composants nommés `A`, `B`, `C`…, ne signalait rien. Un composant nommé `FAQ`
-  n'est pas contrôlé non plus.
-- **Les avertissements de `i18next-cli lint` ne font pas échouer la commande**, seules les erreurs
-  le font. Il signale aussi comme « concaténation » deux `t()` voisins dans un même élément.
-
-### Autres constats
-
-- **Par défaut, Paraglide télécharge son plugin de format depuis un CDN à la compilation.** Le
-  proxy de l'environnement de mesure bloque jsDelivr, et le plugin échoue à se charger. La
-  compilation se déclare pourtant réussie.
-- **jsdom annonce `en-US`** (`navigator.languages` vaut `["en-US","en"]`). Une app qui suit le
-  navigateur s'affiche donc **en anglais dans les tests** si la locale n'est pas fixée
-  explicitement. Et `apps/web/index.html` déclare déjà `lang="en"` sur une page écrite en français.
-
-## Solutions proposées
-
-**A — i18next + react-i18next.**
-- Pour : la plus répandue, avec l'écosystème le plus vaste (détection de langue, `<Trans>` pour le
-  texte riche, formatage par `Intl`, intégrations avec les outils de traduction). Catalogues en
-  JSON, clés et namespaces typés, pluriels CLDR. Un outil officiel de contrôle (`i18next-cli`).
-  Aucune transformation au build.
-- Contre : le poids (+17,7 ko avec la détection de langue). Les paramètres ne sont pas typés. Le
-  repli silencieux sur le français et le `_many` du français restent à contrôler hors de la
-  librairie.
-
-**B — react-intl (FormatJS).**
-- Pour : format ICU standard, le plus riche (pluriels, sélections, texte riche).
-- Contre : un poids comparable à celui d'i18next (+14,0 ko) quand les messages sont analysés au
-  runtime. Pour s'en passer, il
-  faut précompiler, avec un outil de plus. Les clés ne sont typées qu'après une déclaration
-  globale, et les paramètres ne le sont pas. L'écosystème est plus étroit qu'i18next.
-
-**C — Paraglide JS (inlang).**
-- Pour : très léger (+1,3 ko), clés et paramètres typés, format JSON.
-- Contre : communauté plus petite. Une traduction manquante retombe en silence sur le français. Le
-  plugin est tiré d'un CDN par défaut. Il faut une étape de compilation et du code généré dans
-  l'arbre.
-
-**D — Catalogue typé maison sur `Intl`.** Écartée. C'est la meilleure option pour le typage (quatre
-sondes sur quatre) et le poids (+0,3 ko), mais elle perd sur le critère 🔴 « standard » :
-- un format que seul ce repo connaît ;
-- des messages écrits en fonctions TypeScript, qu'un traducteur ne peut pas toucher ;
-- du code à écrire et tester pour ce qu'une librairie donne (chargement, replis, texte riche,
-  outillage).
-
-Ses deux avantages portent sur des critères 🟠 et 🟢.
-
-**E — Lingui avec macros.** Écartée : ses macros exigent un plugin Babel ou SWC en plus de la chaîne
-Vite 8 / `@vitejs/plugin-react` 6, contraire au critère 🔴 de compatibilité.
-
-**F — typesafe-i18n.** Écartée : une seule version publiée depuis août 2023 (la 5.27.1, en février
-2026). C'est trop incertain pour une brique dont on fait dépendre le garde-fou.
+La méthode, les mesures, les constats et l'analyse de chaque candidat sont consignés dans l'issue
+**#58**. Cet ADR n'en retient que ce qui fonde la décision.
 
 ## Solution retenue
 
@@ -248,8 +106,10 @@ Vite 8 / `@vitejs/plugin-react` 6, contraire au critère 🔴 de compatibilité.
   `CustomTypeOptions` à partir des JSON français. Les slices n'importent que `react-i18next`
   (`useTranslation('<slice>')`), jamais une autre slice ni un module partagé. **Aucune lib
   `libs/shared/i18n`** : il n'y a rien à partager qu'i18next ne fournisse déjà.
-- **Choix de la locale** : détection sur `navigator` seul, sans persistance (`caches: []`), avec
-  les réglages mesurés ci-dessus. `<html lang>` suit l'événement `languageChanged`. Le sélecteur
+- **Choix de la locale** : détection sur `navigator` seul, sans persistance (`caches: []`). Les
+  réglages sont `order: ['navigator']`, `supportedLngs: ['fr','en']`, `nonExplicitSupportedLngs`,
+  `load: 'languageOnly'` et `fallbackLng: 'fr'`. Mesuré dans #58 : `["de-DE","en-GB"]` donne `en`,
+  et `["pt-BR","fr-FR","en"]` donne `fr`, conformément à la décision de #58. `<html lang>` suit l'événement `languageChanged`. Le sélecteur
   manuel et la persistance du choix relèvent de la spec ; le détecteur sait déjà lire et écrire
   `localStorage` si elle le demande.
 - **Erreurs de l'API** : l'API ne renvoie pas de texte destiné à l'utilisateur. Le front le
@@ -267,6 +127,12 @@ Vite 8 / `@vitejs/plugin-react` 6, contraire au critère 🔴 de compatibilité.
 
 ### Garde-fou
 
+Deux comportements d'i18next, mesurés dans #58, **ne se voient pas à l'exécution** et
+fondent ce garde-fou :
+- une traduction anglaise absente affiche la phrase française, sans appeler `missingKeyHandler` ;
+- en français, un pluriel sans forme `_many` affiche la clé brute à 1 000 000, puisque le CLDR
+  attribue `many` aux multiples exacts du million.
+
 Chaque erreur a son contrôle, et tous font échouer `yarn check` et la CI.
 
 | Erreur | Contrôle | Quand |
@@ -280,12 +146,8 @@ Chaque erreur a son contrôle, et tous font échouer `yarn check` et la CI.
 Ce qui reste à la revue : le gabarit de chaîne dans le JSX, un paramètre oublié sur un chemin
 qu'aucun test n'exerce, et une traduction recopiée sans être traduite.
 
-Deux options ont été écartées :
-- **oxlint `react/jsx-no-literals`** : elle ne couvre qu'un sous-ensemble de `i18next-cli lint`, et
-  aurait signalé deux fois la même faute.
-- **eslint-plugin-i18next** : c'est le seul à attraper les gabarits, mais il ajouterait une règle
-  ESLint hors des frontières Nx (ADR 0008) pour un seul cas, alors que `i18next-cli` est de toute
-  façon requis pour `status`.
+Les autres outils sondés pour le texte en dur sont comparés dans #58. `i18next-cli lint` est
+retenu parce que `i18next-cli` est de toute façon requis pour `status`.
 
 ### Conditions de bascule
 
@@ -296,7 +158,7 @@ Deux options ont été écartées :
   typage des paramètres mérite d'être 🔴. On rouvre la question entre Paraglide et un typage des
   interpolations.
 - **`i18next-cli` cesse d'être maintenu ou régresse** : `status` se remplace en étendant le test de
-  parité à la présence des clés, et `lint` par eslint-plugin-i18next (sondé ci-dessus).
+  parité à la présence des clés, et `lint` par eslint-plugin-i18next (sondé dans #58).
 
 Une troisième langue ou un traducteur externe **n'est pas** une condition de bascule : c'est
 précisément ce que ce choix rend simple.
