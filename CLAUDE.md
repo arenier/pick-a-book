@@ -124,8 +124,10 @@ yarn nx graph                      # visualise le graphe de dépendances
 Avant de démarrer l'API : `cp .env.example .env`. Une variable requise manquante fait échouer le
 démarrage avec la liste de ce qui manque — c'est voulu, ne pas la contourner. `yarn api` a besoin
 du Postgres et de l'émulateur de bucket de la stack (`docker compose up db bucket`) : l'API applique
-les migrations au démarrage, et les specs des adapters de `recognition-infrastructure` tournent
-contre ces deux mêmes services (la CI les démarre aussi).
+les migrations au démarrage, et les specs des adapters de `recognition-infrastructure` et de
+`tools/db-backup` tournent contre ces deux mêmes services (la CI les démarre aussi). Celles de
+`tools/db-backup` appellent aussi `pg_dump`, `pg_restore` et `psql` du `PATH`, en **version 18 ou
+plus** (la majeure de la prod) : sans eux, `yarn check` échoue sur ce projet.
 
 La **CI** (GitHub Actions, `.github/workflows/ci.yml`) tourne sur chaque PR et push `main` : oxlint
 et oxfmt sur tout le dépôt, puis `nx affected -t lint typecheck test build` sur les projets touchés
@@ -150,7 +152,8 @@ libs/recognition/infrastructure/ # adapters (Gemini, Qwen, stub) derrière Shelf
 libs/shared/result/              # contenu partagé, une lib par sujet nommé
 libs/shared/text-match/          # normalisation + comparaison floue de chaînes (bench, réconciliation)
 tools/bench/                     # départage manuel des adapters VLM sur photos réelles (#10) — hors CI
-docker/                          # Dockerfile des deux apps — contexte de build : la racine
+tools/db-backup/                 # pg_dump hebdomadaire vers le bucket (Cloud Run Job, #22) — voir son README
+docker/                          # Dockerfile des apps et du job de sauvegarde — contexte de build : la racine
 docs/adr/
 docs/decisions/                  # notes de décision de niveau inférieur (pas des ADR)
 infra/                           # infrastructure GCP en Terraform — voir infra/README.md
