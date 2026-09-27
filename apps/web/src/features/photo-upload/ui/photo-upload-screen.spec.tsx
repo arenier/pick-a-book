@@ -83,7 +83,7 @@ describe('PhotoUploadScreen, once a photo is settled', () => {
     choose(aJpeg());
     fireEvent.click(sendButton());
     await act(async () => {
-      submission.settle({ status: 'error', message: 'Le service est indisponible.' });
+      submission.settle({ status: 'error', failure: 'upstream' });
     });
 
     expect(sendButton()).toHaveProperty('disabled', false);
@@ -137,17 +137,19 @@ describe('PhotoUploadScreen, with a file it cannot send', () => {
     expect(sendButton()).toHaveProperty('disabled', true);
   });
 
-  it('shows the message of a failed submission', async () => {
+  it('words the failure of a submission', async () => {
     const submission = aPendingSubmission();
     render(<PhotoUploadScreen submit={submission.submit} />);
 
     choose(aJpeg());
     fireEvent.click(sendButton());
     await act(async () => {
-      submission.settle({ status: 'error', message: 'Le service est indisponible.' });
+      submission.settle({ status: 'error', failure: 'upstream' });
     });
 
-    expect(screen.getByRole('alert').textContent).toBe('Le service est indisponible.');
+    expect(screen.getByRole('alert').textContent).toBe(
+      'Le service de reconnaissance ne répond pas pour le moment. Réessayez dans quelques instants.',
+    );
   });
 });
 
@@ -157,7 +159,7 @@ const startOver = () => screen.getByRole('button', { name: 'Recommencer' });
 describe('PhotoUploadScreen, starting over', () => {
   it.each([
     ['a result', { status: 'success', books: [] }],
-    ['an error', { status: 'error', message: 'Le service est indisponible.' }],
+    ['an error', { status: 'error', failure: 'upstream' }],
   ] satisfies [string, UploadState][])(
     'comes back to the start after %s',
     async (_label, outcome) => {
@@ -254,7 +256,7 @@ describe('PhotoUploadScreen, once the chosen photo is sent', () => {
     fireEvent.click(sendButton());
 
     await act(async () => {
-      submission.settle({ status: 'error', message: 'Le service est indisponible.' });
+      submission.settle({ status: 'error', failure: 'upstream' });
     });
 
     expect(preview()).not.toBeNull();

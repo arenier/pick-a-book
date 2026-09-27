@@ -1,0 +1,32 @@
+{
+  "name": "@pick-a-book/shared-i18n",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "nx": {
+    "name": "shared-i18n",
+    "tags": [
+      "type:shared",
+      "context:none",
+      "scope:web"
+    ]
+  },
+  "dependencies": {
+    "i18next": "^26.4.2",
+    "i18next-browser-languagedetector": "^8.2.1",
+    "react": "^19.0.0",
+    "react-i18next": "^17.0.15",
+    "tslib": "^2.3.0"
+  }
+}

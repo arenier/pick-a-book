@@ -187,7 +187,8 @@ jobs:
       - uses: nrwl/nx-set-shas@v5
 
       # oxlint and oxfmt cover the whole repo (fast, not bound to the Nx graph); nx affected
-      # restricts lint (ESLint/boundaries), typecheck and test to the touched projects.
+      # restricts lint (ESLint/boundaries), typecheck, test, build and translations (i18next-cli,
+      # ADR 0011) to the touched projects.
       # `--type-aware` runs the tsgolint engine (oxlint-tsgolint): it type-checks, so it costs
       # roughly +0.6 s on this repo — measured, and small enough to stay in this step rather
       # than earn a job of its own.
@@ -195,7 +196,7 @@ jobs:
         run: |
           yarn oxlint --type-aware
           yarn format:check
-          yarn nx affected -t lint typecheck test build
+          yarn nx affected -t lint typecheck test build translations
 
   # Dedicated job: infra/ has nothing to do with Nx, and its gates (terraform test) are
   # hermetic — mock_provider means no GCP credentials, no cost, safe to run on every PR.

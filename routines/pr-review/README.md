@@ -1,8 +1,8 @@
 # Routine — revue de code sur PR (ouverture ou label `claude`)
 
 Routine cloud (agent claude.ai **événementiel**) qui relit **une** pull request de
-`arenier/pick-a-book`, applique le skill `pr-review` du repo, et poste le commentaire de review sous
-l'identité `claude[bot]`.
+`arenier/pick-a-book`, applique le skill `pr-review` (publié dans `arenier/claude-skills`, plugin
+`adri-plugin`), et poste le commentaire de review sous l'identité `claude[bot]`.
 
 Un **seul** prompt couvre les deux déclenchements possibles — l'**ouverture / mise à jour** d'une PR
 et l'**ajout du label `claude`** — parce que la seule chose qui change entre eux (la déduplication)
@@ -24,10 +24,11 @@ Conséquence du montage des déclencheurs (dans l'UI, voir plus bas) :
 - déclencheur **label seul** → relue à la pose du label ;
 - **les deux** → auto-review à l'ouverture **et** review à la demande par label, sans doublon.
 
-## Une seule source de vérité — et sa frontière de sécurité
+## Deux sources de vérité — et leur frontière de sécurité
 
-Contrairement au montage multi-repos d'autres organisations (prompt + skill dans un dépôt d'agents
-séparé), **pick-a-book est mono-repo** : le `prompt.md` **et** le skill `pr-review` vivent ici même.
+Le `prompt.md` de la routine vit ici ; le skill `pr-review` vit dans le dépôt de skills
+`arenier/claude-skills`, d'où pick-a-book le charge par la marketplace `adri-skills`
+(`.claude/settings.json`) — la copie locale a été retirée pour éviter les doublons.
 
 | Fichier | Rôle |
 |---|---|
@@ -35,22 +36,26 @@ séparé), **pick-a-book est mono-repo** : le `prompt.md` **et** le skill `pr-re
 | `routine.template.json` | Body de création de l'API, à instancier (placeholders `<<…>>`). |
 | `README.md` | Cette fiche. |
 
-Le skill de review : `.claude/skills/pr-review/SKILL.md`.
+Le skill de review : `adri-plugin/skills/pr-review/SKILL.md` dans `arenier/claude-skills`, lu au ref
+`main`.
 
-> **Le durcissement mono-repo.** Le workspace d'un run événementiel est le checkout de **la branche
-> de la PR relue** — modifiable par l'auteur de la PR. Le prompt et le skill sont donc lus **au ref
-> `main`** via le canal GitHub MCP (`get_file_contents`), **jamais** depuis le workspace. Comme
-> `main` est protégée (review requise, pas de push direct — cf. « Workflow Git » de `CLAUDE.md`), un
-> auteur ne peut pas altérer le référentiel de review sans d'abord le faire merger sur `main`. C'est
-> l'équivalent mono-repo du dépôt d'agents séparé : la protection de branche **est** la frontière de
-> sécurité.
+> **Le durcissement.** Le workspace d'un run événementiel est le checkout de **la branche de la PR
+> relue** — modifiable par l'auteur de la PR. Aucune instruction n'y est donc lue : tout passe par le
+> canal GitHub MCP (`get_file_contents`), **au ref `main`**, **jamais** depuis le workspace.
+>
+> - Le prompt, les ADR et `CLAUDE.md` sont lus sur la `main` de pick-a-book, protégée (review
+>   requise, pas de push direct — cf. « Workflow Git » de `CLAUDE.md`) : un auteur ne peut pas les
+>   altérer sans d'abord les faire merger.
+> - Le skill est lu sur la `main` d'`arenier/claude-skills`, un **autre dépôt** : une PR de
+>   pick-a-book ne peut pas le toucher. Qui peut pousser sur ce dépôt peut en revanche changer le
+>   référentiel de review — c'est la frontière à tenir de ce côté.
 
 ## Prérequis d'accès
 
 La session cloud lit GitHub via la **GitHub App de Claude**, pas via SSH. Cette App doit avoir accès
-à `arenier/pick-a-book`, **et** le dépôt doit figurer dans les `sources` de la routine (clone +
-allowlist de `get_file_contents`). Sans l'un ou l'autre, la routine s'arrête proprement
-(fail-closed) sans rien poster.
+à `arenier/pick-a-book` **et** à `arenier/claude-skills`, **et** les deux dépôts doivent figurer
+dans les `sources` de la routine (clone + allowlist de `get_file_contents`). Sans l'un ou l'autre, la
+routine s'arrête proprement (fail-closed) sans rien poster.
 
 ## Déployer
 
@@ -82,8 +87,8 @@ stricte par SHA) puis une PR **labellisée** (ré-étiquetage → nouvelle revie
 
 ## Composition
 
-- `pr-review` (skill) — la procédure de review appliquée par cette routine, en mode « aucun humain
+- `pr-review` (skill, plugin `adri-plugin` d'`arenier/claude-skills`) — la procédure de review appliquée par cette routine, en mode « aucun humain
   dans la boucle » (les questions deviennent des remarques 💬, le second avis à froid et le fan-out
   ne se déclenchent pas).
-- `pr-review-triage` (skill) — en aval, à la main : traiter la review une fois postée (vérifier,
+- `pr-review-triage` (skill, même plugin) — en aval, à la main : traiter la review une fois postée (vérifier,
   corriger, répondre).

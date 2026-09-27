@@ -19,7 +19,9 @@ La photo choisie par l'utilisateur avant envoi (prise à l'instant ou existante)
 **Règles de validation** (FR-003, FR-009 ; reprennent `ShelfPhoto`, voir research.md §5) :
 - `mediaType` DOIT être l'un de `image/jpeg`, `image/png`, `image/webp`, `image/heic`.
 - `sizeInBytes` DOIT être strictement positif et ne pas dépasser 20 971 520 octets (20 Mo).
-- Une violation produit un message d'erreur affichable, sans appel réseau (FR-003).
+- Une violation produit un **motif de refus** — `unsupportedType`, `empty` ou `tooLarge`, dans
+  cet ordre de priorité — sans appel réseau (FR-003). Le motif n'est pas une phrase : c'est l'UI
+  qui le traduit dans la langue de l'interface *(amendé le 27/09/2026, ADR 0011)*.
 
 **Aperçu** (US5, ajouté le 27/09/2026) : une photo retenue est affichée par une URL locale
 (`URL.createObjectURL(file)`), dérivée du `File` et jamais stockée à côté de lui — elle naît quand
@@ -38,7 +40,23 @@ L'état affiché à l'écran — une union discriminée, jamais plusieurs branch
 | `idle` | Au chargement, ou après « recommencer » (US4) | aucun |
 | `uploading` | Entre l'envoi et la réponse du serveur | aucun (empêche un second envoi concurrent, FR-007) |
 | `success` | Réponse 200 reçue, avec ou sans livre détecté | `books: DetectedBook[]` (peut être vide → « aucun livre détecté », scénario US1.3) |
-| `error` | Validation locale refusée, ou réponse HTTP non 200, ou échec réseau | `message: string` (texte prêt à afficher, distinct pour 400 côté client, 400/502 côté serveur, et échec réseau — FR-006) |
+| `error` | Validation locale refusée, ou réponse HTTP non 200, ou échec réseau | `failure: UploadFailure` (voir ci-dessous) |
+
+**`UploadFailure`** *(amendé le 27/09/2026, ADR 0011 — remplace `message: string`)* : le type
+d'échec, jamais une phrase. `model/` et `api/` ne connaissent pas la langue active ; l'UI associe
+chaque type à un message de son catalogue (`features/photo-upload/i18n/`), par une table
+explicite.
+
+| `failure` | Origine | Message (FR-006, FR-009) |
+|---|---|---|
+| `unsupportedType`, `empty`, `tooLarge` | Validation locale (motif de `SelectedPhoto`) | propre à chaque motif |
+| `refused` | Réponse 400 ou 413 de `POST /shelf-photos` | photo refusée par le serveur |
+| `upstream` | Réponse 502 de l'analyse | service de reconnaissance indisponible |
+| `offline` | Aucune réponse (réseau coupé, serveur injoignable) | connexion impossible |
+| `unexpected` | Tout autre statut, ou un corps hors contrat | erreur générique |
+
+Les quatre messages d'échec d'envoi restent distincts entre eux et de « aucun livre détecté »
+(FR-006).
 
 Transitions valides : `idle → uploading → (success | error)`, puis `(success | error) → idle` sur
 action « recommencer » (US4, FR-008). Aucune transition ne part de `uploading` vers `uploading`
