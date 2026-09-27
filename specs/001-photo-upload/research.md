@@ -55,7 +55,8 @@ n'expose qu'une seule fonction à l'écran (`submitShelfPhoto`) : l'UI ignore qu
 
 **Rationale**: `ScanController` (devenu, avec le découpage de §7, un contrôleur en deux routes)
 accepte déjà le multipart (`FileInterceptor('photo', …)`) — c'est le chemin le plus direct, et il
-évite l'inflation ~33 % du repli JSON+base64 (`ScanRequestBody`, prévu pour d'autres appelants).
+évite l'inflation ~33 % du repli JSON+base64 (`ScanRequestBody`, prévu pour d'autres appelants —
+supprimé depuis, faute d'appelant : contracts/scan-api.md §1).
 Deux requêtes vers deux endpoints ne justifient pas plus une dépendance HTTP dédiée (axios,
 react-query) qu'une seule n'en justifiait : le projet n'en a aucune aujourd'hui, et
 `require-await`/`promise-function-async` (ADR 0008) couvrent déjà la rigueur asynchrone que ces
@@ -166,6 +167,16 @@ clic, requête réseau rejouée) de relancer un appel VLM déjà payé et déjà
 fonctionnalité de nouvelle tentative (voir FR-014 plus bas, qui documente uniquement la garantie de
 non-perte, pas une UX de retry explicite, hors scope de cette feature).
 
+**Limite connue** *(relevée en revue de #55, le 27/09/2026)* : le 409 protège contre un second
+appel **séquentiel**, pas contre deux appels **simultanés**. Deux requêtes qui lisent toutes deux
+l'enregistrement encore `pending` appellent toutes deux le VLM ; seule la première à écrire
+l'emporte (la condition `status = 'pending'` est dans l'`UPDATE` lui-même), la seconde reçoit 409 —
+mais les deux appels ont été payés. Acceptée plutôt que corrigée : il faut deux requêtes quasi
+simultanées sur le même `id`, que le frontend n'émet pas (bouton désactivé pendant l'envoi,
+FR-007), pour un seul utilisateur. La fermer demanderait un état intermédiaire (`scanning`) posé
+avant l'appel, et donc une reprise pour les enregistrements restés bloqués si l'instance tombe
+pendant l'analyse — une complexité que ce volume ne justifie pas.
+
 **Alternatives considered**:
 - Un seul endpoint synchrone (version précédente) — rejeté pour la raison ci-dessus.
 - Un troisième endpoint asynchrone avec file d'attente et statut interrogé par polling (`GET
@@ -263,8 +274,15 @@ reprend la colonne `type` de la table `uploads`, research.md §8. En local et en
 l'émulateur que `CLAUDE.md` mentionne déjà dans la description de la stack (`docker compose up
 --build # API + front + Postgres + émulateur de bucket`), pas encore présent dans le fichier
 réel : cette feature comble cet écart plutôt que d'en introduire un nouveau. Le client GCS pointe
-vers l'émulateur via une variable d'environnement optionnelle (`STORAGE_EMULATOR_HOST`, absente en
+vers l'émulateur via une variable d'environnement optionnelle (`BUCKET_EMULATOR_HOST`, absente en
 production — le SDK s'adresse alors à la vraie API GCS).
+
+**Amendé à l'implémentation (23/09/2026)** : la variable devait s'appeler `STORAGE_EMULATOR_HOST`,
+le nom que suggère la documentation de l'émulateur. Mais le SDK Node `@google-cloud/storage` lit
+cette variable **de lui-même** (bascule expérimentale) et en dérive ses URL de téléchargement sans
+le préfixe `/storage/v1` : les écritures passent, toutes les lectures répondent 404. D'où
+`BUCKET_EMULATOR_HOST`, passée explicitement au client (`apiEndpoint`) ; le démarrage refuse
+désormais `STORAGE_EMULATOR_HOST` en nommant la variable à utiliser.
 
 **Rationale**: `@google-cloud/storage` est le SDK officiel du fournisseur déjà choisi (ADR 0004),
 pas un nouvel arbitrage. `fake-gcs-server` est le même choix de catégorie que `db` dans le

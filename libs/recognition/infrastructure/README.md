@@ -46,3 +46,22 @@ Qwen est écrite à la main, et cette différence compte.
 
 Le test de non-régression sur photos réelles est **séparé et manuel** (ADR 0005) : il n'a pas
 sa place en CI, où il coûterait un appel payant par run.
+
+## Conservation des photos (specs/001-photo-upload)
+
+| Adapter | Port | Technologie |
+|---|---|---|
+| `GcsShelfPhotoStorageAdapter` | `ShelfPhotoStoragePort` | bucket Cloud Storage (ADR 0004), clé `{ownerId}/shelf_photo/{id}` |
+| `DrizzleShelfScanRepositoryAdapter` | `ShelfScanRepositoryPort` | Postgres via Drizzle (ADR 0006), tables `uploads` + `shelf_scans` |
+
+Le schéma vit dans `src/lib/drizzle/schema.ts` ; les migrations, **générées** par
+`yarn db:generate` et jamais écrites à la main, dans `src/lib/drizzle/migrations/`. L'API les
+applique au démarrage (`migrateDatabase`, sous verrou consultatif Postgres), le build de l'API les
+copiant à côté du bundle.
+
+Ces deux adapters se testent contre la vraie technologie, pas contre des doubles : le Postgres et
+l'émulateur `fake-gcs-server` de `docker-compose.yml` (`docker compose up db bucket`), que la CI
+démarre aussi. `DATABASE_URL` et `BUCKET_EMULATOR_HOST` les redirigent au besoin.
+
+Piège : l'émulateur se désigne par `BUCKET_EMULATOR_HOST`, jamais `STORAGE_EMULATOR_HOST` — le SDK
+lit cette dernière de lui-même et en dérive des URL de téléchargement fausses.

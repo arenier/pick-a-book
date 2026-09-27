@@ -4,6 +4,22 @@
   "private": true,
   "nx": {
     "name": "web",
+    "targets": {
+      "build": {
+        "inputs": [
+          "production",
+          "^production",
+          {
+            "externalDependencies": [
+              "vite"
+            ]
+          },
+          {
+            "env": "VITE_API_BASE_URL"
+          }
+        ]
+      }
+    },
     "tags": [
       "type:app",
       "scope:web"
