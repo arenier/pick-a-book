@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config';
+import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 
 // Dev/preview port, overridable per worktree via WEB_PORT (worktrunk); defaults to 4200.
@@ -18,7 +19,8 @@ export default defineConfig({
     port: webPort,
     host: 'localhost',
   },
-  plugins: [react()],
+  // Tailwind 4 through its Vite plugin: the stylesheet comes from @pick-a-book/shared-ui (ADR 0012).
+  plugins: [react(), tailwindcss()],
   build: {
     outDir: './dist',
     emptyOutDir: true,

@@ -47,6 +47,7 @@
     ]
   },
   "dependencies": {
-    "@pick-a-book/shared-i18n": "workspace:*"
+    "@pick-a-book/shared-i18n": "workspace:*",
+    "@pick-a-book/shared-ui": "workspace:*"
   }
 }

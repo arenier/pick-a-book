@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@pick-a-book/shared-ui/components",
+    "ui": "@pick-a-book/shared-ui/components",
+    "utils": "@pick-a-book/shared-ui/lib/cn",
+    "lib": "@pick-a-book/shared-ui/lib",
+    "hooks": "@pick-a-book/shared-ui/hooks"
+  }
+}

@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useMessages } from '@pick-a-book/shared-i18n';
 
-import styles from './photo-upload-screen.module.css';
-
 export interface PhotoPreviewProps {
   readonly photo: File;
 }
@@ -42,5 +40,13 @@ export function PhotoPreview({ photo }: PhotoPreviewProps) {
     return <p>{t('preview.unavailable')}</p>;
   }
 
-  return <img className={styles['preview']} src={url} alt={t('preview.alt')} onError={onError} />;
+  // Bounded in height so the send button stays within reach under a portrait photo (SC-006).
+  return (
+    <img
+      className="mx-auto block max-h-[50vh] max-w-full object-contain"
+      src={url}
+      alt={t('preview.alt')}
+      onError={onError}
+    />
+  );
 }

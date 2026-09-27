@@ -19,6 +19,16 @@ describe('ScanResult', () => {
     expect(items).toStrictEqual(['La Peste — Albert Camus', 'Les Choses']);
   });
 
+  // docs/decisions/0002: the book's title, and nothing else, is set in the book typeface.
+  it('sets the title alone in the book typeface', () => {
+    render(<ScanResult books={books} />);
+
+    const inBookTypeface = [...document.querySelectorAll('.font-book')].map(
+      (element) => element.textContent,
+    );
+    expect(inBookTypeface).toStrictEqual(['La Peste', 'Les Choses']);
+  });
+
   it('says so when no book was detected', () => {
     render(<ScanResult books={none} />);
 

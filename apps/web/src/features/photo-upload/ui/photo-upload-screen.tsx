@@ -1,12 +1,12 @@
 import { useCallback } from 'react';
 import { useMessages } from '@pick-a-book/shared-i18n';
+import { Button, Spinner } from '@pick-a-book/shared-ui';
 
 import { submitShelfPhoto } from '../api/scan-shelf-photo';
 import type { UploadState } from '../model/upload-state';
 import { FailureMessage } from './failure-message';
 import { PhotoPicker } from './photo-picker';
 import { PhotoPreview } from './photo-preview';
-import styles from './photo-upload-screen.module.css';
 import { ScanResult } from './scan-result';
 import { usePhotoUpload } from './use-photo-upload';
 
@@ -29,24 +29,29 @@ export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScre
   }, [send]);
 
   return (
-    <section className={styles['screen']}>
+    // A single column that holds from 360px wide up, with no horizontal scroll (SC-004).
+    <section className="flex min-w-0 flex-col gap-4">
       <PhotoPicker key={pickerKey} disabled={uploading} onPick={pick} />
       {photo !== undefined && <PhotoPreview photo={photo} />}
-      <button type="button" className={styles['send']} disabled={!canSend} onClick={onSend}>
+      <Button className="w-full" disabled={!canSend} onClick={onSend}>
         {t('send')}
-      </button>
+      </Button>
 
       {uploading && (
         // The VLM call takes around 30 s (docs/decisions/0001): saying so up front is what keeps
         // a user from reading the wait as a hang.
-        <output>{t('uploading')}</output>
+        // The spinner sits on the first line: the message wraps on a phone.
+        <output className="flex items-start gap-2">
+          <Spinner className="mt-1 shrink-0" />
+          {t('uploading')}
+        </output>
       )}
       {state.status === 'success' && <ScanResult books={state.books} />}
       {state.status === 'error' && <FailureMessage failure={state.failure} />}
       {settled && (
-        <button type="button" className={styles['send']} onClick={startOver}>
+        <Button variant="outline" className="w-full" onClick={startOver}>
           {t('startOver')}
-        </button>
+        </Button>
       )}
     </section>
   );

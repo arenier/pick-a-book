@@ -1,7 +1,6 @@
 import { useCallback, type ChangeEvent } from 'react';
 import { useMessages } from '@pick-a-book/shared-i18n';
-
-import styles from './photo-upload-screen.module.css';
+import { Input } from '@pick-a-book/shared-ui';
 
 export interface PhotoPickerProps {
   readonly disabled: boolean;
@@ -31,9 +30,10 @@ export function PhotoPicker({ disabled, onPick }: PhotoPickerProps) {
   );
 
   return (
-    <label className={styles['picker']}>
+    <label className="flex flex-col gap-2 font-semibold">
       <span>{t('picker.label')}</span>
-      <input
+      <Input
+        className="font-normal"
         type="file"
         accept="image/jpeg,image/png,image/webp,image/heic"
         disabled={disabled}

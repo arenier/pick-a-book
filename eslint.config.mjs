@@ -72,11 +72,14 @@ export default [
                 'type:shared',
               ],
               // i18next lives behind the facade of libs/shared/i18n (ADR 0011): an app reads its
-              // messages through `useMessages`, never through the library itself.
+              // messages through `useMessages`, never through the library itself. Radix lives
+              // inside the components of libs/shared/ui (ADR 0012), in the same way.
               bannedExternalImports: [
                 'i18next',
                 'react-i18next',
                 'i18next-browser-languagedetector',
+                'radix-ui',
+                '@radix-ui/*',
               ],
             },
             // -- Bounded contexts ---------------------------------------------

@@ -11,7 +11,7 @@
   "startOver": "Recommencer",
   "result": {
     "none": "Aucun livre détecté sur cette photo.",
-    "book": "{{title}} — {{author}}"
+    "byAuthor": " — {{author}}"
   },
   "failure": {
     "unsupportedType": "Ce fichier n’est pas une photo prise en charge : choisissez une image JPEG, PNG, WebP ou HEIC.",

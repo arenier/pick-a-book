@@ -1,6 +1,6 @@
 # ADR 0012 — Design system de l'interface : shadcn/ui et Tailwind, dans `libs/shared/ui`
 
-Statut : proposé · Date : 2026-09-27 · Phase 1 · Couplé aux ADR [0002](0002-ddd-et-architecture-hexagonale.md) (feature-slice), [0007](0007-vite-et-vitest-outillage-unique.md) (outillage), [0008](0008-lint-et-format-oxlint-oxfmt.md) (lint) et à l'ADR d'internationalisation de l'interface (#58)
+Statut : accepté · Date : 2026-09-27 · Phase 1 · Couplé aux ADR [0002](0002-ddd-et-architecture-hexagonale.md) (feature-slice), [0007](0007-vite-et-vitest-outillage-unique.md) (outillage), [0008](0008-lint-et-format-oxlint-oxfmt.md) (lint) et à l'ADR d'internationalisation de l'interface (#58)
 
 ## Contexte
 
@@ -164,7 +164,8 @@ lint strict sur le code copié, 98 paquets, +24,5 ko de JS et +7,0 ko de CSS gzi
 - **`libs/shared/ui`**, avec les tags `type:shared`, `context:none` et `scope:web`, contient :
   - `components.json`, la config du CLI, avec ses alias pointant dans la lib ;
   - `src/components/` : les composants copiés et retouchés, chacun accompagné de sa spec ;
-  - `src/lib/utils.ts` : `cn()` ;
+  - `src/lib/cn.ts` : `cn()`, le `lib/utils.ts` de shadcn/ui renommé (le dépôt n'a pas de module
+    « utils ») ;
   - `src/styles/globals.css` : `@import "tailwindcss"`, `tw-animate-css`, la copie de
     `shadcn/tailwind.css` et les tokens du thème, en mode clair et en mode sombre ;
   - un `README.md` qui tient, pour chaque composant, la version du registre d'où il vient et la
@@ -179,8 +180,10 @@ lint strict sur le code copié, 98 paquets, +24,5 ko de JS et +7,0 ko de CSS gzi
   contrainte `type:app` de `@nx/enforce-module-boundaries` (`eslint.config.mjs`). On vérifie
   qu'elle opère comme les autres garde-fous : un import direct de `radix-ui` depuis `apps/web`
   doit faire échouer `yarn lint`.
-- **`.oxlintrc.json`** : `import/no-unassigned-import` reçoit `allow: ['**/*.css']`. C'est la
-  seule règle touchée.
+- **`.oxlintrc.json`** reste inchangé. `import/no-unassigned-import` ne se déclenche pas : la
+  feuille est importée depuis `index.html` et par des `@import` CSS, jamais depuis un fichier
+  TypeScript. L'exception `allow: ['**/*.css']`, mesurée sur le banc, ne sert que si un composant
+  importe un jour sa feuille en TypeScript.
 - **`.oxfmtrc.json`** : `sortTailwindcss` est activé, avec `stylesheet` pointant sur la feuille
   globale de `shared/ui` et `functions: ['cn', 'cva']`. oxfmt 0.63 trie alors les classes avec
   l'algorithme de `prettier-plugin-tailwindcss` (vérifié : `p-4 flex text-red-500 mx-auto`
