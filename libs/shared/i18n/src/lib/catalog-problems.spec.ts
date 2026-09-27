@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
 import { catalogProblems } from './catalog-problems';
-import { resources } from './resources';
 
 // What `i18next-cli status` does not check (ADR 0011): plural forms against the CLDR rules of each
 // language, and placeholders kept identical from French to its translations.
@@ -79,11 +78,5 @@ describe('catalogProblems, on placeholders', () => {
         en: { shelf: { title: 'Shelf' } },
       }),
     ).toStrictEqual([]);
-  });
-});
-
-describe('catalogProblems, on the catalogs of the front', () => {
-  it('finds nothing in them', () => {
-    expect(catalogProblems(resources)).toStrictEqual([]);
   });
 });

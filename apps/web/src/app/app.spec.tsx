@@ -1,8 +1,8 @@
+import { createI18n, I18nProvider } from '@pick-a-book/shared-i18n';
 import { render, screen } from '@testing-library/react';
-import { I18nextProvider } from 'react-i18next';
 import { describe, expect, it } from 'vitest';
 
-import { createI18n } from '../i18n/create-i18n';
+import { resources } from '../i18n/resources';
 import App from './app';
 
 describe('App', () => {
@@ -20,12 +20,12 @@ describe('App', () => {
 
   // ADR 0011: the same screen, in the other language the interface speaks.
   it('speaks English to an English-speaking browser', async () => {
-    const english = await createI18n({ lng: 'en' });
+    const english = await createI18n(resources, { language: 'en' });
 
     render(
-      <I18nextProvider i18n={english}>
+      <I18nProvider i18n={english}>
         <App />
-      </I18nextProvider>,
+      </I18nProvider>,
     );
 
     expect(screen.getByText('Take a photo of a shelf to see the books on it.')).toBeDefined();

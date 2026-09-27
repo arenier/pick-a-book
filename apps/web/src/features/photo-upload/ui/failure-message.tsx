@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next';
+import { useMessages } from '@pick-a-book/shared-i18n';
 
 import type { UploadFailure } from '../model/upload-failure';
 import styles from './photo-upload-screen.module.css';
@@ -13,7 +13,7 @@ export interface FailureMessageProps {
  * here (ADR 0011).
  */
 export function FailureMessage({ failure }: FailureMessageProps) {
-  const { t } = useTranslation('photo-upload');
+  const { t } = useMessages('photo-upload');
 
   const wordings: Record<UploadFailure, () => string> = {
     unsupportedType: () => t('failure.unsupportedType'),

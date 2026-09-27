@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useMessages } from '@pick-a-book/shared-i18n';
 
 import styles from './photo-upload-screen.module.css';
 
@@ -16,7 +16,7 @@ export interface PhotoPreviewProps {
  * it is revoked as soon as the photo changes, not to keep every photo tried on a phone.
  */
 export function PhotoPreview({ photo }: PhotoPreviewProps) {
-  const { t } = useTranslation('photo-upload');
+  const { t } = useMessages('photo-upload');
   const [url, setUrl] = useState<string>();
   // Tied to a URL rather than a flag: a photo that cannot be displayed says nothing of the next.
   const [unreadableUrl, setUnreadableUrl] = useState<string>();

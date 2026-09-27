@@ -17,6 +17,8 @@ export default defineConfig({
         ? `src/app/i18n/${language}.json`
         : `src/features/${namespace ?? ''}/i18n/${language}.json`,
     primaryLanguage: 'fr',
+    // The slices read their messages through the facade of @pick-a-book/shared-i18n (ADR 0011).
+    useTranslationNames: ['useMessages'],
     defaultNS: 'shell',
   },
 });

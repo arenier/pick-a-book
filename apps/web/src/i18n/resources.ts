@@ -8,14 +8,10 @@ import photoUploadFr from '../features/photo-upload/i18n/fr.json';
  * only module that knows them all — the composition root of the front, as `main.tsx` is; a slice
  * reads its own namespace through `useTranslation`, never another slice's catalog.
  *
- * French is the source language: its catalogs give the keys their types (`i18next.d.ts`).
+ * French is the source language: its catalogs give the keys their types (`i18next.d.ts`). The
+ * mechanics — detection, fallback, React — live behind the facade of `@pick-a-book/shared-i18n`.
  */
 export const resources = {
   fr: { shell: shellFr, 'photo-upload': photoUploadFr },
   en: { shell: shellEn, 'photo-upload': photoUploadEn },
 };
-
-export const SUPPORTED_LANGUAGES = ['fr', 'en'];
-
-/** What the interface speaks when the browser speaks none of the supported languages. */
-export const FALLBACK_LANGUAGE = 'fr';

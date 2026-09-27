@@ -153,6 +153,7 @@ libs/recognition/application/    # use cases, parlent aux ports
 libs/recognition/infrastructure/ # adapters (Gemini, Qwen, stub) derrière ShelfScannerPort
 libs/shared/result/              # contenu partagé, une lib par sujet nommé
 libs/shared/text-match/          # normalisation + comparaison floue de chaînes (bench, réconciliation)
+libs/shared/i18n/                # façade i18next du front (useMessages, createI18n) — seule à importer i18next
 tools/bench/                     # départage manuel des adapters VLM sur photos réelles (#10) — hors CI
 docker/                          # Dockerfile des deux apps — contexte de build : la racine
 docs/adr/
@@ -232,7 +233,9 @@ d'`apps/api`, via des DTO de frontière.
   par le catalogue i18next de sa slice, `features/<slice>/i18n/{fr,en}.json` (celui du shell dans
   `app/i18n/`), le français étant la langue source
   ([0011](docs/adr/0011-internationalisation-de-l-interface.md)). Une clé s'ajoute **dans les deux
-  langues du même commit**. `model/` et `api/` rendent un type d'échec, jamais une phrase : l'UI le
+  langues du même commit**. Une slice lit ses messages par `useMessages('<slice>')`, la façade de
+  `libs/shared/i18n` : **seule cette lib importe `i18next`, `react-i18next` et
+  `i18next-browser-languagedetector`** (`bannedExternalImports` sur `type:app`). `model/` et `api/` rendent un type d'échec, jamais une phrase : l'UI le
   traduit par une table explicite, jamais par une clé construite (`` t(`failure.${kind}`) ``), qui
   échapperait au typage. Les specs lisent le français, fixé par `test-setup.ts` (jsdom annonce
   `en-US`) ; une clé inconnue ou un paramètre d'interpolation manquant y fait échouer le test.

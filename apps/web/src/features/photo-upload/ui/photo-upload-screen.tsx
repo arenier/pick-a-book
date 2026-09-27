@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useMessages } from '@pick-a-book/shared-i18n';
 
 import { submitShelfPhoto } from '../api/scan-shelf-photo';
 import type { UploadState } from '../model/upload-state';
@@ -20,7 +20,7 @@ export interface PhotoUploadScreenProps {
  * (specs/001-photo-upload, US1, US2, US4, US5).
  */
 export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScreenProps) {
-  const { t } = useTranslation('photo-upload');
+  const { t } = useMessages('photo-upload');
   const { photo, state, pickerKey, uploading, canSend, settled, pick, send, startOver } =
     usePhotoUpload(submit);
 

@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
 import { createI18n } from './create-i18n';
+import { catalogs } from './fixtures';
 import { syncDocumentLanguage } from './sync-document-language';
 
 // Screen readers and the browser's own translation offer read the language from <html lang>.
 describe('syncDocumentLanguage', () => {
   it('declares the current language on the document at once', async () => {
-    const i18n = await createI18n({ lng: 'en' });
+    const i18n = await createI18n(catalogs, { language: 'en' });
     const html = document.createElement('html');
 
     syncDocumentLanguage(i18n, html);
@@ -15,7 +16,7 @@ describe('syncDocumentLanguage', () => {
   });
 
   it('follows every later change of language', async () => {
-    const i18n = await createI18n({ lng: 'en' });
+    const i18n = await createI18n(catalogs, { language: 'en' });
     const html = document.createElement('html');
     syncDocumentLanguage(i18n, html);
 

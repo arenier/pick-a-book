@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next';
+import { useMessages } from '@pick-a-book/shared-i18n';
 
 import type { DetectedBook } from '../model/detected-book';
 import styles from './photo-upload-screen.module.css';
@@ -9,7 +9,7 @@ export interface ScanResultProps {
 
 /** The books read off the shelf — title first, then the author when the spine showed one. */
 export function ScanResult({ books }: ScanResultProps) {
-  const { t } = useTranslation('photo-upload');
+  const { t } = useMessages('photo-upload');
 
   if (books.length === 0) {
     return <p>{t('result.none')}</p>;

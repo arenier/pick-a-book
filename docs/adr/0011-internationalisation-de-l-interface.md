@@ -101,11 +101,30 @@ La méthode, les mesures, les constats et l'analyse de chaque candidat sont cons
   message appartient à la slice qui l'affiche : aucun catalogue global où tout s'accumulerait. Le
   shell de l'app a son propre namespace ; son emplacement exact est laissé au plan, pourvu qu'il
   suive le même motif que les slices, que lit `i18next-cli`.
-- **L'initialisation vit dans `apps/web`**, à côté de `main.tsx`. C'est la racine de composition du
-  front, et le seul endroit qui connaît tous les namespaces : il importe les catalogues et déclare
-  `CustomTypeOptions` à partir des JSON français. Les slices n'importent que `react-i18next`
-  (`useTranslation('<slice>')`), jamais une autre slice ni un module partagé. **Aucune lib
-  `libs/shared/i18n`** : il n'y a rien à partager qu'i18next ne fournisse déjà.
+- **i18next est encapsulé dans `libs/shared/i18n`**, avec les tags `type:shared`, `context:none`
+  et `scope:web`, sur le modèle de `libs/shared/ui` pour `radix-ui`
+  ([ADR 0012](0012-design-system-de-l-interface.md)). La lib porte toute la mécanique et expose une
+  façade que le reste du front utilise seule :
+  - `createI18n(catalogues, { language, strict })` : l'instance, la détection et le repli ;
+    `strict` fait lever les handlers de clé et de paramètre manquants, pour les specs ;
+  - `I18nProvider` et `setDefaultI18n` : l'instance fournie à React, par contexte ou par défaut ;
+  - `useMessages('<namespace>')`, qui rend `{ t }` typé : c'est la seule API que voient les slices ;
+  - `syncDocumentLanguage` et `catalogProblems` (le test de parité).
+- **Seule `libs/shared/i18n` importe `i18next`, `react-i18next` et
+  `i18next-browser-languagedetector`.** La règle passe par le graphe Nx, comme les autres
+  frontières : `bannedExternalImports` sur la contrainte `type:app` de
+  `@nx/enforce-module-boundaries` (`eslint.config.mjs`). Un import direct depuis `apps/web` fait
+  échouer `yarn lint`.
+- **La composition vit dans `apps/web`**, à côté de `main.tsx`. C'est le seul endroit qui connaît
+  tous les namespaces : il importe les catalogues, les passe à `createI18n`, et déclare
+  `CustomTypeOptions` à partir des JSON français. Cette déclaration de types est la seule mention
+  d'i18next hors de la lib ; elle n'importe rien à l'exécution. Les slices n'importent que la
+  façade (`useMessages('<slice>')`), jamais une autre slice.
+- **Ce que la façade isole, et ce qu'elle n'isole pas.** Changer de librairie ne touche plus les
+  slices ni la composition : c'est l'intérieur de `libs/shared/i18n` qui change. Restent liés à
+  i18next, et à reprendre dans ce cas : le format des catalogues (suffixes de pluriel `_one`,
+  placeholders `{{x}}`), le typage des clés (`CustomTypeOptions`) et l'outillage (`i18next-cli`,
+  qui reconnaît `useMessages` par son option `useTranslationNames`).
 - **Choix de la locale** : détection sur `navigator` seul, sans persistance (`caches: []`). Les
   réglages sont `order: ['navigator']`, `supportedLngs: ['fr','en']`, `nonExplicitSupportedLngs`,
   `load: 'languageOnly'` et `fallbackLng: 'fr'`. Mesuré dans #58 : `["de-DE","en-GB"]` donne `en`,
@@ -157,6 +176,9 @@ retenu parce que `i18next-cli` est de toute façon requis pour `status`.
 - **Un paramètre oublié passe en production** malgré les handlers de test : c'est le signal que le
   typage des paramètres mérite d'être 🔴. On rouvre la question entre Paraglide et un typage des
   interpolations.
+- **Un changement de librairie** (l'une des deux conditions ci-dessus) se fait dans
+  `libs/shared/i18n`, derrière la façade, plus les catalogues et l'outillage : les slices ne
+  changent pas.
 - **`i18next-cli` cesse d'être maintenu ou régresse** : `status` se remplace en étendant le test de
   parité à la présence des clés, et `lint` par eslint-plugin-i18next (sondé dans #58).
 
@@ -172,6 +194,12 @@ précisément ce que ce choix rend simple.
   binaires SWC coexistent dans l'arbre. C'est sans effet sur le build (ADR 0007), mais à surveiller
   aux montées de version (#21).
 - **+17,7 ko gzip** acceptés sur le bundle initial.
+- **Une lib de plus, `libs/shared/i18n`** *(amendé le 27/09/2026, à la mise en œuvre)*. La
+  première version de cet ADR faisait importer `react-i18next` directement par les slices, faute
+  de rien à partager. L'encapsulation est retenue pour deux raisons : la frontière devient
+  appliquée par le lint au lieu d'être une convention, comme pour `radix-ui` (ADR 0012), et la
+  configuration (détection, repli, handlers stricts) a un seul propriétaire. Les dépendances
+  i18next se déclarent dans le `package.json` de la lib, contrôlé par `@nx/dependency-checks`.
 - **Une cible Nx ajoutée à `web`** pour `i18next-cli status` et `lint`. Le garde-fou de la CI
   « check and CI verify the same targets » impose de l'ajouter **des deux côtés** (`yarn check` et
   `ci.yml`), et il échouera si l'un des deux est oublié. Ce garde-fou lit les listes avec
@@ -180,7 +208,7 @@ précisément ce que ce choix rend simple.
   nomme donc en lettres seules (par exemple `translations`), ou l'expression du garde-fou s'élargit
   dans la même PR.
 - **Les specs de `apps/web` fixent leur locale.** jsdom annonce `en-US` : `test-setup.ts`
-  initialise i18next en `fr` explicitement, avec les deux handlers qui lèvent. Une spec qui teste
+  crée l'instance en `fr` explicitement et en mode `strict`, où les deux handlers lèvent. Une spec qui teste
   l'anglais change de langue explicitement.
 - **Le français porte trois formes de pluriel** (`_one`, `_many`, `_other`) sur chaque clé
   comptée. Le test de parité l'exige : sans `_many`, un million afficherait la clé brute.

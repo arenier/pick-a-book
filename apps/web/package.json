@@ -45,5 +45,8 @@
       "type:app",
       "scope:web"
     ]
+  },
+  "dependencies": {
+    "@pick-a-book/shared-i18n": "workspace:*"
   }
 }

@@ -1,5 +1,5 @@
 import { useCallback, type ChangeEvent } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useMessages } from '@pick-a-book/shared-i18n';
 
 import styles from './photo-upload-screen.module.css';
 
@@ -19,7 +19,7 @@ export interface PhotoPickerProps {
  * again before sending, and once more by the server.
  */
 export function PhotoPicker({ disabled, onPick }: PhotoPickerProps) {
-  const { t } = useTranslation('photo-upload');
+  const { t } = useMessages('photo-upload');
   const pick = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       // Indexed rather than `.item(0)`: a `FileList` is indexable, and so is what tests put

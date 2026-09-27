@@ -4208,6 +4208,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@pick-a-book/shared-i18n@workspace:*, @pick-a-book/shared-i18n@workspace:libs/shared/i18n":
+  version: 0.0.0-use.local
+  resolution: "@pick-a-book/shared-i18n@workspace:libs/shared/i18n"
+  dependencies:
+    i18next: "npm:^26.4.2"
+    i18next-browser-languagedetector: "npm:^8.2.1"
+    react: "npm:^19.0.0"
+    react-i18next: "npm:^17.0.15"
+    tslib: "npm:^2.3.0"
+  languageName: unknown
+  linkType: soft
+
 "@pick-a-book/shared-result@workspace:libs/shared/result":
   version: 0.0.0-use.local
   resolution: "@pick-a-book/shared-result@workspace:libs/shared/result"
@@ -4290,6 +4302,8 @@ __metadata:
 "@pick-a-book/web@workspace:apps/web":
   version: 0.0.0-use.local
   resolution: "@pick-a-book/web@workspace:apps/web"
+  dependencies:
+    "@pick-a-book/shared-i18n": "workspace:*"
   languageName: unknown
   linkType: soft
 
