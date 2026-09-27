@@ -1,4 +1,4 @@
-# ADR 0011 — Internationalisation de l'interface : catalogue typé maison sur `Intl`
+# ADR 0011 — Internationalisation de l'interface : i18next
 
 Statut : proposé · Date : 2026-09-27 · Couplé aux ADR [0002](0002-ddd-et-architecture-hexagonale.md) (feature-slice), [0007](0007-vite-et-vitest-outillage-unique.md) (outillage) et [0008](0008-lint-et-format-oxlint-oxfmt.md) (lint)
 
@@ -25,21 +25,26 @@ méritent pas d'ADR. Ce qui justifie celui-ci est ailleurs :
 
 - le **contrat de l'API** : des codes, pas du texte ;
 - la **place des catalogues** par rapport aux slices (ADR 0002) ;
-- un **garde-fou** qui touche au lint (ADR 0008) ;
+- un **garde-fou** qui ajoute une cible à `yarn check` et à la CI ;
 - un **amendement de la constitution**.
 
-Le choix de la librairie y est traité parce qu'il décide du typage, donc du garde-fou.
+Le choix de la librairie y est traité parce qu'il décide de la forme de tout le reste.
 
 ## Problématique
 
-Où placer le coût de l'i18n : dans une **dépendance**, qui apporte un format standard, des outils
-d'extraction et une communauté, mais pèse sur un bundle mobile et type plus ou moins bien ? Ou dans
-**du code maison**, minimal et typé de bout en bout, mais à maintenir et sans format que connaîtrait
-un traducteur ?
+Faut-il une librairie standard, ou un catalogue maison ? Une librairie apporte un format connu des
+traducteurs et des outils, des cas difficiles déjà résolus et du code qu'on n'a pas à posséder. Elle
+coûte du poids et type moins finement. Un catalogue maison est minimal et typé de bout en bout, mais
+tout est à écrire, et son format n'est connu que de ce repo.
 
-Le corollaire tient au garde-fou. Le repo refuse les règles seulement écrites (« pas de `as` »,
-frontières par `tags`). Une traduction manquante doit donc faire **échouer `yarn check`**, et non
-s'afficher en production sous forme de clé brute ou de repli silencieux.
+Une première version de cet ADR retenait le catalogue maison. Elle traitait le typage des paramètres
+comme décisif et le poids comme important. En relisant, ni l'un ni l'autre ne tient face à un
+projet open source, tenu par un seul mainteneur, dont le reste de l'outillage est standard (Nx,
+oxlint, Spec Kit).
+
+Le corollaire tient au garde-fou. Le repo refuse les règles seulement écrites. Il faut donc décider
+**quelles erreurs bloquent, et avec quel outil**, la librairie n'en attrapant qu'une partie par
+elle-même.
 
 ## Critères de choix
 
@@ -47,13 +52,12 @@ Légende : 🔴 fort · 🟠 moyen · 🟢 faible · ⚪ à clarifier
 
 | Critère | Poids | Motif |
 |---|---|---|
-| Typage de bout en bout, sans `as` | 🔴 | Une clé absente, mal orthographiée ou un paramètre oublié échoue au typecheck. C'est la forme que prend ici « appliqué, pas seulement écrit ». |
+| Standard et écosystème | 🔴 | Le projet est open source et a un seul mainteneur. Un format et une API connus, c'est moins de code à posséder, un contributeur qui s'y retrouve, et des outils de traduction qui s'y branchent. |
+| Garde-fou exécutable | 🔴 | Une clé mal orthographiée ou une traduction absente fait échouer `yarn check` et la CI. Appliqué, pas seulement écrit. |
 | Compatibilité avec la chaîne de build | 🔴 | Vite 8, Vitest et `@vitejs/plugin-react` (ADR 0007). Pas de plugin Babel ou SWC en plus, pas d'accès réseau au build (CI, images Docker). |
 | Pluriels et formatage corrects | 🟠 | « 0 livre détecté » en français, « 0 books detected » en anglais : la concaténation à la main est fausse dans l'une des deux langues. |
-| Poids du bundle | 🟠 | L'usage se fait au téléphone, en ressourcerie, sur un réseau quelconque. |
-| Nombre de choses à connaître | 🟠 | Un seul mainteneur ([0001](0001-stack-et-monorepo-nx.md)). |
-| Format standard pour des traducteurs | 🟢 | Deux langues, tenues par l'auteur. Aucun traducteur externe n'est prévu. |
-| Chargement paresseux des locales | 🟢 | Deux locales et des catalogues de quelques kilo-octets : les charger toutes deux dès le départ ne coûte rien de mesurable. |
+| Typage des paramètres à l'appel | 🟠 | Un paramètre oublié affiche un texte troué. C'est grave, mais les tests l'attrapent quand le chemin est exercé (voir *Garde-fou*). |
+| Poids du bundle | 🟢 | React pèse déjà 67 ko gzip. Quelques kilo-octets de plus ne changent rien de mesurable pour une app personnelle à 20–200 photos par mois. |
 
 ## Mesurer avant de choisir
 
@@ -70,15 +74,15 @@ i18n (67 461 o).
 
 | Candidat | Écart gzip |
 |---|---|
-| Catalogue typé maison sur `Intl` | **+0,3 ko** |
+| Catalogue typé maison sur `Intl` | +0,3 ko |
 | Paraglide JS 2.25 (messages compilés) | +1,3 ko |
 | Lingui 6.8 (runtime seul, catalogue précompilé chargé à la main) | +2,4 ko |
 | react-intl 12.1 (FormatJS, messages ICU analysés au runtime) | +14,0 ko |
 | i18next 26.4 + react-i18next 17.0 | +15,8 ko |
+| **i18next + react-i18next + i18next-browser-languagedetector 8.2** | **+17,7 ko** |
 
 Lingui est mesuré **sans ses macros** : c'est son poids minimal. Les macros apportent l'extraction
-des messages, mais demandent un plugin Babel ou SWC en plus de la chaîne de build. Ce montage n'a
-pas été fait.
+des messages, mais demandent un plugin Babel ou SWC en plus de la chaîne de build.
 
 ### Typage
 
@@ -101,19 +105,71 @@ Toutes les variantes passent `tsc` avant les sondes.
    `FormatjsIntl.Message`.
 5. Le paramètre est typé `NonNullable<unknown>` dans le code généré.
 
-### Trois constats que la documentation ne donnait pas
+Pour i18next, le typage a ensuite été sondé dans la forme retenue : **un namespace par slice, des
+catalogues en JSON**, et `CustomTypeOptions` qui tire ses types de l'import des JSON français. Trois
+erreurs échouent au typecheck :
+- une clé mal orthographiée (`t('unsuported')`) ;
+- un namespace mal orthographié (`useTranslation('photoUplod')`) ;
+- une clé d'un autre namespace préfixée (`t('photoUpload:detected')`) depuis un composant qui ne
+  l'a pas déclaré.
+
+La clé de pluriel s'écrit sans suffixe (`t('detected', { count })`), et i18next en connaît les
+variantes.
+
+### Comportement d'i18next à l'exécution
+
+| Situation | Résultat observé |
+|---|---|
+| `navigator.languages` = `["en-US","en"]`, `["de-DE","en-GB"]` | `en` |
+| `navigator.languages` = `["de-DE"]`, `["fr-CA"]`, `["pt-BR","fr-FR","en"]` | `fr` |
+| Traduction anglaise absente | **La phrase française s'affiche**, et `missingKeyHandler` n'est **pas** appelé |
+| Clé inconnue | La clé brute (`nope`) s'affiche ; `missingKeyHandler` est appelé |
+| Paramètre oublié | « Format  non pris en charge » (trou) ; `missingInterpolationHandler` est appelé |
+| Français, `count` = 1 000 000, sans clé `_many` | **La clé brute (`detected`) s'affiche**, sans repli sur `_other` |
+
+La détection est configurée ainsi : `order: ['navigator']`, `supportedLngs: ['fr','en']`,
+`nonExplicitSupportedLngs`, `load: 'languageOnly'` et `fallbackLng: 'fr'`. Elle fait exactement ce
+que demande #58.
+
+Les deux lignes en gras sont les pièges. Une traduction manquante ne se voit pas à l'exécution. Et
+en français, un pluriel exige **trois** formes (`_one`, `_many`, `_other`), puisque le CLDR attribue
+`many` aux multiples exacts du million. Aucun des deux n'est attrapé par la librairie elle-même.
+
+### Outillage de contrôle
+
+**`i18next-cli` 1.74** est l'outil en ligne de commande du projet i18next, par les mêmes
+mainteneurs. Il est sondé sur des catalogues rangés dans chaque slice
+(`src/features/{{namespace}}/i18n/{{language}}.json`), un chemin qu'il gère.
+
+| Sonde | `i18next-cli status` |
+|---|---|
+| Clé absente du catalogue anglais | ✅ code de sortie 1, clé nommée |
+| Formes de pluriel attendues en anglais (`_one`, `_other`, sans `_many`) | ✅ comptées juste |
+| Forme `_many` absente du catalogue **français** (langue source) | ❌ non vérifiée |
+| Placeholder mal orthographié en anglais (`{{fromat}}`) | ❌ non vérifié |
+
+Texte en dur, même fichier sondé par trois outils :
+
+| Cas | oxlint `react/jsx-no-literals` | `i18next-cli lint` | eslint-plugin-i18next (`jsx-only` + gabarits) |
+|---|---|---|---|
+| Texte nu dans le JSX | ✅ | ✅ | ✅ |
+| `{'…'}` | ❌ | ✅ | ✅ |
+| `alt`, `aria-label` | ❌ | ✅ | ✅ |
+| Gabarit de chaîne `` {`${n} livres`} `` | ❌ | ❌ | ✅ |
+| `className`, `data-testid` (à ignorer) | ✅ ignoré | ✅ ignoré | ✅ ignoré |
+
+Deux détails ont faussé une première lecture, et l'expliquent :
+- **eslint-plugin-i18next ignore les composants dont le nom est tout en capitales.** Une première
+  sonde, avec des composants nommés `A`, `B`, `C`…, ne signalait rien. Un composant nommé `FAQ`
+  n'est pas contrôlé non plus.
+- **Les avertissements de `i18next-cli lint` ne font pas échouer la commande**, seules les erreurs
+  le font. Il signale aussi comme « concaténation » deux `t()` voisins dans un même élément.
+
+### Autres constats
 
 - **Par défaut, Paraglide télécharge son plugin de format depuis un CDN à la compilation.** Le
-  proxy de l'environnement de mesure bloque jsDelivr, et le plugin échoue à se charger (« Couldn't
-  import the plugin »). La compilation se déclare pourtant réussie. On contourne en pointant le
-  plugin installé depuis npm par un chemin local, ce qui a été vérifié. Mais le montage par défaut
-  fait dépendre le build du réseau.
-- **`react/jsx-no-literals` est bien implémentée par oxlint 1.78**, mais **sans options**. Elle se
-  déclenche sur le texte nu dans le JSX (vérifié avec une règle témoin, `react/jsx-key`, qui se
-  déclenche dans la même config). Elle laisse en revanche passer `{'…'}`, les gabarits de chaîne et
-  les attributs (`alt`, `aria-label`). La version ESLint a les options `noStrings` et
-  `noAttributeStrings`, mais `eslint-plugin-oxlint`, placé en dernier (ADR 0008), l'éteint
-  justement parce qu'oxlint la connaît.
+  proxy de l'environnement de mesure bloque jsDelivr, et le plugin échoue à se charger. La
+  compilation se déclare pourtant réussie.
 - **jsdom annonce `en-US`** (`navigator.languages` vaut `["en-US","en"]`). Une app qui suit le
   navigateur s'affiche donc **en anglais dans les tests** si la locale n'est pas fixée
   explicitement. Et `apps/web/index.html` déclare déjà `lang="en"` sur une page écrite en français.
@@ -121,103 +177,137 @@ Toutes les variantes passent `tsc` avant les sondes.
 ## Solutions proposées
 
 **A — i18next + react-i18next.**
-- Pour : la plus répandue, riche en extensions (détection de langue, backends, ICU en option).
-- Contre : la plus lourde (+15,8 ko). Les paramètres ne sont pas typés. Les pluriels passent par
-  des suffixes de clés (`detected_one`, `detected_other`) que le typage voit comme des clés
-  distinctes.
+- Pour : la plus répandue, avec l'écosystème le plus vaste (détection de langue, `<Trans>` pour le
+  texte riche, formatage par `Intl`, intégrations avec les outils de traduction). Catalogues en
+  JSON, clés et namespaces typés, pluriels CLDR. Un outil officiel de contrôle (`i18next-cli`).
+  Aucune transformation au build.
+- Contre : le poids (+17,7 ko avec la détection de langue). Les paramètres ne sont pas typés. Le
+  repli silencieux sur le français et le `_many` du français restent à contrôler hors de la
+  librairie.
 
 **B — react-intl (FormatJS).**
-- Pour : format ICU standard, compris par les outils de traduction. Pluriels et formatage complets.
-- Contre : +14,0 ko quand les messages sont analysés au runtime. Pour s'en passer, il faut
-  précompiler, avec un outil de plus. Les clés ne sont typées qu'après une déclaration globale, et
-  les paramètres ne le sont pas.
+- Pour : format ICU standard, le plus riche (pluriels, sélections, texte riche).
+- Contre : un poids comparable à celui d'i18next (+14,0 ko) quand les messages sont analysés au
+  runtime. Pour s'en passer, il
+  faut précompiler, avec un outil de plus. Les clés ne sont typées qu'après une déclaration
+  globale, et les paramètres ne le sont pas. L'écosystème est plus étroit qu'i18next.
 
 **C — Paraglide JS (inlang).**
-- Pour : très léger (+1,3 ko), messages compilés en fonctions, clés et paramètres typés, format
-  JSON standard.
-- Contre : une traduction manquante **retombe en silence sur le français**, ce qui contredit le
-  critère 🔴 sans un contrôle ajouté. Le plugin est tiré d'un CDN par défaut. Il faut une étape de
-  compilation et du code généré dans l'arbre. Le typage des paramètres est faible.
+- Pour : très léger (+1,3 ko), clés et paramètres typés, format JSON.
+- Contre : communauté plus petite. Une traduction manquante retombe en silence sur le français. Le
+  plugin est tiré d'un CDN par défaut. Il faut une étape de compilation et du code généré dans
+  l'arbre.
 
-**D — Catalogue typé maison sur `Intl`.** Pour chaque slice, un catalogue français (la langue
-source) donne son type au catalogue anglais, déclaré avec `satisfies`. Un message est soit une
-chaîne, soit une fonction à paramètres typés qui rend une chaîne. Pluriels, nombres et dates
-passent par `Intl.PluralRules`, `Intl.NumberFormat` et `Intl.DateTimeFormat`, fournis par le
-navigateur.
-- Pour : les quatre sondes détectent l'erreur, sans `as` ni déclaration globale. +0,3 ko. Aucune
-  dépendance, aucun plugin, aucune étape de build.
-- Contre : du code à écrire et à tester (fournisseur de contexte, aide aux pluriels, résolution de
-  la locale). Pas de format que connaîtrait un traducteur externe. Pas d'outil d'extraction : c'est
-  le typecheck qui en tient lieu.
+**D — Catalogue typé maison sur `Intl`.** Écartée. C'est la meilleure option pour le typage (quatre
+sondes sur quatre) et le poids (+0,3 ko), mais elle perd sur le critère 🔴 « standard » :
+- un format que seul ce repo connaît ;
+- des messages écrits en fonctions TypeScript, qu'un traducteur ne peut pas toucher ;
+- du code à écrire et tester pour ce qu'une librairie donne (chargement, replis, texte riche,
+  outillage).
+
+Ses deux avantages portent sur des critères 🟠 et 🟢.
 
 **E — Lingui avec macros.** Écartée : ses macros exigent un plugin Babel ou SWC en plus de la chaîne
-Vite 8 / `@vitejs/plugin-react` 6. C'est une dépendance de build, contraire au critère 🔴, pour un
-bénéfice (l'extraction) que le critère 🟢 ne réclame pas.
+Vite 8 / `@vitejs/plugin-react` 6, contraire au critère 🔴 de compatibilité.
 
 **F — typesafe-i18n.** Écartée : une seule version publiée depuis août 2023 (la 5.27.1, en février
-2026). C'est trop incertain pour une brique dont on fait dépendre le garde-fou, et elle repose elle
-aussi sur un générateur de code.
+2026). C'est trop incertain pour une brique dont on fait dépendre le garde-fou.
 
 ## Solution retenue
 
-**Solution D**, pour le français et l'anglais.
+**Solution A : i18next + react-i18next**, avec i18next-browser-languagedetector pour la détection et
+`i18next-cli` pour le contrôle.
 
-1. **Typage (🔴)** — c'est le seul candidat pour lequel les quatre sondes échouent au typecheck :
-   clé absente, clé mal orthographiée, paramètre oublié, paramètre mal typé. Le garde-fou repose
-   sur un `satisfies`, c'est-à-dire l'outil que la convention « pas de `as` » désigne déjà pour
-   contraindre un type.
-2. **Chaîne de build (🔴)** — rien n'est ajouté : pas de plugin, pas d'étape de compilation, pas de
-   code généré, pas d'accès réseau. Vite, Vitest et SWC restent tels quels.
-3. **Pluriels et formatage (🟠)** — `Intl.PluralRules` applique les règles CLDR, que la mesure
-   confirme : en français, 0 et 1 sont au singulier (`one`) ; en anglais, 0 est au pluriel
-   (`other`). C'est exactement l'écart qu'une concaténation manquerait.
-4. **Poids (🟠)** — +0,3 ko, contre 14 à 16 ko pour les deux librairies les plus répandues.
+1. **Standard (🔴)** — c'est la librairie d'i18n la plus répandue de l'écosystème React. Ses
+   catalogues JSON se branchent sur les outils de traduction sans conversion. Une troisième langue
+   ou un traducteur externe devient un ajout de fichiers, pas un changement d'architecture.
+2. **Garde-fou (🔴)** — les clés et namespaces sont typés nativement. Ce qui échappe aux types est
+   couvert par l'outil officiel (`i18next-cli`) et par un test ciblé (voir *Garde-fou*). Chaque
+   trou mesuré a son contrôle.
+3. **Chaîne de build (🔴)** — ce ne sont que des dépendances d'exécution : pas de plugin, pas de
+   compilation, pas de code généré, pas d'accès réseau. `i18next-cli` s'exécute en local, hors du
+   build.
+4. **Pluriels et formatage (🟠)** — les pluriels suivent le CLDR par suffixes de clés. Dates et
+   nombres passent par les formateurs intégrés, fondés sur `Intl`.
 
 ### Organisation
 
-- **`libs/shared/i18n`**, avec les tags `type:shared`, `context:none` et `scope:web`, porte la
-  mécanique : le type `Locale` (`'fr' | 'en'`), la résolution de la locale depuis
-  `navigator.languages` (une fonction pure), l'aide aux pluriels et au formatage, le fournisseur
-  React et les hooks. C'est une lib et non un dossier de `apps/web`, parce qu'une slice ne peut
-  rien partager avec une autre autrement que par une lib (ADR 0002). Elle est `scope:web` parce
-  qu'elle dépend de React.
-- **Un catalogue par slice** : `features/<slice>/i18n/fr.ts` et `en.ts`. Le shell de l'app a le
-  sien. Un message appartient à la slice qui l'affiche : aucun catalogue global où tout
-  s'accumulerait.
-- **Choix de la locale** : on parcourt `navigator.languages` et on retient la première langue dont
-  le sous-tag principal est pris en charge. Sinon, c'est `fr`. `<html lang>` suit la locale active.
-  Le sélecteur manuel et la persistance du choix relèvent de la spec, pas de cet ADR.
-- **Erreurs de l'API** : l'API renvoie des codes stables. Le front associe chaque code à un
-  message de son catalogue, et un code inconnu à un message générique. La forme de l'erreur et
-  l'endroit où elle est traduite en HTTP relèvent de #24 et #26. Cet ADR fixe seulement qu'elle ne
-  contient pas de texte destiné à l'utilisateur.
+- **Un namespace par slice** : `apps/web/src/features/<slice>/i18n/fr.json` et `en.json`. Un
+  message appartient à la slice qui l'affiche : aucun catalogue global où tout s'accumulerait. Le
+  shell de l'app a son propre namespace ; son emplacement exact est laissé au plan, pourvu qu'il
+  suive le même motif que les slices, que lit `i18next-cli`.
+- **L'initialisation vit dans `apps/web`**, à côté de `main.tsx`. C'est la racine de composition du
+  front, et le seul endroit qui connaît tous les namespaces : il importe les catalogues et déclare
+  `CustomTypeOptions` à partir des JSON français. Les slices n'importent que `react-i18next`
+  (`useTranslation('<slice>')`), jamais une autre slice ni un module partagé. **Aucune lib
+  `libs/shared/i18n`** : il n'y a rien à partager qu'i18next ne fournisse déjà.
+- **Choix de la locale** : détection sur `navigator` seul, sans persistance (`caches: []`), avec
+  les réglages mesurés ci-dessus. `<html lang>` suit l'événement `languageChanged`. Le sélecteur
+  manuel et la persistance du choix relèvent de la spec ; le détecteur sait déjà lire et écrire
+  `localStorage` si elle le demande.
+- **Erreurs de l'API** : l'API renvoie des codes stables. Le front associe chaque code à une clé
+  de son catalogue par une table explicite, plutôt que par une clé construite
+  (`` t(`errors.${code}`) ``) qui échapperait au typage. Un code inconnu donne un message
+  générique. La forme de l'erreur et l'endroit où elle est traduite en HTTP relèvent de #24 et
+  #26.
 
 ### Garde-fou
 
-- **Typecheck** : `en.ts` se déclare avec `satisfies` sur le type du catalogue français. Une
-  traduction manquante fait échouer `yarn typecheck`, donc `yarn check` et la CI.
-- **Lint** : `react/jsx-no-literals` est activée dans oxlint, limitée au code de production de
-  `apps/web` (les specs en sont exclues). Elle attrape le cas le plus courant, le texte nu dans le
-  JSX. Les chaînes entre accolades et les attributs restent à la charge de la revue, faute
-  d'options dans oxlint (voir *Conditions de bascule*).
+Chaque erreur a son contrôle, et tous font échouer `yarn check` et la CI.
+
+| Erreur | Contrôle | Quand |
+|---|---|---|
+| Clé ou namespace mal orthographié | Typecheck (`CustomTypeOptions` tiré des JSON français) | `yarn typecheck`, et dans l'éditeur |
+| Traduction absente d'une locale | `i18next-cli status` (code de sortie 1) | Cible Nx de `web` |
+| Texte en dur dans le JSX (nu, `{'…'}`, `alt`, `aria-label`) | `i18next-cli lint` | Même cible |
+| Forme de pluriel manquante (dont `_many` en français), placeholders différents entre `fr` et `en` | Test Vitest de parité des catalogues, fondé sur `Intl.PluralRules(locale).resolvedOptions().pluralCategories` | `yarn test` |
+| Paramètre oublié, clé inconnue à l'exécution | `missingInterpolationHandler` et `missingKeyHandler` qui **lèvent** dans `test-setup.ts` | Quand un test exerce le chemin |
+
+Ce qui reste à la revue : le gabarit de chaîne dans le JSX, un paramètre oublié sur un chemin
+qu'aucun test n'exerce, et une traduction recopiée sans être traduite.
+
+Deux options ont été écartées :
+- **oxlint `react/jsx-no-literals`** : elle ne couvre qu'un sous-ensemble de `i18next-cli lint`, et
+  aurait signalé deux fois la même faute.
+- **eslint-plugin-i18next** : c'est le seul à attraper les gabarits, mais il ajouterait une règle
+  ESLint hors des frontières Nx (ADR 0008) pour un seul cas, alors que `i18next-cli` est de toute
+  façon requis pour `status`.
 
 ### Conditions de bascule
 
-- **Une troisième langue, ou un traducteur qui n'est pas développeur** : le catalogue en TypeScript
-  cesse d'être un avantage, et il faut un format standard. Le candidat de repli est **Paraglide**
-  (léger, compilé, JSON), à deux conditions : un contrôle qui fait échouer la CI sur une traduction
-  manquante, et le plugin chargé depuis npm plutôt que depuis le CDN.
-- **Des catalogues qui dépassent 10 ko gzip au total** : on charge chaque locale par un `import()`
-  dynamique. Cela reste dans D, ce n'est pas une bascule.
-- **Oxlint ajoute `noStrings` et `noAttributeStrings` à `react/jsx-no-literals`** : on les active,
-  et la part du garde-fou laissée à la revue disparaît.
+- **Un budget de poids du bundle initial est instauré et la pile i18n l'empêche d'être tenu** :
+  Paraglide (+1,3 ko mesuré) devient le candidat. Il faut alors un contrôle de traduction manquante
+  et son plugin chargé depuis npm.
+- **Un paramètre oublié passe en production** malgré les handlers de test : c'est le signal que le
+  typage des paramètres mérite d'être 🔴. On rouvre la question entre Paraglide et un typage des
+  interpolations.
+- **`i18next-cli` cesse d'être maintenu ou régresse** : `status` se remplace en étendant le test de
+  parité à la présence des clés, et `lint` par eslint-plugin-i18next (sondé ci-dessus).
+
+Une troisième langue ou un traducteur externe **n'est pas** une condition de bascule : c'est
+précisément ce que ce choix rend simple.
 
 ### Conséquences
 
-- **Code maison, donc testé.** `libs/shared/i18n` s'écrit en TDD comme le reste. Sa surface est
-  volontairement étroite : résolution de la locale, pluriels, formatage, contexte React. Au-delà
-  (rich text, pluriels imbriqués, sélecteurs de genre), la question se rouvre au lieu de gonfler la
-  lib.
+- **Quatre dépendances nouvelles**, épinglées selon les conventions du repo :
+  - `i18next`, `react-i18next` et `i18next-browser-languagedetector` à l'exécution ;
+  - `i18next-cli` en développement.
+- **`i18next-cli` tire son propre `@swc/core` (^1.16)**, alors que le repo épingle 1.15.8 : deux
+  binaires SWC coexistent dans l'arbre. C'est sans effet sur le build (ADR 0007), mais à surveiller
+  aux montées de version (#21).
+- **+17,7 ko gzip** acceptés sur le bundle initial.
+- **Une cible Nx ajoutée à `web`** pour `i18next-cli status` et `lint`. Le garde-fou de la CI
+  « check and CI verify the same targets » impose de l'ajouter **des deux côtés** (`yarn check` et
+  `ci.yml`), et il échouera si l'un des deux est oublié. Ce garde-fou lit les listes avec
+  l'expression `[a-z ]*[a-z]`. Une cible dont le nom contient un chiffre ou un tiret (`i18n`,
+  `i18n-check`) y serait tronquée, et la comparaison porterait sur des listes coupées. La cible se
+  nomme donc en lettres seules (par exemple `translations`), ou l'expression du garde-fou s'élargit
+  dans la même PR.
+- **Les specs de `apps/web` fixent leur locale.** jsdom annonce `en-US` : `test-setup.ts`
+  initialise i18next en `fr` explicitement, avec les deux handlers qui lèvent. Une spec qui teste
+  l'anglais change de langue explicitement.
+- **Le français porte trois formes de pluriel** (`_one`, `_many`, `_other`) sur chaque clé
+  comptée. Le test de parité l'exige : sans `_many`, un million afficherait la clé brute.
 - **Amendement de la constitution et de `CLAUDE.md`**, à faire à l'acceptation de cet ADR
   (`/speckit-constitution`, bump MINOR). Le §V passe de « texte écrit en français dans le code » à
   « texte affiché passant par le catalogue de sa slice, le français étant la langue source ». Les
@@ -225,13 +315,6 @@ aussi sur un générateur de code.
 - **`specs/001-photo-upload` à ajuster** quand #23 se code. Le `message: string` de
   `data-model.md` devient un code, et le plan ne dit plus que le texte est écrit en français dans
   le code.
-- **Les specs de `apps/web` fixent leur locale.** jsdom annonce `en-US` : une spec qui vérifie un
-  texte doit rendre sous une locale explicite, sinon elle dépend de l'environnement de test.
-- **Les messages sont du code.** Les fonctions à paramètres sont ce qui rend le typage complet ;
-  elles rendent aussi le catalogue illisible pour quelqu'un qui ne programme pas. C'est le prix
-  accepté, et c'est précisément la première condition de bascule.
-- **La forme `many` du français** (« 1 000 000 **de** livres ») retombe sur `other` quand un
-  message ne la fournit pas. Pour un nombre de livres sur une étagère, c'est sans conséquence.
 
 ## Question ouverte
 
@@ -239,3 +322,6 @@ aussi sur un générateur de code.
   la spec de la feature.
 - **Liste des codes d'erreur de l'API et leur forme** : renvoyées à #24 et #26. Cet ADR n'exige que
   leur stabilité et l'absence de texte destiné à l'utilisateur.
+- **Types générés ou écrits à la main** : `i18next-cli types` sait générer les définitions
+  TypeScript. La déclaration écrite à la main (`typeof` des JSON importés) tient en quelques lignes
+  et ne peut pas se désynchroniser. C'est un choix de mise en œuvre, laissé au plan.
