@@ -1,0 +1,245 @@
+# Feature Specification: Upload d'une photo d'étagère
+
+**Feature Branch**: `[001-photo-upload]`
+
+**Created**: 2026-09-19
+
+**Status**: Draft
+
+**Input**: User description: "upload d'une photo"
+
+## User Scenarios & Testing *(mandatory)*
+
+### User Story 1 - Prendre une photo et voir les livres détectés (Priority: P1)
+
+En ressourcerie, devant une étagère, l'utilisateur ouvre l'application sur son téléphone, prend
+une photo de l'étagère (ou en choisit une déjà prise), l'envoie, et voit apparaître la liste des
+livres détectés (auteur, titre) pendant que l'analyse se fait.
+
+**Why this priority**: C'est le seul point d'entrée de tout le produit — sans lui, aucune des
+fonctionnalités en aval (réconciliation, curation) n'est atteignable. C'est aussi la première
+brique frontend du projet : l'interface n'existe pas encore.
+
+**Independent Test**: Peut être testée seule en soumettant une photo depuis un téléphone (ou son
+équivalent en émulation d'écran mobile) et en constatant qu'une liste de livres détectés s'affiche,
+sans dépendre d'aucune autre fonctionnalité de l'application.
+
+**Acceptance Scenarios**:
+
+1. **Given** l'utilisateur est sur l'écran d'accueil, **When** il prend une photo avec l'appareil
+   photo de son téléphone et l'envoie, **Then** l'application affiche un état de chargement pendant
+   l'analyse puis la liste des livres détectés (auteur si connu, titre, sans doublon d'affichage).
+2. **Given** l'utilisateur est sur l'écran d'accueil, **When** il choisit une photo existante dans
+   sa galerie et l'envoie, **Then** le même comportement s'applique que pour une photo prise sur
+   l'instant.
+3. **Given** une photo envoyée dont l'étagère ne contient aucun livre reconnaissable, **When**
+   l'analyse se termine, **Then** l'application indique clairement qu'aucun livre n'a été détecté
+   et propose de réessayer avec une autre photo.
+
+---
+
+### User Story 2 - Être prévenu quand la photo est refusée (Priority: P2)
+
+L'utilisateur envoie un fichier que le système ne peut pas traiter (mauvais format, poids excessif,
+fichier vide ou corrompu) et comprend immédiatement pourquoi, sans page blanche ni message
+technique.
+
+**Why this priority**: Sans ce garde-fou, un envoi refusé silencieusement ou avec une erreur brute
+casse la confiance dans l'outil dès le premier usage. C'est secondaire au chemin heureux (US1) mais
+nécessaire avant toute mise en usage réel.
+
+**Independent Test**: Peut être testée seule en soumettant un fichier non conforme (par exemple un
+PDF, une image de plus de 20 Mo, ou un fichier vide) et en constatant qu'un message compréhensible
+s'affiche sans que l'application ne plante ni ne reste bloquée en chargement.
+
+**Acceptance Scenarios**:
+
+1. **Given** l'utilisateur choisit un fichier qui n'est pas une image (ex. PDF), **When** il tente
+   de l'envoyer, **Then** l'application refuse l'envoi avant ou après soumission et affiche un
+   message expliquant que le format n'est pas pris en charge.
+2. **Given** l'utilisateur choisit une image de plus de 20 Mo, **When** il tente de l'envoyer,
+   **Then** l'application affiche un message expliquant que le fichier est trop volumineux.
+3. **Given** l'analyse échoue côté serveur (panne du service de reconnaissance), **When** la
+   réponse d'erreur arrive, **Then** l'application affiche un message invitant à réessayer plus
+   tard, distinct du message "aucun livre détecté".
+
+---
+
+### User Story 3 - Conserver la photo et le résultat de l'analyse (Priority: P2)
+
+Après une analyse qui aboutit à une réponse du service de reconnaissance — qu'elle détecte des
+livres, n'en détecte aucun, ou échoue en amont — la photo et ce qui en a été tiré sont conservés,
+pour qu'un traitement ultérieur (réconciliation, nouvelle tentative sur une analyse en échec) n'ait
+pas besoin de redemander la photo à l'utilisateur.
+
+**Why this priority**: Sans cette conservation, chaque photo est perdue dès l'écran de résultat
+fermé — la reconnaissance devient un aller-retour sans mémoire, alors que le produit vise à terme
+une réconciliation bibliographique qui a besoin de ces données. Secondaire au chemin heureux visible
+par l'utilisateur (US1, invisible pour lui), mais fait partie du contrat de cette feature plutôt
+que d'être reporté.
+
+**Independent Test**: Peut être testée seule en envoyant une photo (chemin heureux ou échec du
+service de reconnaissance) et en constatant, indépendamment de l'interface, qu'une copie de la
+photo est retrouvable et qu'un enregistrement correspondant existe, portant le résultat obtenu (les
+livres détectés, ou l'indication que l'analyse a échoué).
+
+**Acceptance Scenarios**:
+
+1. **Given** une photo envoyée dont l'analyse aboutit (avec ou sans livre détecté), **When**
+   l'analyse se termine, **Then** la photo est conservée et un enregistrement associe cette photo
+   au résultat obtenu (livres détectés, éventuellement une liste vide) et à un horodatage.
+2. **Given** une photo envoyée dont l'analyse échoue en amont (panne du service de reconnaissance),
+   **When** l'échec est constaté, **Then** la photo est conservée et un enregistrement associe cette
+   photo à un statut d'échec (sans liste de livres), pour un traitement ultérieur sans redemander la
+   photo.
+3. **Given** un fichier refusé avant toute analyse (mauvais format, poids excessif — US2), **When**
+   l'envoi est rejeté, **Then** rien n'est conservé : il n'y a ni photo ni résultat à associer.
+
+---
+
+### User Story 4 - Reprendre après une erreur ou changer de photo (Priority: P3)
+
+L'utilisateur qui a reçu une erreur, ou qui n'est pas satisfait de la photo envoyée (floue,
+mauvais angle), peut immédiatement recommencer avec une nouvelle photo sans recharger la page ni
+perdre le fil.
+
+**Why this priority**: Confort d'usage plutôt que fonctionnalité bloquante — améliore la
+récupération sur erreur mais l'outil reste utilisable sans, en rechargeant la page.
+
+**Independent Test**: Peut être testée seule en déclenchant une erreur ou en obtenant un résultat,
+puis en vérifiant qu'un bouton ou une action ramène à l'état initial prêt pour un nouvel envoi.
+
+**Acceptance Scenarios**:
+
+1. **Given** un résultat (liste de livres ou erreur) est affiché, **When** l'utilisateur choisit de
+   recommencer, **Then** l'application revient à l'état initial, prête à recevoir une nouvelle
+   photo.
+
+### Edge Cases
+
+- Que se passe-t-il si l'utilisateur envoie une photo alors qu'une analyse précédente est encore en
+  cours ? (une seule analyse à la fois : le nouvel envoi remplace ou est bloqué tant que la
+  précédente n'est pas terminée — voir FR-007)
+- Que se passe-t-il si la connexion réseau est interrompue pendant l'envoi ou l'analyse ?
+- Que se passe-t-il si l'utilisateur quitte l'écran (navigation, mise en veille du téléphone)
+  pendant l'analyse ?
+- Que se passe-t-il si l'appareil de l'utilisateur ne dispose pas d'appareil photo (ordinateur de
+  bureau) ? L'envoi depuis un fichier existant doit rester possible.
+- Que se passe-t-il si la photo est correctement soumise mais que la connexion est coupée avant que
+  l'analyse elle-même ait pu être lancée ? La photo déjà soumise reste conservée (FR-014) ; côté
+  écran, ce cas se présente comme les autres coupures réseau, sans distinction visible pour
+  l'utilisateur.
+
+## Requirements *(mandatory)*
+
+### Functional Requirements
+
+- **FR-001**: Le système DOIT permettre à l'utilisateur de fournir une photo soit en la prenant
+  directement avec l'appareil photo du téléphone, soit en choisissant un fichier existant.
+- **FR-002**: Le système DOIT n'accepter qu'une seule photo par envoi (le contrat existant de
+  reconnaissance, `ShelfScannerPort.scan`, traite une image à la fois).
+- **FR-003**: Le système DOIT valider côté interface le type de fichier (image) avant envoi, pour
+  éviter un aller-retour réseau inutile sur un fichier manifestement non conforme.
+- **FR-004**: Le système DOIT afficher un état de chargement visible pendant toute la durée de
+  l'analyse, l'utilisateur étant informé qu'un traitement est en cours.
+- **FR-005**: Le système DOIT afficher, à l'issue d'une analyse réussie, la liste des livres
+  détectés avec leur titre et, quand il est connu, leur auteur.
+- **FR-006**: Le système DOIT distinguer clairement trois issues à l'utilisateur : livres détectés,
+  aucun livre détecté, et échec de l'analyse (panne du service en amont) — chacune avec un message
+  propre à sa cause.
+- **FR-007**: Le système DOIT empêcher l'envoi d'une nouvelle photo tant qu'une analyse est en
+  cours pour la même session d'utilisation.
+- **FR-008**: Le système DOIT permettre à l'utilisateur de revenir à l'état initial après un
+  résultat ou une erreur, pour envoyer une nouvelle photo sans recharger la page.
+- **FR-009**: Le système DOIT refuser, avec un message compréhensible sans jargon technique, un
+  fichier dont le format n'est pas prix en charge (formats pris en charge : JPEG, PNG, WebP, HEIC)
+  ou dont le poids dépasse 20 Mo — limites déjà appliquées côté serveur (`ShelfPhoto`), reprises
+  côté interface pour un retour immédiat.
+- **FR-010**: Le système DOIT rester utilisable sur un appareil sans appareil photo (l'envoi d'un
+  fichier existant suffit alors).
+- **FR-011**: Le système DOIT conserver durablement la photo dès lors qu'une analyse a été tentée
+  et que le service de reconnaissance a répondu — que la réponse contienne des livres, une liste
+  vide, ou un échec (US3).
+- **FR-012**: Le système DOIT enregistrer durablement, pour chaque photo conservée, le résultat
+  associé : la liste des livres détectés (éventuellement vide) en cas d'analyse aboutie, ou un
+  statut d'échec en cas de panne du service de reconnaissance — jamais les deux à la fois, et
+  jamais un enregistrement sans photo correspondante.
+- **FR-013**: Le système NE DOIT PAS conserver une photo dont l'envoi est refusé avant toute
+  tentative d'analyse (format non supporté, poids excessif — FR-009) : rien n'a été soumis au
+  service de reconnaissance, rien n'est retenu.
+- **FR-014**: Le système DOIT garantir qu'une photo correctement soumise reste conservée même si la
+  tentative d'analyse qui la concerne échoue avant d'atteindre le service de reconnaissance (panne
+  réseau, interruption côté client) — la soumission de la photo et le déclenchement de son analyse
+  sont deux garanties distinctes, la seconde ne pouvant pas défaire la première une fois acquise.
+- **FR-015**: Le système DOIT conserver, pour chaque photo, le nom de fichier fourni par
+  l'utilisateur uniquement à des fins de référence en base de données — ce nom ne DOIT jamais
+  apparaître tel quel dans l'endroit où la photo est effectivement stockée, ni être exposé par une
+  réponse du système.
+
+### Key Entities
+
+- **Photo soumise** : la photo d'étagère fournie par l'utilisateur pour un envoi — ses attributs
+  significatifs pour cette feature sont son format et son poids ; son contenu visuel est traité
+  par la reconnaissance (hors scope de cette spec).
+- **Résultat d'analyse** : ce que l'utilisateur voit après un envoi — une liste de livres détectés
+  (auteur optionnel, titre), ou l'indication qu'aucun livre n'a été détecté, ou un message d'échec.
+- **Scan conservé** : l'enregistrement durable d'une photo soumise et de ce qui en a été tiré —
+  l'endroit où la photo est stockée, ses attributs techniques (format, poids), le nom de fichier
+  d'origine à des fins de référence (jamais utilisé comme identifiant de stockage, FR-015), le
+  résultat associé une fois l'analyse tentée (livres détectés ou statut d'échec, ou son absence si
+  l'analyse n'a pas encore été déclenchée — FR-014) et la date de la soumission. Distinct du
+  « Résultat d'analyse » affiché : celui-ci est ce que voit l'utilisateur dans l'instant, celui-là
+  est ce qui en reste après (US3). Isolé par un identifiant technique fixe pour l'instant, pas par
+  un compte utilisateur réel (Assumptions).
+
+## Success Criteria *(mandatory)*
+
+### Measurable Outcomes
+
+- **SC-001**: Un utilisateur nouveau peut envoyer une photo et voir un résultat (livres détectés,
+  aucun livre, ou erreur) sans explication préalable, en moins de 30 secondes du lancement de
+  l'application à l'affichage du résultat (hors temps d'analyse du service de reconnaissance).
+- **SC-002**: 100 % des fichiers non conformes (mauvais format, poids excessif) déclenchent un
+  message d'erreur compréhensible, jamais une page blanche ou un blocage silencieux.
+- **SC-003**: Un utilisateur peut enchaîner l'envoi de deux photos successives (avec ou sans
+  résultat entre les deux) sans recharger la page.
+- **SC-004**: L'écran d'envoi et le résultat restent utilisables sur un écran de la taille d'un
+  téléphone (largeur 360px et plus), sans défilement horizontal.
+- **SC-005**: 100 % des analyses qui obtiennent une réponse du service de reconnaissance (livres
+  détectés, aucun livre, ou échec) laissent une photo et un enregistrement retrouvables après coup,
+  sans action supplémentaire de l'utilisateur ni ressaisie de la photo.
+
+## Assumptions
+
+- Usage mono-utilisateur, une photo à la fois, sans compte ni authentification (cohérent avec
+  l'usage personnel décrit pour le projet) — pas de file d'attente ni d'historique multi-appareil
+  à gérer dans cette feature.
+- Les photos conservées sont néanmoins isolées par un identifiant technique fixe (pas un compte
+  réel, aucune authentification introduite) — décision actée avec le porteur du projet le
+  21/09/2026, pour que l'emplacement de stockage soit déjà compatible avec de vrais comptes
+  utilisateurs le jour où ils existeront, sans anticiper leur conception.
+- La photo est conservée dès qu'une analyse a été tentée et que le service de reconnaissance a
+  répondu, y compris en cas d'échec de ce service — décision actée avec le porteur du projet le
+  21/09/2026, qui révise le comportement « éphémère en V1 » documenté à l'origine dans
+  `ScanController` (FR-011 à FR-013, US3). Un fichier refusé avant analyse (US2) n'est jamais
+  conservé.
+- Aucune politique de purge ou de rétention n'est mise en place par cette feature : les photos et
+  leurs enregistrements sont conservés indéfiniment pour l'instant — cohérent avec la question de
+  rétention déjà laissée ouverte par l'ADR 0006 (cadence du `pg_dump`), tranchée plus tard au vu du
+  volume réel plutôt qu'anticipée ici.
+- La soumission d'une photo et le déclenchement de son analyse sont deux opérations distinctes
+  (FR-014) — décision actée avec le porteur du projet le 21/09/2026, en réaction à la latence du
+  service de reconnaissance (de l'ordre de 27 s, `docs/decisions/0001`) : les enchaîner dans une
+  seule opération réseau risquerait de perdre la photo déjà reçue si la partie la plus longue et la
+  plus faillible échoue. Une photo soumise dont l'analyse n'a jamais pu être déclenchée (coupure
+  entre les deux) reste dans un état intermédiaire, sans reprise automatique ni notion d'expiration
+  dans le scope de cette feature — cohérent avec l'absence de politique de rétention ci-dessus.
+- Les formats acceptés et la taille maximale (JPEG/PNG/WebP/HEIC, 20 Mo) reprennent une contrainte
+  déjà actée côté domaine (`ShelfPhoto`, contexte `recognition`) plutôt que d'en introduire une
+  nouvelle pour cette feature.
+- La réconciliation bibliographique et l'affichage enrichi des livres (couverture, résumé) sont
+  hors scope : cette feature s'arrête à l'affichage des couples (auteur, titre) tels que retournés
+  par la reconnaissance.
+- Le réseau du téléphone est disponible mais peut être lent ou instable — la feature affiche un
+  message d'erreur réseau plutôt que de rester bloquée indéfiniment, sans exigence de nouvelle
+  tentative automatique.
