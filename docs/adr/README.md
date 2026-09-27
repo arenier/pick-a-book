@@ -42,9 +42,16 @@ reconstitution du raisonnement, à valider.
    Un numéro annoncé avant l'écriture devient faux dès que l'ordre change.
 3. Le rédiger au présent, en énonçant la décision — pas « on pourrait », mais « nous faisons ».
 4. Pondérer les critères, et rattacher chaque raison de la solution retenue à un critère fort.
-5. Donner les **conditions de bascule** : le seuil mesurable qui rouvrirait la décision.
-6. Ajouter la ligne dans l'index ci-dessus.
-7. Le faire passer en PR, comme le code. La discussion a lieu dans la PR ; l'ADR mergé en est
+5. **Mettre l'étude des candidats dans l'issue, pas dans l'ADR.** L'issue qui porte la décision
+   rassemble les options examinées, la méthode, les mesures, les constats et l'analyse de chaque
+   candidat. L'ADR résume la démarche en quelques lignes et renvoie à l'issue. Il ne garde que ce
+   qui fonde la décision : la solution retenue, ses raisons, et les alternatives que nomment ses
+   conditions de bascule. Un ADR se lit ainsi comme une décision, et non comme un rapport
+   d'étude. La règle vaut à partir de l'ADR [0012](0012-design-system-de-l-interface.md). Les ADR
+   antérieurs gardent leur étude, puisqu'un ADR accepté ne se réécrit pas.
+6. Donner les **conditions de bascule** : le seuil mesurable qui rouvrirait la décision.
+7. Ajouter la ligne dans l'index ci-dessus.
+8. Le faire passer en PR, comme le code. La discussion a lieu dans la PR ; l'ADR mergé en est
    le résultat.
 
 ## Statuts
