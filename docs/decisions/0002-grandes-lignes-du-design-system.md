@@ -14,8 +14,8 @@
 - **mode sombre dès le MVP**, qui suit le réglage du système.
 
 Le reste en découle : c'est le contexte d'usage et WCAG 2.2 AA qui le fixent. Chaque valeur de
-cette note a été **mesurée** sur l'écran de #23, sur le banc de l'ADR 0012 (décrit dans l'issue
-#59) : Chromium en 360 × 740, axe-core 4.11, en clair et en sombre. Résultat : **0 violation dans
+cette note a été **mesurée** sur l'écran modèle du banc de l'ADR 0012, construit d'après #23 et
+décrit dans l'issue #59 : Chromium en 360 × 740, axe-core 4.11, en clair et en sombre. Résultat : **0 violation dans
 les deux thèmes**, écran et fenêtre de dialogue ouverte.
 
 ## Le contexte qui dicte les règles
@@ -70,6 +70,11 @@ gamut les rend telles quelles. Tailwind les expose en utilitaires (`bg-confidenc
 **Le niveau de confiance s'écrit toujours en toutes lettres** (« Confiance élevée »). La couleur
 redouble le texte, elle ne le remplace jamais (principe 3).
 
+**Ces tokens attendent la spec qui affichera la confiance.** Aujourd'hui, `photo-upload` reçoit la
+confiance de l'API sans l'afficher (`specs/001-photo-upload/data-model.md`). Les tokens sont
+déclarés et vérifiés dès maintenant, pour qu'une spec qui les utilisera n'ait pas à rouvrir la
+palette.
+
 ## Typographie
 
 - **Interface : la police système** (`system-ui`), c'est-à-dire San Francisco sur iOS et Roboto
@@ -100,7 +105,7 @@ redouble le texte, elle ne le remplace jamais (principe 3).
 - **Pas de sélecteur manuel dans le MVP.** Il reviendrait à rétablir une classe et un stockage :
   c'est à rouvrir si un besoin apparaît.
 - **Chaque vérification de contraste se fait dans les deux thèmes** : les specs axe de `shared/ui`
-  et de #23 tournent en `colorScheme: 'light'` puis `'dark'`.
+  et de `photo-upload` tournent en `colorScheme: 'light'` puis `'dark'`.
 
 ## Forme, espace, mouvement
 
@@ -109,8 +114,8 @@ redouble le texte, elle ne le remplace jamais (principe 3).
 - **Rayon** : `--radius` à 0,625 rem, la valeur par défaut de shadcn/ui, dont découlent tous les
   arrondis.
 - **Cibles tactiles** : **44 px au minimum** pour tout élément interactif (`h-11`, `size-11`),
-  mesurées sur l'écran de #23. Les actions principales de l'écran (photographier, analyser)
-  prennent toute la largeur.
+  mesurées sur l'écran modèle. Les actions principales de l'écran (choisir la photo, analyser)
+  prennent toute la largeur, comme dans la slice `photo-upload`.
 - **Une seule action primaire par écran** (variante `default`). Les autres sont en `outline` ou
   `ghost`.
 - **Icônes** : `lucide-react`, déjà dépendance de shadcn/ui, en 16 ou 20 px. Une icône est
@@ -121,7 +126,7 @@ redouble le texte, elle ne le remplace jamais (principe 3).
 
 ## États de l'interface
 
-Chaque attente, chaque absence de résultat et chaque échec a sa forme, pour que #23 et les
+Chaque attente, chaque absence de résultat et chaque échec a sa forme, pour que `photo-upload` et les
 features suivantes ne la réinventent pas :
 
 | État | Forme |
@@ -138,5 +143,5 @@ d'internationalisation (#58) est en place.
 
 - **La couleur d'accent**, choisie plus tard, dans les conditions de la section *Couleurs*.
 - **Un logo ou une marque** : il n'y en a pas pour l'instant.
-- **La présentation détaillée des résultats de #23** (ordre, filtrage des détections faibles) :
+- **La présentation détaillée des résultats de `photo-upload`** (ordre, filtrage des détections faibles) :
   c'est du comportement, qui relève de `specs/001-photo-upload`.

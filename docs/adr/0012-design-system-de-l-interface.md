@@ -4,12 +4,28 @@ Statut : proposé · Date : 2026-09-27 · Phase 1 · Couplé aux ADR [0002](0002
 
 ## Contexte
 
-`apps/web` n'a aucun design system : `styles.css` fixe une pile de polices `system-ui`,
-`app.module.css` une largeur maximale et un gris `#6b6b6b` écrit en dur. La première feature
-(#23, `specs/001-photo-upload`) apporte les premiers composants : sélection ou capture d'une photo,
-aperçu, bouton d'envoi, états d'attente et d'erreur, liste des livres détectés avec leur confiance,
-fenêtre de détail. Le cadrage est dans l'issue #59. Plusieurs points y sont déjà fixés et ne sont
-pas rediscutés ici :
+`apps/web` n'a aucun design system. Le front compte aujourd'hui une slice,
+`features/photo-upload` (#23, livrée par #55, `specs/001-photo-upload`), et le shell de l'app. Leur
+interface repose sur des **éléments HTML natifs** stylés à la main :
+- un `<input type="file">` pour choisir la photo, sans attribut `capture`, pour que le téléphone
+  propose l'appareil photo comme la galerie ;
+- des `<button>` pour envoyer et pour recommencer ;
+- un `<output>` pour l'attente de l'analyse, d'environ 30 s ;
+- un paragraphe `role="alert"` pour l'erreur ;
+- une liste des livres détectés, avec leur titre et leur auteur.
+
+La PR #63, en revue, y ajoute l'aperçu de la photo choisie. La confiance de chaque livre est
+reçue de l'API, mais elle n'est pas affichée (`data-model.md`).
+
+Le style tient en une feuille globale et deux CSS Modules :
+- `styles.css` fixe une pile de polices `system-ui` ;
+- `app.module.css` fixe la largeur du shell ;
+- `photo-upload-screen.module.css` porte l'écran d'upload, avec des couleurs d'erreur écrites en
+  dur (`#b3261e`, `#fdecea`, `#5f1410`).
+
+Adopter un design system maintenant coûte la migration d'une slice, et chaque nouvelle slice en
+ajoutera une. Le cadrage est dans l'issue #59. Plusieurs points y sont déjà fixés et ne sont pas
+rediscutés ici :
 
 - on **adopte** un design system publié et maintenu, on n'en conçoit pas un. Notre travail se
   limite à le thémer, à l'encapsuler et, pour un système copié, à le mettre aux normes du dépôt ;
@@ -57,7 +73,8 @@ Légende : 🔴 fort · 🟠 moyen · 🟢 faible · ⚪ à clarifier
 
 ## Étude des candidats
 
-Huit bibliothèques stylées ont implémenté **le même écran**, celui de #23, avec les versions
+Huit bibliothèques stylées ont implémenté **le même écran modèle**, construit d'après #23 avant
+sa livraison, avec les versions
 d'outils du repo. Pour chacune, on a mesuré :
 - le poids gzip ;
 - des sondes de typage ;
@@ -109,13 +126,13 @@ Ces specs portent sur notre contrat, pas sur l'implémentation de Radix. Ce sont
 détectent une régression quand on reprend une nouvelle version d'un composant.
 
 **Tailwind et les CSS Modules.** Tailwind devient la **seule** façon d'écrire le style dans
-`apps/web` et `libs/shared/ui`, au lieu de s'ajouter à côté des CSS Modules : deux façons de
-faire, c'est deux choses à connaître pour un seul mainteneur. `app.module.css` migre quand
-`shared/ui` arrive, et aucun nouveau `*.module.css` ne s'écrit. Les couleurs, rayons et
-espacements sont les variables CSS du thème (`--primary`, `--destructive`, `--radius`…),
-déclarées une fois dans la feuille globale de `shared/ui`. Aucune couleur en dur dans une classe
-arbitraire (`bg-[#…]`) : c'est à la revue d'y veiller, comme pour les textes laissés à la revue
-par l'ADR d'i18n.
+`apps/web` et `libs/shared/ui`, au lieu de s'ajouter à côté des CSS Modules : deux façons de faire,
+c'est deux choses à connaître pour un seul mainteneur. `app.module.css` et
+`photo-upload-screen.module.css` migrent quand `shared/ui` arrive, et aucun nouveau `*.module.css`
+ne s'écrit. Les couleurs, rayons et espacements sont les variables CSS du thème (`--primary`,
+`--destructive`, `--radius`…), déclarées une fois dans la feuille globale de `shared/ui`. Aucune
+couleur en dur dans une classe arbitraire (`bg-[#…]`) : c'est à la revue d'y veiller, comme pour les
+textes laissés à la revue par l'ADR d'i18n.
 
 **`shadcn/tailwind.css` et le CLI.** La feuille est copiée dans `libs/shared/ui`, comme le reste
 du code. Le paquet `shadcn` n'est **jamais une dépendance** du workspace. Le CLI s'utilise
@@ -126,7 +143,7 @@ la CI n'en dépendent pas, ce qui épargne 306 paquets.
 ### Retouches à l'import
 
 Le code copié est le nôtre : chaque composant est mis aux normes du dépôt en entrant. Les retouches
-suivantes ont été appliquées et mesurées sur l'écran de #23 (détail dans #59) :
+suivantes ont été appliquées et mesurées sur l'écran modèle du banc (détail dans #59) :
 
 - **Boutons à `h-11` (44 px)** au lieu de `h-9`, et boutons-icônes à `size-11`.
 - **`Spinner` en `aria-hidden`** : c'est l'`<output>` qui l'entoure qui porte le texte. Plus de
@@ -198,21 +215,25 @@ lint strict sur le code copié, 98 paquets, +24,5 ko de JS et +7,0 ko de CSS gzi
   retouches.
 - **Retouches systématiques à l'import** : taille tactile de 44 px, libellés en props obligatoires
   (aucune chaîne en dur), `Spinner` décoratif, contraste des tokens vérifié. Les specs de contrat
-  les rendent vérifiables, et un test axe sur l'écran de #23 empêche la régression.
+  les rendent vérifiables, et un test axe sur l'écran de `photo-upload` empêche la régression.
 - **Fenêtres de dialogue par `DialogTrigger`** : c'est ce qui permet à Radix de rendre le focus au
   déclencheur. Une fenêtre pilotée uniquement par état doit gérer `onCloseAutoFocus` elle-même.
 - **Nouvelle règle de frontière et nouvelle façon d'écrire le style**, à reporter dans `CLAUDE.md` ›
   Architecture et Conventions, et dans la constitution (`/speckit-constitution`), à l'acceptation
   de cet ADR : « Radix ne s'importe que depuis `shared/ui` » ; « le style s'écrit en classes
   Tailwind sur les tokens du thème, pas de nouveau CSS Module ».
-- **`specs/001-photo-upload/plan.md`** mentionne des composants en CSS Modules : il faudra
-  l'ajuster quand #23 se code.
+- **La slice `photo-upload` est à migrer**, et c'est le premier chantier de `shared/ui`. Ses
+  éléments natifs deviennent des composants de la lib (`Button`, `Alert`, `Spinner`), son CSS
+  Module devient des classes Tailwind, et ses couleurs écrites en dur deviennent des tokens. Ses
+  specs existantes, qui interrogent par rôle et par texte, servent de filet : elles doivent
+  passer sans changement de comportement. Le choix du fichier sans `capture` est conservé.
 
 ## Question ouverte
 
-- **Ordre avec #23 et #58** : si #23 passe avant #58, ses textes s'écrivent en attendant dans un
-  module unique par slice, pour que la migration vers le catalogue reste mécanique. Les props de
-  libellé des composants de `shared/ui` reçoivent alors directement les messages du catalogue.
+- **Ordre avec l'i18n (#58)** : les deux chantiers migrent la même slice, `photo-upload`. On peut
+  les mener en une seule passe, composant par composant (`shared/ui` et `t()` ensemble), ou l'un
+  après l'autre. Dans les deux cas, les props de libellé des composants de `shared/ui` reçoivent
+  les messages du catalogue, sans chaîne par défaut.
 - ~~**Identité visuelle**~~ : tranchée dans la note de niveau inférieur
   [`docs/decisions/0002`](../decisions/0002-grandes-lignes-du-design-system.md). Elle retient la
   palette neutre corrigée pour AA, Literata pour les titres de livres, et un mode sombre qui suit
