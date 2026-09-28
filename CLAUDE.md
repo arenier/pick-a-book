@@ -43,7 +43,7 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
 
 | Node.js | Yarn | Terraform | tflint | checkov | Géré par |
 |---|---|---|---|---|---|
-| **26.5.1** | **4.18.0** | **1.15.9** | **0.64.0** | **3.3.11** | **mise** (`mise.toml` à la racine) |
+| **26.5.1** | **4.18.0** | **1.15.9** | **0.64.0** | **3.3.20** | **mise** (`mise.toml` à la racine) |
 
 `mise install` à la racine pose toute la chaîne ; la CI installe à partir du **même fichier**
 (`jdx/mise-action`), seule source des versions ([0001](docs/adr/0001-stack-et-monorepo-nx.md),

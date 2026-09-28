@@ -12,7 +12,9 @@ node = "26.5.1"
 "npm:@yarnpkg/cli-dist" = "4.18.0"
 terraform = "1.15.9"
 tflint = "0.64.0"
-checkov = "3.3.11"
+# Only versions with a published binary install: 3.3.11, the former pin, has a tag but no release
+# asset. 3.3.20 finds exactly what 3.3.11 did on infra/.
+checkov = "3.3.20"
 
 [settings]
 # Installs npm-backed tools with npm itself. On "auto", mise may pick another installer that

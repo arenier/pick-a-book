@@ -10,7 +10,7 @@ propres outils et sa propre CI (job `terraform` dans `.github/workflows/ci.yml`)
 |---|---|---|
 | [Terraform](https://developer.hashicorp.com/terraform/install) | **1.15.9** | `mise install`, à la racine du dépôt |
 | [tflint](https://github.com/terraform-linters/tflint) | **0.64.0** | idem |
-| [checkov](https://www.checkov.io/) | **3.3.11** | idem |
+| [checkov](https://www.checkov.io/) | **3.3.20** | idem |
 | [gcloud CLI](https://cloud.google.com/sdk/docs/install) | — | authentification |
 
 Les trois sont épinglés dans le [`mise.toml`](../mise.toml) de la racine, avec Node et Yarn
