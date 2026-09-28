@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Controller,
   HttpCode,
+  Logger,
   Param,
   Post,
   UploadedFile,
@@ -15,6 +16,9 @@ import {
   type StoreShelfPhotoCommand,
   type StoreShelfPhotoResult,
 } from '@pick-a-book/recognition-application';
+import type { Result } from '@pick-a-book/shared-result';
+
+import { toHttpException, type RecognitionError } from './recognition-http-error';
 
 /**
  * The subset of an uploaded file this controller needs.
@@ -41,11 +45,14 @@ const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
  * Two steps so that the photo is safe before the longest and most failure-prone call of the
  * chain (FR-014). Handles boundary DTOs only, never a domain object (ADR 0003).
  *
- * The errors of the context cross it untranslated: `RecognitionExceptionFilter` says them in
- * HTTP, for every route at once.
+ * The use cases answer with a `Result` (ADR 0013): a failure of the context is an `Err`, and
+ * `toHttpException` says it in HTTP, for every route at once. What is not an `Err` — a bucket
+ * or a database that fails — is left to throw, for the global filter of the API to catch.
  */
 @Controller('shelf-photos')
 export class ShelfPhotosController {
+  private readonly logger = new Logger(ShelfPhotosController.name);
+
   constructor(
     private readonly storeShelfPhoto: StoreShelfPhotoUseCase,
     private readonly scanStoredShelfPhoto: ScanStoredShelfPhotoUseCase,
@@ -59,7 +66,7 @@ export class ShelfPhotosController {
 
     // Rebuilt field by field: whatever else the use case may one day return, the id is the
     // only thing that leaves (FR-015).
-    const { id } = await this.storeShelfPhoto.execute(command);
+    const { id } = this.orRespondWithError(await this.storeShelfPhoto.execute(command));
     return { id };
   }
 
@@ -67,7 +74,23 @@ export class ShelfPhotosController {
   // 200, not the 201 Nest defaults to on a POST: a scan creates nothing.
   @HttpCode(200)
   async scan(@Param('id') id: string): Promise<ScanShelfResult> {
-    return this.scanStoredShelfPhoto.execute({ id });
+    return this.orRespondWithError(await this.scanStoredShelfPhoto.execute({ id }));
+  }
+
+  /**
+   * The value of a success, or the HTTP exception of a failure. The provider's own answer
+   * — which can name a key, a quota or a model — goes to the logs, since the caller only
+   * gets a generic message (contracts/scan-api.md §2).
+   */
+  private orRespondWithError<T>(result: Result<T, RecognitionError>): T {
+    if (result.ok) {
+      return result.value;
+    }
+    if (result.error.kind === 'shelf-scan-failed') {
+      this.logger.error(result.error.message, result.error.stack);
+    }
+
+    throw toHttpException(result.error);
   }
 }
 

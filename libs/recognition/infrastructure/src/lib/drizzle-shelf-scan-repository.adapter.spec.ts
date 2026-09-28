@@ -9,6 +9,7 @@ import {
   ShelfScanNotFound,
   type NewShelfScan,
 } from '@pick-a-book/recognition-domain';
+import { err, ok, unwrap } from '@pick-a-book/shared-result';
 import { Pool } from 'pg';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -36,12 +37,14 @@ function aMigratedRepository() {
   return { pool, repository: new DrizzleShelfScanRepositoryAdapter(pool) };
 }
 
+const ownerId = (raw: string) => unwrap(OwnerId.of(raw));
+
 const aNewScan = (): NewShelfScan => {
   const id = ShelfScanId.generate();
 
   return {
     id,
-    ownerId: OwnerId.of('default'),
+    ownerId: ownerId('default'),
     photoBucketKey: `default/shelf_photo/${id.value}`,
     photoMediaType: 'image/jpeg',
     photoSizeBytes: 2_345_678,
@@ -50,8 +53,12 @@ const aNewScan = (): NewShelfScan => {
 };
 
 const books = [
-  DetectedBook.of(Author.of('Annie Ernaux'), BookTitle.of('La Place'), Confidence.of(0.71)),
-  DetectedBook.of(undefined, BookTitle.of('Les Choses'), Confidence.of(0.4)),
+  DetectedBook.of(
+    unwrap(Author.of('Annie Ernaux')),
+    unwrap(BookTitle.of('La Place')),
+    unwrap(Confidence.of(0.71)),
+  ),
+  DetectedBook.of(undefined, unwrap(BookTitle.of('Les Choses')), unwrap(Confidence.of(0.4))),
 ];
 
 describe('DrizzleShelfScanRepositoryAdapter, creating a record', () => {
@@ -119,7 +126,7 @@ describe('DrizzleShelfScanRepositoryAdapter, recording a result', () => {
     const scan = aNewScan();
     await repository.createPending(scan);
 
-    await repository.markCompleted(scan.id, books);
+    await expect(repository.markCompleted(scan.id, books)).resolves.toStrictEqual(ok());
 
     const record = await repository.get(scan.id);
     expect(record?.status).toBe('completed');
@@ -131,7 +138,7 @@ describe('DrizzleShelfScanRepositoryAdapter, recording a result', () => {
     const scan = aNewScan();
     await repository.createPending(scan);
 
-    await repository.markCompleted(scan.id, []);
+    await expect(repository.markCompleted(scan.id, [])).resolves.toStrictEqual(ok());
 
     const record = await repository.get(scan.id);
     expect(record?.status).toBe('completed');
@@ -142,7 +149,7 @@ describe('DrizzleShelfScanRepositoryAdapter, recording a result', () => {
     const scan = aNewScan();
     await repository.createPending(scan);
 
-    await repository.markFailed(scan.id);
+    await expect(repository.markFailed(scan.id)).resolves.toStrictEqual(ok());
 
     const record = await repository.get(scan.id);
     expect(record?.status).toBe('failed');
@@ -163,12 +170,14 @@ describe('DrizzleShelfScanRepositoryAdapter, recording a result only once', () =
     await repository.createPending(failed);
     await repository.markFailed(failed.id);
 
-    await expect(repository.markCompleted(completed.id, [])).rejects.toThrow(
-      ShelfScanAlreadyProcessed,
+    await expect(repository.markCompleted(completed.id, [])).resolves.toStrictEqual(
+      err(new ShelfScanAlreadyProcessed(completed.id)),
     );
-    await expect(repository.markFailed(completed.id)).rejects.toThrow(ShelfScanAlreadyProcessed);
-    await expect(repository.markCompleted(failed.id, books)).rejects.toThrow(
-      ShelfScanAlreadyProcessed,
+    await expect(repository.markFailed(completed.id)).resolves.toStrictEqual(
+      err(new ShelfScanAlreadyProcessed(completed.id)),
+    );
+    await expect(repository.markCompleted(failed.id, books)).resolves.toStrictEqual(
+      err(new ShelfScanAlreadyProcessed(failed.id)),
     );
 
     const record = await repository.get(completed.id);
@@ -176,10 +185,15 @@ describe('DrizzleShelfScanRepositoryAdapter, recording a result only once', () =
   });
 
   it('refuses to mark an id it never stored', async () => {
-    await expect(repository.markCompleted(ShelfScanId.generate(), books)).rejects.toThrow(
-      ShelfScanNotFound,
+    const first = ShelfScanId.generate();
+    const second = ShelfScanId.generate();
+
+    await expect(repository.markCompleted(first, books)).resolves.toStrictEqual(
+      err(new ShelfScanNotFound(first.value)),
     );
-    await expect(repository.markFailed(ShelfScanId.generate())).rejects.toThrow(ShelfScanNotFound);
+    await expect(repository.markFailed(second)).resolves.toStrictEqual(
+      err(new ShelfScanNotFound(second.value)),
+    );
   });
 });
 
@@ -191,14 +205,14 @@ describe('DrizzleShelfScanRepositoryAdapter, reference of the stored photo', () 
   it('keeps the owner, media type, weight and original name as given', async () => {
     const scan = {
       ...aNewScan(),
-      ownerId: OwnerId.of('someone'),
+      ownerId: ownerId('someone'),
       photoMediaType: 'image/heic' as const,
     };
 
     await repository.createPending(scan);
 
     await expect(repository.get(scan.id)).resolves.toMatchObject({
-      ownerId: OwnerId.of('someone'),
+      ownerId: ownerId('someone'),
       photoMediaType: 'image/heic',
       photoSizeBytes: 2_345_678,
       originalFilename: 'IMG_0001.jpg',

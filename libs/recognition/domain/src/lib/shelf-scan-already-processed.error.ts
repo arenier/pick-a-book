@@ -5,6 +5,8 @@ import type { ShelfScanId } from './shelf-scan-id.js';
  * nobody asked for (research.md §7).
  */
 export class ShelfScanAlreadyProcessed extends Error {
+  readonly kind = 'shelf-scan-already-processed';
+
   constructor(id: ShelfScanId) {
     super(`Shelf scan already processed: ${id.value}`);
     this.name = 'ShelfScanAlreadyProcessed';

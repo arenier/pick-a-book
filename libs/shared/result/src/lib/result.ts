@@ -16,7 +16,10 @@ export interface Err<E> {
   readonly error: E;
 }
 
-export function ok<T>(value: T): Ok<T> {
+/** A success with nothing to hand back: the `Result<void, E>` of a step that only succeeds. */
+export function ok(): Ok<void>;
+export function ok<T>(value: T): Ok<T>;
+export function ok<T>(value?: T): Ok<T | undefined> {
   return { ok: true, value };
 }
 

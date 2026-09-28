@@ -1,3 +1,7 @@
+import { err, ok, type Result } from '@pick-a-book/shared-result';
+
+import { InvalidValue } from './invalid-value.error.js';
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u;
 
 /**
@@ -11,13 +15,13 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u;
 export class ShelfScanId {
   private constructor(readonly value: string) {}
 
-  static of(raw: string): ShelfScanId {
+  static of(raw: string): Result<ShelfScanId, InvalidValue> {
     const normalised = raw.toLowerCase();
     if (!UUID.test(normalised)) {
-      throw new Error(`ShelfScanId: not a UUID (${raw})`);
+      return err(new InvalidValue(`ShelfScanId: not a UUID (${raw})`));
     }
 
-    return new ShelfScanId(normalised);
+    return ok(new ShelfScanId(normalised));
   }
 
   static generate(): ShelfScanId {

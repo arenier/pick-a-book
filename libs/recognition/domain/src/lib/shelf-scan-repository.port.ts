@@ -1,7 +1,11 @@
+import type { Result } from '@pick-a-book/shared-result';
+
 import type { DetectedBook } from './detected-book.js';
 import type { OwnerId } from './owner-id.js';
 import type { ShelfPhotoMediaType } from './shelf-photo.js';
+import type { ShelfScanAlreadyProcessed } from './shelf-scan-already-processed.error.js';
 import type { ShelfScanId } from './shelf-scan-id.js';
+import type { ShelfScanNotFound } from './shelf-scan-not-found.error.js';
 
 interface StoredShelfPhoto {
   readonly id: ShelfScanId;
@@ -37,18 +41,26 @@ export type ShelfScanRecord = StoredShelfPhoto &
 /** What it takes to create a pending record: everything the scan has not decided yet. */
 export type NewShelfScan = Omit<StoredShelfPhoto, 'createdAt'>;
 
+/** Why a record could not move: it does not exist, or it already has an outcome. */
+export type ShelfScanTransitionFailure = ShelfScanNotFound | ShelfScanAlreadyProcessed;
+
 /**
  * Outbound port that keeps shelf scan records (ADR 0006: Postgres).
  *
- * `markCompleted` and `markFailed` only ever move a `pending` record, and reject with
+ * `markCompleted` and `markFailed` only ever move a `pending` record, and answer
  * `ShelfScanAlreadyProcessed` otherwise: the transition is enforced where the write happens,
- * so two concurrent scans of the same photo cannot both record a result.
+ * so two concurrent scans of the same photo cannot both record a result. A database that is
+ * down is not part of that vocabulary: the promise rejects, and the global HTTP filter of
+ * `apps/api` catches it (ADR 0013).
  */
 export interface ShelfScanRepositoryPort {
   createPending(scan: NewShelfScan): Promise<void>;
   get(id: ShelfScanId): Promise<ShelfScanRecord | undefined>;
-  markCompleted(id: ShelfScanId, books: readonly DetectedBook[]): Promise<void>;
-  markFailed(id: ShelfScanId): Promise<void>;
+  markCompleted(
+    id: ShelfScanId,
+    books: readonly DetectedBook[],
+  ): Promise<Result<void, ShelfScanTransitionFailure>>;
+  markFailed(id: ShelfScanId): Promise<Result<void, ShelfScanTransitionFailure>>;
 }
 
 /** Injection token for the port. */

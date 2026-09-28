@@ -1,4 +1,5 @@
 import { ShelfPhoto, ShelfScanFailed } from '@pick-a-book/recognition-domain';
+import { ok, unwrap, type Result } from '@pick-a-book/shared-result';
 import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
@@ -34,7 +35,10 @@ const chatRequestSchema = z.object({
   ),
 });
 
-const photo = ShelfPhoto.of(new Uint8Array([0xff, 0xd8, 0xff, 0xe0]), 'image/jpeg');
+const photo = unwrap(ShelfPhoto.of(new Uint8Array([0xff, 0xd8, 0xff, 0xe0]), 'image/jpeg'));
+
+/** The failure a scan answered — `undefined` when it succeeded, which no test below expects. */
+const failureOf = <T>(result: Result<T, ShelfScanFailed>) => (result.ok ? undefined : result.error);
 
 function respondWith(body: unknown, status = 200) {
   return vi.fn<typeof globalThis.fetch>(
@@ -82,7 +86,7 @@ describe('QwenShelfScannerAdapter', () => {
   // environment this adapter was built in. See recorded/README.md — the contract tests below
   // therefore prove the adapter against the envelope we assume, not one we observed.
   it('maps a recorded answer onto detected books', async () => {
-    const books = await adapterWith(respondWith(recorded)).scan(photo);
+    const books = unwrap(await adapterWith(respondWith(recorded)).scan(photo));
 
     expect(books).toHaveLength(2);
     expect(books[0]?.author?.value).toBe('Marguerite Duras');
@@ -152,19 +156,19 @@ describe('QwenShelfScannerAdapter caps and pins its request', () => {
   it('reports an empty shelf as an empty array, not a failure', async () => {
     const empty = { choices: [{ message: { content: '{"books":[]}' } }] };
 
-    await expect(adapterWith(respondWith(empty)).scan(photo)).resolves.toStrictEqual([]);
+    await expect(adapterWith(respondWith(empty)).scan(photo)).resolves.toStrictEqual(ok([]));
   });
 });
 
-describe('QwenShelfScannerAdapter fails with ShelfScanFailed', () => {
+describe('QwenShelfScannerAdapter answers ShelfScanFailed', () => {
   it('when the provider answers a non-2xx status', async () => {
     const transport = respondWith({ error: { message: 'rate limited' } }, 429);
 
-    await expect(adapterWith(transport).scan(photo)).rejects.toThrow(ShelfScanFailed);
+    expect(failureOf(await adapterWith(transport).scan(photo))).toBeInstanceOf(ShelfScanFailed);
   });
 
   it('when the envelope carries no choice', async () => {
-    await expect(adapterWith(respondWith({ choices: [] })).scan(photo)).rejects.toThrow(
+    expect(failureOf(await adapterWith(respondWith({ choices: [] })).scan(photo))).toBeInstanceOf(
       ShelfScanFailed,
     );
   });
@@ -172,7 +176,9 @@ describe('QwenShelfScannerAdapter fails with ShelfScanFailed', () => {
   it('when the model answers prose instead of JSON', async () => {
     const prose = { choices: [{ message: { content: 'Two books, I think.' } }] };
 
-    await expect(adapterWith(respondWith(prose)).scan(photo)).rejects.toThrow(ShelfScanFailed);
+    expect(failureOf(await adapterWith(respondWith(prose)).scan(photo))).toBeInstanceOf(
+      ShelfScanFailed,
+    );
   });
 
   it('when the transport itself rejects', async () => {
@@ -180,6 +186,6 @@ describe('QwenShelfScannerAdapter fails with ShelfScanFailed', () => {
       throw new Error('ECONNRESET');
     });
 
-    await expect(adapterWith(transport).scan(photo)).rejects.toThrow(ShelfScanFailed);
+    expect(failureOf(await adapterWith(transport).scan(photo))).toBeInstanceOf(ShelfScanFailed);
   });
 });

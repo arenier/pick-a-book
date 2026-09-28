@@ -1,15 +1,14 @@
 import type { INestApplication } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import {
   ScanStoredShelfPhotoUseCase,
   StoreShelfPhotoUseCase,
 } from '@pick-a-book/recognition-application';
 import { ShelfScanFailed, type ShelfScannerPort } from '@pick-a-book/recognition-domain';
+import { err } from '@pick-a-book/shared-result';
 import { Logger } from '@nestjs/common';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { RecognitionExceptionFilter } from './recognition-exception.filter';
 import { ShelfPhotosController } from './shelf-photos.controller';
 import { aShelfPhotosController } from './testing/shelf-photos-controller.fixture';
 
@@ -38,8 +37,6 @@ function aRunningApi(scanner?: ShelfScannerPort) {
       providers: [
         { provide: StoreShelfPhotoUseCase, useValue: storeShelfPhoto },
         { provide: ScanStoredShelfPhotoUseCase, useValue: scanStoredShelfPhoto },
-        // Registered as RecognitionModule registers it: the status codes below are its work.
-        { provide: APP_FILTER, useClass: RecognitionExceptionFilter },
       ],
     }).compile();
     app = moduleRef.createNestApplication();
@@ -129,9 +126,7 @@ const providerAnswer = 'Gemini answered 400 (API key not valid. Please pass a va
 const scanFailure = new ShelfScanFailed(providerAnswer);
 
 const failingScanner: ShelfScannerPort = {
-  scan: async () => {
-    throw scanFailure;
-  },
+  scan: async () => err(scanFailure),
 };
 
 // Domain errors of the scan, as HTTP says them (contracts/scan-api.md §2).

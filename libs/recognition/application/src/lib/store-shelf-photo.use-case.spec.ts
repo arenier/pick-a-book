@@ -1,4 +1,5 @@
 import { InvalidShelfPhoto, OwnerId, ShelfScanId } from '@pick-a-book/recognition-domain';
+import { err, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
 import { StoreShelfPhotoUseCase } from './store-shelf-photo.use-case.js';
@@ -15,7 +16,7 @@ function aUseCase(ownerId = 'default') {
   const storage = new InMemoryShelfPhotoStorage();
   const repository = new InMemoryShelfScanRepository();
 
-  const useCase = new StoreShelfPhotoUseCase(OwnerId.of(ownerId), storage, repository);
+  const useCase = new StoreShelfPhotoUseCase(unwrap(OwnerId.of(ownerId)), storage, repository);
 
   return { storage, repository, useCase };
 }
@@ -24,9 +25,9 @@ describe('StoreShelfPhotoUseCase', () => {
   it('answers with a freshly generated id', async () => {
     const { useCase } = aUseCase();
 
-    const { id } = await useCase.execute(aJpeg);
+    const { id } = unwrap(await useCase.execute(aJpeg));
 
-    expect(ShelfScanId.of(id).value).toBe(id);
+    expect(unwrap(ShelfScanId.of(id)).value).toBe(id);
   });
 
   // research.md §10: the owner segment, then the kind of upload, then the id — never the
@@ -34,7 +35,7 @@ describe('StoreShelfPhotoUseCase', () => {
   it('stores the photo under {ownerId}/shelf_photo/{id}', async () => {
     const { storage, useCase } = aUseCase('someone');
 
-    const { id } = await useCase.execute(aJpeg);
+    const { id } = unwrap(await useCase.execute(aJpeg));
 
     expect([...storage.objects.keys()]).toStrictEqual([`someone/shelf_photo/${id}`]);
     expect(storage.objects.get(`someone/shelf_photo/${id}`)?.bytes).toStrictEqual(aJpeg.bytes);
@@ -43,11 +44,11 @@ describe('StoreShelfPhotoUseCase', () => {
   it('creates a pending record carrying the reference of the stored photo', async () => {
     const { repository, useCase } = aUseCase('someone');
 
-    const { id } = await useCase.execute(aJpeg);
+    const { id } = unwrap(await useCase.execute(aJpeg));
 
-    const record = await repository.get(ShelfScanId.of(id));
+    const record = await repository.get(unwrap(ShelfScanId.of(id)));
     expect(record).toMatchObject({
-      ownerId: OwnerId.of('someone'),
+      ownerId: unwrap(OwnerId.of('someone')),
       photoBucketKey: `someone/shelf_photo/${id}`,
       photoMediaType: 'image/jpeg',
       photoSizeBytes: 6,
@@ -69,13 +70,23 @@ describe('StoreShelfPhotoUseCase', () => {
 // US3, scenario 3 (FR-013): a photo refused before analysis leaves no trace at all.
 describe('StoreShelfPhotoUseCase, with an image it refuses', () => {
   it.each([
-    ['an empty image', { ...aJpeg, bytes: new Uint8Array(0) }],
-    ['an unsupported media type', { ...aJpeg, mediaType: 'application/pdf' }],
-    ['an image over 20 MB', { ...aJpeg, bytes: new Uint8Array(20 * 1024 * 1024 + 1) }],
-  ])('stores nothing for %s', async (_label, command) => {
+    ['an empty image', { ...aJpeg, bytes: new Uint8Array(0) }, 'empty image'],
+    [
+      'an unsupported media type',
+      { ...aJpeg, mediaType: 'application/pdf' },
+      'unsupported media type (application/pdf) — expected image/jpeg, image/png, image/webp, image/heic',
+    ],
+    [
+      'an image over 20 MB',
+      { ...aJpeg, bytes: new Uint8Array(20 * 1024 * 1024 + 1) },
+      'image too large (20971521 bytes, 20971520 at most)',
+    ],
+  ])('stores nothing for %s, and says why', async (_label, command, reason) => {
     const { storage, repository, useCase } = aUseCase();
 
-    await expect(useCase.execute(command)).rejects.toThrow(InvalidShelfPhoto);
+    await expect(useCase.execute(command)).resolves.toStrictEqual(
+      err(new InvalidShelfPhoto(reason)),
+    );
 
     expect(storage.objects.size).toBe(0);
     expect(repository.records.size).toBe(0);

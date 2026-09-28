@@ -1,3 +1,7 @@
+import { err, ok, type Result } from '@pick-a-book/shared-result';
+
+import { InvalidValue } from './invalid-value.error.js';
+
 /**
  * Whose photos these are — the first segment of every bucket key
  * (`{ownerId}/shelf_photo/{id}`, specs/001-photo-upload research.md §10).
@@ -9,17 +13,17 @@
 export class OwnerId {
   private constructor(readonly value: string) {}
 
-  static of(raw: string): OwnerId {
+  static of(raw: string): Result<OwnerId, InvalidValue> {
     const trimmed = raw.trim();
 
     if (trimmed.length === 0) {
-      throw new Error('OwnerId: cannot be empty');
+      return err(new InvalidValue('OwnerId: cannot be empty'));
     }
     if (trimmed.includes('/') || trimmed === '.' || trimmed === '..') {
-      throw new Error(`OwnerId: "${trimmed}" is not a single bucket key segment`);
+      return err(new InvalidValue(`OwnerId: "${trimmed}" is not a single bucket key segment`));
     }
 
-    return new OwnerId(trimmed);
+    return ok(new OwnerId(trimmed));
   }
 
   equals(other: OwnerId): boolean {

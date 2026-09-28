@@ -2,6 +2,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 
 import { ShelfPhoto } from '@pick-a-book/recognition-domain';
+import { unwrap } from '@pick-a-book/shared-result';
 
 import { mediaTypeOf } from './config.js';
 import { parseGroundTruth } from './lib/ground-truth.js';
@@ -25,7 +26,9 @@ async function loadPhoto(dir: string, entry: string): Promise<PhotoItem | undefi
     return undefined;
   }
   const bytes = new Uint8Array(await readFile(join(dir, entry)));
-  return { file: basename(entry), photo: ShelfPhoto.of(bytes, mediaType) };
+  // A reference photo the domain refuses stops the bench: a tool has no caller to answer to
+  // (ADR 0013 keeps exceptions at the edges), and a run on fewer photos would skew the report.
+  return { file: basename(entry), photo: unwrap(ShelfPhoto.of(bytes, mediaType)) };
 }
 
 /** The ground truth, or `undefined` when the file is absent — a bench without quality scoring. */

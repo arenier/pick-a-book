@@ -1,3 +1,7 @@
+import { err, ok, type Result } from '@pick-a-book/shared-result';
+
+import { InvalidValue } from './invalid-value.error.js';
+
 /**
  * The confidence attached to a detection, in [0, 1].
  *
@@ -8,15 +12,15 @@
 export class Confidence {
   private constructor(readonly value: number) {}
 
-  static of(raw: number): Confidence {
+  static of(raw: number): Result<Confidence, InvalidValue> {
     if (!Number.isFinite(raw)) {
-      throw new TypeError(`Confidence: not a number (${raw})`);
+      return err(new InvalidValue(`Confidence: not a number (${raw})`));
     }
     if (raw < 0 || raw > 1) {
-      throw new Error(`Confidence: value outside [0, 1] (${raw})`);
+      return err(new InvalidValue(`Confidence: value outside [0, 1] (${raw})`));
     }
 
-    return new Confidence(raw);
+    return ok(new Confidence(raw));
   }
 
   isAtLeast(threshold: Confidence): boolean {

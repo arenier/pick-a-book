@@ -1,5 +1,6 @@
 import { ShelfScanFailed } from '@pick-a-book/recognition-domain';
 import type { DetectedBook, ShelfPhoto, ShelfScannerPort } from '@pick-a-book/recognition-domain';
+import { err, ok, type Result } from '@pick-a-book/shared-result';
 import { z } from 'zod';
 
 import { SHELF_SCAN_JSON_SCHEMA, SHELF_SCAN_PROMPT } from './shelf-scan-prompt.js';
@@ -58,19 +59,29 @@ export class QwenShelfScannerAdapter implements ShelfScannerPort {
     this.maxTokens = configuration.maxTokens ?? DEFAULT_MAX_TOKENS;
   }
 
-  async scan(photo: ShelfPhoto): Promise<DetectedBook[]> {
-    const response = await this.post(photo);
-    const envelope = chatEnvelopeSchema.safeParse(await readJson(response));
+  async scan(photo: ShelfPhoto): Promise<Result<DetectedBook[], ShelfScanFailed>> {
+    const posted = await this.post(photo);
+    if (!posted.ok) {
+      return posted;
+    }
+    const json = await readJson(posted.value);
+    if (!json.ok) {
+      return json;
+    }
+
+    const envelope = chatEnvelopeSchema.safeParse(json.value);
     if (!envelope.success) {
-      throw new ShelfScanFailed(`Qwen returned an unusable envelope (${envelope.error.message})`, {
-        cause: envelope.error,
-      });
+      return err(
+        new ShelfScanFailed(`Qwen returned an unusable envelope (${envelope.error.message})`, {
+          cause: envelope.error,
+        }),
+      );
     }
 
     return toDetectedBooks(envelope.data.choices[0].message.content);
   }
 
-  private async post(photo: ShelfPhoto): Promise<Response> {
+  private async post(photo: ShelfPhoto): Promise<Result<Response, ShelfScanFailed>> {
     const url = `${this.baseUrl}/chat/completions`;
 
     let response: Response;
@@ -84,14 +95,16 @@ export class QwenShelfScannerAdapter implements ShelfScannerPort {
         body: JSON.stringify(this.requestBody(photo)),
       });
     } catch (cause) {
-      throw new ShelfScanFailed(`Qwen is unreachable (${describe(cause)})`, { cause });
+      return err(new ShelfScanFailed(`Qwen is unreachable (${describe(cause)})`, { cause }));
     }
 
     if (!response.ok) {
-      throw new ShelfScanFailed(`Qwen answered ${response.status} (${await readText(response)})`);
+      return err(
+        new ShelfScanFailed(`Qwen answered ${response.status} (${await readText(response)})`),
+      );
     }
 
-    return response;
+    return ok(response);
   }
 
   private requestBody(photo: ShelfPhoto): object {
@@ -128,11 +141,11 @@ export class QwenShelfScannerAdapter implements ShelfScannerPort {
   }
 }
 
-async function readJson(response: Response): Promise<unknown> {
+async function readJson(response: Response): Promise<Result<unknown, ShelfScanFailed>> {
   try {
-    return await response.json();
+    return ok(await response.json());
   } catch (cause) {
-    throw new ShelfScanFailed(`Qwen did not answer JSON (${describe(cause)})`, { cause });
+    return err(new ShelfScanFailed(`Qwen did not answer JSON (${describe(cause)})`, { cause }));
   }
 }
 

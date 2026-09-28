@@ -4164,6 +4164,7 @@ __metadata:
     "@pick-a-book/recognition-application": "workspace:*"
     "@pick-a-book/recognition-domain": "workspace:*"
     "@pick-a-book/recognition-infrastructure": "workspace:*"
+    "@pick-a-book/shared-result": "workspace:*"
     "@swc/helpers": "npm:0.5.18"
     pg: "npm:^8.23.0"
     reflect-metadata: "npm:^0.2.0"
@@ -4178,6 +4179,7 @@ __metadata:
   dependencies:
     "@pick-a-book/recognition-domain": "workspace:*"
     "@pick-a-book/recognition-infrastructure": "workspace:*"
+    "@pick-a-book/shared-result": "workspace:*"
     "@pick-a-book/shared-text-match": "workspace:*"
     tslib: "npm:^2.3.0"
     yaml: "npm:^2.9.0"
@@ -4199,6 +4201,7 @@ __metadata:
   resolution: "@pick-a-book/recognition-application@workspace:libs/recognition/application"
   dependencies:
     "@pick-a-book/recognition-domain": "workspace:*"
+    "@pick-a-book/shared-result": "workspace:*"
     tslib: "npm:^2.3.0"
   languageName: unknown
   linkType: soft
@@ -4207,6 +4210,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@pick-a-book/recognition-domain@workspace:libs/recognition/domain"
   dependencies:
+    "@pick-a-book/shared-result": "workspace:*"
     tslib: "npm:^2.3.0"
   languageName: unknown
   linkType: soft
@@ -4217,6 +4221,7 @@ __metadata:
   dependencies:
     "@google-cloud/storage": "npm:^8.2.0"
     "@pick-a-book/recognition-domain": "workspace:*"
+    "@pick-a-book/shared-result": "workspace:*"
     drizzle-orm: "npm:^0.45.3"
     pg: "npm:^8.23.0"
     tslib: "npm:^2.3.0"
@@ -4236,7 +4241,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@pick-a-book/shared-result@workspace:libs/shared/result":
+"@pick-a-book/shared-result@workspace:*, @pick-a-book/shared-result@workspace:libs/shared/result":
   version: 0.0.0-use.local
   resolution: "@pick-a-book/shared-result@workspace:libs/shared/result"
   dependencies:

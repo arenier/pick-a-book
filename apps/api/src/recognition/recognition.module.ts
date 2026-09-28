@@ -1,7 +1,6 @@
 import { join } from 'node:path';
 
 import { Inject, Module, type OnApplicationShutdown } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
 import {
   ScanStoredShelfPhotoUseCase,
   StoreShelfPhotoUseCase,
@@ -16,7 +15,6 @@ import {
 } from '@pick-a-book/recognition-domain';
 
 import type { Environment } from '../config/environment';
-import { RecognitionExceptionFilter } from './recognition-exception.filter';
 import { createShelfScanArchive, type ShelfScanArchive } from './shelf-scan-archive.factory';
 import { createShelfScanner } from './shelf-scanner.factory';
 import { ShelfPhotosController } from './shelf-photos.controller';
@@ -57,8 +55,6 @@ export class RecognitionModule implements OnApplicationShutdown {
       module: RecognitionModule,
       controllers: [ShelfPhotosController],
       providers: [
-        // The context's errors, said in HTTP once for all its routes.
-        { provide: APP_FILTER, useClass: RecognitionExceptionFilter },
         {
           provide: SHELF_SCANNER_PORT,
           useFactory: () => createShelfScanner(environment.shelfScanner),

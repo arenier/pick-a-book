@@ -14,6 +14,7 @@
   "dependencies": {
     "@pick-a-book/recognition-domain": "workspace:*",
     "@pick-a-book/recognition-infrastructure": "workspace:*",
+    "@pick-a-book/shared-result": "workspace:*",
     "@pick-a-book/shared-text-match": "workspace:*",
     "tslib": "^2.3.0",
     "yaml": "^2.9.0",

@@ -1,7 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { ShelfScanFailed } from '@pick-a-book/recognition-domain';
 import type { DetectedBook, ShelfScannerPort } from '@pick-a-book/recognition-domain';
 
 import type { ProviderSpec } from './config.js';
@@ -69,18 +68,14 @@ async function scanOne(
   truth: GroundTruth | undefined,
   highConfidence: number,
 ): Promise<void> {
-  let records: DetectionRecord[];
-  try {
-    records = toRecords(await adapter.scan(item.photo));
-  } catch (error) {
-    if (error instanceof ShelfScanFailed) {
-      acc.failures++;
-      acc.perPhoto[item.file] = { error: error.message };
-      process.stdout.write(`  ${providerName}  ${item.file}  FAILED: ${error.message}\n`);
-      return;
-    }
-    throw error;
+  const scanned = await adapter.scan(item.photo);
+  if (!scanned.ok) {
+    acc.failures++;
+    acc.perPhoto[item.file] = { error: scanned.error.message };
+    process.stdout.write(`  ${providerName}  ${item.file}  FAILED: ${scanned.error.message}\n`);
+    return;
   }
+  const records = toRecords(scanned.value);
 
   const metrics = last();
   if (metrics !== undefined) {
