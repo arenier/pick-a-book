@@ -1,6 +1,6 @@
 # ADR 0006 — Persistance : Postgres managé (Neon)
 
-Statut : proposé · Date : 2026-08-14 · Socle · Précise l'ADR 0004 (hébergement)
+Statut : proposé · Date : 2026-08-14 · Amendé : 2026-09-27 (cadence et rétention du `pg_dump`) · Socle · Précise l'ADR 0004 (hébergement)
 
 ## Contexte
 
@@ -172,9 +172,42 @@ Neon est notre instance ; le code n'est lié qu'à Postgres, pas à Neon.
 
 ## Question ouverte
 
-- **Cadence et rétention du `pg_dump`** — après chaque scan, ou périodique ; combien de générations
-  conserver. À trancher au scaffolding, la taille réelle de la base sous les yeux.
+- ~~**Cadence et rétention du `pg_dump`**~~ — tranchée par l'amendement du 2026-09-27 ci-dessous.
 - **Outillage de persistance (ORM, migrations)** — l'ORM est **Drizzle** (avec `drizzle-kit` pour les
   migrations). Ce choix et son détail — schéma, configuration — relèvent du module `infrastructure`,
   pas d'un ADR : interchangeable derrière le port, sans impact architectural. Consigné ici pour
   mémoire, la décision vit dans le README de `infrastructure`.
+
+## Amendement — cadence, rétention et surveillance du `pg_dump` (2026-09-27)
+
+Tranché en instruisant #22, la base réelle sous les yeux : deux tables (`uploads`, `shelf_scans`),
+un seul utilisateur, quelques photos par semaine. Les trois décisions viennent du porteur du projet ;
+le reste en découle.
+
+- **Cadence : hebdomadaire**, un job planifié (le lundi à 3 h 17, heure de Paris) — pas après chaque
+  scan. Si Neon disparaît, on perd au plus une semaine de scans, un coût assumé à ce volume. Le PITR
+  de Neon (6 h) reste le filet contre l'erreur de manipulation récente. Un dump déclenché par l'API
+  aurait mis la sauvegarde dans le chemin d'une requête, et l'API aurait dû lancer `pg_dump`.
+- **Rétention : les 8 dernières générations** (environ deux mois), **élaguées par le job lui-même,
+  et seulement après un dump réussi et vérifié.** Une règle d'âge côté bucket aurait été plus simple,
+  mais elle continue de supprimer quand le job est mort, jusqu'au dernier snapshot. Contrepartie : le
+  job a le droit de supprimer. Le versioning du bucket en est le filet : un snapshot élagué reste
+  récupérable 30 jours.
+- **Surveillance : une alerte Cloud Monitoring envoyée par email**, sur deux conditions : aucune
+  exécution réussie depuis 8 jours (le job qui ne tourne plus, et ne signale donc rien), ou une
+  exécution en échec. C'est la « fraîcheur qui se vérifie » des conséquences ci-dessus.
+
+Ce qui en découle, consigné dans le code et `infra/README.md` plutôt qu'ici :
+
+- **Un dump n'est une sauvegarde qu'une fois prouvé** : `pg_restore` doit en lire la table des
+  matières, et il doit contenir les données d'au moins une table. Un fichier vide, ou le dump d'une
+  base vide, fait échouer l'exécution.
+- **Connexion directe** : `pg_dump` ne passe pas par PgBouncer en mode transaction. Le job lit un
+  secret à part (`DATABASE_URL_DIRECT`), que l'API ne peut pas lire.
+- **Version** : `pg_dump` doit être d'une majeure au moins égale à celle du serveur. La prod tourne en
+  Postgres 18 ; `pg_version` est épinglé, et l'image du job, docker-compose et la CI s'alignent
+  dessus, sous le contrôle d'un garde-fou de la CI.
+- **Identité dédiée** : le job a son propre compte de service ; l'API perd tout accès au bucket de
+  sauvegardes.
+- Le job est un outil du monorepo (`tools/db-backup`), testé contre le vrai `pg_dump`, Postgres et
+  l'émulateur de bucket, comme les adapters.

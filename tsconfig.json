@@ -32,6 +32,9 @@
     },
     {
       "path": "./libs/shared/ui"
+    },
+    {
+      "path": "./tools/db-backup"
     }
   ],
   "compilerOptions": {}

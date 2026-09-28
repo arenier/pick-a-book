@@ -28,7 +28,7 @@ jobs:
     # port — and the specs find it where they find it locally.
     services:
       db:
-        image: postgres:17.6-alpine
+        image: postgres:18.6-alpine
         env:
           POSTGRES_USER: pick_a_book
           POSTGRES_PASSWORD: pick_a_book
@@ -84,7 +84,7 @@ jobs:
           grep -qE '^[[:space:]]*yarn format:check[[:space:]]*$' .github/workflows/ci.yml || { echo "::error::ci.yml no longer runs 'yarn format:check'"; fail=1; }
           [ "$fail" -eq 0 ] || exit 1
 
-      # Both images (docker/api.Dockerfile, docker/web.Dockerfile) copy every workspace manifest
+      # Every image (docker/*.Dockerfile) copies every workspace manifest
       # before `yarn install --immutable`, so the install resolves the same graph as yarn.lock. A
       # member left off a COPY list makes the immutable install fail — and only at `docker build`
       # time (yarn deploy:api, docker compose up --build), never in the Nx graph this job
@@ -103,7 +103,7 @@ jobs:
           [ -n "$real" ] || { echo "::error::found no workspace members under apps/*, libs/*/*, tools/* — the globs in this guard moved, update it"; exit 1; }
 
           fail=0
-          for dockerfile in docker/api.Dockerfile docker/web.Dockerfile; do
+          for dockerfile in docker/*.Dockerfile; do
             # Members this Dockerfile copies a manifest for.
             copied=$(grep -oE '(apps|libs|tools)/[^ ]+/package.json' "$dockerfile" | sed 's#/package.json##' | sort -u || true)
             if [ -z "$copied" ]; then
@@ -114,6 +114,31 @@ jobs:
               diff <(echo "$real") <(echo "$copied") || true
               fail=1
             fi
+          done
+          [ "$fail" -eq 0 ] || exit 1
+
+      # Postgres is pinned in five places that cannot read each other: docker-compose, the CI
+      # service above, the client tools installed below, the backup image, and `pg_version` in
+      # infra/modules/neon. pg_dump refuses a server of a newer major, and the specs are only
+      # worth something on prod's major — so the majors must agree, and the three images must
+      # be the very same version. Pure text, fails cheap.
+      - name: Postgres pins agree
+        run: |
+          set -euo pipefail
+          compose=$(sed -n 's/^ *image: postgres:\([0-9.]*\)-.*/\1/p' docker-compose.yml)
+          service=$(sed -n 's/^ *image: postgres:\([0-9.]*\)-.*/\1/p' .github/workflows/ci.yml)
+          backup_image=$(sed -n 's/^FROM postgres:\([0-9.]*\)-.*/\1/p' docker/db-backup.Dockerfile)
+          client=$(sed -n 's/^ *PG_CLIENT_MAJOR: *\([0-9]*\).*/\1/p' .github/workflows/ci.yml)
+          neon=$(sed -n '/variable "pg_version"/,/^}/s/^ *default *= *\([0-9]*\).*/\1/p' infra/modules/neon/variables.tf)
+          fail=0
+          for pin in compose service backup_image client neon; do
+            [ -n "${!pin}" ] || { echo "::error::could not read the ${pin} Postgres pin — it moved or changed shape, update this check"; fail=1; }
+          done
+          [ "$fail" -eq 0 ] || exit 1
+          [ "$service" = "$compose" ] || { echo "::error::CI service runs postgres:$service, docker-compose postgres:$compose"; fail=1; }
+          [ "$backup_image" = "$compose" ] || { echo "::error::docker/db-backup.Dockerfile builds on postgres:$backup_image, docker-compose runs postgres:$compose"; fail=1; }
+          for major in "$client" "$neon"; do
+            [ "$major" = "${compose%%.*}" ] || { echo "::error::a Postgres major ($major) disagrees with docker-compose's (${compose%%.*}) — client tools: $client, neon pg_version: $neon"; fail=1; }
           done
           [ "$fail" -eq 0 ] || exit 1
 
@@ -139,6 +164,17 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --immutable
+
+      # tools/db-backup is tested against the real pg_dump and pg_restore (CLAUDE.md), which
+      # must be of the server's major or newer: the runner's own client lags behind, so the
+      # PGDG packages of the pinned major are installed and put first on the PATH.
+      - name: Install the Postgres client tools
+        env:
+          PG_CLIENT_MAJOR: 18
+        run: |
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y --no-install-recommends "postgresql-client-${PG_CLIENT_MAJOR}"
+          echo "/usr/lib/postgresql/${PG_CLIENT_MAJOR}/bin" >> "$GITHUB_PATH"
 
       # The GCS emulator the storage adapter specs write to. Not a `services:` entry: those
       # cannot pass arguments to the image, and the emulator must be told to speak plain HTTP.

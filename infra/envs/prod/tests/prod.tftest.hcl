@@ -13,6 +13,7 @@ variables {
   project_id  = "pick-a-book-test"
   region      = "europe-west1"
   neon_org_id = "org-test-32376830"
+  alert_email = "someone@example.com"
 }
 
 run "backups_bucket_is_named_after_the_project" {
@@ -24,12 +25,27 @@ run "backups_bucket_is_named_after_the_project" {
   }
 }
 
-run "secret_manager_creates_exactly_the_secrets_the_api_consumes" {
+run "secret_manager_creates_exactly_the_secrets_the_services_consume" {
   command = plan
 
   assert {
-    condition     = toset(module.secret_manager.secret_ids) == toset(["DATABASE_URL", "GEMINI_API_KEY", "OPENROUTER_API_KEY"])
-    error_message = "Cross-module contract: cloud_run_api references DATABASE_URL, GEMINI_API_KEY and OPENROUTER_API_KEY in its secret_env, so secret_manager must create exactly those. A secret renamed or dropped on one side only fails at deploy time, not at plan time — Cloud Run rejects a secret reference it cannot resolve"
+    condition     = toset(module.secret_manager.secret_ids) == toset(["DATABASE_URL", "DATABASE_URL_DIRECT", "GEMINI_API_KEY", "OPENROUTER_API_KEY"])
+    error_message = "Cross-module contract: cloud_run_api references DATABASE_URL and the VLM keys, the backup job DATABASE_URL_DIRECT — secret_manager must create exactly those. A secret renamed or dropped on one side only fails at deploy time, not at plan time"
+  }
+}
+
+run "each_identity_reads_only_the_database_url_it_uses" {
+  command = plan
+
+  # The API goes through the pooler; only the backup job may hold the direct connection.
+  assert {
+    condition     = toset(local.api_secret_ids) == toset(["DATABASE_URL", "GEMINI_API_KEY", "OPENROUTER_API_KEY"])
+    error_message = "The API must read the pooled DATABASE_URL and the VLM keys only — never DATABASE_URL_DIRECT"
+  }
+
+  assert {
+    condition     = local.backup_secret_ids == ["DATABASE_URL_DIRECT"]
+    error_message = "The backup job must read the direct database URL and nothing else"
   }
 }
 
@@ -58,12 +74,19 @@ run "the_api_exposes_its_runtime_identity" {
 
   # The email is provider-computed, so mock_provider leaves it unknown at plan time. Pinning it
   # to a known value is what lets the assertion prove the output exposes *this* service account.
-  # It is also the only service account in the env now: the front is a public static bucket with
-  # no runtime identity, so there is no second SA to accidentally swap it with.
+  # The backup job's service account is pinned to another value, so that swapping the two
+  # identities in the wiring fails here rather than in prod.
   override_module {
     target = module.service_account_api
     outputs = {
       email = "pick-a-book-api@pick-a-book-test.iam.gserviceaccount.com"
+    }
+  }
+
+  override_module {
+    target = module.service_account_db_backup
+    outputs = {
+      email = "pick-a-book-db-backup@pick-a-book-test.iam.gserviceaccount.com"
     }
   }
 
@@ -92,5 +115,109 @@ run "the_front_is_a_public_bucket_distinct_from_the_private_backups_bucket" {
   assert {
     condition     = output.web_url == "https://storage.googleapis.com/pick-a-book-test-web/index.html"
     error_message = "web_url must be the storage.googleapis.com HTTPS endpoint for the front bucket — the static-site decision serves the front there, with no CDN or load balancer"
+  }
+}
+
+run "shelf_photos_have_their_own_private_bucket" {
+  command = plan
+
+  # specs/001-photo-upload keeps every submitted photo: they need a bucket of their own —
+  # never the backups bucket (a dump restore must not drag user photos along, and the photos
+  # must not share the backups' retention), never the public front.
+  assert {
+    condition     = output.shelf_photos_bucket_name == "pick-a-book-test-shelf-photos"
+    error_message = "The shelf-photos bucket name must derive from project_id — GCS bucket names are globally unique"
+  }
+
+  assert {
+    condition     = !contains([output.backups_bucket_name, output.web_bucket_name, output.reference_photos_bucket_name], output.shelf_photos_bucket_name)
+    error_message = "Shelf photos must live in a bucket of their own, distinct from backups, the public front and the bench's reference photos"
+  }
+}
+
+run "the_api_boots_with_the_photo_bucket_and_the_front_origin" {
+  command = plan
+
+  # The API's boot contract (apps/api/src/config/environment.ts): BUCKET_NAME is required, and
+  # WEB_ORIGIN is the one origin CORS lets through. Without them the service fails at boot, or
+  # the front gets opaque CORS errors — both only visible after a deploy.
+  assert {
+    condition     = local.api_env.BUCKET_NAME == output.shelf_photos_bucket_name
+    error_message = "The API must be pointed at the shelf-photos bucket through BUCKET_NAME — the variable is required at boot"
+  }
+
+  assert {
+    condition     = local.api_env.WEB_ORIGIN == "https://storage.googleapis.com"
+    error_message = "WEB_ORIGIN must be the front's origin — scheme and host only, no bucket path: CORS compares it byte for byte with the browser's Origin header"
+  }
+}
+
+run "the_api_can_write_and_read_shelf_photos_and_nothing_more" {
+  command = plan
+
+  assert {
+    condition = toset([
+      for grant in values(local.api_bucket_grants) : "${grant.bucket}:${grant.role}" if grant.bucket == output.shelf_photos_bucket_name
+      ]) == toset([
+      "pick-a-book-test-shelf-photos:roles/storage.objectCreator",
+      "pick-a-book-test-shelf-photos:roles/storage.objectViewer",
+    ])
+    error_message = "On the shelf-photos bucket the API needs exactly create (store) and read (scan) — no delete: a stored photo is never replaced (ifGenerationMatch: 0)"
+  }
+}
+
+run "the_api_no_longer_touches_the_backups_bucket" {
+  command = plan
+
+  # Backups are the job's business: an API with write access to them is one more path to
+  # corrupt the only copy that survives a lost database.
+  assert {
+    condition     = alltrue([for grant in values(local.api_bucket_grants) : grant.bucket != output.backups_bucket_name])
+    error_message = "The API must hold no grant on the backups bucket"
+  }
+}
+
+run "the_backup_job_prunes_its_own_bucket_and_nothing_else" {
+  command = plan
+
+  assert {
+    condition = [for grant in values(local.backup_bucket_grants) : "${grant.bucket}:${grant.role}"] == [
+      "pick-a-book-test-backups:roles/storage.objectUser",
+    ]
+    error_message = "The backup job needs create, list and delete on the backups bucket (objectUser) — and no access to any other bucket"
+  }
+}
+
+run "the_backup_job_gets_its_contract" {
+  command = plan
+
+  # tools/db-backup/src/lib/configuration.ts: DATABASE_URL, BACKUP_BUCKET, BACKUP_GENERATIONS.
+  assert {
+    condition     = local.backup_job_env == { BACKUP_BUCKET = "pick-a-book-test-backups", BACKUP_GENERATIONS = "8" }
+    error_message = "The job must be pointed at the backups bucket and keep 8 generations (issue #22)"
+  }
+
+  assert {
+    condition     = local.backup_job_secret_env == { DATABASE_URL = "DATABASE_URL_DIRECT" }
+    error_message = "The job's DATABASE_URL must come from the direct (unpooled) connection secret"
+  }
+}
+
+run "the_backup_runs_weekly_and_alerts_past_eight_days" {
+  command = plan
+
+  assert {
+    condition     = local.backup_schedule == "17 3 * * 1"
+    error_message = "The backup runs weekly (issue #22): Monday 03:17, Paris time"
+  }
+
+  assert {
+    condition     = local.backup_max_age == "8d"
+    error_message = "The freshness alert allows one week plus a day of margin — no more, or a dead job goes unnoticed longer than a missed run"
+  }
+
+  assert {
+    condition     = output.backup_job_name == "pick-a-book-db-backup"
+    error_message = "backup_job_name is what yarn deploy:db-backup updates — it must name the job"
   }
 }

@@ -4185,6 +4185,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@pick-a-book/db-backup@workspace:tools/db-backup":
+  version: 0.0.0-use.local
+  resolution: "@pick-a-book/db-backup@workspace:tools/db-backup"
+  dependencies:
+    "@google-cloud/storage": "npm:^8.2.0"
+    tslib: "npm:^2.3.0"
+  languageName: unknown
+  linkType: soft
+
 "@pick-a-book/recognition-application@workspace:*, @pick-a-book/recognition-application@workspace:libs/recognition/application":
   version: 0.0.0-use.local
   resolution: "@pick-a-book/recognition-application@workspace:libs/recognition/application"

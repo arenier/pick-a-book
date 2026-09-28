@@ -58,11 +58,11 @@ services:
     depends_on:
       - api
 
-  # Stands in for Neon (ADR 0006). The major version is pinned here only: `infra/modules/neon`
-  # creates the project without `pg_version` and takes Neon's default, so the two pins are
-  # maintained by hand — same arrangement as the Node pins of docker/.
+  # Stands in for Neon (ADR 0006). Same major as prod, pinned on both sides by hand —
+  # `pg_version` in infra/modules/neon, and the CI service in .github/workflows/ci.yml — same
+  # arrangement as the Node pins of docker/.
   db:
-    image: postgres:17.6-alpine
+    image: postgres:18.6-alpine
     environment:
       POSTGRES_USER: pick_a_book
       POSTGRES_PASSWORD: pick_a_book
@@ -73,8 +73,11 @@ services:
     # so `.env.example` carries 5433 and has to move with it.
     ports:
       - '5433:5432'
+    # From 18 on, the image keeps its data under /var/lib/postgresql/18/docker and expects the
+    # volume on the parent. A new volume name: the old one holds a 17 data directory, which an
+    # 18 server cannot open.
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data-18:/var/lib/postgresql
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U pick_a_book -d pick_a_book']
       interval: 5s
@@ -102,5 +105,5 @@ services:
       - '4443:4443'
 
 volumes:
-  db-data:
+  db-data-18:
   bucket-data:

@@ -19,8 +19,19 @@ variable "secret_ids" {
   default     = []
 }
 
-variable "bucket_name" {
-  description = "Backups bucket the service account may write objects to (roles/storage.objectCreator), for the pg_dump job. Null by default: a service account that needs no bucket access gets no binding at all."
-  type        = string
-  default     = null
+variable "bucket_grants" {
+  description = "Bucket-scoped object roles, one binding per entry, keyed by a static name chosen by the caller (e.g. `photos_write`). Empty by default: a service account that needs no bucket access gets no binding at all. Only object-level roles are accepted — none that can read or change a bucket's IAM policy, so a grant can never be used to hand out more access."
+  type = map(object({
+    bucket = string
+    role   = string
+  }))
+  default = {}
+
+  validation {
+    condition = alltrue([
+      for grant in values(var.bucket_grants) :
+      contains(["roles/storage.objectCreator", "roles/storage.objectViewer", "roles/storage.objectUser"], grant.role)
+    ])
+    error_message = "bucket_grants only accepts roles/storage.objectCreator, roles/storage.objectViewer or roles/storage.objectUser — objectAdmin and the legacy/bucket roles can change IAM policies."
+  }
 }
