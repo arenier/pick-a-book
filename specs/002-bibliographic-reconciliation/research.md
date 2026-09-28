@@ -71,6 +71,11 @@ l'état de tous les livres. Le même appel sert donc à la première réconcilia
 - Synchrone reste dans le cadre d'ADR 0003 : ≤ 20 s pour 30 livres (SC-003, §7), du même ordre que
   l'analyse (~27 s) qui l'est déjà. Un travail en arrière-plan imposerait un nouvel ADR.
 
+Deux appels simultanés sur la même analyse (l'écran monté deux fois par `StrictMode` en
+développement, un double appui sur « relancer ») ne sont pas une erreur : l'index unique partiel
+(§8) refuse la seconde tentative définitive, et le use case relit alors l'état et le rend — les deux
+appels répondent 200. L'écran, de son côté, n'envoie qu'un appel par analyse.
+
 **Alternatives écartées** :
 - *Réconcilier dans la même requête que l'analyse* — voir ci-dessus ; et un échec du référentiel se
   mêlerait à la réponse de la reconnaissance.
@@ -214,6 +219,13 @@ Côté exploitation :
   `recognition-infrastructure` vers une lib partagée, `libs/shared/sql-migrations` (tags
   `type:shared`, `context:none`, `scope:api`), avec la table de suivi en paramètre — même verrou
   consultatif pour toutes, donc migrations sérialisées au démarrage.
+- **Pourquoi une lib partagée ne contredit pas « le SQL, le schéma et les migrations restent dans
+  `infrastructure` »** (`CLAUDE.md`) : ce qui reste dans chaque `infrastructure`, ce sont les
+  fichiers de migration et le schéma — ce qui décrit les tables d'un contexte. Le lanceur ne
+  connaît aucune table : il applique un dossier sous un verrou. Le dupliquer par contexte, ce
+  serait deux copies du même verrou, qu'un oubli désynchroniserait. La lib est `scope:api` — le
+  front n'en a pas l'usage —, nuance de « `libs/shared/*` est importable par tous » que `CLAUDE.md`
+  précisera (tasks T063).
 - **Un seul pool Postgres** pour l'API : un `DatabaseModule` de `apps/api` ouvre le pool et applique
   les migrations de chaque contexte avant de servir ; `createShelfScanArchive` reçoit le pool au lieu
   de l'ouvrir. Évite deux pools vers la même base Neon (ADR 0006).

@@ -127,3 +127,4 @@ Le client recharge l'état par le §1 et l'affiche.
 | `BookNotAmbiguous` | bibliography | 409 | `BibliographyExceptionFilter` |
 | `UnknownCandidate`, entrée invalide | bibliography | 400 | `BibliographyExceptionFilter` |
 | `CatalogUnavailable` | bibliography | — | jamais propagé : converti en `not_verified` par le use case |
+| `BookAlreadyReconciled` | bibliography | — | jamais propagé : deux réconciliations simultanées de la même analyse (double montage de l'écran, double relance) — le use case relit l'état et le rend, les deux appels répondent 200 |

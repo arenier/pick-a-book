@@ -18,6 +18,16 @@ contexte, pool unique, modèle et dépôt), puis une phase par user story dans l
 US1 (P1), US2, US3, US5 (P2), US4 (P3). La Phase 8 (référentiel réel) est **bloquée par l'ADR #20**
 et ne conditionne aucune autre phase.
 
+**Révisé le 28/09/2026** (`/speckit-analyze`) : sans renumérotation —
+- *I1* : la course entre deux réconciliations de la même analyse est traitée dès US1 (T026, T040,
+  T035) : `StrictMode` monte l'écran deux fois en développement, et le second appel levait
+  `BookAlreadyReconciled` en 500 ; T056 devient le test de bout en bout de ce cas, via la relance ;
+- *G1* : une analyse sans livre garde le message « aucun livre détecté » de la spec 001 (T037) ;
+- *I2* : US5 dépend de US2 (T052, T053 ont besoin de `saveDecision`, T044) ;
+- *U1* : dépendances de workspace à déclarer (T008, T009, T032) ;
+- *C1* : le lanceur de migrations partagé est justifié dans research §8, et `CLAUDE.md` nuancé (T063) ;
+- *U2* : SC-003 prouvé par une spec de 30 livres (T026) plutôt que par un stub ralenti.
+
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]** : parallélisable (fichiers différents, aucune dépendance sur une tâche non terminée)
@@ -88,7 +98,9 @@ DTO et configuration. Rien de visible pour l'utilisateur à la fin de cette phas
       (`pick-a-book/migrations`). **Vert** : implémenter, exporter depuis `src/index.ts`, retirer
       l'export de `recognition-infrastructure` et faire pointer ses specs (`test-database.ts`) vers
       la lib partagée, `migrationsTable` = `__drizzle_migrations` (la table actuelle, pour ne pas
-      rejouer les migrations déjà appliquées de `recognition`)
+      rejouer les migrations déjà appliquées de `recognition`) ; ajouter
+      `@pick-a-book/shared-sql-migrations` (`workspace:*`) aux dépendances de
+      `libs/recognition/infrastructure/package.json` (sinon `@nx/dependency-checks` échoue)
 - [ ] T009 Créer `apps/api/src/database/database.module.ts` (+ `.spec.ts`) : fournit un `Pool`
       unique (`DATABASE_POOL`) depuis `environment.databaseUrl`, applique au démarrage les
       migrations de `recognition` (`dist/migrations/recognition`, table `__drizzle_migrations`)
@@ -96,7 +108,9 @@ DTO et configuration. Rien de visible pour l'utilisateur à la fin de cette phas
       `__drizzle_migrations_bibliography`), ferme le pool à l'arrêt (`onApplicationShutdown`).
       **Rouge** : la spec vérifie l'ordre des migrations et la fermeture avec un pool factice.
       Adapter `apps/api/src/recognition/shelf-scan-archive.factory.ts` (+ spec) pour **recevoir**
-      le pool au lieu de l'ouvrir, et `recognition.module.ts` pour ne plus migrer ni fermer
+      le pool au lieu de l'ouvrir, et `recognition.module.ts` pour ne plus migrer ni fermer ;
+      ajouter `@pick-a-book/shared-sql-migrations` et `pg` (s'il n'y est pas) à
+      `apps/api/package.json`
 - [ ] T010 Dans `apps/api/vite.config.mts`, copier les deux dossiers de migrations vers
       `dist/migrations/recognition` et `dist/migrations/bibliography` ; vérifier par
       `yarn nx build api && ls apps/api/dist/migrations/*` ; relire `docker/` pour s'assurer que
@@ -219,8 +233,12 @@ titre inventé jamais confirmé, un référentiel en panne n'empêche pas l'affi
       `CatalogUnavailable` → `not_verified` avec sa cause ; recherche au-delà de 8 s →
       `not_verified` / `timeout` ; livres au-delà de l'échéance → `not_verified` / `timeout` sans
       appel au référentiel ; réponse = **tous** les livres, triés par position ; liste vide →
-      `{ books: [] }` ; jamais de rejet à cause du référentiel (FR-008). Exporter depuis
-      `src/index.ts`
+      `{ books: [] }` ; jamais de rejet à cause du référentiel (FR-008) ; **deux exécutions
+      concurrentes** sur la même analyse — le `BookAlreadyReconciled` levé par `saveAttempt` pour
+      la seconde n'est pas une erreur : le use case relit l'état et le rend (dépôt en mémoire de
+      T019, qui applique la même unicité) ; **SC-003** — 30 livres, référentiel factice à 1,5 s par
+      recherche, faux timers : tous les livres ont un statut définitif en ≤ 18 s simulées, aucun en
+      `timeout`. Exporter depuis `src/index.ts`
 
 ### Adapters (`libs/bibliography/infrastructure/src/lib/`)
 
@@ -253,7 +271,9 @@ titre inventé jamais confirmé, un référentiel en panne n'empêche pas l'affi
       `BIBLIOGRAPHIC_CATALOG_PORT` à la fabrique, construit `ReconcileDetectedBooksUseCase` avec
       les réglages et limites par défaut, et l'**exporte** ; `bibliography-exception.filter.ts`
       traduit les erreurs du contexte comme `contracts/reconciliation-api.md` §Correspondance
-      (404, 409, 400), sans jamais propager `CatalogUnavailable`
+      (404, 409, 400), sans jamais propager `CatalogUnavailable` ni `BookAlreadyReconciled` ;
+      ajouter `@pick-a-book/bibliography-domain`, `-application` et `-infrastructure`
+      (`workspace:*`) à `apps/api/package.json`
 - [ ] T033 [US1] `orchestration/reconcile-shelf-photo.use-case.ts` (+ spec avec doubles des deux
       use cases) : lit les livres par `GetDetectedBooksUseCase`, les traduit en
       `DetectedBookInput` (`position`, `title`, `author` seulement s'il est présent), passe l'`id`
@@ -268,7 +288,8 @@ titre inventé jamais confirmé, un référentiel en panne n'empêche pas l'affi
       et référentiel stub, Postgres du compose, comme `shelf-photos.http.spec.ts`) : envoi → analyse
       → réconciliation rend un élément par livre, trié, aux statuts attendus, `read` intact ; 404
       sur id inconnu ; 409 sur analyse `pending` ; avec le référentiel `offline`, **200** et tous les
-      livres `not_verified` (FR-008, SC-004)
+      livres `not_verified` (FR-008, SC-004) ; deux `POST …/reconciliation` simultanés sur la même
+      analyse rendent tous deux 200 et le même état, sans doublon de tentative en base
 
 ### Écran (`apps/web/src/`)
 
@@ -278,7 +299,9 @@ titre inventé jamais confirmé, un référentiel en panne n'empêche pas l'affi
 - [ ] T037 [US1] `features/photo-upload/ui/photo-upload-screen.tsx` : prop optionnelle
       `renderResult?: (result: { scanId: string; books: readonly DetectedBook[] }) => ReactNode`,
       `ScanResult` par défaut. **Rouge** dans `photo-upload-screen.spec.tsx` : la prop reçoit
-      `scanId` et les livres, et remplace la liste par défaut
+      `scanId` et les livres, et remplace la liste par défaut ; elle **n'est pas appelée** pour une
+      analyse sans livre, qui garde le message « aucun livre détecté » de `ScanResult` (spec 001,
+      US1 scénario 3 ; spec 002, Edge Cases)
 - [ ] T038 [P] [US1] `features/reconciliation/model/` : `reconciled-book.ts` (copie locale du DTO,
       plus le statut d'affichage `checking`), `reconciliation-state.ts` (`checking` |
       `ready { books }` | `failed { failure }`), `reconciliation-failure.ts` (`offline` |
@@ -289,7 +312,9 @@ titre inventé jamais confirmé, un référentiel en panne n'empêche pas l'affi
       `candidates` pour `ambiguous`) ; absence de réponse → `offline`, tout autre statut ou corps
       invalide → `unexpected`
 - [ ] T040 [US1] `features/reconciliation/ui/use-reconciliation.ts` et
-      `ui/reconciled-book-list.tsx` (+ specs, français) : au montage, les livres détectés s'affichent
+      `ui/reconciled-book-list.tsx` (+ specs, français) : **un seul appel par `scanId`**, même si le
+      composant est monté deux fois (`StrictMode` en développement) — le second montage reprend
+      l'appel en cours au lieu d'en lancer un autre ; au montage, les livres détectés s'affichent
       « vérification en cours », puis leur statut — confirmé : forme de référence (titre — auteurs)
       et, si elle diffère, la lecture en second ; ambigu : mention « plusieurs œuvres possibles »
       (le choix arrive en US2) ; non trouvé : « inconnu du référentiel », jamais « inexistant »
@@ -408,9 +433,9 @@ renvoyer la photo ni refaire l'analyse.
       le référentiel factice échoue pour certains livres, un second appel ne cherche **que** ces
       livres, laisse les définitifs intacts, et ajoute une tentative sans effacer la
       `not_verified` précédente (FR-014, US5)
-- [ ] T056 [US4] `reconcile-detected-books.use-case.ts` : deux réconciliations concurrentes de la
-      même analyse — un `BookAlreadyReconciled` levé par `saveAttempt` n'est pas une erreur : le
-      use case relit l'état et le rend. **Rouge** avec le dépôt en mémoire (unicité, T019)
+- [ ] T056 [US4] `reconciliation.http.spec.ts` : relance pendant une réconciliation encore en
+      cours (double appui sur « relancer ») — les deux réponses sont 200 et décrivent le même état,
+      une seule tentative définitive par livre en base (la règle elle-même est posée en US1, T026)
 - [ ] T057 [US4] `reconciliation.http.spec.ts` : avec un référentiel factice injecté (surcharge du
       port dans le module de test), indisponible puis rétabli — second `POST …/reconciliation` →
       les `not_verified` reçoivent un statut définitif, sans nouvel appel au scanner
@@ -449,15 +474,19 @@ autre phase n'en dépend.
 
 - [ ] T063 [P] `CLAUDE.md` : arborescence (`libs/bibliography/{domain,application,infrastructure}`,
       `libs/shared/sql-migrations`, `apps/api/src/orchestration/`), `bibliography` désormais fondé en
-      code (paragraphe « `recognition` est le seul bounded context fondé… »)
+      code (paragraphe « `recognition` est le seul bounded context fondé… ») ; nuancer « `libs/shared/*`
+      est importable par tous » : une lib partagée n'importe aucun contexte, mais peut être
+      `scope:api` quand elle ne sert qu'au back (`sql-migrations`, research §8) ; préciser que
+      « les migrations restent dans `infrastructure` » vise les fichiers SQL et le schéma, pas le
+      lanceur générique
 - [ ] T064 [P] `README.md` des quatre nouvelles libs, au format de ceux de `libs/recognition/*`
       (rôle, API publique, frontières)
 - [ ] T065 [P] Vérifier que la CI (`.github/workflows/ci.yml`) fait tourner les specs de
       `bibliography-infrastructure` et `shared-sql-migrations` contre son Postgres (même
       `DATABASE_URL` que `recognition-infrastructure`) ; ajuster sinon
 - [ ] T066 Exécuter `quickstart.md` en entier dans Chromium à 360 px de large, contre l'API buildée
-      (`yarn nx build api`) : scénarios 1 à 4, et vérifier SC-003 (30 livres) avec un catalogue
-      stub ralenti ou, après la Phase 8, le vrai référentiel
+      (`yarn nx build api`) : scénarios 1 à 4 ; SC-003 est prouvé par la spec de T026, et se
+      remesure sur le vrai référentiel après la Phase 8
 - [ ] T067 `yarn check` vert ; vérifier que les garde-fous opèrent (import interdit
       `bibliography` → `recognition` qui fait échouer `yarn lint`, puis retiré)
 
@@ -470,9 +499,10 @@ autre phase n'en dépend.
 - **Setup (Phase 1)** : aucune dépendance.
 - **Foundational (Phase 2)** : après Setup ; bloque toutes les user stories.
 - **US1 (Phase 3)** : après Foundational. MVP.
-- **US2 (Phase 4)**, **US3 (Phase 5)**, **US5 (Phase 6)** : après US1 — elles s'appuient sur la route
-  de réconciliation et la liste réconciliée. Indépendantes entre elles, à une exception : T054
-  (FR-018 sur les deux endpoints) suppose T046 (US2).
+- **US2 (Phase 4)**, **US3 (Phase 5)** : après US1 — elles s'appuient sur la route de
+  réconciliation et la liste réconciliée ; indépendantes entre elles.
+- **US5 (Phase 6)** : après US1 **et US2** — T052 et T053 ont besoin de `saveDecision` (T044),
+  T054 de la route de décision (T046).
 - **US4 (Phase 7)** : après US1 ; T058 réutilise la liste de T040.
 - **Référentiel réel (Phase 8)** : après l'ADR #20 **et** US1 ; ne bloque rien.
 - **Polish (Phase 9)** : après les stories voulues ; T066 complet après la Phase 8.
@@ -491,7 +521,7 @@ autre phase n'en dépend.
 - US1 : T022 ‖ T023 ; T027 ‖ T028 ; T038 ‖ T039 (et tout le front ‖ le back à partir de T036,
   le contrat étant fixé).
 - US2 : T042 ‖ T043 ; T047 ‖ back.
-- Après US1 : US2, US3, US5 et US4 peuvent avancer en parallèle.
+- Après US1 : US2, US3 et US4 peuvent avancer en parallèle ; US5 après US2.
 
 ## Parallel Example: User Story 1
 
@@ -522,7 +552,7 @@ Task: "T039 api/reconcile-shelf-photo.ts in apps/web/src/features/reconciliation
 
 1. MVP (US1).
 2. US2 — les ambigus deviennent exploitables.
-3. US3 + US5 — surtout des specs : la persistance est posée dès la Phase 2.
+3. US3, puis US5 (après US2) — surtout des specs : la persistance est posée dès la Phase 2.
 4. US4 — relance depuis l'écran.
 5. Après l'ADR #20 : Phase 8, puis mesure de SC-001/SC-002 et calage des réglages.
 
