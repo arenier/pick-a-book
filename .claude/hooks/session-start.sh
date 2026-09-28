@@ -112,4 +112,18 @@ if [ ! -f .env ]; then
   echo "Created .env from .env.example."
 fi
 
+# --- Claude plugins -----------------------------------------------------------
+# settings.json declares the marketplace and enables the plugins, but a web session never
+# fetches them on its own: without this their skills (create-pr, ...) are simply absent.
+# Installed through the plugin CLI rather than copied into .claude/skills, because the skills
+# call `${CLAUDE_SKILL_DIR}/../../scripts` and need the plugin layout intact. Both names are
+# read from settings.json. Non-fatal: a missing plugin must not block the session.
+if command -v claude >/dev/null 2>&1; then
+  marketplace=$(node -e 'const s=require("./.claude/settings.json");const [n,m]=Object.entries(s.extraKnownMarketplaces)[0];console.log(m.source.repo)')
+  claude plugin marketplace add "$marketplace" >/dev/null 2>&1 || echo "warning: could not add marketplace $marketplace" >&2
+  for plugin in $(node -e 'console.log(Object.keys(require("./.claude/settings.json").enabledPlugins).join(" "))'); do
+    claude plugin install "$plugin" >/dev/null 2>&1 || echo "warning: could not install plugin $plugin" >&2
+  done
+fi
+
 echo "Node $(node --version), Yarn $(yarn --version), Terraform $TERRAFORM_VERSION, tflint $TFLINT_VERSION, checkov $CHECKOV_VERSION — workspace ready."
