@@ -34,9 +34,9 @@ permet de reprendre le pipeline à froid (nouvelle session, autre contributeur) 
 
 ### 1. `/speckit-constitution` — rarement rejoué
 
-Établit ou amende `.specify/memory/constitution.md`, qui reflète les principes de `CLAUDE.md` (TDD,
-hexagonal, bounded contexts, pas de `as`, outillage unique, français/anglais). Ne pas y toucher au
-fil d'une feature : un principe qui doit changer se discute et se versionne pour lui-même, avec bump
+Établit ou amende `.specify/memory/constitution.md`, qui reflète les principes de `CLAUDE.md` et
+des rules de `.claude/rules/` (TDD, hexagonal, bounded contexts, pas de `as`, outillage unique,
+français/anglais). Ne pas y toucher au fil d'une feature : un principe qui doit changer se discute et se versionne pour lui-même, avec bump
 sémantique (MAJOR/MINOR/PATCH — voir la section *Governance* de la constitution).
 
 ### 2. `/speckit-specify` — le point d'entrée d'une feature
@@ -80,8 +80,8 @@ Non destructif — il ne corrige rien, il pointe. À faire sur une feature dont 
 ### 7. `/speckit-implement` — exécute `tasks.md`
 
 Traite les tâches dans l'ordre, en TDD systématique (test rouge d'abord, code minimal, refactor —
-`CLAUDE.md` § Conventions). Respecte l'architecture hexagonale et les frontières de bounded context
-au fil de l'exécution, pas en rattrapage après coup.
+[`.claude/rules/tdd.md`](../.claude/rules/tdd.md)). Respecte l'architecture hexagonale et les
+frontières de bounded context au fil de l'exécution, pas en rattrapage après coup.
 
 ### 8. `/speckit-taskstoissues` — optionnel
 
