@@ -43,9 +43,21 @@ photo: <fichier image>
 - `id` DOIT être réutilisé tel quel pour l'appel `POST /shelf-photos/{id}/scan` qui suit
   immédiatement, côté frontend, sans intervention de l'utilisateur.
 
+### Forme du corps d'erreur *(amendé le 28/09/2026, #26)*
+
+Toute réponse d'erreur des deux endpoints prend la **même forme**, quelle que soit son origine :
+`{ "statusCode": number, "message": string, "timestamp": string, "path": string }` — `timestamp` en
+ISO 8601, `path` sans query string. Les corps décrits ci-dessous ne montrent que `message` et
+`statusCode`, les champs sur lesquels le frontend s'appuie ; `timestamp` et `path` s'y ajoutent
+sans les changer. Le frontend ne lit que le **statut**.
+
+Une erreur que personne n'a modélisée (un bug, une base ou un bucket injoignable) répond
+**`500`** avec le message générique `Internal server error` : ni stack, ni cause, ni détail
+d'implémentation ne sort. Ils sont journalisés côté serveur en `severity: ERROR`.
+
 ### 400 — requête refusée
 
-Corps : `{ "message": string, "statusCode": 400 }` (format par défaut de Nest). Causes possibles
+Corps : `{ "message": string, "statusCode": 400 }`. Causes possibles
 détectées par le serveur : fichier absent, vide, type MIME non supporté.
 
 **413 — photo trop lourde** *(amendé à l'implémentation, le 23/09/2026)* : au-delà de 20 Mo, le

@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app/app.module';
 import { InvalidEnvironment, loadEnvironment } from './config/environment';
+import { applyHttpBoundary } from './http/http-boundary';
 
 async function bootstrap() {
   // Configuration is validated before anything is constructed: a missing required variable
@@ -10,9 +11,8 @@ async function bootstrap() {
   const environment = loadEnvironment();
 
   const app = await NestFactory.create(AppModule.withEnvironment(environment));
-  // The frontend is served from its own origin (a bucket, ADR 0004): without this, every
-  // call it makes fails in the browser as an opaque CORS error.
-  app.enableCors({ origin: environment.webOrigin });
+  // CORS and the global exception filter: what holds for every route.
+  applyHttpBoundary(app, environment);
   // SIGTERM (how Cloud Run stops an instance) runs the shutdown hooks: the Postgres pool is
   // released instead of dropped.
   app.enableShutdownHooks();

@@ -144,6 +144,13 @@ les migrations au démarrage, et les specs des adapters de `recognition-infrastr
 `tools/db-backup` appellent aussi `pg_dump`, `pg_restore` et `psql` du `PATH`, en **version 18 ou
 plus** (la majeure de la prod) : sans eux, `yarn check` échoue sur ce projet.
 
+La **frontière HTTP** de l'API (`apps/api/src/http/`) est durcie une fois pour toutes les routes :
+CORS depuis `WEB_ORIGIN` (requise en production) et un **filtre d'exception global** qui uniformise
+le corps des erreurs (`statusCode`, `message`, `timestamp`, `path`), respecte le statut des
+`HttpException` et répond un `500` générique — sans stack — à tout le reste, journalisé en
+`severity: ERROR`. Il ne traduit aucune erreur de domaine : c'est le rôle de chaque contexte
+([error-policy](.claude/rules/error-policy.md)).
+
 La **CI** (GitHub Actions, `.github/workflows/ci.yml`) tourne sur chaque PR et push `main` : oxlint
 et oxfmt sur tout le dépôt, puis `nx affected -t lint typecheck test build translations` sur les projets touchés
 (base calculée par `nrwl/nx-set-shas`). Elle installe Node, Yarn et l'outillage Terraform à partir
