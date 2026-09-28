@@ -166,6 +166,7 @@ tools/db-backup/                 # pg_dump hebdomadaire vers le bucket (Cloud Ru
 docker/                          # Dockerfile des apps et du job de sauvegarde — contexte de build : la racine
 docs/adr/
 docs/decisions/                  # notes de décision de niveau inférieur (pas des ADR)
+docs/parking.md                  # idées et hors-scope en attente, sans issue ni ADR pour les porter
 infra/                           # infrastructure GCP en Terraform — voir infra/README.md
 .specify/                        # Spec Kit : constitution, templates, scripts (voir plus bas)
 specs/                           # une spec par feature, gardée durablement (Spec Kit)
@@ -293,6 +294,9 @@ Articulation avec l'existant, actée dans
   transverse propose un ADR, elle ne tranche pas à sa place.
 - **Issue GitHub** reste le point d'entrée de discussion et de suivi ; elle référence la spec sans
   la dupliquer.
+- **Parking** ([`docs/parking.md`](docs/parking.md)) recueille ce qu'une spec, un plan ou un ADR
+  met hors scope sans issue ni ADR pour le porter — ajouté dans le même commit que la décision de
+  report. Une idée reprise en sort pour devenir une issue, puis une spec ou un ADR.
 
 La constitution (`.specify/memory/constitution.md`) reflète les principes de ce fichier — TDD,
 architecture hexagonale et bounded contexts étanches, pas de `as`, outillage unique, français en
