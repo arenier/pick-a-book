@@ -232,8 +232,10 @@ lisible, au moins une table avec des données), l'envoie dans `${project_id}-bac
 Une exécution qui échoue ne touche à rien. Un snapshot élagué reste récupérable 30 jours grâce au
 versioning du bucket.
 
-L'alerte `pick-a-book-db-backup — backup not fresh` envoie un email à `TF_VAR_alert_email` si
-aucune exécution n'a réussi depuis 8 jours, ou dès qu'une exécution échoue.
+Deux alertes Cloud Monitoring envoient un email à `TF_VAR_alert_email` : `pick-a-book-db-backup —
+no successful run in 8d` si aucune exécution n'a réussi depuis 8 jours, et `pick-a-book-db-backup —
+a run failed` dès qu'une exécution échoue. Deux politiques et non une seule à deux conditions :
+Cloud Monitoring refuse une politique PromQL qui porte plus d'une condition.
 
 ### Mise en service (une fois)
 
@@ -248,7 +250,7 @@ gsutil ls "gs://$(terraform -chdir=infra/envs/prod output -raw backups_bucket_na
 - Ce que le `plan` doit montrer : les APIs Cloud Scheduler et Monitoring ; le secret
   `DATABASE_URL_DIRECT` et sa version ; le compte `pick-a-book-db-backup` avec ses deux droits (ce
   secret, `objectUser` sur le bucket de sauvegardes) ; le job, son droit `run.invoker`, son
-  planning ; le canal email et la politique d'alerte ; le **retrait** du droit de l'API sur le
+  planning ; le canal email et les deux politiques d'alerte ; le **retrait** du droit de l'API sur le
   bucket de sauvegardes.
 - Lancer la première exécution **juste après** l'`apply` : tant qu'aucune exécution n'a réussi, la
   condition « aucune réussite depuis 8 jours » est vraie, et l'alerte part.
