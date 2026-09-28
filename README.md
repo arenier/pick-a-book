@@ -8,17 +8,12 @@ Usage personnel, 20–200 photos par mois. Open source, hébergement simple et p
 
 ## Démarrer
 
-Node **26.5.1** et Yarn **4.18.0**, épinglés dans `package.json` (champ `volta`). Avec
-[Volta](https://volta.sh) installé, les deux versions sont posées automatiquement en entrant dans
-le dossier. Sans Volta, installer Yarn 4 explicitement — Node 26 ne fournit plus Corepack :
+Toute la chaîne d'outils (Node **26.5.1**, Yarn **4.18.0**, Terraform, tflint, checkov) est
+épinglée dans [`mise.toml`](mise.toml), que la CI lit aussi. Avec [mise](https://mise.jdx.dev)
+installé :
 
 ```bash
-npm install -g @yarnpkg/cli-dist@4.18.0
-```
-
-Puis :
-
-```bash
+mise install            # une fois, puis à chaque montée de version
 yarn install
 cp .env.example .env    # les variables requises sont commentées dans le fichier
 yarn api                # http://localhost:3000/health

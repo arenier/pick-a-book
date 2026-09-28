@@ -41,21 +41,25 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
 
 ## Outillage
 
-| Node.js | Yarn | Géré par |
-|---|---|---|
-| **26.5.1** | **4.18.0** | **Volta** (champ `volta` de `package.json`) |
+| Node.js | Yarn | Terraform | tflint | checkov | Géré par |
+|---|---|---|---|---|---|
+| **26.5.1** | **4.18.0** | **1.15.9** | **0.64.0** | **3.3.20** | **mise** (`mise.toml` à la racine) |
 
-Épinglage exact, jamais en plage. `nodeLinker: node-modules` dans `.yarnrc.yml` — pas de
-Plug'n'Play. Trois pièges :
+`mise install` à la racine pose toute la chaîne ; la CI installe à partir du **même fichier**
+(`jdx/mise-action`), seule source des versions ([0001](docs/adr/0001-stack-et-monorepo-nx.md),
+amendement du 2026-09-28). Épinglage exact, jamais en plage. `nodeLinker: node-modules` dans
+`.yarnrc.yml` — pas de Plug'n'Play. Le client Postgres (`psql`, `pg_dump`) reste hors de mise, qui ne
+sait que le compiler : `brew install libpq`. Trois pièges :
 
 - sur npm, `yarn@latest` est **1.22.22** (Yarn Classic) ; la ligne moderne est publiée sous
   `@yarnpkg/cli`, et le binaire prêt à l'emploi sous `@yarnpkg/cli-dist` ;
 - **Node 26 ne fournit plus Corepack.** Le champ `packageManager` ne suffit donc pas à obtenir le
-  bon Yarn : c'est Volta qui le fournit en local, et une installation explicite
-  (`npm i -g @yarnpkg/cli-dist@4.18.0`) en CI et dans les images Docker ;
+  bon Yarn : `mise.toml` le déclare par son paquet npm (`"npm:@yarnpkg/cli-dist"`), et les images
+  Docker l'installent explicitement (`npm i -g @yarnpkg/cli-dist@4.18.0`) ;
 - **Node 26 n'est pas encore LTS** (attendu vers octobre 2026), à reconfirmer avant le premier
-  déploiement. Les `Dockerfile` de `docker/` épinglent Node de leur côté — les deux épinglages se
-  maintiennent à la main.
+  déploiement. Les `Dockerfile` de `docker/` et les champs `engines`/`packageManager` de
+  `package.json` gardent leur copie des versions — le garde-fou de CI « toolchain pins agree » les
+  compare à `mise.toml`.
 
 Build et test passent par **Vite et Vitest sur tous les projets** ([0007](docs/adr/0007-vite-et-vitest-outillage-unique.md)) :
 un `vite.config.mts` par app, un `vitest.config.mts` par lib, et `tsc` pour la compilation des
@@ -139,8 +143,8 @@ plus** (la majeure de la prod) : sans eux, `yarn check` échoue sur ce projet.
 
 La **CI** (GitHub Actions, `.github/workflows/ci.yml`) tourne sur chaque PR et push `main` : oxlint
 et oxfmt sur tout le dépôt, puis `nx affected -t lint typecheck test build translations` sur les projets touchés
-(base calculée par `nrwl/nx-set-shas`). Node 26 n'ayant pas Corepack, elle installe Yarn avec
-`@yarnpkg/cli-dist@4.18.0` — comme les images Docker.
+(base calculée par `nrwl/nx-set-shas`). Elle installe Node, Yarn et l'outillage Terraform à partir
+de `mise.toml`, comme un poste local.
 
 `yarn check` et la CI vérifient **les mêmes cibles** : la seule différence assumée est la sélection
 des projets — `run-many` (tout) en local, `affected` (les touchés) en CI. Un garde-fou de la CI

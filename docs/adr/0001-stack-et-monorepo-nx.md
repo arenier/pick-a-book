@@ -1,6 +1,6 @@
 # ADR 0001 — Stack Node/TypeScript et monorepo Nx
 
-Statut : accepté · Date : 2026-07-29 · Amendé : 2026-07-30 (outillage) · Socle · Rédigé a posteriori
+Statut : accepté · Date : 2026-07-29 · Amendé : 2026-07-30 (outillage), 2026-09-28 (mise remplace Volta) · Socle · Rédigé a posteriori
 
 > Consigne une contrainte actée avant l'ouverture du repo. Les sections « Alternatives » et
 > « Conséquences » sont une reconstitution du raisonnement, à valider ou corriger.
@@ -85,3 +85,30 @@ Sur l'outillage :
   l'erreur. Ce champ suppose en revanche un lanceur qui le lit (Corepack), dont la présence dans
   les distributions Node récentes est à vérifier au scaffolding — Volta fournissant Yarn de son
   côté, seule la CI pourrait avoir à l'installer explicitement.
+
+## Amendement — mise remplace Volta (2026-09-28)
+
+La condition de bascule posée plus haut (« le jour où il faut épingler autre chose que Node et
+Yarn ») est remplie depuis longtemps : Terraform et tflint vivaient dans `infra/mise.toml`,
+`.terraform-version` et le workflow de CI, checkov dans une commande `pip`, et la sauvegarde (#22)
+a ajouté le client Postgres aux prérequis. Le même numéro de version de Terraform était écrit à trois
+endroits, celui de Node à quatre, et deux garde-fous de CI n'existaient que pour empêcher ces copies
+de diverger.
+
+Décision : **un `mise.toml` à la racine est la seule source des versions d'outils** — Node, Yarn,
+Terraform, tflint et checkov, épinglés à l'exact. Le champ `volta` de `package.json`,
+`infra/mise.toml` et `.terraform-version` disparaissent. La CI installe à partir de ce même fichier
+(`jdx/mise-action`, la version de mise étant elle-même épinglée) : ce qu'elle exécute est, par
+construction, ce que donne un `mise install` local.
+
+- **Yarn** est déclaré par son paquet npm `@yarnpkg/cli-dist`, pour la même raison que le piège décrit
+  plus haut : le paquet `yarn` est Yarn Classic. `npm.package_manager = "npm"` est fixé dans
+  `mise.toml` : en mode automatique, mise peut choisir un installeur qui ne crée pas le lien `yarn`.
+- **Copies restantes, surveillées** : les champs `engines` et `packageManager` de `package.json`
+  (Yarn lit le second lui-même), et la version de Node et de Yarn de chaque `docker/*.Dockerfile` —
+  il n'y a pas de mise dans un conteneur. Le garde-fou de CI « toolchain pins agree » les compare à
+  `mise.toml`.
+- **Le client Postgres reste hors de mise** : mise ne sait que le compiler depuis les sources
+  (plusieurs minutes, des bibliothèques de développement). `brew install libpq` en local, l'image
+  `postgres:18.6` pour un besoin ponctuel, les paquets PGDG en CI.
+- **tfenv n'est plus pris en charge** : un seul gestionnaire documenté, une seule copie.

@@ -1,9 +1,9 @@
 # API image. This is the deployment unit (ADR 0004): reproducible locally, portable to any
 # container host. Build context is the repository root: `docker build -f docker/api.Dockerfile .`
 #
-# ADR 0001: Node is pinned here to 26.5.1, exactly as in the `volta` field of package.json.
-# Both pins have to be kept in sync by hand — Volta does not exist inside the container.
-# A version bump touches both places.
+# ADR 0001: Node is pinned here to 26.5.1, exactly as in mise.toml. There is no mise inside the
+# container, so both pins are kept in sync by hand — CI's "toolchain pins agree" step fails the
+# day they diverge.
 #
 # Node 26 reminder: *Current* line, not LTS yet (expected around October 2026). To be
 # reconfirmed before the first deployment.
