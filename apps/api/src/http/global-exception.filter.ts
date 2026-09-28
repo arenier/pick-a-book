@@ -1,4 +1,10 @@
-import { type ArgumentsHost, Catch, type ExceptionFilter, HttpException } from '@nestjs/common';
+import {
+  type ArgumentsHost,
+  Catch,
+  type ExceptionFilter,
+  HttpException,
+  Logger,
+} from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
 /** What every error answer looks like, whatever raised it: one shape for the whole API. */
@@ -24,12 +30,14 @@ const UNEXPECTED_MESSAGE = 'Internal server error';
  * the client (ADR 0013 leaves those failures untyped, for this filter to catch).
  *
  * The promise "no stack to the client" only holds if the stack goes somewhere else: the error
- * is written as a `severity: ERROR` JSON line, the form Cloud Run turns into an ERROR entry —
- * otherwise a 500 drowns as INFO in Cloud Logging and is invisible (ADR 0004). An
- * `HttpException` was raised on purpose, so it is not logged here.
+ * is logged through the application logger, which writes the `severity: ERROR` JSON line that
+ * Cloud Run files as an ERROR entry — otherwise a 500 drowns as INFO in Cloud Logging and is
+ * invisible (ADR 0004). An `HttpException` was raised on purpose, so it is not logged here.
  */
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(GlobalExceptionFilter.name);
+
   constructor(private readonly adapterHost: HttpAdapterHost) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
@@ -51,7 +59,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       return;
     }
 
-    logUnexpected(exception, path, timestamp);
+    this.logUnexpected(exception);
     const body = {
       statusCode: 500,
       message: UNEXPECTED_MESSAGE,
@@ -59,6 +67,20 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       path,
     } satisfies ErrorBody;
     httpAdapter.reply(http.getResponse<unknown>(), body, 500);
+  }
+
+  /**
+   * The message and the stack go to the logger as it expects an error: `Logger.error(message,
+   * stack)` is the contract Nest's own handlers use, and the application logger turns it into
+   * an `err` — the request it belongs to (method, path, trace) is attached by the logger itself.
+   */
+  private logUnexpected(exception: unknown): void {
+    if (exception instanceof Error) {
+      this.logger.error(exception.message, exception.stack);
+      return;
+    }
+
+    this.logger.error(String(exception));
   }
 }
 
@@ -82,22 +104,4 @@ function messageOf(response: string | object): string {
 
 function pathOf(url: string): string {
   return url.split('?')[0] ?? url;
-}
-
-/**
- * One JSON object per line on stderr, with the fields Cloud Logging reads: `severity` sets
- * the level, `message` the text, `stack_trace` lets Error Reporting group the crash. When the
- * app-wide logger comes (pino), the filter will log through it and this line keeps its shape.
- */
-function logUnexpected(exception: unknown, path: string, timestamp: string): void {
-  const isError = exception instanceof Error;
-  const entry = {
-    severity: 'ERROR',
-    message: isError ? exception.message : String(exception),
-    stack_trace: isError ? exception.stack : undefined,
-    path,
-    timestamp,
-  };
-
-  process.stderr.write(`${JSON.stringify(entry)}\n`);
 }

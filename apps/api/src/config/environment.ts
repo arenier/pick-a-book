@@ -39,6 +39,11 @@ export interface Environment {
   readonly ownerId: OwnerId;
   /** Origin of the frontend, the one CORS lets through (ADR 0004: two origins). */
   readonly webOrigin: string;
+  /**
+   * The GCP project the API runs in. Optional: it only lets a log line name its trace by the
+   * resource Cloud Logging links on (`projects/{project}/traces/{id}`).
+   */
+  readonly googleCloudProject: string | undefined;
 }
 
 /**
@@ -138,6 +143,7 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
     shelfScanner,
     ...photoStorage,
     webOrigin,
+    googleCloudProject: optional(source, 'GOOGLE_CLOUD_PROJECT'),
   };
 }
 

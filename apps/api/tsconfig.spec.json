@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "./out-tsc/vitest",
     "types": ["node"],
+    "lib": ["es2023"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },

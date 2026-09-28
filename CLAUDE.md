@@ -144,6 +144,15 @@ les migrations au démarrage, et les specs des adapters de `recognition-infrastr
 `tools/db-backup` appellent aussi `pg_dump`, `pg_restore` et `psql` du `PATH`, en **version 18 ou
 plus** (la majeure de la prod) : sans eux, `yarn check` échoue sur ce projet.
 
+Les **logs** de l'API sont structurés (`apps/api/src/logging/`, **pino** via `nestjs-pino`) : une ligne
+JSON par log, avec `severity` et `message` que Cloud Logging lit, la trace de `X-Cloud-Trace-Context`
+sous `logging.googleapis.com/trace`, et une ligne par requête (méthode, chemin, statut, durée — jamais
+ni en-têtes, ni query string, ni corps). Les clés de provider, `authorization`, `cookie` et les octets
+d'image sont **retirés** (`redact`) à toute profondeur. `NODE_ENV=development` passe par `pino-pretty`
+(en `devDependencies`, absent de l'image). Dans `apps/api`, logger avec le `Logger` de Nest, jamais `console.*` :
+c'est `useLogger` qui le route vers pino. `domain` et `application` ne connaissent aucun logger ; le
+`console.error` de `ScanStoredShelfPhotoUseCase` reste hors pino, faute d'un port de journalisation.
+
 La **frontière HTTP** de l'API (`apps/api/src/http/`) est durcie une fois pour toutes les routes :
 CORS depuis `WEB_ORIGIN` (requise en production) et un **filtre d'exception global** qui uniformise
 le corps des erreurs (`statusCode`, `message`, `timestamp`, `path`), respecte le statut des
