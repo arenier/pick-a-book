@@ -1,3 +1,5 @@
+import { err, ok, type Result } from '@pick-a-book/shared-result';
+
 import { InvalidShelfPhoto } from './invalid-shelf-photo.error.js';
 
 /**
@@ -25,22 +27,24 @@ export class ShelfPhoto {
     readonly mediaType: ShelfPhotoMediaType,
   ) {}
 
-  static of(bytes: Uint8Array, mediaType: string): ShelfPhoto {
+  static of(bytes: Uint8Array, mediaType: string): Result<ShelfPhoto, InvalidShelfPhoto> {
     if (bytes.byteLength === 0) {
-      throw new InvalidShelfPhoto('empty image');
+      return err(new InvalidShelfPhoto('empty image'));
     }
     if (bytes.byteLength > MAX_BYTES) {
-      throw new InvalidShelfPhoto(
-        `image too large (${bytes.byteLength} bytes, ${MAX_BYTES} at most)`,
+      return err(
+        new InvalidShelfPhoto(`image too large (${bytes.byteLength} bytes, ${MAX_BYTES} at most)`),
       );
     }
     if (!isShelfPhotoMediaType(mediaType)) {
-      throw new InvalidShelfPhoto(
-        `unsupported media type (${mediaType}) — expected ${SUPPORTED_MEDIA_TYPES.join(', ')}`,
+      return err(
+        new InvalidShelfPhoto(
+          `unsupported media type (${mediaType}) — expected ${SUPPORTED_MEDIA_TYPES.join(', ')}`,
+        ),
       );
     }
 
-    return new ShelfPhoto(bytes, mediaType);
+    return ok(new ShelfPhoto(bytes, mediaType));
   }
 }
 

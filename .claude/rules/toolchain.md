@@ -58,7 +58,9 @@ Pourquoi, et relevé des règles retenues et écartées :
 - **`oxlint-tsgolint` est requis** : sans lui, `yarn lint` s'arrête sur
   `Failed to find tsgolint executable`.
 - **ESLint n'est conservé que pour ce qu'oxlint ne sait pas exprimer** :
-  `@nx/enforce-module-boundaries` et `@nx/dependency-checks`, fondées sur le graphe Nx.
+  `@nx/enforce-module-boundaries` et `@nx/dependency-checks`, fondées sur le graphe Nx, et
+  `no-restricted-syntax`, qui interdit `throw` et `unwrap` dans `domain` et `application`
+  ([`error-policy.md`](error-policy.md)).
 - **`eslint-plugin-oxlint` reste en dernier** dans `eslint.config.mjs` : il éteint les doublons.
 - Le bloc **`overrides`** de `.oxlintrc.json` cible `**/*.{spec,test}.{ts,tsx}`. Ce scope n'est
   pas décoratif : sans lui, les règles du plugin `vitest` contraignent aussi `main.ts`.

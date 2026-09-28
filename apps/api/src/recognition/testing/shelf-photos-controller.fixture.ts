@@ -14,8 +14,22 @@ import {
   type ShelfScanRepositoryPort,
 } from '@pick-a-book/recognition-domain';
 import { StubShelfScannerAdapter } from '@pick-a-book/recognition-infrastructure';
+import { err, ok, unwrap } from '@pick-a-book/shared-result';
 
 import { ShelfPhotosController } from '../shelf-photos.controller';
+
+/** The record an id names, if it is still pending — the transition rule of Postgres. */
+function pending(records: ReadonlyMap<string, ShelfScanRecord>, id: ShelfScanId) {
+  const record = records.get(id.value);
+  if (record === undefined) {
+    return err(new ShelfScanNotFound(id.value));
+  }
+  if (record.status !== 'pending') {
+    return err(new ShelfScanAlreadyProcessed(id));
+  }
+
+  return ok(record);
+}
 
 /** In-memory doubles of the two storage ports, holding the transition rules of Postgres. */
 function inMemoryPorts() {
@@ -27,18 +41,7 @@ function inMemoryPorts() {
       objects.set(key, photo);
     },
     retrieve: async (key, mediaType) =>
-      ShelfPhoto.of(objects.get(key)?.bytes ?? new Uint8Array(), mediaType),
-  };
-
-  const pending = (id: ShelfScanId): ShelfScanRecord => {
-    const record = records.get(id.value);
-    if (record === undefined) {
-      throw new ShelfScanNotFound(id.value);
-    }
-    if (record.status !== 'pending') {
-      throw new ShelfScanAlreadyProcessed(id);
-    }
-    return record;
+      unwrap(ShelfPhoto.of(objects.get(key)?.bytes ?? new Uint8Array(), mediaType)),
   };
 
   const repository: ShelfScanRepositoryPort = {
@@ -52,10 +55,20 @@ function inMemoryPorts() {
     },
     get: async (id) => records.get(id.value),
     markCompleted: async (id, books) => {
-      records.set(id.value, { ...pending(id), status: 'completed', detectedBooks: books });
+      const record = pending(records, id);
+      if (!record.ok) {
+        return record;
+      }
+      records.set(id.value, { ...record.value, status: 'completed', detectedBooks: books });
+      return ok();
     },
     markFailed: async (id) => {
-      records.set(id.value, { ...pending(id), status: 'failed', detectedBooks: undefined });
+      const record = pending(records, id);
+      if (!record.ok) {
+        return record;
+      }
+      records.set(id.value, { ...record.value, status: 'failed', detectedBooks: undefined });
+      return ok();
     },
   };
 
@@ -74,7 +87,11 @@ export function aShelfPhotosController(
   const { objects, records, repository } = ports;
   const storage = overrides.storage ?? ports.storage;
   const scanner = overrides.scanner ?? new StubShelfScannerAdapter();
-  const storeShelfPhoto = new StoreShelfPhotoUseCase(OwnerId.of('default'), storage, repository);
+  const storeShelfPhoto = new StoreShelfPhotoUseCase(
+    unwrap(OwnerId.of('default')),
+    storage,
+    repository,
+  );
   const scanStoredShelfPhoto = new ScanStoredShelfPhotoUseCase(storage, repository, scanner);
 
   return {

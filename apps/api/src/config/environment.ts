@@ -1,4 +1,5 @@
 import { OwnerId } from '@pick-a-book/recognition-domain';
+import { unwrap } from '@pick-a-book/shared-result';
 
 /**
  * Configuration validation at startup.
@@ -124,7 +125,7 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
   const shelfScanner = readShelfScanner(source, problems);
 
   const photoStorage = readPhotoStorage(source, problems);
-  const webOrigin = readWebOrigin(source, problems);
+  const webOrigin = readWebOrigin(source, nodeEnv, problems);
 
   if (problems.length > 0) {
     throw new InvalidEnvironment(problems);
@@ -166,17 +167,33 @@ function readPhotoStorage(
 /** What makes a valid owner id is the recognition context's rule (`OwnerId`), not ours. */
 function readOwnerId(source: NodeJS.ProcessEnv, problems: string[]): OwnerId {
   const raw = optional(source, 'OWNER_ID') ?? DEFAULT_OWNER_ID;
-  try {
-    return OwnerId.of(raw);
-  } catch (error) {
-    problems.push(`OWNER_ID is "${raw}" — ${error instanceof Error ? error.message : 'invalid'}`);
-    // The fallback never escapes: a non-empty `problems` throws before the caller returns.
-    return OwnerId.of(DEFAULT_OWNER_ID);
+  const ownerId = OwnerId.of(raw);
+  if (ownerId.ok) {
+    return ownerId.value;
   }
+
+  problems.push(`OWNER_ID is "${raw}" — ${ownerId.error.message}`);
+  // The fallback never escapes: a non-empty `problems` throws before the caller returns.
+  return unwrap(OwnerId.of(DEFAULT_OWNER_ID));
 }
 
-function readWebOrigin(source: NodeJS.ProcessEnv, problems: string[]): string {
-  const webOrigin = optional(source, 'WEB_ORIGIN') ?? DEFAULT_WEB_ORIGIN;
+/**
+ * Defaults to the port of `yarn web` in development, so the stack starts with no
+ * configuration. In production there is no sensible default — the front is another Cloud Run
+ * service on its own origin (ADR 0004) — and a browser front without it is unusable, so its
+ * absence fails the boot, like any other required variable.
+ */
+function readWebOrigin(
+  source: NodeJS.ProcessEnv,
+  nodeEnv: NodeEnvironment,
+  problems: string[],
+): string {
+  const configured = optional(source, 'WEB_ORIGIN');
+  if (configured === undefined && nodeEnv === 'production') {
+    problems.push('WEB_ORIGIN is required in production and is not set');
+  }
+
+  const webOrigin = configured ?? DEFAULT_WEB_ORIGIN;
   if (!isHttpOrigin(webOrigin)) {
     problems.push(`WEB_ORIGIN is "${webOrigin}" — expected an http:// or https:// origin`);
   }

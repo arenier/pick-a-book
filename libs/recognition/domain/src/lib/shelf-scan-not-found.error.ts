@@ -3,6 +3,8 @@
  * that is not even a UUID is just as unknown.
  */
 export class ShelfScanNotFound extends Error {
+  readonly kind = 'shelf-scan-not-found';
+
   constructor(id: string) {
     super(`Shelf scan not found: ${id}`);
     this.name = 'ShelfScanNotFound';

@@ -4,8 +4,10 @@ import {
   Confidence,
   DetectedBook,
   type ShelfPhoto,
+  type ShelfScanFailed,
   type ShelfScannerPort,
 } from '@pick-a-book/recognition-domain';
+import { ok, unwrap, type Result } from '@pick-a-book/shared-result';
 
 /**
  * Stub adapter: returns a fixed set of detections, calling nothing at all.
@@ -16,6 +18,9 @@ import {
  *
  * It also allows working on the frontend without an API key or a bill, and serves as the
  * reference for the future recorded-response adapter (deterministic tests, ADR 0005).
+ *
+ * Builds its fixed detections with `unwrap`: they are constants, so a value the domain refuses
+ * is a bug in this file, not an outcome to report — and ADR 0013 lets `infrastructure` throw.
  */
 export class StubShelfScannerAdapter implements ShelfScannerPort {
   private static readonly SAMPLE: ReadonlyArray<[string, string, number]> = [
@@ -25,14 +30,20 @@ export class StubShelfScannerAdapter implements ShelfScannerPort {
     ['Auteur peu lisible', 'Titre peu lisible', 0.31],
   ];
 
-  async scan(_photo: ShelfPhoto): Promise<DetectedBook[]> {
+  async scan(_photo: ShelfPhoto): Promise<Result<DetectedBook[], ShelfScanFailed>> {
     // Nothing to await: the stub computes synchronously and only honours the async
     // `ShelfScannerPort` contract. `async` is not decoration — it guarantees that a failure
     // in the body surfaces as a rejection, which is what the port promises, rather than as a
     // synchronous throw the caller's `.catch` would miss. The real VLM adapter (ADR 0005)
     // will actually await.
-    return StubShelfScannerAdapter.SAMPLE.map(([author, title, confidence]) =>
-      DetectedBook.of(Author.of(author), BookTitle.of(title), Confidence.of(confidence)),
+    return ok(
+      StubShelfScannerAdapter.SAMPLE.map(([author, title, confidence]) =>
+        DetectedBook.of(
+          unwrap(Author.of(author)),
+          unwrap(BookTitle.of(title)),
+          unwrap(Confidence.of(confidence)),
+        ),
+      ),
     );
   }
 }

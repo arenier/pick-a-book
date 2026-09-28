@@ -117,6 +117,20 @@ describe('loadEnvironment, CORS origin (ADR 0004: two origins)', () => {
   it('rejects a WEB_ORIGIN that is not an http(s) origin', () => {
     expect(() => load({ WEB_ORIGIN: 'localhost:4200' })).toThrow(/WEB_ORIGIN/u);
   });
+
+  // In production the front is a second Cloud Run service on its own origin (ADR 0004): with
+  // no origin configured, every browser call would fail as an opaque CORS error, seen only
+  // after the deploy. The boot fails instead, naming the variable, like any other required one.
+  it('requires WEB_ORIGIN in production, naming it', () => {
+    expect(() => load({ NODE_ENV: 'production' })).toThrow(InvalidEnvironment);
+    expect(() => load({ NODE_ENV: 'production' })).toThrow(/WEB_ORIGIN is required/u);
+  });
+
+  it('accepts WEB_ORIGIN in production when it is set', () => {
+    expect(load({ NODE_ENV: 'production', WEB_ORIGIN: 'https://front.run.app' }).webOrigin).toBe(
+      'https://front.run.app',
+    );
+  });
 });
 
 describe('loadEnvironment, shelf scanner selection (ADR 0005)', () => {

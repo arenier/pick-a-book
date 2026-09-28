@@ -34,6 +34,9 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
   `libs/shared/ui` et mis aux normes du dépôt ; palette neutre, Literata pour les titres de livres,
   mode sombre qui suit le système · [0012](docs/adr/0012-design-system-de-l-interface.md),
   [note 0002](docs/decisions/0002-grandes-lignes-du-design-system.md)
+- **Politique d'erreur** — `Result` aux frontières de `domain` et `application`, exceptions
+  cantonnées à `infrastructure` et `apps` ·
+  [0013](docs/adr/0013-politique-d-erreur-result-aux-frontieres.md)
 - **Découpage en bounded contexts** — `recognition` (reconnaissance depuis une photo),
   `bibliography` (réconciliation + enrichissement, un seul contexte pour l'instant) et `curation`
   (correspondance avec la bibliothèque, la liste de souhaits et les préférences de l'utilisateur) ·
@@ -63,6 +66,7 @@ que le fichier ne soit chargé.
 |---|---|---|
 | [`tdd.md`](.claude/rules/tdd.md) | tout le dépôt | **TDD systématique**, IaC et correctifs compris ; `domain`/`application` sans infra, adapters contre la vraie techno ou sur réponses enregistrées |
 | [`typescript.md`](.claude/rules/typescript.md) | `*.ts`, `*.tsx` | Strict, **pas de `as`** (`satisfies` ou type guard) ; value objects dans le domaine ; `async` sans `await` voulu ; `kebab-case` ; anglais dans le code |
+| [`error-policy.md`](.claude/rules/error-policy.md) | tout le dépôt | `domain`/`application` ne jettent jamais : échec attendu → `Err` de `Result`, erreur à discriminant `kind`, traduction HTTP par `switch` exhaustif dans `apps/api` |
 | [`tests.md`](.claude/rules/tests.md) | specs | `*.spec.ts` ; imports `vitest` explicites ; `toStrictEqual`, `toBe(true)` |
 | [`module-boundaries.md`](.claude/rules/module-boundaries.md) | `apps/`, `libs/`, `tools/` | `domain` → rien, `application` → `domain` ; un contexte n'importe jamais un autre ; trois tags Nx sur chaque projet |
 | [`web-interface.md`](.claude/rules/web-interface.md) | `apps/web`, `libs/shared/{i18n,ui}` | Aucun texte en dur : catalogue i18next fr + en ; composants dans `libs/shared/ui` ; classes Tailwind sur les tokens |
@@ -103,6 +107,13 @@ les migrations au démarrage, et les specs des adapters de `recognition-infrastr
 `tools/db-backup` tournent contre ces deux mêmes services (la CI les démarre aussi). Celles de
 `tools/db-backup` appellent aussi `pg_dump`, `pg_restore` et `psql` du `PATH`, en **version 18 ou
 plus** (la majeure de la prod) : sans eux, `yarn check` échoue sur ce projet.
+
+La **frontière HTTP** de l'API (`apps/api/src/http/`) est durcie une fois pour toutes les routes :
+CORS depuis `WEB_ORIGIN` (requise en production) et un **filtre d'exception global** qui uniformise
+le corps des erreurs (`statusCode`, `message`, `timestamp`, `path`), respecte le statut des
+`HttpException` et répond un `500` générique — sans stack — à tout le reste, journalisé en
+`severity: ERROR`. Il ne traduit aucune erreur de domaine : c'est le rôle de chaque contexte
+([error-policy](.claude/rules/error-policy.md)).
 
 La **CI** (`.github/workflows/ci.yml`) tourne sur chaque PR et push `main`, et vérifie les mêmes
 cibles que `yarn check` sur les seuls projets touchés — détail dans

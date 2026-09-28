@@ -11,7 +11,9 @@ import {
   type NewShelfScan,
   type ShelfScanRecord,
   type ShelfScanRepositoryPort,
+  type ShelfScanTransitionFailure,
 } from '@pick-a-book/recognition-domain';
+import { err, ok, unwrap, type Result } from '@pick-a-book/shared-result';
 import { and, eq } from 'drizzle-orm';
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { Pool } from 'pg';
@@ -79,26 +81,30 @@ export class DrizzleShelfScanRepositoryAdapter implements ShelfScanRepositoryPor
     return row === undefined ? undefined : toRecord(row);
   }
 
-  async markCompleted(id: ShelfScanId, books: readonly DetectedBook[]): Promise<void> {
-    await this.settle(id, {
+  async markCompleted(
+    id: ShelfScanId,
+    books: readonly DetectedBook[],
+  ): Promise<Result<void, ShelfScanTransitionFailure>> {
+    return this.settle(id, {
       status: 'completed',
       detectedBooks: books.map((book) => toStored(book)),
     });
   }
 
-  async markFailed(id: ShelfScanId): Promise<void> {
-    await this.settle(id, { status: 'failed', detectedBooks: null });
+  async markFailed(id: ShelfScanId): Promise<Result<void, ShelfScanTransitionFailure>> {
+    return this.settle(id, { status: 'failed', detectedBooks: null });
   }
 
   /**
    * Moves a pending record, and only a pending one: the `status = 'pending'` condition is in
    * the UPDATE itself, so two concurrent scans cannot both record a result. Zero rows updated
-   * then says which rule was broken — no record, or a record already settled.
+   * then says which rule was broken — no record, or a record already settled — as an `Err`:
+   * both are outcomes the port declares (ADR 0013).
    */
   private async settle(
     id: ShelfScanId,
     outcome: { status: 'completed' | 'failed'; detectedBooks: StoredDetectedBook[] | null },
-  ): Promise<void> {
+  ): Promise<Result<void, ShelfScanTransitionFailure>> {
     const updated = await this.db
       .update(shelfScans)
       .set(outcome)
@@ -106,14 +112,15 @@ export class DrizzleShelfScanRepositoryAdapter implements ShelfScanRepositoryPor
       .returning({ id: shelfScans.id });
 
     if (updated.length > 0) {
-      return;
+      return ok();
     }
 
     const existing = await this.get(id);
     if (existing === undefined) {
-      throw new ShelfScanNotFound(id.value);
+      return err(new ShelfScanNotFound(id.value));
     }
-    throw new ShelfScanAlreadyProcessed(id);
+
+    return err(new ShelfScanAlreadyProcessed(id));
   }
 }
 
@@ -123,11 +130,16 @@ function toStored(book: DetectedBook): StoredDetectedBook {
   return book.author === undefined ? stored : { author: book.author.value, ...stored };
 }
 
+/**
+ * Rebuilds value objects from a row this adapter wrote itself: one the domain now refuses is a
+ * corrupted row — a bug, not an outcome the port declares — so it throws, through `unwrap`
+ * (ADR 0013 keeps exceptions in `infrastructure`).
+ */
 function toDetectedBook(book: z.infer<typeof storedDetectedBooks>[number]): DetectedBook {
   return DetectedBook.of(
-    book.author === undefined ? undefined : Author.of(book.author),
-    BookTitle.of(book.title),
-    Confidence.of(book.confidence),
+    book.author === undefined ? undefined : unwrap(Author.of(book.author)),
+    unwrap(BookTitle.of(book.title)),
+    unwrap(Confidence.of(book.confidence)),
   );
 }
 
@@ -137,8 +149,8 @@ function toRecord({ upload, scan }: Row): ShelfScanRecord {
   }
 
   const reference = {
-    id: ShelfScanId.of(upload.id),
-    ownerId: OwnerId.of(upload.ownerId),
+    id: unwrap(ShelfScanId.of(upload.id)),
+    ownerId: unwrap(OwnerId.of(upload.ownerId)),
     photoBucketKey: upload.bucketKey,
     photoMediaType: upload.mediaType,
     photoSizeBytes: upload.sizeBytes,

@@ -1,5 +1,6 @@
 import { ShelfScanFailed } from '@pick-a-book/recognition-domain';
 import type { DetectedBook, ShelfPhoto, ShelfScannerPort } from '@pick-a-book/recognition-domain';
+import { err, ok, type Result } from '@pick-a-book/shared-result';
 import { z } from 'zod';
 
 import { SHELF_SCAN_JSON_SCHEMA, SHELF_SCAN_PROMPT } from './shelf-scan-prompt.js';
@@ -50,15 +51,22 @@ export class GeminiShelfScannerAdapter implements ShelfScannerPort {
     this.baseUrl = configuration.baseUrl ?? DEFAULT_BASE_URL;
   }
 
-  async scan(photo: ShelfPhoto): Promise<DetectedBook[]> {
-    const response = await this.post(photo);
-    const envelope = geminiEnvelopeSchema.safeParse(await readJson(response));
+  async scan(photo: ShelfPhoto): Promise<Result<DetectedBook[], ShelfScanFailed>> {
+    const posted = await this.post(photo);
+    if (!posted.ok) {
+      return posted;
+    }
+    const json = await readJson(posted.value);
+    if (!json.ok) {
+      return json;
+    }
+
+    const envelope = geminiEnvelopeSchema.safeParse(json.value);
     if (!envelope.success) {
-      throw new ShelfScanFailed(
-        `Gemini returned an unusable envelope (${envelope.error.message})`,
-        {
+      return err(
+        new ShelfScanFailed(`Gemini returned an unusable envelope (${envelope.error.message})`, {
           cause: envelope.error,
-        },
+        }),
       );
     }
 
@@ -69,7 +77,7 @@ export class GeminiShelfScannerAdapter implements ShelfScannerPort {
     return toDetectedBooks(text);
   }
 
-  private async post(photo: ShelfPhoto): Promise<Response> {
+  private async post(photo: ShelfPhoto): Promise<Result<Response, ShelfScanFailed>> {
     const url = `${this.baseUrl}/models/${this.model}:generateContent`;
     const body = {
       contents: [
@@ -107,22 +115,24 @@ export class GeminiShelfScannerAdapter implements ShelfScannerPort {
         body: JSON.stringify(body),
       });
     } catch (cause) {
-      throw new ShelfScanFailed(`Gemini is unreachable (${describe(cause)})`, { cause });
+      return err(new ShelfScanFailed(`Gemini is unreachable (${describe(cause)})`, { cause }));
     }
 
     if (!response.ok) {
-      throw new ShelfScanFailed(`Gemini answered ${response.status} (${await readText(response)})`);
+      return err(
+        new ShelfScanFailed(`Gemini answered ${response.status} (${await readText(response)})`),
+      );
     }
 
-    return response;
+    return ok(response);
   }
 }
 
-async function readJson(response: Response): Promise<unknown> {
+async function readJson(response: Response): Promise<Result<unknown, ShelfScanFailed>> {
   try {
-    return await response.json();
+    return ok(await response.json());
   } catch (cause) {
-    throw new ShelfScanFailed(`Gemini did not answer JSON (${describe(cause)})`, { cause });
+    return err(new ShelfScanFailed(`Gemini did not answer JSON (${describe(cause)})`, { cause }));
   }
 }
 

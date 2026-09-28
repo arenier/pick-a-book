@@ -6,7 +6,9 @@ import {
   type ShelfScanId,
   type ShelfScanRecord,
   type ShelfScanRepositoryPort,
+  type ShelfScanTransitionFailure,
 } from '@pick-a-book/recognition-domain';
+import { err, ok, type Result } from '@pick-a-book/shared-result';
 
 /** Test double of `ShelfScanRepositoryPort`, holding the same transition rules as Postgres. */
 export class InMemoryShelfScanRepository implements ShelfScanRepositoryPort {
@@ -25,25 +27,38 @@ export class InMemoryShelfScanRepository implements ShelfScanRepositoryPort {
     return this.records.get(id.value);
   }
 
-  async markCompleted(id: ShelfScanId, books: readonly DetectedBook[]): Promise<void> {
+  async markCompleted(
+    id: ShelfScanId,
+    books: readonly DetectedBook[],
+  ): Promise<Result<void, ShelfScanTransitionFailure>> {
     const record = this.pending(id);
-    this.records.set(id.value, { ...record, status: 'completed', detectedBooks: books });
+    if (!record.ok) {
+      return record;
+    }
+    this.records.set(id.value, { ...record.value, status: 'completed', detectedBooks: books });
+
+    return ok();
   }
 
-  async markFailed(id: ShelfScanId): Promise<void> {
+  async markFailed(id: ShelfScanId): Promise<Result<void, ShelfScanTransitionFailure>> {
     const record = this.pending(id);
-    this.records.set(id.value, { ...record, status: 'failed', detectedBooks: undefined });
+    if (!record.ok) {
+      return record;
+    }
+    this.records.set(id.value, { ...record.value, status: 'failed', detectedBooks: undefined });
+
+    return ok();
   }
 
-  private pending(id: ShelfScanId): ShelfScanRecord {
+  private pending(id: ShelfScanId): Result<ShelfScanRecord, ShelfScanTransitionFailure> {
     const record = this.records.get(id.value);
     if (record === undefined) {
-      throw new ShelfScanNotFound(id.value);
+      return err(new ShelfScanNotFound(id.value));
     }
     if (record.status !== 'pending') {
-      throw new ShelfScanAlreadyProcessed(id);
+      return err(new ShelfScanAlreadyProcessed(id));
     }
 
-    return record;
+    return ok(record);
   }
 }

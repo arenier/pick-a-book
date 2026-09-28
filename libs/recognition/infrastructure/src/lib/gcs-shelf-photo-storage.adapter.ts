@@ -39,7 +39,16 @@ export class GcsShelfPhotoStorageAdapter implements ShelfPhotoStoragePort {
       throw new ShelfPhotoStorageFailed(`could not retrieve ${key}`, { cause: error });
     }
 
-    return ShelfPhoto.of(new Uint8Array(contents), mediaType);
+    const photo = ShelfPhoto.of(new Uint8Array(contents), mediaType);
+    if (!photo.ok) {
+      // It was a valid photo when it was stored: an object that no longer is has been
+      // corrupted, which is the bucket's failure — not the caller's photo being refused.
+      throw new ShelfPhotoStorageFailed(`${key} is no longer a valid shelf photo`, {
+        cause: photo.error,
+      });
+    }
+
+    return photo.value;
   }
 }
 
