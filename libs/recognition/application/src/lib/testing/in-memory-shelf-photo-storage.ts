@@ -3,10 +3,14 @@ import {
   type ShelfPhotoMediaType,
   type ShelfPhotoStoragePort,
 } from '@pick-a-book/recognition-domain';
+import { unwrap } from '@pick-a-book/shared-result';
 
 /**
  * Test doubles of the two storage ports: the use cases are tested without infrastructure
  * (ADR 0002). Excluded from the lib build (`tsconfig.lib.json`), compiled with the specs.
+ *
+ * Like an adapter, a double may throw and `unwrap`: it stands where `infrastructure` would,
+ * and ADR 0013 keeps exceptions there.
  */
 export class InMemoryShelfPhotoStorage implements ShelfPhotoStoragePort {
   readonly objects = new Map<string, ShelfPhoto>();
@@ -21,6 +25,6 @@ export class InMemoryShelfPhotoStorage implements ShelfPhotoStoragePort {
       throw new Error(`no object at ${key}`);
     }
 
-    return ShelfPhoto.of(photo.bytes, mediaType);
+    return unwrap(ShelfPhoto.of(photo.bytes, mediaType));
   }
 }

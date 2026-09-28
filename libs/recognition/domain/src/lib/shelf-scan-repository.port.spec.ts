@@ -1,6 +1,9 @@
+import type { Result } from '@pick-a-book/shared-result';
+import { err, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import type { DetectedBook } from './detected-book.js';
+import { InvalidValue } from './invalid-value.error.js';
 import type { OwnerId } from './owner-id.js';
 import type { ShelfPhotoMediaType } from './shelf-photo.js';
 import { ShelfScanAlreadyProcessed } from './shelf-scan-already-processed.error.js';
@@ -10,6 +13,7 @@ import {
   SHELF_SCAN_REPOSITORY_PORT,
   type NewShelfScan,
   type ShelfScanRecord,
+  type ShelfScanTransitionFailure,
   type ShelfScanRepositoryPort,
 } from './shelf-scan-repository.port.js';
 
@@ -17,23 +21,25 @@ const anId = '1f9c2e3a-4b5d-4e6f-8a7b-9c0d1e2f3a4b';
 
 describe('ShelfScanId', () => {
   it('accepts a UUID', () => {
-    expect(ShelfScanId.of(anId).value).toBe(anId);
+    expect(unwrap(ShelfScanId.of(anId)).value).toBe(anId);
   });
 
   it('normalises the case of a UUID', () => {
-    expect(ShelfScanId.of(anId.toUpperCase()).value).toBe(anId);
+    expect(unwrap(ShelfScanId.of(anId.toUpperCase())).value).toBe(anId);
   });
 
   // The id travels in a URL path: anything that is not a UUID never reaches the database.
   it.each(['', 'not-a-uuid', '../1f9c2e3a', `${anId}x`])('rejects %p', (raw) => {
-    expect(() => ShelfScanId.of(raw)).toThrow(/ShelfScanId/u);
+    expect(ShelfScanId.of(raw)).toStrictEqual(
+      err(new InvalidValue(`ShelfScanId: not a UUID (${raw})`)),
+    );
   });
 
   it('generates distinct UUIDs', () => {
     const first = ShelfScanId.generate();
     const second = ShelfScanId.generate();
 
-    expect(ShelfScanId.of(first.value).value).toBe(first.value);
+    expect(unwrap(ShelfScanId.of(first.value)).value).toBe(first.value);
     expect(first.equals(second)).toBe(false);
   });
 });
@@ -79,11 +85,19 @@ describe('ShelfScanRepositoryPort', () => {
     expectTypeOf<ShelfScanRepositoryPort['get']>().toEqualTypeOf<
       (id: ShelfScanId) => Promise<ShelfScanRecord | undefined>
     >();
+  });
+
+  // The two transitions say what can go wrong in their type: a caller cannot ignore that the
+  // record was missing, or already settled. A database that is down is not modelled — it
+  // rejects, and the global HTTP filter catches it (ADR 0013).
+  it('reports a missing or settled record in the result of a transition', () => {
+    type Outcome = Promise<Result<void, ShelfScanTransitionFailure>>;
+
     expectTypeOf<ShelfScanRepositoryPort['markCompleted']>().toEqualTypeOf<
-      (id: ShelfScanId, books: readonly DetectedBook[]) => Promise<void>
+      (id: ShelfScanId, books: readonly DetectedBook[]) => Outcome
     >();
     expectTypeOf<ShelfScanRepositoryPort['markFailed']>().toEqualTypeOf<
-      (id: ShelfScanId) => Promise<void>
+      (id: ShelfScanId) => Outcome
     >();
   });
 
@@ -93,11 +107,12 @@ describe('ShelfScanRepositoryPort', () => {
 });
 
 describe('shelf scan errors', () => {
-  const id = ShelfScanId.of(anId);
+  const id = unwrap(ShelfScanId.of(anId));
 
   it('names the id that matched no scan', () => {
     const error = new ShelfScanNotFound(anId);
 
+    expect(error.kind).toBe('shelf-scan-not-found');
     expect(error.name).toBe('ShelfScanNotFound');
     expect(error.message).toContain(anId);
   });
@@ -105,6 +120,7 @@ describe('shelf scan errors', () => {
   it('names the scan that is no longer pending', () => {
     const error = new ShelfScanAlreadyProcessed(id);
 
+    expect(error.kind).toBe('shelf-scan-already-processed');
     expect(error.name).toBe('ShelfScanAlreadyProcessed');
     expect(error.message).toContain(anId);
   });

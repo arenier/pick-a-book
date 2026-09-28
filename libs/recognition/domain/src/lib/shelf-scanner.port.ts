@@ -1,3 +1,5 @@
+import type { Result } from '@pick-a-book/shared-result';
+
 import type { DetectedBook } from './detected-book.js';
 import type { ShelfPhoto } from './shelf-photo.js';
 
@@ -8,11 +10,12 @@ import type { ShelfPhoto } from './shelf-photo.js';
  * into the prompt, tokens absent from the OCR text rejected — is a matter of swapping in
  * a composite adapter: domain, application and frontend are indifferent to the choice.
  *
- * The implementation throws `ShelfScanFailed` when the source is unavailable or answers
- * off-contract. A photo with no readable book is not an error: it is an empty array.
+ * The implementation answers `ShelfScanFailed` when the source is unavailable or answers
+ * off-contract: an expected failure, said in the type rather than thrown (ADR 0013). A photo
+ * with no readable book is not one — it is `ok([])`.
  */
 export interface ShelfScannerPort {
-  scan(photo: ShelfPhoto): Promise<DetectedBook[]>;
+  scan(photo: ShelfPhoto): Promise<Result<DetectedBook[], ShelfScanFailed>>;
 }
 
 /**
@@ -24,6 +27,8 @@ export interface ShelfScannerPort {
 export const SHELF_SCANNER_PORT = 'ShelfScannerPort';
 
 export class ShelfScanFailed extends Error {
+  readonly kind = 'shelf-scan-failed';
+
   constructor(reason: string, options?: { cause?: unknown }) {
     super(`Shelf scan failed: ${reason}`, options);
     this.name = 'ShelfScanFailed';

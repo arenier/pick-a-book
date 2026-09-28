@@ -1,4 +1,5 @@
 import { ShelfPhoto, ShelfScanFailed } from '@pick-a-book/recognition-domain';
+import { ok, unwrap, type Result } from '@pick-a-book/shared-result';
 import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
@@ -19,7 +20,10 @@ const geminiRequestSchema = z.object({
   generationConfig: z.object({ response_mime_type: z.string() }),
 });
 
-const photo = ShelfPhoto.of(new Uint8Array([0xff, 0xd8, 0xff, 0xe0]), 'image/jpeg');
+const photo = unwrap(ShelfPhoto.of(new Uint8Array([0xff, 0xd8, 0xff, 0xe0]), 'image/jpeg'));
+
+/** The failure a scan answered — `undefined` when it succeeded, which no test below expects. */
+const failureOf = <T>(result: Result<T, ShelfScanFailed>) => (result.ok ? undefined : result.error);
 
 /** Stands in for `fetch`, answering a recorded body — no network, no key, no cost. */
 function respondWith(body: unknown, status = 200) {
@@ -68,7 +72,7 @@ describe('GeminiShelfScannerAdapter', () => {
   // gemini-3.6-flash on a reference photo, then replayed forever: no network, no key, no
   // cost, whatever the number of runs (ADR 0005).
   it('maps a recorded answer onto detected books', async () => {
-    const books = await adapterWith(respondWith(recorded)).scan(photo);
+    const books = unwrap(await adapterWith(respondWith(recorded)).scan(photo));
 
     expect(books).toHaveLength(31);
     expect(books[0]?.author?.value).toBe('Elizabeth Aston');
@@ -114,27 +118,29 @@ describe('GeminiShelfScannerAdapter builds its request', () => {
   it('reports an empty shelf as an empty array, not a failure', async () => {
     const empty = { candidates: [{ content: { parts: [{ text: '{"books":[]}' }] } }] };
 
-    await expect(adapterWith(respondWith(empty)).scan(photo)).resolves.toStrictEqual([]);
+    await expect(adapterWith(respondWith(empty)).scan(photo)).resolves.toStrictEqual(ok([]));
   });
 });
 
-describe('GeminiShelfScannerAdapter fails with ShelfScanFailed', () => {
+describe('GeminiShelfScannerAdapter answers ShelfScanFailed', () => {
   it('when the provider answers a non-2xx status', async () => {
     const transport = respondWith({ error: { message: 'quota exceeded' } }, 429);
 
-    await expect(adapterWith(transport).scan(photo)).rejects.toThrow(ShelfScanFailed);
+    expect(failureOf(await adapterWith(transport).scan(photo))).toBeInstanceOf(ShelfScanFailed);
   });
 
   it('when the envelope carries no text part', async () => {
-    await expect(adapterWith(respondWith({ candidates: [] })).scan(photo)).rejects.toThrow(
-      ShelfScanFailed,
-    );
+    expect(
+      failureOf(await adapterWith(respondWith({ candidates: [] })).scan(photo)),
+    ).toBeInstanceOf(ShelfScanFailed);
   });
 
   it('when the model answers prose instead of JSON', async () => {
     const prose = { candidates: [{ content: { parts: [{ text: 'I see three books.' }] } }] };
 
-    await expect(adapterWith(respondWith(prose)).scan(photo)).rejects.toThrow(ShelfScanFailed);
+    expect(failureOf(await adapterWith(respondWith(prose)).scan(photo))).toBeInstanceOf(
+      ShelfScanFailed,
+    );
   });
 
   // A transport that rejects must not surface as a raw network error: callers of the port
@@ -144,6 +150,6 @@ describe('GeminiShelfScannerAdapter fails with ShelfScanFailed', () => {
       throw new Error('ECONNRESET');
     });
 
-    await expect(adapterWith(transport).scan(photo)).rejects.toThrow(ShelfScanFailed);
+    expect(failureOf(await adapterWith(transport).scan(photo))).toBeInstanceOf(ShelfScanFailed);
   });
 });

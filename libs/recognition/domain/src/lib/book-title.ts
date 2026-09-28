@@ -1,3 +1,7 @@
+import { err, ok, type Result } from '@pick-a-book/shared-result';
+
+import { InvalidValue } from './invalid-value.error.js';
+
 /**
  * A title as read off a book spine, before any reconciliation.
  *
@@ -6,17 +10,19 @@
 export class BookTitle {
   private constructor(readonly value: string) {}
 
-  static of(raw: string): BookTitle {
+  static of(raw: string): Result<BookTitle, InvalidValue> {
     const trimmed = raw.trim().replaceAll(/\s+/gu, ' ');
 
     if (trimmed.length === 0) {
-      throw new Error('BookTitle: the title read cannot be empty');
+      return err(new InvalidValue('BookTitle: the title read cannot be empty'));
     }
     if (trimmed.length > 500) {
-      throw new Error(`BookTitle: title too long (${trimmed.length} characters, 500 at most)`);
+      return err(
+        new InvalidValue(`BookTitle: title too long (${trimmed.length} characters, 500 at most)`),
+      );
     }
 
-    return new BookTitle(trimmed);
+    return ok(new BookTitle(trimmed));
   }
 
   equals(other: BookTitle): boolean {

@@ -4,6 +4,8 @@
  * a database failing, which is not.
  */
 export class InvalidShelfPhoto extends Error {
+  readonly kind = 'invalid-shelf-photo';
+
   constructor(reason: string) {
     super(`ShelfPhoto: ${reason}`);
     this.name = 'InvalidShelfPhoto';

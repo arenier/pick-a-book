@@ -1,3 +1,7 @@
+import { err, ok, type Result } from '@pick-a-book/shared-result';
+
+import { InvalidValue } from './invalid-value.error.js';
+
 /**
  * An author name as read off a book spine.
  *
@@ -8,17 +12,19 @@
 export class Author {
   private constructor(readonly value: string) {}
 
-  static of(raw: string): Author {
+  static of(raw: string): Result<Author, InvalidValue> {
     const trimmed = raw.trim().replaceAll(/\s+/gu, ' ');
 
     if (trimmed.length === 0) {
-      throw new Error('Author: the name read cannot be empty');
+      return err(new InvalidValue('Author: the name read cannot be empty'));
     }
     if (trimmed.length > 200) {
-      throw new Error(`Author: name too long (${trimmed.length} characters, 200 at most)`);
+      return err(
+        new InvalidValue(`Author: name too long (${trimmed.length} characters, 200 at most)`),
+      );
     }
 
-    return new Author(trimmed);
+    return ok(new Author(trimmed));
   }
 
   equals(other: Author): boolean {

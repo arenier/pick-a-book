@@ -22,6 +22,7 @@ documentation d'architecture — il ne décrit pas comment le système marche, i
 | [0010](0010-decoupage-bounded-contexts.md)          | Découpage en bounded contexts                           | Proposé  | —     | 2026-09-07 |
 | [0011](0011-internationalisation-de-l-interface.md) | Internationalisation de l'interface : i18next | Accepté  | —     | 2026-09-27 |
 | [0012](0012-design-system-de-l-interface.md)       | Design system de l'interface : shadcn/ui et Tailwind, dans `libs/shared/ui` | Accepté  | 1     | 2026-09-27 |
+| [0013](0013-politique-d-erreur-result-aux-frontieres.md) | Politique d'erreur : `Result` aux frontières du domaine et de l'application | Proposé  | —     | 2026-09-28 |
 
 **À écrire** — la source d'enrichissement bibliographique. Elle n'a pas de numéro tant que le
 fichier n'existe pas ; [0005](0005-reconnaissance-livres-photo-etagere.md) et

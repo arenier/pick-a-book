@@ -1,4 +1,5 @@
 import { OwnerId } from '@pick-a-book/recognition-domain';
+import { unwrap } from '@pick-a-book/shared-result';
 
 /**
  * Configuration validation at startup.
@@ -166,13 +167,14 @@ function readPhotoStorage(
 /** What makes a valid owner id is the recognition context's rule (`OwnerId`), not ours. */
 function readOwnerId(source: NodeJS.ProcessEnv, problems: string[]): OwnerId {
   const raw = optional(source, 'OWNER_ID') ?? DEFAULT_OWNER_ID;
-  try {
-    return OwnerId.of(raw);
-  } catch (error) {
-    problems.push(`OWNER_ID is "${raw}" — ${error instanceof Error ? error.message : 'invalid'}`);
-    // The fallback never escapes: a non-empty `problems` throws before the caller returns.
-    return OwnerId.of(DEFAULT_OWNER_ID);
+  const ownerId = OwnerId.of(raw);
+  if (ownerId.ok) {
+    return ownerId.value;
   }
+
+  problems.push(`OWNER_ID is "${raw}" — ${ownerId.error.message}`);
+  // The fallback never escapes: a non-empty `problems` throws before the caller returns.
+  return unwrap(OwnerId.of(DEFAULT_OWNER_ID));
 }
 
 function readWebOrigin(source: NodeJS.ProcessEnv, problems: string[]): string {

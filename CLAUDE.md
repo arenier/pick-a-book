@@ -34,6 +34,9 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
   `libs/shared/ui` et mis aux normes du dépôt ; palette neutre, Literata pour les titres de livres,
   mode sombre qui suit le système · [0012](docs/adr/0012-design-system-de-l-interface.md),
   [note 0002](docs/decisions/0002-grandes-lignes-du-design-system.md)
+- **Politique d'erreur** — `Result` aux frontières de `domain` et `application`, exceptions
+  cantonnées à `infrastructure` et `apps` ·
+  [0013](docs/adr/0013-politique-d-erreur-result-aux-frontieres.md)
 - **Découpage en bounded contexts** — `recognition` (reconnaissance depuis une photo),
   `bibliography` (réconciliation + enrichissement, un seul contexte pour l'instant) et `curation`
   (correspondance avec la bibliothèque, la liste de souhaits et les préférences de l'utilisateur) ·
@@ -230,6 +233,13 @@ d'`apps/api`, via des DTO de frontière.
   réellement pas connu à la compilation (`process.env`, réponse HTTP, `document.getElementById`) :
   un **type guard** ou une vérification explicite, qui prouve au lieu d'affirmer.
   `as const` n'est pas concerné — il restreint un littéral, il n'affirme rien.
+- **Échecs attendus aux frontières `domain`/`application` → `Result`** (`shared/result`). Ces deux
+  couches ne jettent jamais — pas de `throw`, pas d'`unwrap` ; les exceptions sont réservées à
+  `infrastructure` et `apps`. Une erreur porte un discriminant `kind`, et sa traduction HTTP est un
+  `switch` exhaustif dans `apps/api`. Le lint le fait respecter (`no-restricted-syntax`, couche
+  ESLint) ; mode d'emploi dans
+  [`.claude/rules/error-policy.md`](.claude/rules/error-policy.md),
+  décision dans [0013](docs/adr/0013-politique-d-erreur-result-aux-frontieres.md).
 - Pas de primitives nues dans le domaine : value objects validant à la construction.
 - Fichiers en `kebab-case`, classes en `PascalCase`, use cases en verbe explicite
   (`pick-book-for-user.use-case.ts`).

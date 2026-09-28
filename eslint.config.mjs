@@ -112,6 +112,37 @@ export default [
       ],
     },
   },
+  {
+    // ADR 0013 — `domain` and `application` never throw: an expected failure is a `Result`, an
+    // exceptional one has no channel here and lives in `infrastructure`/`apps`. A core ESLint
+    // rule rather than a custom one: oxlint does not know `no-restricted-syntax`, so this is
+    // the layer of "what oxlint cannot express" (ADR 0008), and `eslint-plugin-oxlint` cannot
+    // switch it off. `unwrap` is banned too — it throws in the caller's place, which would
+    // reopen through the side door what the first selector closes.
+    // Specs and test doubles are exempt: a double stands where an adapter would, and a spec
+    // builds its fixtures with `unwrap` on purpose.
+    // `basePath` anchors the globs at the workspace root: ESLint runs from each lib
+    // (`eslint .` in its folder) and resolves `files` against the config in effect, where a
+    // root-relative glob would otherwise match nothing.
+    basePath: import.meta.dirname,
+    files: ['libs/*/domain/**/*.ts', 'libs/*/application/**/*.ts'],
+    ignores: ['**/*.spec.ts', '**/testing/**'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ThrowStatement',
+          message:
+            'domain and application never throw (ADR 0013): return an Err instead. Exceptions belong to infrastructure and apps.',
+        },
+        {
+          selector: "CallExpression[callee.name='unwrap']",
+          message:
+            'unwrap throws, and domain and application never do (ADR 0013): handle the Err. unwrap is for infrastructure, apps and specs.',
+        },
+      ],
+    },
+  },
   // Must stay last: disable every ESLint rule that oxlint already reports, leaving only the
   // Nx-graph rules above active under ESLint.
   ...oxlint.configs['flat/all'],
