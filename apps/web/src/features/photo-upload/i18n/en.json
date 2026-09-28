@@ -11,7 +11,7 @@
   "startOver": "Start over",
   "result": {
     "none": "No book detected on this photo.",
-    "book": "{{title}} — {{author}}"
+    "byAuthor": " — {{author}}"
   },
   "failure": {
     "unsupportedType": "This file is not a supported photo: choose a JPEG, PNG, WebP or HEIC image.",
