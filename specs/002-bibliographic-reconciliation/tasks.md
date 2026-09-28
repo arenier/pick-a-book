@@ -320,8 +320,9 @@ titre inventé jamais confirmé, un référentiel en panne n'empêche pas l'affi
       (le choix arrive en US2) ; non trouvé : « inconnu du référentiel », jamais « inexistant »
       (FR-009) ; non vérifié ; en `failed`, tous les livres affichés « non vérifiés » (FR-008). Texte
       dans `i18n/fr.json` et `i18n/en.json`, namespace `reconciliation` enregistré dans
-      `apps/web/src/i18n/resources.ts` ; mise en page qui tient à 360 px (`overflow-wrap: anywhere`
-      sur les titres, SC-006) ; `yarn nx translations web` vert
+      `apps/web/src/i18n/resources.ts` ; composants de `@pick-a-book/shared-ui` et classes
+      Tailwind (research §11) ; mise en page qui tient à 360 px (titres longs renvoyés à la ligne,
+      SC-006) ; `yarn nx translations web` vert
 - [ ] T041 [US1] `apps/web/src/app/app.tsx` : branche `ReconciledBookList` dans `renderResult` de
       `PhotoUploadScreen` ; `app.spec.tsx` couvre le parcours analyse → statuts avec des `fetch`
       factices

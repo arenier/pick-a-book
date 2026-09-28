@@ -298,8 +298,10 @@ puis le statut de chacun : forme de référence pour un confirmé (et la lecture
 diffère), candidats dépliables avec « aucun ne correspond » pour un ambigu, « inconnu du
 référentiel » pour un non trouvé, « non vérifié » avec un bouton de relance global. Un échec de
 l'appel lui-même (réseau, 5xx) s'affiche comme si tous les livres étaient « non vérifiés » : les
-livres restent visibles (FR-008). Styles en CSS modules, comme la slice existante ; les composants
-de `libs/shared/ui` (ADR 0012) les remplaceront quand la lib existera.
+livres restent visibles (FR-008). Composants de `libs/shared/ui` (ADR 0012 : `Button`, `Alert`,
+`Spinner`, `BookTitle`…) et classes Tailwind, comme la slice `photo-upload` ; un composant qui
+manque (un badge de statut, par exemple) s'ajoute à `libs/shared/ui` selon la règle de l'ADR 0012 —
+sa spec d'abord.
 
 **Raison** : une slice n'importe pas l'intérieur d'une autre (CLAUDE.md) ; la réconciliation a ses
 propres appels, états, échecs et textes. Composer dans le shell évite une lib partagée pour un seul
