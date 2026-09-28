@@ -1,4 +1,5 @@
 import { useMessages } from '@pick-a-book/shared-i18n';
+import { BookTitle } from '@pick-a-book/shared-ui';
 
 import type { DetectedBook } from '../model/detected-book';
 
@@ -22,7 +23,7 @@ export function ScanResult({ books }: ScanResultProps) {
         // Two spines can carry the same title: the position is the only stable identity.
         // oxlint-disable-next-line react/no-array-index-key
         <li key={index}>
-          <span className="font-book font-semibold">{book.title}</span>
+          <BookTitle>{book.title}</BookTitle>
           {book.author !== undefined && t('result.byAuthor', { author: book.author })}
         </li>
       ))}

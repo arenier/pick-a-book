@@ -2,7 +2,7 @@
 
 Le design system du front ([ADR 0012](../../../docs/adr/0012-design-system-de-l-interface.md)) :
 les composants de [shadcn/ui](https://ui.shadcn.com), **copiés dans cette lib et mis aux normes du
-dépôt**, et la feuille globale qui porte Tailwind 4 et les tokens de la note
+dépôt**, les **composants écrits ici** qui les complètent, et la feuille globale qui porte Tailwind 4 et les tokens de la note
 [`docs/decisions/0002`](../../../docs/decisions/0002-grandes-lignes-du-design-system.md).
 
 Lib partagée (`type:shared`, `context:none`, `scope:web`). **C'est la seule du dépôt autorisée à
@@ -25,7 +25,7 @@ L'app importe la feuille une fois, depuis `apps/web/src/styles.css`. La feuille 
 sur les sources de cette lib : sans cela, Tailwind ne générerait pas les classes des composants,
 qui vivent hors de l'app.
 
-## Composants et retouches
+## Composants copiés de shadcn/ui, et leurs retouches
 
 Les sources viennent du registre `new-york-v4` du dépôt `shadcn-ui/ui`, relevées le 2026-09-27.
 Chaque retouche est motivée par une clause de la spec du composant, qui échouait sur le code copié
@@ -41,7 +41,23 @@ tel quel.
 Le code copié est reformaté par oxfmt (guillemets simples, points-virgules) : la comparaison avec
 le registre se fait sur le fond, d'où ce tableau.
 
+## Composants du dépôt
+
+**Tout composant d'interface qui ne dépend d'aucune slice vit ici**, à côté de ceux de shadcn/ui :
+ce que plusieurs écrans pourraient réutiliser, et ce qui porte une règle du design system. Une
+slice ne garde que ce qui connaît son métier (la formulation de ses échecs, ses formats acceptés,
+son parcours), et lie les composants d'ici à son catalogue par une prop.
+
+| Composant | Rôle |
+|---|---|
+| `PhotoPicker` | Choix d'une photo : appareil photo **ou** galerie sur un téléphone, faute d'attribut `capture` ; un sélecteur de fichier sur un ordinateur. Libellé et types acceptés en props. |
+| `PhotoPreview` | Aperçu d'une photo choisie, par une URL locale libérée dès que la photo change ; un texte de repli quand le navigateur ne sait pas l'afficher (HEIC hors Safari). Hauteur bornée à la moitié de l'écran. |
+| `BookTitle` | Le titre d'un livre en Literata 600, seule police serif du design system (note 0002). En ligne, pour s'insérer dans une phrase. |
+
 ## Ajouter un composant
+
+Un composant du dépôt s'écrit en TDD, comme le reste du code, dans `src/components/`. Pour un
+composant de shadcn/ui :
 
 1. **Rouge** : écrire `src/components/<nom>.spec.tsx`, qui fixe notre contrat (rôle, nom
    accessible, libellés obligatoires, 44 px, clavier, `motion-reduce`) et échoue faute de

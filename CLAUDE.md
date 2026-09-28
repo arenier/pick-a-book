@@ -246,7 +246,9 @@ d'`apps/api`, via des DTO de frontière.
   `en-US`) ; une clé inconnue ou un paramètre d'interpolation manquant y fait échouer le test.
 - **L'interface de `apps/web` se compose avec `libs/shared/ui`**
   ([0012](docs/adr/0012-design-system-de-l-interface.md)) : les composants shadcn/ui y sont copiés,
-  et **seule cette lib importe `radix-ui`** (`bannedExternalImports` sur `type:app`). Le style
+  et **tout composant d'interface qui ne dépend d'aucune slice y vit aussi** (`PhotoPicker`,
+  `PhotoPreview`, `BookTitle`) ; la slice ne garde que ce qui connaît son métier, et lie ces
+  composants à son catalogue. **Seule cette lib importe `radix-ui`** (`bannedExternalImports` sur `type:app`). Le style
   s'écrit en **classes Tailwind sur les tokens du thème**
   ([note 0002](docs/decisions/0002-grandes-lignes-du-design-system.md)) : pas de CSS Module, pas de
   couleur écrite en dur, et oxfmt trie les classes (`sortTailwindcss`). Un composant copié entre par

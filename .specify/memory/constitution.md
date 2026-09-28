@@ -17,9 +17,12 @@ contexte) ; `application` dépend de `domain` seul et parle aux ports, jamais au
 personne ne dépend d'`infrastructure` hors de la composition root. Un contexte n'importe jamais un
 autre contexte — le croisement se fait uniquement dans l'orchestrateur d'`apps/api`, via des DTO de
 frontière, jamais des objets de domaine. Au front, l'interface de `apps/web` passe par les
-composants de `libs/shared/ui` : ceux de shadcn/ui, copiés et mis aux normes du dépôt, dont chacun
-entre par une spec de contrat écrite d'abord (principe I). Seule cette lib importe `radix-ui` et
-`@radix-ui/*` ([ADR 0012](../../docs/adr/0012-design-system-de-l-interface.md)). Ces règles sont
+composants de `libs/shared/ui` : ceux de shadcn/ui, copiés et mis aux normes du dépôt, et ceux
+écrits dans le dépôt qui complètent le design system — tout composant d'interface qui ne dépend
+d'aucune slice. Une slice ne garde que ce qui connaît son métier, et lie ces composants à son
+catalogue. Chaque composant, copié ou écrit, entre par une spec écrite d'abord (principe I).
+Seule cette lib importe `radix-ui` et `@radix-ui/*`
+([ADR 0012](../../docs/adr/0012-design-system-de-l-interface.md)). Ces règles sont
 vérifiées par les tags Nx et `@nx/enforce-module-boundaries` (`bannedExternalImports` sur
 `type:app`), pas seulement documentées.
 
@@ -79,4 +82,4 @@ jour pour refléter la décision. Toute modification de cette constitution est u
 MINOR : ajout de principe ; PATCH : clarification). `/speckit-plan` et `/speckit-implement` vérifient
 la conformité à ces principes avant de produire ou d'exécuter un plan.
 
-**Version**: 1.2.0 | **Ratified**: 2026-09-12 | **Last Amended**: 2026-09-27
+**Version**: 1.2.0 | **Ratified**: 2026-09-12 | **Last Amended**: 2026-09-28

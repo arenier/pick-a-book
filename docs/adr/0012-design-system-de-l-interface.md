@@ -163,7 +163,9 @@ lint strict sur le code copié, 98 paquets, +24,5 ko de JS et +7,0 ko de CSS gzi
 
 - **`libs/shared/ui`**, avec les tags `type:shared`, `context:none` et `scope:web`, contient :
   - `components.json`, la config du CLI, avec ses alias pointant dans la lib ;
-  - `src/components/` : les composants copiés et retouchés, chacun accompagné de sa spec ;
+  - `src/components/` : les composants copiés et retouchés, et ceux du dépôt qui complètent le
+    design system (tout composant d'interface qui ne dépend d'aucune slice), chacun accompagné
+    de sa spec ;
   - `src/lib/cn.ts` : `cn()`, le `lib/utils.ts` de shadcn/ui renommé (le dépôt n'a pas de module
     « utils ») ;
   - `src/styles/globals.css` : `@import "tailwindcss"`, `tw-animate-css`, la copie de
