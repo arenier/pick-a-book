@@ -38,6 +38,18 @@ run "fires_as_soon_as_a_run_fails" {
   }
 }
 
+run "the_stale_policy_is_evaluated_no_more_often_than_hourly" {
+  command = plan
+
+  # Cloud Monitoring ties the evaluation interval to the lookback window: at least 1h for an
+  # 8d window ("Evaluation interval must be at least 1h for a lookback window of 8d") — found
+  # at the second prod apply, invisible to the mock provider. Hourly is plenty for a weekly job.
+  assert {
+    condition     = google_monitoring_alert_policy.stale.conditions[0].condition_prometheus_query_language[0].evaluation_interval == "3600s"
+    error_message = "The stale policy looks back over days: the Monitoring API requires an evaluation interval of at least 1h"
+  }
+}
+
 run "each_policy_holds_a_single_condition" {
   command = plan
 

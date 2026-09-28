@@ -36,9 +36,10 @@ resource "google_monitoring_alert_policy" "stale" {
     # running weekly. The delta metric only has points when an execution completes, so no
     # point with result="succeeded" over the window means no success over the window.
     condition_prometheus_query_language {
-      query               = "absent_over_time(${local.executions},result=\"succeeded\"}[${var.max_age}])"
-      duration            = "0s"
-      evaluation_interval = "600s"
+      query    = "absent_over_time(${local.executions},result=\"succeeded\"}[${var.max_age}])"
+      duration = "0s"
+      # The API requires at least 1h for a lookback of days; hourly is plenty for a weekly job.
+      evaluation_interval = "3600s"
     }
   }
 
