@@ -2,7 +2,7 @@
 # Build context is the repository root: `docker build -f docker/db-backup.Dockerfile .`
 #
 # Two pins meet here, both maintained by hand:
-# - Node 26.5.1, exactly as the `volta` field of package.json and docker/api.Dockerfile;
+# - Node 26.5.1, exactly as mise.toml (CI's "toolchain pins agree" step compares them);
 # - Postgres 18.6, exactly as docker-compose.yml, the CI service and `pg_version` in
 #   infra/modules/neon — pg_dump must be of the server's major or newer.
 
