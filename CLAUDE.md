@@ -68,8 +68,11 @@ que le fichier ne soit chargé.
 | [`typescript.md`](.claude/rules/typescript.md) | `*.ts`, `*.tsx` | Strict, **pas de `as`** (`satisfies` ou type guard) ; value objects dans le domaine ; `async` sans `await` voulu ; `kebab-case` ; anglais dans le code |
 | [`error-policy.md`](.claude/rules/error-policy.md) | tout le dépôt | `domain`/`application` ne jettent jamais : échec attendu → `Err` de `Result`, erreur à discriminant `kind`, traduction HTTP par `switch` exhaustif dans `apps/api` |
 | [`tests.md`](.claude/rules/tests.md) | specs | `*.spec.ts` ; imports `vitest` explicites ; `toStrictEqual`, `toBe(true)` |
+| [`domain-modeling.md`](.claude/rules/domain-modeling.md) | `libs/*/{domain,application}` | Value object à constructeur privé et `of()` → `Result` ; port = interface + jeton chaîne ; use case `execute()` qui rend des DTO |
+| [`adapters.md`](.claude/rules/adapters.md) | `libs/*/infrastructure`, `apps/api` | Réponse externe validée par `zod`, tout ou rien ; transport injecté ; fixtures à provenance ; migrations générées ; config validée au démarrage |
 | [`module-boundaries.md`](.claude/rules/module-boundaries.md) | `apps/`, `libs/`, `tools/` | `domain` → rien, `application` → `domain` ; un contexte n'importe jamais un autre ; trois tags Nx sur chaque projet |
 | [`web-interface.md`](.claude/rules/web-interface.md) | `apps/web`, `libs/shared/{i18n,ui}` | Aucun texte en dur : catalogue i18next fr + en ; composants dans `libs/shared/ui` ; classes Tailwind sur les tokens |
+| [`infra.md`](.claude/rules/infra.md) | `infra/` | Un module par ressource, câblés par l'env seul ; tests `plan` hermétiques d'abord ; secrets vides ; jamais d'`apply` sans `plan` relu |
 | [`toolchain.md`](.claude/rules/toolchain.md) | configs, `docker/`, CI | Versions dans `mise.toml` seul, à l'exact ; Vite/Vitest, SWC pour l'API ; oxlint type-aware, ESLint pour les frontières |
 | [`adr.md`](.claude/rules/adr.md) | `docs/adr/`, rules, `CLAUDE.md` | Procédure de `docs/adr/README.md` ; un ADR accepté ne se réécrit pas ; ADR et rule vont ensemble |
 | [`commits-and-pull-requests.md`](.claude/rules/commits-and-pull-requests.md) | tout le dépôt | Commits et **titre de PR en anglais**, corps de PR en français |
