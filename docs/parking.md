@@ -35,6 +35,10 @@ paragraphe *Assumptions* que personne ne relira.
   pour relancer la recherche sur ce seul livre. *Origine* : spec 002, décision du 27/09/2026.
   *Report* : garder la spec centrée sur le filet automatique ; renvoyer une photo suffit pour
   l'instant.
+- **Revenir sur une décision d'ambiguïté** — corriger un choix de candidat fait par erreur (ou un
+  « aucun ne correspond »). *Origine* : spec 002, plan (research §10) : une seule décision par livre
+  ambigu, la plus simple qui garde le résultat automatique à côté (FR-016). *Reprise* : si les mauvais
+  choix s'avèrent fréquents à l'usage.
 - **Identifier l'édition exacte**, pas seulement l'œuvre (Folio vs Livre de Poche vs Pléiade).
   *Origine* : spec 002, FR-007. *Report* : une tranche ne dit pas l'édition de façon fiable.
 - **Réconcilier rétroactivement les analyses antérieures** à la spec 002. *Origine* : spec 002,
