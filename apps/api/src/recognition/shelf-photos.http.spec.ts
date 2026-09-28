@@ -9,6 +9,8 @@ import { err } from '@pick-a-book/shared-result';
 import { Logger } from '@nestjs/common';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
+import { applyHttpBoundary } from '../http/http-boundary';
+import { errorBodyOf } from '../http/testing/error-body';
 import { ShelfPhotosController } from './shelf-photos.controller';
 import { aShelfPhotosController } from './testing/shelf-photos-controller.fixture';
 
@@ -40,6 +42,9 @@ function aRunningApi(scanner?: ShelfScannerPort) {
       ],
     }).compile();
     app = moduleRef.createNestApplication();
+    // The API as it boots: the status codes below are the controller's work, their body the
+    // global filter's.
+    applyHttpBoundary(app, { webOrigin: 'http://localhost:4200' });
     await app.listen(0, '127.0.0.1');
     baseUrl = await app.getUrl();
   });
@@ -157,11 +162,16 @@ describe('POST /shelf-photos/:id/scan, when the recognition service fails', () =
     const response = await scan(id);
 
     expect(response.status).toBe(502);
-    await expect(response.json()).resolves.toStrictEqual({
+    const body = await errorBodyOf(response);
+    expect({ statusCode: body.statusCode, message: body.message }).toStrictEqual({
       statusCode: 502,
       message: 'The recognition service is unavailable',
-      error: 'Bad Gateway',
     });
+    // Nothing else leaves: no extra field, and the provider's answer nowhere in the body.
+    expect(new Set(Object.keys(body))).toStrictEqual(
+      new Set(['message', 'path', 'statusCode', 'timestamp']),
+    );
+    expect(JSON.stringify(body)).not.toContain(providerAnswer);
     expect(log).toHaveBeenCalledWith(scanFailure.message, scanFailure.stack);
     log.mockRestore();
   });
