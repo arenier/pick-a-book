@@ -1,0 +1,22 @@
+# Server-side build of the backup job image (issue #22), like cloudbuild.yaml for the API.
+# Driven by `yarn deploy:db-backup`.
+substitutions:
+  _REGION: europe-west1
+  _REPO: pick-a-book
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -f
+      - docker/db-backup.Dockerfile
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/db-backup:latest
+      - .
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/db-backup:latest
+
+# Same reason as cloudbuild.yaml: builds run under the Compute Engine default SA.
+options:
+  logging: CLOUD_LOGGING_ONLY

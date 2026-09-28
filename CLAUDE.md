@@ -30,6 +30,10 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
 - **Internationalisation** de `apps/web` — **i18next** + react-i18next, français (source) et anglais,
   langue du navigateur avec repli sur le français, un catalogue par slice. L'API ne renvoie jamais
   de texte destiné à l'utilisateur · [0011](docs/adr/0011-internationalisation-de-l-interface.md)
+- **Design system** de `apps/web` — **shadcn/ui** sur Radix et **Tailwind 4**, composants copiés dans
+  `libs/shared/ui` et mis aux normes du dépôt ; palette neutre, Literata pour les titres de livres,
+  mode sombre qui suit le système · [0012](docs/adr/0012-design-system-de-l-interface.md),
+  [note 0002](docs/decisions/0002-grandes-lignes-du-design-system.md)
 - **Découpage en bounded contexts** — `recognition` (reconnaissance depuis une photo),
   `bibliography` (réconciliation + enrichissement, un seul contexte pour l'instant) et `curation`
   (correspondance avec la bibliothèque, la liste de souhaits et les préférences de l'utilisateur) ·
@@ -128,8 +132,10 @@ yarn nx graph                      # visualise le graphe de dépendances
 Avant de démarrer l'API : `cp .env.example .env`. Une variable requise manquante fait échouer le
 démarrage avec la liste de ce qui manque — c'est voulu, ne pas la contourner. `yarn api` a besoin
 du Postgres et de l'émulateur de bucket de la stack (`docker compose up db bucket`) : l'API applique
-les migrations au démarrage, et les specs des adapters de `recognition-infrastructure` tournent
-contre ces deux mêmes services (la CI les démarre aussi).
+les migrations au démarrage, et les specs des adapters de `recognition-infrastructure` et de
+`tools/db-backup` tournent contre ces deux mêmes services (la CI les démarre aussi). Celles de
+`tools/db-backup` appellent aussi `pg_dump`, `pg_restore` et `psql` du `PATH`, en **version 18 ou
+plus** (la majeure de la prod) : sans eux, `yarn check` échoue sur ce projet.
 
 La **CI** (GitHub Actions, `.github/workflows/ci.yml`) tourne sur chaque PR et push `main` : oxlint
 et oxfmt sur tout le dépôt, puis `nx affected -t lint typecheck test build translations` sur les projets touchés
@@ -154,8 +160,10 @@ libs/recognition/infrastructure/ # adapters (Gemini, Qwen, stub) derrière Shelf
 libs/shared/result/              # contenu partagé, une lib par sujet nommé
 libs/shared/text-match/          # normalisation + comparaison floue de chaînes (bench, réconciliation)
 libs/shared/i18n/                # façade i18next du front (useMessages, createI18n) — seule à importer i18next
+libs/shared/ui/                  # design system du front : composants shadcn/ui, Tailwind, tokens — seule autorisée à importer Radix
 tools/bench/                     # départage manuel des adapters VLM sur photos réelles (#10) — hors CI
-docker/                          # Dockerfile des deux apps — contexte de build : la racine
+tools/db-backup/                 # pg_dump hebdomadaire vers le bucket (Cloud Run Job, #22) — voir son README
+docker/                          # Dockerfile des apps et du job de sauvegarde — contexte de build : la racine
 docs/adr/
 docs/decisions/                  # notes de décision de niveau inférieur (pas des ADR)
 docs/parking.md                  # idées et hors-scope en attente, sans issue ni ADR pour les porter
@@ -240,6 +248,18 @@ d'`apps/api`, via des DTO de frontière.
   traduit par une table explicite, jamais par une clé construite (`` t(`failure.${kind}`) ``), qui
   échapperait au typage. Les specs lisent le français, fixé par `test-setup.ts` (jsdom annonce
   `en-US`) ; une clé inconnue ou un paramètre d'interpolation manquant y fait échouer le test.
+- **L'interface de `apps/web` se compose avec `libs/shared/ui`**
+  ([0012](docs/adr/0012-design-system-de-l-interface.md)) : les composants shadcn/ui y sont copiés,
+  et **tout composant d'interface qui ne dépend d'aucune slice y vit aussi** (`PhotoPicker`,
+  `PhotoPreview`, `BookTitle`) ; la slice ne garde que ce qui connaît son métier, et lie ces
+  composants à son catalogue. **Seule cette lib importe `radix-ui`** (`bannedExternalImports` sur `type:app`). Le style
+  s'écrit en **classes Tailwind sur les tokens du thème**
+  ([note 0002](docs/decisions/0002-grandes-lignes-du-design-system.md)) : pas de CSS Module, pas de
+  couleur écrite en dur, et oxfmt trie les classes (`sortTailwindcss`). Un composant copié entre par
+  une **spec de contrat écrite d'abord** (rôle, nom accessible, 44 px, `motion-reduce`), puis reçoit
+  les retouches minimales qui la font passer ; le `README.md` de la lib en tient la liste. Aucune
+  chaîne en dur dans un composant : un libellé qu'il exige est une prop, remplie par le catalogue de
+  la slice.
 - **Le titre d'une PR est un message de commit, donc en anglais.** Le merge est un squash et ce
   titre devient le sujet du commit sur `main` — un titre français y laisse une trace définitive.
   Le **corps** de la PR, lui, est de la doc : en français. La règle vaut même quand le skill

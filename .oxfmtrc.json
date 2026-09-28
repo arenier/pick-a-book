@@ -2,6 +2,10 @@
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "singleQuote": true,
   "printWidth": 100,
+  "sortTailwindcss": {
+    "stylesheet": "./libs/shared/ui/src/styles/globals.css",
+    "functions": ["cn", "cva"]
+  },
   "sortPackageJson": false,
   "ignorePatterns": [
     "*.md",

@@ -1,7 +1,7 @@
 import { useMessages } from '@pick-a-book/shared-i18n';
+import { BookTitle } from '@pick-a-book/shared-ui';
 
 import type { DetectedBook } from '../model/detected-book';
-import styles from './photo-upload-screen.module.css';
 
 export interface ScanResultProps {
   readonly books: readonly DetectedBook[];
@@ -16,14 +16,15 @@ export function ScanResult({ books }: ScanResultProps) {
   }
 
   return (
-    <ul className={styles['books']}>
+    <ul className="list-disc pl-5 wrap-anywhere">
       {books.map((book, index) => (
+        // The title alone is set in the book typeface (docs/decisions/0002), so it has its own
+        // element; the catalog words what follows it.
         // Two spines can carry the same title: the position is the only stable identity.
         // oxlint-disable-next-line react/no-array-index-key
         <li key={index}>
-          {book.author === undefined
-            ? book.title
-            : t('result.book', { title: book.title, author: book.author })}
+          <BookTitle>{book.title}</BookTitle>
+          {book.author !== undefined && t('result.byAuthor', { author: book.author })}
         </li>
       ))}
     </ul>

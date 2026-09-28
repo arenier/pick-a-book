@@ -1,7 +1,7 @@
 import { useMessages } from '@pick-a-book/shared-i18n';
+import { Alert, AlertDescription } from '@pick-a-book/shared-ui';
 
 import type { UploadFailure } from '../model/upload-failure';
-import styles from './photo-upload-screen.module.css';
 
 export interface FailureMessageProps {
   readonly failure: UploadFailure;
@@ -26,8 +26,8 @@ export function FailureMessage({ failure }: FailureMessageProps) {
   };
 
   return (
-    <p role="alert" className={styles['error']}>
-      {wordings[failure]()}
-    </p>
+    <Alert variant="destructive">
+      <AlertDescription>{wordings[failure]()}</AlertDescription>
+    </Alert>
   );
 }

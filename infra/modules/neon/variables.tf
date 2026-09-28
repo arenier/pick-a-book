@@ -20,3 +20,9 @@ variable "history_retention_seconds" {
   type        = number
   default     = 21600
 }
+
+variable "pg_version" {
+  description = "Postgres major version. Must match the live project's: the provider replaces the project — data included — when it changes. The backup job's pg_dump and the docker-compose/CI Postgres images are aligned on it."
+  type        = number
+  default     = 18
+}

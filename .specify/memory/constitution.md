@@ -16,8 +16,15 @@ feature-slice au front. `domain` ne dépend de rien (ni framework, ni ORM, ni HT
 contexte) ; `application` dépend de `domain` seul et parle aux ports, jamais aux adapters ;
 personne ne dépend d'`infrastructure` hors de la composition root. Un contexte n'importe jamais un
 autre contexte — le croisement se fait uniquement dans l'orchestrateur d'`apps/api`, via des DTO de
-frontière, jamais des objets de domaine. Ces règles sont vérifiées par les tags Nx et
-`@nx/enforce-module-boundaries`, pas seulement documentées.
+frontière, jamais des objets de domaine. Au front, l'interface de `apps/web` passe par les
+composants de `libs/shared/ui` : ceux de shadcn/ui, copiés et mis aux normes du dépôt, et ceux
+écrits dans le dépôt qui complètent le design system — tout composant d'interface qui ne dépend
+d'aucune slice. Une slice ne garde que ce qui connaît son métier, et lie ces composants à son
+catalogue. Chaque composant, copié ou écrit, entre par une spec écrite d'abord (principe I).
+Seule cette lib importe `radix-ui` et `@radix-ui/*`
+([ADR 0012](../../docs/adr/0012-design-system-de-l-interface.md)). Ces règles sont
+vérifiées par les tags Nx et `@nx/enforce-module-boundaries` (`bannedExternalImports` sur
+`type:app`), pas seulement documentées.
 
 ### III. Typage prouvé, jamais affirmé
 TypeScript strict, pas de `any` implicite, pas d'assertion `as` (`assertionStyle: 'never'`) : pour
@@ -29,7 +36,10 @@ domaine — value objects validant à la construction. Assertions de test strict
 ### IV. Outillage unique, pas de choix locaux
 Vite et Vitest partout ([ADR 0007](../../docs/adr/0007-vite-et-vitest-outillage-unique.md)), oxlint
 et oxfmt pour le lint et le format ([ADR 0008](../../docs/adr/0008-lint-et-format-oxlint-oxfmt.md)),
-lint type-aware via `oxlint-tsgolint`. Un nouveau projet ou une nouvelle feature n'introduit pas un
+lint type-aware via `oxlint-tsgolint`. Au front, le style s'écrit en classes Tailwind 4 sur les
+tokens du thème de `libs/shared/ui` ([note 0002](../../docs/decisions/0002-grandes-lignes-du-design-system.md)),
+jamais en CSS Module ni en couleur écrite en dur ; oxfmt trie les classes (`sortTailwindcss`), et
+un ordre non trié fait échouer `yarn check`. Un nouveau projet ou une nouvelle feature n'introduit pas un
 second outil de build, de test ou de lint pour un besoin ponctuel : le désaccord avec l'outillage
 acté passe par un nouvel ADR, pas par une exception locale.
 
@@ -72,4 +82,4 @@ jour pour refléter la décision. Toute modification de cette constitution est u
 MINOR : ajout de principe ; PATCH : clarification). `/speckit-plan` et `/speckit-implement` vérifient
 la conformité à ces principes avant de produire ou d'exécuter un plan.
 
-**Version**: 1.1.0 | **Ratified**: 2026-09-12 | **Last Amended**: 2026-09-27
+**Version**: 1.2.0 | **Ratified**: 2026-09-12 | **Last Amended**: 2026-09-28

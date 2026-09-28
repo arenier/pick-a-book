@@ -1,5 +1,5 @@
-# Least-privilege Cloud Run runtime identity: read the secrets it needs, write
-# pg_dump snapshots to the backups bucket, nothing else. No google_project_iam_member (or any
+# Least-privilege Cloud Run runtime identity: read the secrets it needs, and hold on each
+# bucket exactly the object roles it is handed, nothing else. No google_project_iam_member (or any
 # project-wide binding) is declared here, deliberately — a project-level role would grant more
 # than this service account needs project-wide, which is exactly what least privilege rules
 # out.
@@ -19,10 +19,12 @@ resource "google_secret_manager_secret_iam_member" "secret_accessor" {
   member    = "serviceAccount:${google_service_account.this.email}"
 }
 
-resource "google_storage_bucket_iam_member" "bucket_writer" {
-  count = var.bucket_name == null ? 0 : 1
+# Keyed by the caller's static grant names, not by bucket: a bucket name is another module's
+# output, and for_each keys must be known at plan time.
+resource "google_storage_bucket_iam_member" "bucket_grant" {
+  for_each = var.bucket_grants
 
-  bucket = var.bucket_name
-  role   = "roles/storage.objectCreator"
+  bucket = each.value.bucket
+  role   = each.value.role
   member = "serviceAccount:${google_service_account.this.email}"
 }
