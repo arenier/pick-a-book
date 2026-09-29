@@ -56,6 +56,21 @@ paragraphe *Assumptions* que personne ne relira.
   échoué (aujourd'hui refusée une fois l'enregistrement terminé), et nouvelle tentative automatique
   après une erreur réseau. *Origine* : spec 001, Assumptions ; `research.md` §7.
 
+### Sources d'annonces
+
+- **Extension de navigateur pour leboncoin** — repérer des livres directement sur les pages
+  d'annonces, avec le même enchaînement que pour une photo d'étagère : extraction de couples
+  `(auteur, titre)`, réconciliation, puis croisement avec la bibliothèque et les préférences. Trois
+  formes d'annonce à couvrir : un livre par annonce (titre et auteur dans le titre, au format
+  variable : « Titre. Auteur. Collection »), un lot de livres sur une photo (même problème que
+  l'étagère, `ShelfScannerPort` réutilisable), plusieurs livres listés dans la description
+  (extraction depuis du texte libre). Points à trancher à la reprise : les cas texte ne relèvent
+  probablement pas de `recognition` (à voir avec l'ADR 0010) ; appel à l'API depuis une extension
+  (CORS, authentification) ; lecture du DOM de leboncoin, fragile et soumise aux conditions
+  d'utilisation du site ; nouveau projet Nx pour l'extension. *Origine* : discussion du 29/09/2026,
+  capture d'une page de résultats leboncoin (catégorie Livres). *Reprise* : quand l'enrichissement
+  bibliographique (#20) et `curation` existent, car l'extension n'a de valeur qu'avec eux.
+
 ### Comptes et données
 
 - **Comptes utilisateurs réels et authentification** — aujourd'hui un identifiant technique fixe
