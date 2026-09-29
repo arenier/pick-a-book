@@ -42,79 +42,46 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
   (correspondance avec la bibliothèque, la liste de souhaits et les préférences de l'utilisateur) ·
   [0010](docs/adr/0010-decoupage-bounded-contexts.md)
 
-## Outillage
+## Où vit quoi
 
-| Node.js | Yarn | Terraform | tflint | checkov | Géré par |
-|---|---|---|---|---|---|
-| **26.5.1** | **4.18.0** | **1.15.9** | **0.64.0** | **3.3.20** | **mise** (`mise.toml` à la racine) |
+| Objet | Où | Répond à |
+|---|---|---|
+| **ADR** | `docs/adr/` | *Pourquoi* une décision transverse, et à quelles conditions on en changerait. Figé une fois accepté. |
+| **Note de décision** | `docs/decisions/` | Un choix de niveau inférieur, sans impact architectural. |
+| **Rule** | `.claude/rules/` | *Quoi faire* en écrivant le code. Vivante, courte, impérative ; renvoie à son ADR sans le recopier. |
+| **Spec** | `specs/NNN-*/` | Le comportement et le scope d'une feature (Spec Kit). |
+| **Constitution** | `.specify/memory/constitution.md` | Les principes, relus par `/speckit-plan` et `/speckit-implement`. |
 
-`mise install` à la racine pose toute la chaîne ; la CI installe à partir du **même fichier**
-(`jdx/mise-action`), seule source des versions ([0001](docs/adr/0001-stack-et-monorepo-nx.md),
-amendement du 2026-09-28). Épinglage exact, jamais en plage. `nodeLinker: node-modules` dans
-`.yarnrc.yml` — pas de Plug'n'Play. Le client Postgres (`psql`, `pg_dump`) reste hors de mise, qui ne
-sait que le compiler : `brew install libpq`. Trois pièges :
+Une règle que l'outillage peut vérifier est vérifiée par lui (lint, CI) : la rule le signale, elle
+ne s'y substitue pas. Quand un ADR acte une règle d'exécution, la même PR crée ou met à jour la
+rule correspondante et la ligne de l'index ci-dessous.
 
-- sur npm, `yarn@latest` est **1.22.22** (Yarn Classic) ; la ligne moderne est publiée sous
-  `@yarnpkg/cli`, et le binaire prêt à l'emploi sous `@yarnpkg/cli-dist` ;
-- **Node 26 ne fournit plus Corepack.** Le champ `packageManager` ne suffit donc pas à obtenir le
-  bon Yarn : `mise.toml` le déclare par son paquet npm (`"npm:@yarnpkg/cli-dist"`), et les images
-  Docker l'installent explicitement (`npm i -g @yarnpkg/cli-dist@4.18.0`) ;
-- **Node 26 n'est pas encore LTS** (attendu vers octobre 2026), à reconfirmer avant le premier
-  déploiement. Les `Dockerfile` de `docker/` et les champs `engines`/`packageManager` de
-  `package.json` gardent leur copie des versions — le garde-fou de CI « toolchain pins agree » les
-  compare à `mise.toml`.
+## Rules
 
-Build et test passent par **Vite et Vitest sur tous les projets** ([0007](docs/adr/0007-vite-et-vitest-outillage-unique.md)) :
-un `vite.config.mts` par app, un `vitest.config.mts` par lib, et `tsc` pour la compilation des
-libs. Les générateurs Nx d'app Node proposent encore webpack — ne pas garder ce qu'ils écrivent.
-`apps/api/vite.config.mts` passe par **SWC** (`unplugin-swc`) : ni esbuild ni Oxc n'émettent les
-métadonnées de décorateurs dont NestJS a besoin, et sans elles l'injection casse **à l'exécution**,
-pas à la compilation.
+Les rules sans `paths` sont chargées à chaque session ; les autres quand un fichier qu'elles ciblent
+est lu. L'essentiel de chacune tient en une ligne ci-dessous, pour qu'il reste visible avant même
+que le fichier ne soit chargé.
 
-Le lint et le format passent par **oxlint et oxfmt** (Oxc), montage hybride
-([0008](docs/adr/0008-lint-et-format-oxlint-oxfmt.md)) : oxlint est le linter principal, en
-catégories strictes ; **ESLint n'est conservé que pour les règles qu'oxlint ne sait pas exprimer** —
-`@nx/enforce-module-boundaries` (les frontières, ADR 0002) et `@nx/dependency-checks`, toutes deux
-fondées sur le graphe Nx. `eslint-plugin-oxlint` doit rester **en dernier** dans `eslint.config.mjs` :
-il éteint les doublons, sinon les deux linters reportent la même erreur. oxfmt remplace Prettier avec
-les mêmes réglages (`singleQuote`, `printWidth: 100`) — la bascule ne reformate aucun fichier, et il
-ne touche pas au Markdown des ADR. Adopter Oxc ici ne rouvre pas [0007](docs/adr/0007-vite-et-vitest-outillage-unique.md) :
-SWC reste le transpileur du build. Les règles strictes désactivées le sont chacune pour une raison
-tracée dans l'ADR 0008 (runtime JSX de React 19, CommonJS de l'API, modules NestJS).
-
-Le lint est **type-aware** : oxlint tourne partout avec `--type-aware`, qui délègue à
-**`oxlint-tsgolint`** (moteur `tsgolint`) les règles ayant besoin du type-checker — l'étanchéité au
-`any` (`no-unsafe-*`) et surtout la justesse asynchrone (`no-floating-promises`,
-`no-misused-promises`, `await-thenable`, `promise-function-async`). Deux conséquences à connaître :
-
-- `oxlint-tsgolint` est **requis**, pas optionnel : sans lui, `yarn lint` s'arrête sur
-  `Failed to find tsgolint executable`. Épinglé à l'exact, comme le reste de l'outillage.
-- **`require-await` est désactivée** parce qu'elle contredit `promise-function-async` : une fonction
-  qui rend une `Promise` porte `async` même sans `await` dans le corps, pour qu'un échec **rejette**
-  au lieu de jeter de façon synchrone. Ne pas « corriger » un `async` qui paraît inutile.
-
-Le code de test a son propre jeu de règles, dans le bloc **`overrides`** de `.oxlintrc.json` ciblant
-`**/*.{spec,test}.{ts,tsx}` — 31 règles du plugin `vitest`, choisies sur relevé (ADR 0008). Le
-scope n'est pas décoratif : oxlint applique le plugin `vitest` à *tous* les fichiers, et sans lui
-des règles de test se mettent à contraindre `main.ts`. Trois conséquences dans le code :
-
-- **Les specs importent ce qu'elles utilisent** — `import { describe, expect, it } from 'vitest'`.
-  Les globales de Vitest sont désactivées (`globals: true` retiré des six configs) : un fichier de
-  test se lit seul, sans savoir qu'une config ailleurs injecte des noms. Corollaire côté front :
-  Testing Library ne s'auto-nettoie plus, le `afterEach(cleanup)` est explicite dans
-  `apps/web/src/test-setup.ts`.
-- **Les fichiers de test sont en `*.spec.ts`**, jamais `*.test.ts` — `consistent-test-filename` le
-  fait échouer.
-- `vitest` est dans les `allowedExternalImports` de `type:domain` et `type:application`
-  (`eslint.config.mjs`) : ces couches n'autorisent que `tslib` et le runner, rien d'autre.
-
-Le relevé qui a fixé les listes de règles retenues et écartées — type-aware et tests — est dans
-l'ADR 0008. Pour vérifier que le garde-fou est opérant, ajouter un `void` manquant sur un appel
-asynchrone, ou deux `it` de même titre dans un `describe`, et constater que `yarn lint` échoue.
+| Rule | S'applique à | L'essentiel |
+|---|---|---|
+| [`tdd.md`](.claude/rules/tdd.md) | tout le dépôt | **TDD systématique**, IaC et correctifs compris ; `domain`/`application` sans infra, adapters contre la vraie techno ou sur réponses enregistrées |
+| [`typescript.md`](.claude/rules/typescript.md) | `*.ts`, `*.tsx` | Strict, **pas de `as`** (`satisfies` ou type guard) ; value objects dans le domaine ; `async` sans `await` voulu ; `kebab-case` ; anglais dans le code |
+| [`error-policy.md`](.claude/rules/error-policy.md) | tout le dépôt | `domain`/`application` ne jettent jamais : échec attendu → `Err` de `Result`, erreur à discriminant `kind`, traduction HTTP par `switch` exhaustif dans `apps/api` |
+| [`tests.md`](.claude/rules/tests.md) | specs | `*.spec.ts` ; imports `vitest` explicites ; `toStrictEqual`, `toBe(true)` |
+| [`domain-modeling.md`](.claude/rules/domain-modeling.md) | `libs/*/{domain,application}` | Value object à constructeur privé et `of()` → `Result` ; port = interface + jeton chaîne ; use case `execute()` qui rend des DTO |
+| [`adapters.md`](.claude/rules/adapters.md) | `libs/*/infrastructure`, `apps/api` | Réponse externe validée par `zod`, tout ou rien ; transport injecté ; fixtures à provenance ; migrations générées ; config validée au démarrage |
+| [`module-boundaries.md`](.claude/rules/module-boundaries.md) | `apps/`, `libs/`, `tools/` | `domain` → rien, `application` → `domain` ; un contexte n'importe jamais un autre ; trois tags Nx sur chaque projet |
+| [`web-interface.md`](.claude/rules/web-interface.md) | `apps/web`, `libs/shared/{i18n,ui}` | Aucun texte en dur : catalogue i18next fr + en ; composants dans `libs/shared/ui` ; classes Tailwind sur les tokens |
+| [`infra.md`](.claude/rules/infra.md) | `infra/` | Un module par ressource, câblés par l'env seul ; tests `plan` hermétiques d'abord ; secrets vides ; jamais d'`apply` sans `plan` relu |
+| [`toolchain.md`](.claude/rules/toolchain.md) | configs, `docker/`, CI | Versions dans `mise.toml` seul, à l'exact ; Vite/Vitest, SWC pour l'API ; oxlint type-aware, ESLint pour les frontières |
+| [`adr.md`](.claude/rules/adr.md) | `docs/adr/`, rules, `CLAUDE.md` | Procédure de `docs/adr/README.md` ; un ADR accepté ne se réécrit pas ; ADR et rule vont ensemble |
+| [`commits-and-pull-requests.md`](.claude/rules/commits-and-pull-requests.md) | tout le dépôt | Commits et **titre de PR en anglais**, corps de PR en français |
+| [`always-work-in-a-worktree.md`](.claude/rules/always-work-in-a-worktree.md) | tout le dépôt | Un worktree `wt` par tâche, jamais sur `main` |
 
 ## Commandes
 
 ```bash
+mise install                       # pose Node, Yarn, Terraform, tflint, checkov (versions : mise.toml)
 yarn install                       # installe le workspace
 yarn check                         # lint + format + typecheck + test + build + translations, tous projets
 yarn lint                          # oxlint puis nx run-many -t lint (ESLint : frontières)
@@ -151,17 +118,9 @@ le corps des erreurs (`statusCode`, `message`, `timestamp`, `path`), respecte le
 `severity: ERROR`. Il ne traduit aucune erreur de domaine : c'est le rôle de chaque contexte
 ([error-policy](.claude/rules/error-policy.md)).
 
-La **CI** (GitHub Actions, `.github/workflows/ci.yml`) tourne sur chaque PR et push `main` : oxlint
-et oxfmt sur tout le dépôt, puis `nx affected -t lint typecheck test build translations` sur les projets touchés
-(base calculée par `nrwl/nx-set-shas`). Elle installe Node, Yarn et l'outillage Terraform à partir
-de `mise.toml`, comme un poste local.
-
-`yarn check` et la CI vérifient **les mêmes cibles** : la seule différence assumée est la sélection
-des projets — `run-many` (tout) en local, `affected` (les touchés) en CI. Un garde-fou de la CI
-(« check and CI verify the same targets », dans l'esprit du check « toolchain pins agree ») échoue si
-la liste des cibles Nx ou l'une des deux étapes Oxc diverge entre les deux — chaque liste est lue
-dans le fichier qui la porte, jamais recopiée. Pour le vérifier : retirer `build` d'un côté et
-constater que la CI échoue.
+La **CI** (`.github/workflows/ci.yml`) tourne sur chaque PR et push `main`, et vérifie les mêmes
+cibles que `yarn check` sur les seuls projets touchés — détail dans
+[`toolchain.md`](.claude/rules/toolchain.md).
 
 ## Architecture
 
@@ -178,119 +137,27 @@ libs/shared/ui/                  # design system du front : composants shadcn/ui
 tools/bench/                     # départage manuel des adapters VLM sur photos réelles (#10) — hors CI
 tools/db-backup/                 # pg_dump hebdomadaire vers le bucket (Cloud Run Job, #22) — voir son README
 docker/                          # Dockerfile des apps et du job de sauvegarde — contexte de build : la racine
-docs/adr/
+docs/adr/                        # décisions d'architecture : le pourquoi
 docs/decisions/                  # notes de décision de niveau inférieur (pas des ADR)
 infra/                           # infrastructure GCP en Terraform — voir infra/README.md
+.claude/rules/                   # règles d'écriture du code : le quoi (voir « Rules » plus haut)
 .specify/                        # Spec Kit : constitution, templates, scripts (voir plus bas)
 specs/                           # une spec par feature, gardée durablement (Spec Kit)
 ```
 
-Le glob des workspaces Yarn couvre `apps/*`, `libs/*/*` et `tools/*` — un projet Nx hors de ces
-trois emplacements n'est pas lié et perd ses tags (donc les frontières de modules).
-
-`recognition` est le seul bounded context fondé en code aujourd'hui (ADR 0005). `bibliography` et
-`curation` ont leur frontière actée ([0010](docs/adr/0010-decoupage-bounded-contexts.md)) mais pas
-encore de lib : chacune arrive avec sa première implémentation — ne pas en créer au jugé avant.
-
-Règles de dépendance, appliquées par les `tags` Nx et `@nx/enforce-module-boundaries` dans
-`eslint.config.mjs` — sans cette configuration, l'architecture n'est qu'un document :
-
-- `domain` ne dépend de rien : ni framework, ni ORM, ni HTTP, ni autre contexte.
-- `application` dépend de `domain` seul et parle aux ports, jamais aux adapters.
-- Personne ne dépend d'`infrastructure` hors de la composition root.
-- **Un contexte n'importe jamais un autre contexte.** Le croisement se fait dans l'orchestrateur de
-  `apps/api`, seul module du repo à connaître plus d'un contexte. Il ne manipule que des **DTO de
-  frontière** — jamais un objet de domaine — et ne porte aucune règle exprimable dans un contexte.
-- **`libs/shared/*` est importable par tous et n'importe aucun contexte.** Une lib par sujet nommé
-  (`shared/result`, `shared/ui`) — jamais de `common` ni d'`utils`, qui accumulent tout et
-  dissolvent les frontières.
-- Côté `web`, une slice n'importe pas l'intérieur d'une autre : passer par une lib partagée.
-
-Les tags portent trois dimensions indépendantes, à poser sur **chaque** nouveau projet dans le champ
-`nx.tags` de son `package.json` :
-
-| Dimension | Valeurs |
-|---|---|
-| `type:` | `domain`, `application`, `infrastructure`, `shared`, `app` |
-| `context:` | `recognition`, `bibliography`, `curation`, `none` (libs partagées) |
-| `scope:` | `api`, `web`, `shared` |
-
-Un projet sans tag échappe aux règles : c'est la façon la plus simple de percer la frontière sans
-s'en apercevoir. Pour vérifier que le garde-fou est encore opérant, ajouter un import interdit dans
-`libs/recognition/domain` et constater que `yarn lint` échoue.
-
-Le découpage en bounded contexts est acté par
-[0010](docs/adr/0010-decoupage-bounded-contexts.md) : `recognition` (fondé, ADR 0005),
-`bibliography` (réconciliation + enrichissement — un seul contexte tant que l'ADR d'enrichissement
-bibliographique, à écrire, ne révèle pas un second langage métier), et `curation` (correspondance
-entre un livre résolu et le profil de lecture de l'utilisateur — sa bibliothèque, sa liste de
-souhaits, ses préférences en texte libre). Les trois se croisent uniquement dans l'orchestrateur
-d'`apps/api`, via des DTO de frontière.
-
-## Conventions
-
-- **TDD systématique.** Tout code s'écrit en cycle rouge/vert/refactor : le test qui échoue d'abord, puis le
-  code minimal qui le fait passer, puis refactor. Aucun code de production sans un test qui le motive —
-  correctifs inclus (test de non-régression **avant** le fix). Vaut aussi pour l'**IaC** : les modules
-  d'infrastructure sont testés, assertions écrites d'abord.
-- TypeScript strict. Pas de `any` implicite.
-- **Pas de `as`.** `typescript/consistent-type-assertions` en `assertionStyle: 'never'` (oxlint)
-  fait échouer `yarn lint` sur une assertion — la règle est appliquée, pas seulement écrite.
-  Pour contraindre un type sans perdre l'inférence : **`satisfies`**. Quand le type n'est
-  réellement pas connu à la compilation (`process.env`, réponse HTTP, `document.getElementById`) :
-  un **type guard** ou une vérification explicite, qui prouve au lieu d'affirmer.
-  `as const` n'est pas concerné — il restreint un littéral, il n'affirme rien.
-- **Échecs attendus aux frontières `domain`/`application` → `Result`** (`shared/result`). Ces deux
-  couches ne jettent jamais — pas de `throw`, pas d'`unwrap` ; les exceptions sont réservées à
-  `infrastructure` et `apps`. Une erreur porte un discriminant `kind`, et sa traduction HTTP est un
-  `switch` exhaustif dans `apps/api`. Le lint le fait respecter (`no-restricted-syntax`, couche
-  ESLint) ; mode d'emploi dans
-  [`.claude/rules/error-policy.md`](.claude/rules/error-policy.md),
-  décision dans [0013](docs/adr/0013-politique-d-erreur-result-aux-frontieres.md).
-- Pas de primitives nues dans le domaine : value objects validant à la construction.
-- Fichiers en `kebab-case`, classes en `PascalCase`, use cases en verbe explicite
-  (`pick-book-for-user.use-case.ts`).
-- `domain` et `application` se testent sans infra. Les adapters se testent contre la vraie techno.
-- Assertions strictes : `toStrictEqual` plutôt que `toEqual`, `toBe(true)` plutôt que `toBeTruthy`
-  — les matchers flous affirment au lieu de prouver, comme le `as`. Le lint le fait respecter.
-- Adapters de reconnaissance : tests sur **réponses enregistrées** ; la non-régression sur photos
-  réelles est un test séparé et manuel.
-- Le SQL, le schéma et les migrations restent dans `infrastructure`.
-- **Français dans la doc et les ADR, anglais dans le code** — commentaires, messages d'erreur,
-  logs, descriptions de tests (`it('rejects an empty image')`) et commits inclus.
-- **Le texte affiché à l'utilisateur dans `apps/web` n'est jamais écrit dans le code** : il passe
-  par le catalogue i18next de sa slice, `features/<slice>/i18n/{fr,en}.json` (celui du shell dans
-  `app/i18n/`), le français étant la langue source
-  ([0011](docs/adr/0011-internationalisation-de-l-interface.md)). Une clé s'ajoute **dans les deux
-  langues du même commit**. Une slice lit ses messages par `useMessages('<slice>')`, la façade de
-  `libs/shared/i18n` : **seule cette lib importe `i18next`, `react-i18next` et
-  `i18next-browser-languagedetector`** (`bannedExternalImports` sur `type:app`). `model/` et `api/` rendent un type d'échec, jamais une phrase : l'UI le
-  traduit par une table explicite, jamais par une clé construite (`` t(`failure.${kind}`) ``), qui
-  échapperait au typage. Les specs lisent le français, fixé par `test-setup.ts` (jsdom annonce
-  `en-US`) ; une clé inconnue ou un paramètre d'interpolation manquant y fait échouer le test.
-- **L'interface de `apps/web` se compose avec `libs/shared/ui`**
-  ([0012](docs/adr/0012-design-system-de-l-interface.md)) : les composants shadcn/ui y sont copiés,
-  et **tout composant d'interface qui ne dépend d'aucune slice y vit aussi** (`PhotoPicker`,
-  `PhotoPreview`, `BookTitle`) ; la slice ne garde que ce qui connaît son métier, et lie ces
-  composants à son catalogue. **Seule cette lib importe `radix-ui`** (`bannedExternalImports` sur `type:app`). Le style
-  s'écrit en **classes Tailwind sur les tokens du thème**
-  ([note 0002](docs/decisions/0002-grandes-lignes-du-design-system.md)) : pas de CSS Module, pas de
-  couleur écrite en dur, et oxfmt trie les classes (`sortTailwindcss`). Un composant copié entre par
-  une **spec de contrat écrite d'abord** (rôle, nom accessible, 44 px, `motion-reduce`), puis reçoit
-  les retouches minimales qui la font passer ; le `README.md` de la lib en tient la liste. Aucune
-  chaîne en dur dans un composant : un libellé qu'il exige est une prop, remplie par le catalogue de
-  la slice.
-- **Le titre d'une PR est un message de commit, donc en anglais.** Le merge est un squash et ce
-  titre devient le sujet du commit sur `main` — un titre français y laisse une trace définitive.
-  Le **corps** de la PR, lui, est de la doc : en français. La règle vaut même quand le skill
-  `create-pr` n'est pas chargé, d'où sa présence ici et pas seulement dans le skill.
+`recognition` est le seul bounded context fondé en code ; `bibliography` et `curation` arrivent
+avec leur première implémentation. Les trois se croisent uniquement dans l'orchestrateur
+d'`apps/api`, via des DTO de frontière. Les règles de dépendance, appliquées par les tags Nx et
+`@nx/enforce-module-boundaries`, sont dans [`module-boundaries.md`](.claude/rules/module-boundaries.md).
 
 ## Spec-driven development (GitHub Spec Kit)
 
 Toute feature non triviale se spécifie avant de se coder, avec [GitHub Spec
 Kit](https://github.com/github/spec-kit) : `specs/NNN-nom-feature/spec.md` est la source de vérité
 du comportement et du scope de la feature, gardée durablement dans le repo. Toute évolution
-ultérieure de cette feature **repasse par la spec avant le code**, jamais l'inverse.
+ultérieure de cette feature **repasse par la spec avant le code**, jamais l'inverse. Une spec qui
+bute sur une décision transverse propose un ADR, elle ne tranche pas à sa place. L'issue GitHub
+reste le point d'entrée de discussion et de suivi ; elle référence la spec sans la dupliquer.
 
 ```
 /speckit-constitution   # établit/amende les principes projet (.specify/memory/constitution.md)
@@ -306,29 +173,16 @@ ultérieure de cette feature **repasse par la spec avant le code**, jamais l'inv
 Mode d'emploi détaillé — ordre d'enchaînement, entrée/sortie de chaque commande, comment reprendre
 une feature déjà spécifiée — dans [`docs/spec-driven-development.md`](docs/spec-driven-development.md).
 
-Articulation avec l'existant, actée dans
-[`.specify/memory/constitution.md`](.specify/memory/constitution.md) :
-
-- **ADR** (`docs/adr/`) tranche une décision d'architecture transverse, une fois, rarement révisée.
-- **Spec** décrit le comportement d'une feature précise ; une spec qui bute sur une décision
-  transverse propose un ADR, elle ne tranche pas à sa place.
-- **Issue GitHub** reste le point d'entrée de discussion et de suivi ; elle référence la spec sans
-  la dupliquer.
-
-La constitution (`.specify/memory/constitution.md`) reflète les principes de ce fichier — TDD,
-architecture hexagonale et bounded contexts étanches, pas de `as`, outillage unique, français en
-doc/anglais en code. Elle se met à jour avec `/speckit-constitution`, jamais en divergeant à la
-main de ce `CLAUDE.md`.
+La constitution reflète les principes de ce fichier et des rules — TDD, architecture hexagonale et
+bounded contexts étanches, pas de `as`, outillage unique, français en doc/anglais en code. Elle se
+met à jour avec `/speckit-constitution`, jamais en divergeant à la main.
 
 ## Workflow Git
 
-**Toujours travailler dans un worktree dédié** (worktrunk `wt`), jamais directement sur `main` ni
-dans le checkout principal — règle et procédure complète dans
-[`.claude/rules/always-work-in-a-worktree.md`](.claude/rules/always-work-in-a-worktree.md). La config projet
-worktrunk vit dans [`.config/wt.toml`](.config/wt.toml).
-
-`main` est protégée : push direct refusé, force-push et suppression interdits, conversations à
-résoudre. 0 approbation requise — l'auteur merge sa propre PR.
+**Toujours travailler dans un worktree dédié** (worktrunk `wt`) — voir
+[`always-work-in-a-worktree.md`](.claude/rules/always-work-in-a-worktree.md), config dans
+[`.config/wt.toml`](.config/wt.toml). Commits et PR :
+[`commits-and-pull-requests.md`](.claude/rules/commits-and-pull-requests.md).
 
 ```bash
 wt switch --create feat/ma-feature   # branche + worktree isolé (pre-start fait yarn install)

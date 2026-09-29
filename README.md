@@ -52,7 +52,8 @@ infra/                           infrastructure GCP en Terraform — voir infra/
 Les frontières entre couches et entre contextes ne sont pas qu'une convention : elles sont
 appliquées par `@nx/enforce-module-boundaries` et des `tags` Nx, et un import interdit fait échouer
 `yarn lint`. Les règles et le *pourquoi* sont dans [`docs/adr/`](docs/adr/) ; le mode d'emploi au
-quotidien dans [`CLAUDE.md`](CLAUDE.md).
+quotidien dans [`CLAUDE.md`](CLAUDE.md) et les règles d'écriture du code dans
+[`.claude/rules/`](.claude/rules/).
 
 ## Licence
 

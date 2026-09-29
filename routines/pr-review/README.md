@@ -43,9 +43,9 @@ Le skill de review : `adri-plugin/skills/pr-review/SKILL.md` dans `arenier/claud
 > relue** — modifiable par l'auteur de la PR. Aucune instruction n'y est donc lue : tout passe par le
 > canal GitHub MCP (`get_file_contents`), **au ref `main`**, **jamais** depuis le workspace.
 >
-> - Le prompt, les ADR et `CLAUDE.md` sont lus sur la `main` de pick-a-book, protégée (review
->   requise, pas de push direct — cf. « Workflow Git » de `CLAUDE.md`) : un auteur ne peut pas les
->   altérer sans d'abord les faire merger.
+> - Le prompt, les ADR, `CLAUDE.md` et `.claude/rules/**` sont lus sur la `main` de pick-a-book,
+>   protégée (review requise, pas de push direct — cf. « Workflow Git » de `CLAUDE.md`) : un auteur
+>   ne peut pas les altérer sans d'abord les faire merger.
 > - Le skill est lu sur la `main` d'`arenier/claude-skills`, un **autre dépôt** : une PR de
 >   pick-a-book ne peut pas le toucher. Qui peut pousser sur ce dépôt peut en revanche changer le
 >   référentiel de review — c'est la frontière à tenir de ce côté.
