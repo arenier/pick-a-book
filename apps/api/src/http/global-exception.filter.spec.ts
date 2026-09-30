@@ -7,8 +7,11 @@ import {
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { Logger as PinoLogger, LoggerModule } from 'nestjs-pino';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import { buildLoggerOptions } from '../logging/logger-options';
+import { aCapturedLog } from '../logging/testing/captured-log';
 import { GlobalExceptionFilter } from './global-exception.filter';
 import { errorBodyOf } from './testing/error-body';
 
@@ -36,14 +39,23 @@ class BoomController {
   }
 }
 
-/** The filter over real HTTP, on an ephemeral port. Called inside a `describe`. */
+/**
+ * One application for the whole file — nestjs-pino keeps a single pino-http per process. It is
+ * wired as `main.ts` wires it: pino behind `useLogger`, so the filter logs through it.
+ */
 function aRunningApiWithTheFilter() {
+  const log = aCapturedLog();
   let app: INestApplication;
   let baseUrl = '';
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({ controllers: [BoomController] }).compile();
-    app = moduleRef.createNestApplication();
+    const options = buildLoggerOptions({ nodeEnv: 'production', googleCloudProject: undefined });
+    const moduleRef = await Test.createTestingModule({
+      imports: [LoggerModule.forRoot({ pinoHttp: [options, log.stream] })],
+      controllers: [BoomController],
+    }).compile();
+    app = moduleRef.createNestApplication({ bufferLogs: true });
+    app.useLogger(app.get(PinoLogger));
     app.useGlobalFilters(new GlobalExceptionFilter(app.get(HttpAdapterHost)));
     await app.listen(0, '127.0.0.1');
     baseUrl = await app.getUrl();
@@ -53,64 +65,16 @@ function aRunningApiWithTheFilter() {
     await app.close();
   });
 
-  return async (path: string) => fetch(`${baseUrl}${path}`);
+  return { log, get: async (path: string) => fetch(`${baseUrl}${path}`) };
 }
 
-/** What the filter writes: the fields Cloud Logging reads, proven rather than asserted. */
-interface LogEntry {
-  readonly severity: string;
-  readonly message: string;
-  readonly stack_trace: string;
-  readonly path: string;
-}
+const { log, get } = aRunningApiWithTheFilter();
 
-function isLogEntry(value: unknown): value is LogEntry {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'severity' in value &&
-    typeof value.severity === 'string' &&
-    'message' in value &&
-    typeof value.message === 'string' &&
-    'stack_trace' in value &&
-    typeof value.stack_trace === 'string' &&
-    'path' in value &&
-    typeof value.path === 'string'
-  );
-}
-
-/** Every line the filter wrote to stderr, parsed — Cloud Logging reads one JSON per line. */
-function captureLog() {
-  const write = vi.spyOn(process.stderr, 'write').mockReturnValue(true);
-
-  return {
-    lines: () =>
-      write.mock.calls.map(([chunk]) => {
-        const entry: unknown = JSON.parse(String(chunk));
-        if (!isLogEntry(entry)) {
-          throw new TypeError(`not a log entry: ${String(chunk)}`);
-        }
-
-        return entry;
-      }),
-    restore: () => {
-      write.mockRestore();
-    },
-  };
-}
+/** The ERROR lines that concern a path: what a route raised on purpose must not be among them. */
+const errorLinesAbout = (path: string) =>
+  log.lines().filter((line) => line['severity'] === 'ERROR' && JSON.stringify(line).includes(path));
 
 describe('GlobalExceptionFilter, for an error nobody modelled', () => {
-  const get = aRunningApiWithTheFilter();
-  let log: ReturnType<typeof captureLog>;
-
-  beforeEach(() => {
-    log = captureLog();
-  });
-
-  afterEach(() => {
-    log.restore();
-  });
-
   it('answers 500 with a generic body, and no stack, cause or detail', async () => {
     const response = await get('/boom/bug?token=abc');
 
@@ -127,22 +91,22 @@ describe('GlobalExceptionFilter, for an error nobody modelled', () => {
     expect(JSON.stringify(body)).not.toMatch(/ECONNREFUSED|hunter2|at .*\.ts/u);
   });
 
-  it('writes the error, stack included, as a severity ERROR JSON line', async () => {
+  // The promise "no stack to the client" only holds if the stack goes somewhere else: through
+  // the application logger, as the ERROR line Cloud Logging files under its own level.
+  it('logs the error through the application logger, stack included', async () => {
     await get('/boom/bug');
 
-    const [entry] = log.lines();
-    expect(entry).toMatchObject({
+    const [line] = errorLinesAbout('/boom/bug');
+    expect(line).toMatchObject({
       severity: 'ERROR',
       message: 'connect ECONNREFUSED 10.0.0.7:5432 with password hunter2',
-      path: '/boom/bug',
+      req: { method: 'GET', path: '/boom/bug' },
     });
-    expect(entry.stack_trace).toContain('BoomController');
+    expect(line).toHaveProperty('stack_trace', expect.stringContaining('BoomController'));
   });
 });
 
 describe('GlobalExceptionFilter, for an HttpException a route chose to raise', () => {
-  const get = aRunningApiWithTheFilter();
-
   it('keeps its status, and takes the uniform body', async () => {
     const response = await get('/boom/bad-request');
 
@@ -177,18 +141,13 @@ describe('GlobalExceptionFilter, for an HttpException a route chose to raise', (
   });
 
   it('does not log an error a route raised on purpose', async () => {
-    const log = captureLog();
-
     await get('/boom/bad-request');
 
-    expect(log.lines()).toStrictEqual([]);
-    log.restore();
+    expect(errorLinesAbout('/boom/bad-request')).toStrictEqual([]);
   });
 });
 
 describe('GlobalExceptionFilter, for a route that does not exist', () => {
-  const get = aRunningApiWithTheFilter();
-
   it('answers 404 in the same shape', async () => {
     const response = await get('/nowhere');
 

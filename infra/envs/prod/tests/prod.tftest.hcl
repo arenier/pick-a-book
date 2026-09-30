@@ -152,6 +152,19 @@ run "the_api_boots_with_the_photo_bucket_and_the_front_origin" {
   }
 }
 
+run "the_api_names_its_project_so_log_lines_link_to_their_trace" {
+  command = plan
+
+  # Cloud Logging attaches a log line to a trace only through the resource name
+  # `projects/{project}/traces/{id}`. The API builds it from GOOGLE_CLOUD_PROJECT (issue #45);
+  # without it the trace is a bare id that Cloud Logging cannot link, and nothing fails — the
+  # correlation is quietly absent.
+  assert {
+    condition     = local.api_env.GOOGLE_CLOUD_PROJECT == var.project_id
+    error_message = "The API must be told its project through GOOGLE_CLOUD_PROJECT, or its log lines cannot be linked to their Cloud Trace"
+  }
+}
+
 run "the_api_can_write_and_read_shelf_photos_and_nothing_more" {
   command = plan
 

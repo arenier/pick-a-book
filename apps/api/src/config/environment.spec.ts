@@ -133,6 +133,19 @@ describe('loadEnvironment, CORS origin (ADR 0004: two origins)', () => {
   });
 });
 
+describe('loadEnvironment, GOOGLE_CLOUD_PROJECT (log correlation)', () => {
+  it('is optional: absent, the trace of a log line stays a bare id', () => {
+    expect(load().googleCloudProject).toBeUndefined();
+    expect(load({ GOOGLE_CLOUD_PROJECT: '   ' }).googleCloudProject).toBeUndefined();
+  });
+
+  it('carries a configured project', () => {
+    expect(load({ GOOGLE_CLOUD_PROJECT: 'pick-a-book-prod' }).googleCloudProject).toBe(
+      'pick-a-book-prod',
+    );
+  });
+});
+
 describe('loadEnvironment, shelf scanner selection (ADR 0005)', () => {
   const keys = { GEMINI_API_KEY: 'gemini-key', OPENROUTER_API_KEY: 'openrouter-key' };
 

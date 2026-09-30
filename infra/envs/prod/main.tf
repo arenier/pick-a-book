@@ -102,11 +102,13 @@ locals {
   # The API's plain (non-secret) boot contract — apps/api/src/config/environment.ts. OWNER_ID
   # is left to its default until there are user accounts. WEB_ORIGIN is the front's origin
   # only (scheme + host): CORS compares it byte for byte with the browser's Origin header,
-  # which never carries the bucket path of public_base_url.
+  # which never carries the bucket path of public_base_url. GOOGLE_CLOUD_PROJECT lets a log
+  # line name its trace by the resource Cloud Logging links on (issue #45).
   api_env = {
-    NODE_ENV    = "production"
-    BUCKET_NAME = module.bucket_shelf_photos.bucket_name
-    WEB_ORIGIN  = regex("^https://[^/]+", module.static_site.public_base_url)
+    NODE_ENV             = "production"
+    BUCKET_NAME          = module.bucket_shelf_photos.bucket_name
+    WEB_ORIGIN           = regex("^https://[^/]+", module.static_site.public_base_url)
+    GOOGLE_CLOUD_PROJECT = var.project_id
   }
 }
 
