@@ -76,6 +76,15 @@ describe('buildLoggerOptions, redaction', () => {
     ['a provider key', { apiKey: 'sk-secret-key' }, 'sk-secret-key'],
     ['a provider key, nested', { provider: { apiKey: 'sk-secret-key' } }, 'sk-secret-key'],
     ['a provider key, deeper', { a: { b: { apiKey: 'sk-secret-key' } } }, 'sk-secret-key'],
+    [
+      'a provider key, ten levels down',
+      {
+        l1: {
+          l2: { l3: { l4: { l5: { l6: { l7: { l8: { l9: { apiKey: 'sk-secret-key' } } } } } } } },
+        },
+      },
+      'sk-secret-key',
+    ],
     ['GEMINI_API_KEY', { env: { GEMINI_API_KEY: 'gm-secret-key' } }, 'gm-secret-key'],
     ['OPENROUTER_API_KEY', { env: { OPENROUTER_API_KEY: 'or-secret-key' } }, 'or-secret-key'],
     ['an authorization header', { headers: { authorization: 'Bearer tok-secret' } }, 'tok-secret'],

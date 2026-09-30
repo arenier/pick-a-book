@@ -4,6 +4,7 @@ import { stdTimeFunctions } from 'pino';
 import type { Options } from 'pino-http';
 
 import type { Environment } from '../config/environment';
+import { redactSensitive } from './redact-sensitive';
 
 /**
  * The pino level names, as the `severity` Cloud Logging reads from a JSON line (ADR 0004).
@@ -25,28 +26,6 @@ const TRACE_KEY = 'logging.googleapis.com/trace';
 /** `TRACE_ID/SPAN_ID;o=1` — the 128-bit trace id is 32 hexadecimal digits. */
 const TRACE_HEADER = /^(?<id>[\da-f]{32})(?:\/|$)/iu;
 
-/**
- * What must never reach a log line, whatever the depth somebody logs it at: a provider key
- * (ADR 0005), a credential, the bytes of a photo. Redacted by key, `remove: true`, so the field
- * is gone rather than masked — a mask says a secret was there.
- */
-const SENSITIVE_KEYS = [
-  'apiKey',
-  'GEMINI_API_KEY',
-  'OPENROUTER_API_KEY',
-  'authorization',
-  'cookie',
-  'bytes',
-  'buffer',
-  'image',
-] as const;
-
-const REDACT_DEPTH = 4;
-
-const redactedPaths = SENSITIVE_KEYS.flatMap((key) =>
-  Array.from({ length: REDACT_DEPTH }, (_, depth) => `${'*.'.repeat(depth)}${key}`),
-);
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -61,6 +40,11 @@ function withStackTrace(line: Record<string, unknown>): Record<string, unknown> 
   return isRecord(err) && typeof err['stack'] === 'string'
     ? { ...line, stack_trace: err['stack'] }
     : line;
+}
+
+/** What goes out of a log line: the sensitive keys removed first, then the stack copied up. */
+function shaped(line: Record<string, unknown>): Record<string, unknown> {
+  return withStackTrace(redactSensitive(line));
 }
 
 /**
@@ -109,6 +93,8 @@ function pathOf(url: string | undefined): string {
  *
  * - `severity` and `message` are the fields Cloud Logging reads; in development the level stays
  *   readable and `pino-pretty` prints it, a person reading the terminal;
+ * - what is sensitive — provider keys, credentials, the bytes of a photo — is removed from every
+ *   line at any depth, by `redactSensitive`;
  * - the request line keeps the method, the path, the status and the duration — never the
  *   headers, the query string or the body, so a key or a photo cannot get there by that door;
  * - the level of the request line follows its status (INFO, WARNING for a 4xx, ERROR for a 5xx);
@@ -126,9 +112,8 @@ export function buildLoggerOptions(
       ...(development
         ? {}
         : { level: (label: string) => ({ severity: SEVERITY[label] ?? 'DEFAULT' }) }),
-      log: withStackTrace,
+      log: shaped,
     },
-    redact: { paths: redactedPaths, remove: true },
     serializers: {
       req: (request: IncomingMessage) => ({ method: request.method, path: pathOf(request.url) }),
       res: (response: { statusCode?: number }) => ({ statusCode: response.statusCode }),
