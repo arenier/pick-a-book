@@ -23,12 +23,7 @@ documentation d'architecture — il ne décrit pas comment le système marche, i
 | [0011](0011-internationalisation-de-l-interface.md) | Internationalisation de l'interface : i18next | Accepté  | —     | 2026-09-27 |
 | [0012](0012-design-system-de-l-interface.md)       | Design system de l'interface : shadcn/ui et Tailwind, dans `libs/shared/ui` | Accepté  | 1     | 2026-09-27 |
 | [0013](0013-politique-d-erreur-result-aux-frontieres.md) | Politique d'erreur : `Result` aux frontières du domaine et de l'application | Proposé  | —     | 2026-09-28 |
-
-**À écrire** — la source d'enrichissement bibliographique. Elle n'a pas de numéro tant que le
-fichier n'existe pas ; [0005](0005-reconnaissance-livres-photo-etagere.md) et
-[0010](0010-decoupage-bounded-contexts.md) s'y réfèrent par son sujet, et en contraignent déjà
-respectivement le critère de choix principal (recherche floue tolérante aux fautes, couverture de
-l'édition française de poche) et le contexte où elle place son contenu (`bibliography`).
+| [0014](0014-referentiel-bibliographique-bnf.md)      | Référentiel bibliographique : catalogue général de la BnF, appariement en cascade | Proposé  | —     | 2026-09-30 |
 
 Les ADR marqués **Socle** consignent des contraintes actées avant l'ouverture du repo ; ils ont
 été rédigés a posteriori et leurs sections « Alternatives » et « Conséquences » sont une

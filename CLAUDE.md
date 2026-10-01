@@ -26,7 +26,9 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
   [0007](docs/adr/0007-vite-et-vitest-outillage-unique.md)
 - **Lint et format** — **oxlint** (strict) + **oxfmt**, écosystème Oxc. ESLint conservé pour les
   seules frontières de modules Nx · [0008](docs/adr/0008-lint-et-format-oxlint-oxfmt.md)
-- **Enrichissement bibliographique** — ADR à écrire, contraint par 0005
+- **Référentiel bibliographique** — catalogue général de la **BnF** (API SRU), seul, pour réconcilier
+  et enrichir ; appariement en cascade piloté par `application`, verdict et regroupement par œuvre
+  par une règle du domaine, seuils 0,85 · [0014](docs/adr/0014-referentiel-bibliographique-bnf.md)
 - **Internationalisation** de `apps/web` — **i18next** + react-i18next, français (source) et anglais,
   langue du navigateur avec repli sur le français, un catalogue par slice. L'API ne renvoie jamais
   de texte destiné à l'utilisateur · [0011](docs/adr/0011-internationalisation-de-l-interface.md)
