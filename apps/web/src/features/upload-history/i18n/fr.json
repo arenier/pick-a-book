@@ -1,1 +1,28 @@
-{}
+{
+  "entry": {
+    "sentAt": "{{date, datetime(dateStyle: medium; timeStyle: short)}}",
+    "thumbnail": "Vignette de la photo",
+    "thumbnailUnavailable": "Vignette indisponible"
+  },
+  "outcome": {
+    "books_one": "{{count}} livre détecté",
+    "books_many": "{{count}} livres détectés",
+    "books_other": "{{count}} livres détectés",
+    "none": "Aucun livre détecté",
+    "failed": "Analyse en échec",
+    "notStarted": "Analyse non lancée"
+  },
+  "history": {
+    "loading": "Chargement de l’historique…",
+    "empty": "Vous n’avez encore envoyé aucune photo.",
+    "upload": "Envoyer une photo",
+    "loadMore": "Afficher plus",
+    "loadingMore": "Chargement…",
+    "retry": "Réessayer"
+  },
+  "failure": {
+    "offline": "Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.",
+    "rateLimited": "Trop de demandes en peu de temps. Patientez une minute puis réessayez.",
+    "unexpected": "Une erreur inattendue est survenue. Réessayez dans quelques instants."
+  }
+}

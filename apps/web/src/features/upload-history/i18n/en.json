@@ -1,1 +1,27 @@
-{}
+{
+  "entry": {
+    "sentAt": "{{date, datetime(dateStyle: medium; timeStyle: short)}}",
+    "thumbnail": "Photo thumbnail",
+    "thumbnailUnavailable": "Thumbnail unavailable"
+  },
+  "outcome": {
+    "books_one": "{{count}} book detected",
+    "books_other": "{{count}} books detected",
+    "none": "No book detected",
+    "failed": "Analysis failed",
+    "notStarted": "Analysis not started"
+  },
+  "history": {
+    "loading": "Loading the history…",
+    "empty": "You haven’t sent any photo yet.",
+    "upload": "Send a photo",
+    "loadMore": "Show more",
+    "loadingMore": "Loading…",
+    "retry": "Try again"
+  },
+  "failure": {
+    "offline": "Cannot reach the server. Check your connection and try again.",
+    "rateLimited": "Too many requests in a short time. Wait a minute, then try again.",
+    "unexpected": "Something unexpected went wrong. Try again in a few moments."
+  }
+}

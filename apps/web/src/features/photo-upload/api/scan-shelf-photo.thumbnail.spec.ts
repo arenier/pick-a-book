@@ -17,7 +17,7 @@ const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
 /** A browser that could not make one. */
-const noThumbnail = async (): Promise<Blob | undefined> => {
+const noThumbnail = async (): Promise<undefined> => {
   // Nothing to make: the browser could not decode the photo.
 };
 

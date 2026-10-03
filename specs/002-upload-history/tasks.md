@@ -374,7 +374,7 @@ le bon résumé (quickstart, scénarios 1 et 2).
 
   Créer ensuite `apps/web/src/features/upload-history/api/history-api.ts`, qui lit `VITE_API_BASE_URL` comme `scan-shelf-photo.ts`. Dépend de T052.
 - [X] T055a [P] [US1] Créer `FallbackImage` dans `libs/shared/ui/src/components/fallback-image.tsx`, spec de contrat écrite d'abord (`fallback-image.spec.tsx`) : il affiche la première source d'une liste ordonnée dans un `<img>` (`alt` en prop), passe à la suivante quand `onError` se déclenche, puis à un indicateur neutre (rôle `img`, nom accessible en prop `placeholderLabel`) quand la liste est épuisée ; une liste vide affiche l'indicateur sans requête ; changer la liste repart de la première source ; aucune chaîne en dur. L'exporter depuis `libs/shared/ui/src/index.ts` et l'ajouter au tableau de `libs/shared/ui/README.md`. Amendement du 03/10/2026 (ADR 0012).
-- [ ] T054 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/history-entry-card.spec.tsx` :
+- [X] T054 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/history-entry-card.spec.tsx` :
   - la date et l'heure locales s'affichent ;
   - les libellés sont « 12 livres détectés », « 1 livre détecté », « Aucun livre détecté », « Analyse en échec » et « Analyse non lancée » (FR-005). Le nombre de livres est **une clé plurielle** (`outcome.books`, avec `count`), pas deux clés, pour que le test de parité vérifie les formes CLDR de chaque langue ;
   - la vignette est un `<img loading="lazy">` vers `thumbnailUrl(id)` si `hasThumbnail`, et un indicateur neutre sans requête sinon (par `FallbackImage`, T055a) ;
@@ -382,7 +382,7 @@ le bon résumé (quickstart, scénarios 1 et 2).
   - la carte est un lien vers `#/historique/{id}`.
 
   Créer ensuite `apps/web/src/features/upload-history/ui/history-entry-card.tsx`. Dépend de T052, T053 et T055a.
-- [ ] T055 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/history-screen.spec.tsx` :
+- [X] T055 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/history-screen.spec.tsx` :
   - un chargement s'affiche d'abord ;
   - un historique vide affiche « Vous n'avez encore envoyé aucune photo. » avec un lien vers `#/` (US1, scénario 2) ;
   - un échec affiche un message d'erreur, **pas** l'état vide (FR-010), avec un bouton « Réessayer » ;
