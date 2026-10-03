@@ -1,5 +1,14 @@
 # Contrat consommé : envoi et analyse d'une photo d'étagère
 
+**Amendé le 03/10/2026 par la spec 002** : ce contrat reste valable, sauf pour trois points que
+[`specs/002-upload-history/contracts/shelf-photos-history-api.md`](../../002-upload-history/contracts/shelf-photos-history-api.md)
+§5 amende — le champ multipart optionnel `thumbnail` de `POST /shelf-photos`, la relance de
+`POST /shelf-photos/{id}/scan` sur un envoi `failed`, et les codes stables des 409
+(`SCAN_ALREADY_COMPLETED`, `SCAN_IN_PROGRESS`) et des 429 (`DAILY_SCAN_QUOTA_EXCEEDED`,
+`TOO_MANY_REQUESTS`). Le corps d'une erreur n'a plus la forme `{ statusCode, message, error }` de
+Nest : c'est celui du filtre global (`{ statusCode, message, timestamp, path }`, plus un `code` quand
+il y en a un).
+
 **Révisé le 21/09/2026** : ce qui était un unique `POST /scan` synchrone (upload + analyse dans la
 même requête) devient deux endpoints — `POST /shelf-photos` (envoi) puis
 `POST /shelf-photos/{id}/scan` (analyse) — pour que la photo soit conservée avant l'appel le plus

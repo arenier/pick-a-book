@@ -506,12 +506,12 @@ une seule action (SC-005), dans la limite du plafond quotidien (SC-006).
 
 ## Phase 6 : Polish et points transverses
 
-- [ ] T073 [P] Ajouter, en tête de `specs/001-photo-upload/contracts/scan-api.md`, une note datée qui renvoie aux amendements de `specs/002-upload-history/contracts/shelf-photos-history-api.md` §5 : champ `thumbnail`, relance depuis `failed`, codes des 409 et 429.
-- [ ] T074 [P] Mettre à jour `CLAUDE.md`, section *Commandes* ou *Architecture*, seulement si une commande ou un emplacement change. Le routage par hash d'`apps/web/src/app/` mérite une ligne dans l'arborescence.
+- [X] T073 [P] Ajouter, en tête de `specs/001-photo-upload/contracts/scan-api.md`, une note datée qui renvoie aux amendements de `specs/002-upload-history/contracts/shelf-photos-history-api.md` §5 : champ `thumbnail`, relance depuis `failed`, codes des 409 et 429.
+- [X] T074 [P] Mettre à jour `CLAUDE.md`, section *Commandes* ou *Architecture*, seulement si une commande ou un emplacement change. Le routage par hash d'`apps/web/src/app/` mérite une ligne dans l'arborescence.
 - [X] T075 Ouvrir une issue GitHub ([#68](https://github.com/arenier/pick-a-book/issues/68)) pour le prérequis de déploiement hors scope (plan.md, *Prérequis hors scope*, point 3) : bucket privé de photos dans `infra/envs/prod/main.tf`, droit `roles/storage.objectAdmin` du compte de service de l'API sur ce bucket, variable `BUCKET_NAME` sur `cloud_run_api` (`DAILY_SCAN_LIMIT` y est déjà, T018). L'issue référence les specs 001 et 002.
-- [ ] T076 Vérification manuelle sur un iPhone (Safari), à tracer dans la PR : une photo portrait HEIC produit une vignette **droite** (orientation EXIF, research.md §5), et l'historique l'affiche.
-- [ ] T077 Dérouler `specs/002-upload-history/quickstart.md`, scénarios 1 à 8, et noter les écarts dans la PR.
-- [ ] T078 Faire passer `yarn check` : lint (oxlint type-aware et frontières ESLint), format, typecheck, test et build, sur tous les projets.
+- [ ] T076 *(non faite : elle demande un iPhone, que cette session n'a pas ; à faire avant le merge)* Vérification manuelle sur un iPhone (Safari), à tracer dans la PR : une photo portrait HEIC produit une vignette **droite** (orientation EXIF, research.md §5), et l'historique l'affiche.
+- [X] T077 Dérouler `specs/002-upload-history/quickstart.md`, scénarios 1 à 8, et noter les écarts dans la PR.
+- [X] T078 Faire passer `yarn check` : lint (oxlint type-aware et frontières ESLint), format, typecheck, test et build, sur tous les projets.
 
 ---
 
@@ -600,3 +600,38 @@ Task: "T062 getShelfScan / photoUrl tests"
 - Specs en `*.spec.ts(x)`, avec `import { describe, expect, it } from 'vitest'` explicite.
 - Textes affichés en français, code, commentaires et tests en anglais.
 - Commit après chaque tâche ou groupe cohérent. Le titre de la PR est en anglais.
+
+---
+
+## Bilan de l'implémentation (03/10/2026)
+
+**Quickstart (T077)**, déroulé dans Chromium émulant un téléphone à 360 px, sur la vraie pile
+(API NestJS, Postgres, émulateur de bucket, front Vite) :
+
+| Scénario | Résultat |
+|---|---|
+| 1. Historique vide, puis alimenté | Conforme : message vide, trois envois depuis l'écran d'envoi, vignettes de 480 px (portrait compris), `original_filename` nul et clé `{owner}/shelf_photo_thumbnail/{id}` en base. |
+| 2. Pagination et poids | Conforme : 55 envois, pages de 20, aucun doublon, 400 sur `limit=51`, `limit=abc` et `cursor=abc`. Première page en ~1 s, 18 vignettes chargées paresseusement pour 47 Ko. |
+| 3. Détail et retour | Conforme : photo et livres, retour sans requête de liste, position de défilement restaurée à l'identique (2943 → 2943), message « introuvable ». |
+| 4. Échec puis relance | Conforme : l'échec s'affiche, « Analyse en échec », relance avec chargement et bouton désactivé, livres affichés, entrée de liste mise à jour sans requête, bouton absent ensuite, 409 `SCAN_ALREADY_COMPLETED`, relance aussi d'un envoi jamais analysé. |
+| 5. Plafond quotidien | Conforme (`DAILY_SCAN_LIMIT=2`) : troisième photo refusée avec le message du plafond, conservée, relance refusée de même, 2 tentatives comptées en base. |
+| 6. Limite de requêtes | Conforme : dix 404 puis 429 `TOO_MANY_REQUESTS` avec `Retry-After: 60`, `/health` toujours 200. |
+| 7. Photo non affichable | Conforme, avec un faux HEIC (octets non décodables) : envoi accepté sans vignette, indicateur neutre dans la liste sans requête `/thumbnail`, indicateur dans le détail, livres affichés. |
+| 8. Téléphone (360 px) | Conforme : aucun défilement horizontal, ni sur la liste ni sur le détail. |
+
+**Écarts à la spec, tous amendés plus haut** : ADR 0012 (Tailwind, `FallbackImage`) et ADR 0013
+(`Result`) ; traduction HTTP dans `recognition-http-error.ts` ; `code` porté par le filtre global ;
+`ThrottlerGuard` surchargé plutôt qu'un filtre ; palier `write` décidé sur la méthode HTTP ;
+avertissement de vignette journalisé par le contrôleur ; plafond compté par propriétaire ;
+`UploadHistory` comme point d'entrée de la slice (le shell ne compose que lui) ; `createdAt`
+posé par l'application, en millisecondes, pour que le curseur de pagination soit exact.
+
+**Deux découvertes en cours de route** : le double effet de `StrictMode` demandait la première page
+deux fois en développement (corrigé, avec test) ; `history` et `entry` étant deux éléments JSX
+distincts du shell, React démontait l'historique en passant de l'un à l'autre (corrigé, avec un test
+de navigation).
+
+**Reste** : T076 (iPhone), la vérification sur une révision déployée que `X-Forwarded-For` forgé ne
+change pas la source comptée (research.md §9, `trust proxy` = 1), et la PR elle-même, que cette
+session n'ouvre pas.
+
