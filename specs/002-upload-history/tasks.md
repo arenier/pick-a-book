@@ -358,7 +358,7 @@ le bon résumé (quickstart, scénarios 1 et 2).
 
 ### Front : slice `upload-history`, liste
 
-- [ ] T052 [P] [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/model/history-entry.spec.ts`, pour les gardes de type sur `unknown` (sans `as`) et la conversion du résumé en `HistoryEntry` :
+- [X] T052 [P] [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/model/history-entry.spec.ts`, pour les gardes de type sur `unknown` (sans `as`) et la conversion du résumé en `HistoryEntry` :
   - `completed` avec `bookCount > 0` donne `{ kind: 'books', count }` ;
   - `completed` avec 0 donne `{ kind: 'none' }` ;
   - `failed` donne `{ kind: 'failed' }` ;
@@ -366,14 +366,14 @@ le bon résumé (quickstart, scénarios 1 et 2).
   - un corps mal formé est rejeté.
 
   Créer ensuite `apps/web/src/features/upload-history/model/history-entry.ts` et `apps/web/src/features/upload-history/model/history-state.ts`, avec l'union `loading | empty | loaded { entries, next, loadingMore, moreFailure? } | error { failure }` et le type `HistoryFailure` de data-model.md.
-- [ ] T053 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/api/history-api.spec.ts`, avec `fetch` injecté :
+- [X] T053 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/api/history-api.spec.ts`, avec `fetch` injecté :
   - `listShelfScans({ cursor? })` appelle `GET {base}/shelf-photos?limit=20[&cursor=…]` ;
   - un échec réseau, un 5xx et un corps invalide donnent chacun un échec typé ;
   - un 429 avec `TOO_MANY_REQUESTS` donne son propre échec ;
   - `thumbnailUrl(id)` encode l'id.
 
   Créer ensuite `apps/web/src/features/upload-history/api/history-api.ts`, qui lit `VITE_API_BASE_URL` comme `scan-shelf-photo.ts`. Dépend de T052.
-- [ ] T055a [P] [US1] Créer `FallbackImage` dans `libs/shared/ui/src/components/fallback-image.tsx`, spec de contrat écrite d'abord (`fallback-image.spec.tsx`) : il affiche la première source d'une liste ordonnée dans un `<img>` (`alt` en prop), passe à la suivante quand `onError` se déclenche, puis à un indicateur neutre (rôle `img`, nom accessible en prop `placeholderLabel`) quand la liste est épuisée ; une liste vide affiche l'indicateur sans requête ; changer la liste repart de la première source ; aucune chaîne en dur. L'exporter depuis `libs/shared/ui/src/index.ts` et l'ajouter au tableau de `libs/shared/ui/README.md`. Amendement du 03/10/2026 (ADR 0012).
+- [X] T055a [P] [US1] Créer `FallbackImage` dans `libs/shared/ui/src/components/fallback-image.tsx`, spec de contrat écrite d'abord (`fallback-image.spec.tsx`) : il affiche la première source d'une liste ordonnée dans un `<img>` (`alt` en prop), passe à la suivante quand `onError` se déclenche, puis à un indicateur neutre (rôle `img`, nom accessible en prop `placeholderLabel`) quand la liste est épuisée ; une liste vide affiche l'indicateur sans requête ; changer la liste repart de la première source ; aucune chaîne en dur. L'exporter depuis `libs/shared/ui/src/index.ts` et l'ajouter au tableau de `libs/shared/ui/README.md`. Amendement du 03/10/2026 (ADR 0012).
 - [ ] T054 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/history-entry-card.spec.tsx` :
   - la date et l'heure locales s'affichent ;
   - les libellés sont « 12 livres détectés », « 1 livre détecté », « Aucun livre détecté », « Analyse en échec » et « Analyse non lancée » (FR-005). Le nombre de livres est **une clé plurielle** (`outcome.books`, avec `count`), pas deux clés, pour que le test de parité vérifie les formes CLDR de chaque langue ;
