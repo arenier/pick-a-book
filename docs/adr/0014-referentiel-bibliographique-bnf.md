@@ -120,19 +120,52 @@ nommé par les conditions de bascule.
    choisit (spec 002, US2). La confiance de lecture du VLM n'entre pas dans le verdict : sans
    notice, un livre est non trouvé, quelle que soit sa confiance (FR-004).
 
+### Périmètre : éditions françaises, traductions comprises
+
+Le référentiel couvre ce que la BnF reçoit au dépôt légal, c'est-à-dire tout ce qui est publié en
+France. Les **traductions françaises** d'œuvres étrangères en font partie : elles représentent 31 %
+des notices confirmées, et se réconcilient comme le reste.
+
+Les **éditions en langue originale** (un poche anglais, espagnol ou allemand sur l'étagère) n'y
+sont que si la BnF les a acquises. Sur un échantillon de 23 titres connus en anglais, espagnol,
+allemand et italien, la BnF en confirme 18 et OpenLibrary les 23. Elle manque surtout les
+best-sellers anglophones récents. Ces éditions sont **hors du périmètre du MVP** :
+
+- elles sont rares là où le produit s'utilise : une seule sur les 552 livres du jeu de référence ;
+- les accueillir ne demande aucun changement d'architecture. La règle d'appariement ne dépend pas du
+  référentiel, `normalizeText` traite les alphabets latins accentués, et OpenLibrary s'ajouterait
+  comme second adapter derrière le même port, sans conflit à arbitrer avec la BnF.
+
+Les alphabets non latins (cyrillique, japonais…) ne sont pas mesurés et restent hors périmètre.
+
 ### Ce qui est enrichi et stocké
 
 L'enrichissement est la notice BnF retenue, lue dans la même réponse que la réconciliation. Il ne
 demande aucun appel ni aucune source de plus.
 
-| Donnée (disponibilité mesurée sur les confirmés) | Usage produit |
-|---|---|
-| ARK | identifiant stable (FR-006), clé de stockage, lien vers la notice pour l'utilisateur |
-| Titre et auteurs de référence | affichage ; complète un auteur absent de la tranche ; entrée de `curation` (bibliothèque, liste de souhaits) |
-| Éditeur, année (≈ 100 %), collection et numéro (40 %) | reconnaître l'édition : poche ou grand format, ancienne ou récente — le cœur du tri en ressourcerie |
-| ISBN (86 %) | identifier une édition exacte ; clé d'échange pour `curation` et pour une couverture future |
-| Sujets (38 %), résumé (17 %), langue | matière pour la préférence en texte libre de `curation` ; stockés quand ils existent, **jamais promis** |
-| Date de consultation | attribution exigée par la licence ; savoir d'où date une notice |
+La disponibilité est mesurée sur les 460 notices confirmées :
+
+| Donnée | Disponibilité | Usage produit |
+|---|---:|---|
+| ARK | 100 % | identifiant stable (FR-006), clé de stockage, lien vers la notice pour l'utilisateur |
+| Titre et auteurs de référence, avec leur rôle (auteur, illustrateur, traducteur) | 100 % | affichage ; complète un auteur absent de la tranche ; entrée de `curation` (bibliothèque, liste de souhaits) |
+| Éditeur, année | ≈ 100 % | reconnaître l'édition, ancienne ou récente |
+| Pages et format en centimètres | 99 % | reconnaître un poche (18 cm) d'un grand format — le cœur du tri en ressourcerie |
+| Collection et numéro | 41 % | idem : « Folio n° 7400 » |
+| ISBN | 86 % | identifier une édition exacte ; clé d'échange pour `curation` |
+| Prix neuf | 84 % | situer le prix demandé en ressourcerie |
+| Genre, d'après le cadre de classement de la Bibliographie nationale française | 85 % | regrouper et filtrer ; matière pour la préférence en texte libre de `curation` |
+| Forme ou genre RAMEAU (28 %), sujets RAMEAU (15 %), indice Dewey (19 %) | partielle | idem, plus fin quand il existe |
+| Résumé de quatrième de couverture | 17 % | affichage quand il existe, **jamais promis** |
+| Langue, langue et titre d'origine d'une traduction | 100 %, 31 % | signaler une traduction ; relier deux éditions d'une même œuvre |
+| Couverture (image servie par le catalogue de la BnF) | 20 % | aider l'utilisateur à reconnaître le livre ; jamais promise |
+| ISNI des auteurs | 94 % | relier l'auteur à sa notice d'autorité (data.bnf.fr : notice biographique, liens Wikidata, VIAF, IdRef) |
+| Date de consultation | 100 % | attribution exigée par la licence ; savoir d'où date une notice |
+
+Le code de genre du cadre de classement se regroupe proprement par rayon du jeu de référence :
+803 sur les romans et les polars, 809 en jeunesse et en ado, 805 sur les BD, 640 en cuisine, 330 en
+économie. La correspondance entre code et libellé reste à établir sur la table officielle avant de
+l'afficher.
 
 Le schéma reste dans `libs/bibliography/infrastructure` (ADR 0006). Il est fixé avec le code.
 
@@ -188,6 +221,10 @@ Le schéma reste dans `libs/bibliography/infrastructure` (ADR 0006). Il est fix�
 - **Disponibilité** : plus de **5 %** de livres « non vérifiés » sur un mois de production, ou une
   réconciliation d'étagère au-delà de **20 s** au 90ᵉ centile. Cache et format d'abord, puis
   OpenLibrary en repli de disponibilité.
+- **Éditions en langue originale** : plus de **5 %** des livres détectés en usage réel sont en
+  langue étrangère, ou ils dominent les « non trouvés ». OpenLibrary s'ajoute alors en second
+  référentiel, interrogé quand la BnF ne trouve rien. L'ADR 0010 n'est pas rouvert pour autant : les
+  deux sources ne se contredisent pas, l'une prend le relais de l'autre.
 - **Retrait de l'API SRU ou changement de licence** : OpenLibrary, en acceptant sa couverture
   (55,8 % de confirmés mesurés).
 
@@ -236,14 +273,14 @@ Le schéma reste dans `libs/bibliography/infrastructure` (ADR 0006). Il est fix�
 
 ## Question ouverte
 
-- **Couverture du livre** : l'API de couvertures d'OpenLibrary la donne par ISBN, avec une limite
-  de 100 requêtes par IP toutes les 5 minutes. OpenLibrary a une couverture pour 76 % des œuvres
-  qu'il confirme. À décider avec l'interface, selon l'usage réel qu'on en attend devant
-  l'étagère. Ce serait une seconde source **sans arbitrage de conflit** (un attribut nouveau, pas
-  disputé) : cela ne rouvre pas l'ADR 0010 à soi seul.
-- **Genre et résumé pour `curation`** : la BnF en donne peu (sujets 38 %, résumé 17 %). La
-  préférence en texte libre aura peu de matière bibliographique ; à instruire avec l'ADR de
-  `curation`.
+- **Couverture du livre** : la BnF en sert une pour 20 % des notices confirmées. L'API de
+  couvertures d'OpenLibrary la donne par ISBN, avec une limite de 100 requêtes par IP toutes les
+  5 minutes ; OpenLibrary a une couverture pour 76 % des œuvres qu'il confirme. À décider avec
+  l'interface, selon l'usage réel qu'on en attend devant l'étagère. Ce serait une seconde source
+  **sans arbitrage de conflit** (un attribut nouveau, pas disputé) : cela ne rouvre pas l'ADR 0010
+  à soi seul.
+- **Matière pour `curation`** : le genre est là (85 %), le résumé rarement (17 %). Ce qu'il faut de
+  plus à la préférence en texte libre est à instruire avec l'ADR de `curation`.
 - **Choix de la notice représentative** parmi les éditions d'une même œuvre : poche ou grand
   format, roman ou adaptation en BD cosignée par l'auteur. C'est un réglage de niveau inférieur,
   qui relève de la spec.
