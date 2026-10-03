@@ -146,7 +146,7 @@ cette phase.
 
   Dépend de T009.
 - [X] T011 Modifier `libs/recognition/application/src/lib/scan-stored-shelf-photo.use-case.ts` : il reçoit `ScanAttemptPolicy` à la construction, appelle `repository.startAttempt(id, policy)` avant de lire la photo, et ne teste plus lui-même `status !== 'pending'` (c'est `startAttempt` qui décide). Le `try` qui appelle `recordFailure` couvre désormais la lecture de la photo **et** l'appel au scanner. Fait passer T010. Dépend de T010.
-- [ ] T012 Écrire les tests (doivent échouer), contre Postgres, dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.spec.ts` :
+- [X] T012 Écrire les tests (doivent échouer), contre Postgres, dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.spec.ts` :
   - `startAttempt` insère une ligne `scan_attempts` ;
   - un envoi inconnu donne `ShelfScanNotFound`, un envoi `completed` donne `ShelfScanAlreadyProcessed` ;
   - une tentative ouverte depuis moins de 5 min donne `ShelfScanInProgress`, une tentative ouverte depuis plus de 5 min ne bloque pas ;
@@ -155,16 +155,16 @@ cette phase.
   - `markCompleted` et `markFailed` remplissent `finished_at`.
 
   Dépend de T005 et T008.
-- [ ] T013 Implémenter `startAttempt` dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.ts` :
+- [X] T013 Implémenter `startAttempt` dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.ts` :
   - une transaction qui commence par `select pg_advisory_xact_lock(<constante>)` ;
   - les vérifications, dans l'ordre du port ;
   - le plafond compté avec `started_at >= date_trunc('day', now() at time zone 'Europe/Paris') at time zone 'Europe/Paris'` ;
   - l'insertion.
 
   `settle` referme la tentative ouverte dans la même transaction que la mise à jour de `shelf_scans`. Fait passer T012. Dépend de T012.
-- [ ] T014 [P] Écrire les tests (doivent échouer) dans `apps/api/src/config/environment.spec.ts` : `DAILY_SCAN_LIMIT` absent donne `50` ; `"12"` donne `12` ; `"0"`, `"-3"`, `"1.5"` et `"abc"` font échouer le démarrage et apparaissent dans la liste des problèmes.
-- [ ] T015 Ajouter `dailyScanLimit: number` à `Environment` et sa lecture à `loadEnvironment` dans `apps/api/src/config/environment.ts`. Fait passer T014. Dépend de T014.
-- [ ] T016 Câbler la politique dans `apps/api/src/recognition/recognition.module.ts` : `ScanStoredShelfPhotoUseCase` reçoit `{ dailyLimit: environment.dailyScanLimit, timeZone: 'Europe/Paris', lease: 5 * 60 * 1000 }`. Dépend de T011 et T015.
+- [X] T014 [P] Écrire les tests (doivent échouer) dans `apps/api/src/config/environment.spec.ts` : `DAILY_SCAN_LIMIT` absent donne `50` ; `"12"` donne `12` ; `"0"`, `"-3"`, `"1.5"` et `"abc"` font échouer le démarrage et apparaissent dans la liste des problèmes.
+- [X] T015 Ajouter `dailyScanLimit: number` à `Environment` et sa lecture à `loadEnvironment` dans `apps/api/src/config/environment.ts`. Fait passer T014. Dépend de T014.
+- [X] T016 Câbler la politique dans `apps/api/src/recognition/recognition.module.ts` : `ScanStoredShelfPhotoUseCase` reçoit `{ dailyLimit: environment.dailyScanLimit, timeZone: 'Europe/Paris', lease: 5 * 60 * 1000 }`. Dépend de T011 et T015.
 
 ### `DAILY_SCAN_LIMIT` en production (Terraform)
 

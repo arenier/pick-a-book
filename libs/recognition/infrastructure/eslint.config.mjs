@@ -11,6 +11,8 @@ export default [
           ignoredFiles: [
             '{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}',
             '{projectRoot}/vitest.config.{js,cjs,mjs,ts,cts,mts}',
+            // Spec helpers, compiled with the specs and left out of the build (tsconfig.lib.json).
+            '{projectRoot}/src/**/testing/**',
           ],
         },
       ],

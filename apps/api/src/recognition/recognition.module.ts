@@ -22,6 +22,13 @@ import { ShelfPhotosController } from './shelf-photos.controller';
 const SHELF_SCAN_ARCHIVE = 'ShelfScanArchive';
 
 /**
+ * How long an open attempt blocks another analysis of the same photo: far above the ~30 s a
+ * scan takes (docs/decisions/0001), short enough that a scan whose instance died is not stuck
+ * (specs/002-upload-history, research.md §8).
+ */
+const ATTEMPT_LEASE_MS = 5 * 60 * 1000;
+
+/**
  * Where the build copies the committed migrations: next to the bundle (`vite.config.mts`),
  * so the image that runs the code also carries the schema that code expects.
  */
@@ -89,7 +96,12 @@ export class RecognitionModule implements OnApplicationShutdown {
             storage: ShelfPhotoStoragePort,
             repository: ShelfScanRepositoryPort,
             scanner: ShelfScannerPort,
-          ) => new ScanStoredShelfPhotoUseCase(storage, repository, scanner),
+          ) =>
+            new ScanStoredShelfPhotoUseCase(storage, repository, scanner, {
+              dailyLimit: environment.dailyScanLimit,
+              timeZone: 'Europe/Paris',
+              lease: ATTEMPT_LEASE_MS,
+            }),
           inject: [SHELF_PHOTO_STORAGE_PORT, SHELF_SCAN_REPOSITORY_PORT, SHELF_SCANNER_PORT],
         },
       ],

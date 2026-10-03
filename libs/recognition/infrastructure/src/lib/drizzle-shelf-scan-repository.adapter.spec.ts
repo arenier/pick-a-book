@@ -1,65 +1,12 @@
 import {
-  Author,
-  BookTitle,
-  Confidence,
-  DetectedBook,
-  OwnerId,
   ShelfScanAlreadyProcessed,
   ShelfScanId,
   ShelfScanNotFound,
-  type NewShelfScan,
 } from '@pick-a-book/recognition-domain';
-import { err, ok, unwrap } from '@pick-a-book/shared-result';
-import { Pool } from 'pg';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { err, ok } from '@pick-a-book/shared-result';
+import { describe, expect, it } from 'vitest';
 
-import { DrizzleShelfScanRepositoryAdapter } from './drizzle-shelf-scan-repository.adapter.js';
-import { MIGRATIONS_FOLDER, testDatabaseUrl } from './drizzle/test-database.js';
-import { migrateDatabase } from './migrate-database.js';
-
-/**
- * Runs against the Postgres of docker-compose, migrated with the committed migrations — the
- * same SQL the API applies at boot. Every test works on fresh ids, so runs never collide.
- *
- * Called inside each `describe`: registers the migration and the teardown of its own pool.
- */
-function aMigratedRepository() {
-  const pool = new Pool({ connectionString: testDatabaseUrl });
-
-  beforeAll(async () => {
-    await migrateDatabase(pool, MIGRATIONS_FOLDER);
-  });
-
-  afterAll(async () => {
-    await pool.end();
-  });
-
-  return { pool, repository: new DrizzleShelfScanRepositoryAdapter(pool) };
-}
-
-const ownerId = (raw: string) => unwrap(OwnerId.of(raw));
-
-const aNewScan = (): NewShelfScan => {
-  const id = ShelfScanId.generate();
-
-  return {
-    id,
-    ownerId: ownerId('default'),
-    photoBucketKey: `default/shelf_photo/${id.value}`,
-    photoMediaType: 'image/jpeg',
-    photoSizeBytes: 2_345_678,
-    originalFilename: 'IMG_0001.jpg',
-  };
-};
-
-const books = [
-  DetectedBook.of(
-    unwrap(Author.of('Annie Ernaux')),
-    unwrap(BookTitle.of('La Place')),
-    unwrap(Confidence.of(0.71)),
-  ),
-  DetectedBook.of(undefined, unwrap(BookTitle.of('Les Choses')), unwrap(Confidence.of(0.4))),
-];
+import { aMigratedRepository, aNewScan, books, ownerId } from './testing/test-repository.js';
 
 describe('DrizzleShelfScanRepositoryAdapter, creating a record', () => {
   const { pool, repository } = aMigratedRepository();
