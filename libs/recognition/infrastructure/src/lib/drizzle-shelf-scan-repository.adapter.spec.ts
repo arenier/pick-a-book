@@ -231,3 +231,26 @@ describe('DrizzleShelfScanRepositoryAdapter, reference of the stored photo', () 
     expect(rows[0]?.bucket_key).not.toContain(scan.originalFilename);
   });
 });
+
+// The schema holds that a thumbnail is the only upload without a name (`uploads_source_or_filename_check`),
+// but a nullable column no longer proves it to the type checker: a shelf photo row that has none is
+// a corrupted row, said out loud rather than read as a photo with a missing name.
+describe('DrizzleShelfScanRepositoryAdapter, reading a corrupted row', () => {
+  const { pool, repository } = aMigratedRepository();
+
+  it('refuses a shelf photo that has no original filename', async () => {
+    const scan = aNewScan();
+    await repository.createPending(scan);
+    const orphan = ShelfScanId.generate();
+    await pool.query(
+      `insert into uploads (id, owner_id, type, bucket_key, media_type, size_bytes, source_upload_id)
+       values ($1, 'default', 'shelf_photo', $2, 'image/jpeg', 10, $3)`,
+      [orphan.value, `default/shelf_photo/${orphan.value}`, scan.id.value],
+    );
+    await pool.query("insert into shelf_scans (upload_id, status) values ($1, 'pending')", [
+      orphan.value,
+    ]);
+
+    await expect(repository.get(orphan)).rejects.toThrow(/has no original filename/u);
+  });
+});

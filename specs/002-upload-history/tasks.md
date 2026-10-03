@@ -92,8 +92,8 @@ acceptés depuis ; la spec repasse avant le code)* :
 
 ## Phase 1 : Setup
 
-- [ ] T001 Ajouter `@nestjs/throttler` (version 6.x, compatible Nest 11) aux `dependencies` de `apps/api/package.json`, puis `yarn install` (research.md §9).
-- [ ] T002 [P] Documenter `DAILY_SCAN_LIMIT` dans `.env.example`, section `# --- Recognition (ADR 0005) ---` : optionnel, défaut `50`, entier ≥ 1. C'est le nombre d'analyses (envois et relances confondus) autorisées par jour, heure de Paris. Au-delà, une analyse est refusée et la photo reste conservée (spec FR-015).
+- [X] T001 Ajouter `@nestjs/throttler` (version 6.x, compatible Nest 11) aux `dependencies` de `apps/api/package.json`, puis `yarn install` (research.md §9).
+- [X] T002 [P] Documenter `DAILY_SCAN_LIMIT` dans `.env.example`, section `# --- Recognition (ADR 0005) ---` : optionnel, défaut `50`, entier ≥ 1. C'est le nombre d'analyses (envois et relances confondus) autorisées par jour, heure de Paris. Au-delà, une analyse est refusée et la photo reste conservée (spec FR-015).
 
 ---
 
@@ -107,7 +107,7 @@ cette phase.
 
 ### Schéma et migration
 
-- [ ] T003 Écrire les tests (doivent échouer), contre Postgres, dans `libs/recognition/infrastructure/src/lib/migrate-database.spec.ts`, sur une base migrée par `migrateDatabase` (analyse, C1) :
+- [X] T003 Écrire les tests (doivent échouer), contre Postgres, dans `libs/recognition/infrastructure/src/lib/migrate-database.spec.ts`, sur une base migrée par `migrateDatabase` (analyse, C1) :
   - une ligne `uploads` avec `original_filename` null **et** `source_upload_id` null est rejetée par la contrainte ;
   - une ligne avec les deux renseignés est rejetée aussi ;
   - une ligne de vignette (`original_filename` null, `source_upload_id` vers une photo existante) est acceptée ;
@@ -116,7 +116,7 @@ cette phase.
   - l'index `uploads_owner_type_created_idx` existe (lu dans `pg_indexes`).
 
   Ces règles sont tenues par la base, pas seulement par l'adapter, comme la contrainte `detected_books` ⇔ `completed` de la spec 001 : elles ont leur propre test.
-- [ ] T004 Modifier `libs/recognition/infrastructure/src/lib/drizzle/schema.ts` (data-model.md, *infrastructure*) :
+- [X] T004 Modifier `libs/recognition/infrastructure/src/lib/drizzle/schema.ts` (data-model.md, *infrastructure*) :
   - `uploads.originalFilename` devient nullable ;
   - ajouter `sourceUploadId: uuid('source_upload_id')`, nullable, `.unique()`, `.references(() => uploads.id)` ;
   - ajouter `check('uploads_source_or_filename_check', sql\`(${table.sourceUploadId} is null) = (${table.originalFilename} is not null)\`)` ;
@@ -124,7 +124,7 @@ cette phase.
   - ajouter la table `scan_attempts` : `id uuid pk defaultRandom`, `upload_id uuid not null references uploads(id)`, `started_at timestamptz not null defaultNow`, `finished_at timestamptz null`, un index sur `started_at` et un index partiel sur `upload_id where finished_at is null`.
 
   Adapter `toRecord` dans `drizzle-shelf-scan-repository.adapter.ts` : la colonne devenue nullable impose au typage de traiter `null`. Une ligne `shelf_photo` sans nom lève une erreur explicite. La contrainte de T003 rend ce cas impossible en base, mais la vérification prouve le type au lieu de l'affirmer. Dépend de T003.
-- [ ] T005 Générer la migration avec `yarn db:generate`, la renommer `0001_upload_history.sql` dans `libs/recognition/infrastructure/src/lib/drizzle/migrations/` et vérifier qu'elle ne réécrit aucune ligne existante. Fait passer T003. Les specs existantes de l'adapter Drizzle doivent toujours passer sur le schéma migré. Dépend de T004.
+- [X] T005 Générer la migration avec `yarn db:generate`, la renommer `0001_upload_history.sql` dans `libs/recognition/infrastructure/src/lib/drizzle/migrations/` et vérifier qu'elle ne réécrit aucune ligne existante. Fait passer T003. Les specs existantes de l'adapter Drizzle doivent toujours passer sur le schéma migré. Dépend de T004.
 
 ### Plafond quotidien et tentatives d'analyse (FR-015, research.md §8)
 

@@ -147,6 +147,11 @@ function toRecord({ upload, scan }: Row): ShelfScanRecord {
   if (!isShelfPhotoMediaType(upload.mediaType)) {
     throw new Error(`Stored shelf scan ${upload.id} has an unsupported media type`);
   }
+  // Only a derived file (a thumbnail) has no original name, and `uploads_source_or_filename_check`
+  // keeps one from being a shelf photo. The column is nullable all the same: say it, don't assume.
+  if (upload.originalFilename === null) {
+    throw new Error(`Stored shelf scan ${upload.id} has no original filename`);
+  }
 
   const reference = {
     id: unwrap(ShelfScanId.of(upload.id)),
