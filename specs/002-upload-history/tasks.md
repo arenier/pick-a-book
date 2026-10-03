@@ -425,9 +425,9 @@ photo et ses livres s'affichent. Ouvrir un id inconnu et constater le message «
   - après `GET /shelf-photos/{id}` et `GET …/photo`, l'état des doubles est inchangé (FR-013).
 
   Puis ajouter les deux routes à `apps/api/src/recognition/shelf-photos.controller.ts`, avec `@SkipThrottle({ write: true })`. Traduire `ShelfPhotoStorageFailed` en 502 dans `apps/api/src/recognition/recognition-exception.filter.ts` si ce n'est pas déjà le cas. Enregistrer `GetShelfScanUseCase` dans `apps/api/src/recognition/recognition.module.ts`. Dépend de T058 et T060.
-- [ ] T062 [P] [US2] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/api/history-api.spec.ts` : `getShelfScan(id)` rend `found`, `notFound` (404) ou un échec typé, et valide le corps par garde de type ; `photoUrl(id)` encode l'id. Puis étendre `apps/web/src/features/upload-history/api/history-api.ts`.
-- [ ] T063 [US2] Créer `apps/web/src/features/upload-history/ui/detected-books-list.tsx`, une copie locale de l'affichage de `photo-upload/ui/scan-result.tsx` (titre, puis « — auteur » si connu ; « Aucun livre détecté sur cette photo. » si vide), accompagnée de `detected-books-list.spec.tsx` écrit d'abord (research.md §11).
-- [ ] T064 [US2] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/entry-detail-screen.spec.tsx` :
+- [X] T062 [P] [US2] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/api/history-api.spec.ts` : `getShelfScan(id)` rend `found`, `notFound` (404) ou un échec typé, et valide le corps par garde de type ; `photoUrl(id)` encode l'id. Puis étendre `apps/web/src/features/upload-history/api/history-api.ts`.
+- [X] T063 [US2] Créer `apps/web/src/features/upload-history/ui/detected-books-list.tsx`, une copie locale de l'affichage de `photo-upload/ui/scan-result.tsx` (titre, puis « — auteur » si connu ; « Aucun livre détecté sur cette photo. » si vide), accompagnée de `detected-books-list.spec.tsx` écrit d'abord (research.md §11).
+- [X] T064 [US2] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/entry-detail-screen.spec.tsx` :
   - un chargement s'affiche d'abord ;
   - `completed` affiche la photo (`<img src={photoUrl}>`) et la liste des livres ;
   - `completed` vide affiche « Aucun livre détecté » ;
@@ -440,7 +440,7 @@ photo et ses livres s'affichent. Ouvrir un id inconnu et constater le message «
   - un 429 `TOO_MANY_REQUESTS` affiche « Trop de demandes en peu de temps. Patientez une minute puis réessayez. », distinct du message de panne (FR-014, analyse G2).
 
   Créer ensuite `apps/web/src/features/upload-history/ui/entry-detail-screen.tsx`. Dépend de T062 et T063.
-- [ ] T065 [US2] Brancher la route `entry` dans `apps/web/src/app/app.tsx`. `HistoryScreen` reste **monté** (masqué par l'attribut `hidden`) quand le détail est affiché, et la slice mémorise `window.scrollY` au départ vers un détail pour le restaurer au retour (research.md §3). Tests d'abord dans `apps/web/src/app/app.spec.tsx` et `apps/web/src/features/upload-history/ui/history-screen.spec.tsx` :
+- [X] T065 [US2] Brancher la route `entry` dans `apps/web/src/app/app.tsx`. `HistoryScreen` reste **monté** (masqué par l'attribut `hidden`) quand le détail est affiché, et la slice mémorise `window.scrollY` au départ vers un détail pour le restaurer au retour (research.md §3). Tests d'abord dans `apps/web/src/app/app.spec.tsx` et `apps/web/src/features/upload-history/ui/history-screen.spec.tsx` :
   - aller de `#/historique` à `#/historique/{id}` puis revenir ne refait **aucune** requête de liste ;
   - les entrées déjà chargées, y compris la deuxième page, sont toujours là ;
   - la position de défilement est restaurée.

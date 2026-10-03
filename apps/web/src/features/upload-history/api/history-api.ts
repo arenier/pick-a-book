@@ -1,5 +1,6 @@
 import { isRecord, isWireSummary, toHistoryEntry, type WireSummary } from '../model/history-entry';
-import type { PageAnswer } from '../model/history-state';
+import { isWireDetail, toEntryDetail } from '../model/entry-detail';
+import type { DetailAnswer, PageAnswer } from '../model/history-state';
 import { ask, baseUrlOf, failureOf, type ApiOptions } from './http';
 
 /** How many uploads a page asks for; the API caps it at 50 (contracts §1). */
@@ -29,6 +30,28 @@ export async function listShelfScans(
   }
 
   return { status: 'error', failure: failureOf(answer) };
+}
+
+/**
+ * The detail of one upload (`GET /shelf-photos/{id}`, contracts §2): how its analysis ended and,
+ * when it completed, its books. A 404 is `notFound`, not a failure — a stale link has a screen of
+ * its own. Never rejects, and never a sentence.
+ */
+export async function getShelfScan(id: string, options: ApiOptions = {}): Promise<DetailAnswer> {
+  const answer = await ask(options, `/shelf-photos/${encodeURIComponent(id)}`);
+  if (answer.reached && answer.status === 200 && isWireDetail(answer.body)) {
+    return { status: 'found', ...toEntryDetail(answer.body) };
+  }
+  if (answer.reached && answer.status === 404) {
+    return { status: 'notFound' };
+  }
+
+  return { status: 'error', failure: failureOf(answer) };
+}
+
+/** Where the photo of an upload is, to be loaded in an `<img>` like its thumbnail (contracts §3). */
+export function photoUrl(id: string, options: ApiOptions = {}): string {
+  return `${baseUrlOf(options)}/shelf-photos/${encodeURIComponent(id)}/photo`;
 }
 
 /**

@@ -23,5 +23,19 @@
     "offline": "Cannot reach the server. Check your connection and try again.",
     "rateLimited": "Too many requests in a short time. Wait a minute, then try again.",
     "unexpected": "Something unexpected went wrong. Try again in a few moments."
+  },
+  "books": {
+    "none": "No book detected on this photo.",
+    "byAuthor": " — {{author}}"
+  },
+  "detail": {
+    "loading": "Loading the upload…",
+    "back": "History",
+    "photo": "Shelf photo that was sent",
+    "photoUnavailable": "Photo unavailable",
+    "failed": "The analysis of this photo failed.",
+    "notStarted": "The analysis of this photo was not started.",
+    "notFound": "This upload cannot be found.",
+    "retry": "Try again"
   }
 }

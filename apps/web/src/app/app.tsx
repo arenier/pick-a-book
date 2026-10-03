@@ -2,7 +2,7 @@ import { useMessages } from '@pick-a-book/shared-i18n';
 import { buttonVariants, cn } from '@pick-a-book/shared-ui';
 
 import { PhotoUploadScreen } from '../features/photo-upload/ui/photo-upload-screen';
-import { HistoryScreen } from '../features/upload-history/ui/history-screen';
+import { UploadHistory } from '../features/upload-history/ui/upload-history';
 import { hrefFor, type Route } from './routes';
 import { useHashRoute } from './use-hash-route';
 
@@ -21,9 +21,16 @@ export function App() {
       <p className="text-muted-foreground">{t('tagline')}</p>
       <Navigation route={route} />
       {route.name === 'upload' && <PhotoUploadScreen />}
-      {route.name === 'history' && <HistoryScreen />}
+      {/* One element for both routes: the history must outlive a move from the list to an upload
+          and back, which two elements at two places in the tree would not (research.md §3). */}
+      {route.name !== 'upload' && <UploadHistory entryId={entryIdOf(route)} />}
     </main>
   );
+}
+
+/** The upload a route names, if it names one: the list has none. */
+function entryIdOf(route: Route): string | undefined {
+  return route.name === 'entry' ? route.id : undefined;
 }
 
 /** One link to the other side: the history from the upload screen, a new photo from anywhere else. */

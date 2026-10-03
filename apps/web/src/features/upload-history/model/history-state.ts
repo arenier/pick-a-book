@@ -1,3 +1,4 @@
+import type { EntryDetail } from './entry-detail';
 import type { HistoryEntry } from './history-entry';
 
 /**
@@ -23,6 +24,15 @@ export type PageAnswer =
   | { readonly status: 'error'; readonly failure: HistoryFailure };
 
 /**
+ * What a request for the detail of one upload comes back with. A 404 is not a failure: the link
+ * is stale or wrong, and the screen says so (spec, Edge Cases).
+ */
+export type DetailAnswer =
+  | ({ readonly status: 'found' } & EntryDetail)
+  | { readonly status: 'notFound' }
+  | { readonly status: 'error'; readonly failure: HistoryFailure };
+
+/**
  * What the history screen shows — one state at a time. `error` is never `empty` (FR-010): an
  * history that could not be loaded must not read as an history with nothing in it.
  */
@@ -38,4 +48,14 @@ export type HistoryState =
       /** Set when the next page could not be loaded: the entries stay, with a local retry. */
       readonly moreFailure?: HistoryFailure;
     }
+  | { readonly status: 'error'; readonly failure: HistoryFailure };
+
+/**
+ * What the detail screen shows — one state at a time. `notFound` and `error` are told apart: a
+ * stale link and a server out of reach are not the same thing to the user.
+ */
+export type EntryDetailState =
+  | { readonly status: 'loading' }
+  | ({ readonly status: 'loaded' } & EntryDetail)
+  | { readonly status: 'notFound' }
   | { readonly status: 'error'; readonly failure: HistoryFailure };

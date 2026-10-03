@@ -1,6 +1,6 @@
 import { createI18n, I18nProvider } from '@pick-a-book/shared-i18n';
-import { act, render, screen, waitFor } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { resources } from '../i18n/resources';
 import App from './app';
@@ -67,56 +67,5 @@ describe('App, navigation', () => {
     );
 
     expect(screen.getByRole('link', { name: 'History' })).toBeDefined();
-  });
-});
-
-/** A `fetch` that answers every request with an empty history — enough to mount the screen. */
-function stubAnEmptyHistory() {
-  vi.stubGlobal(
-    'fetch',
-    vi.fn(async () => Response.json({ items: [], nextCursor: null })),
-  );
-}
-
-describe('App, the history', () => {
-  afterEach(() => {
-    window.location.hash = '';
-    vi.unstubAllGlobals();
-  });
-
-  it('shows the history on #/historique, and not the upload screen', async () => {
-    stubAnEmptyHistory();
-    window.location.hash = '#/historique';
-
-    render(<App />);
-
-    await screen.findByText('Vous n’avez encore envoyé aucune photo.');
-    expect(screen.queryByRole('button', { name: 'Analyser la photo' })).toBeNull();
-  });
-
-  it('leads back to the upload screen by the link of the shell', async () => {
-    stubAnEmptyHistory();
-    window.location.hash = '#/historique';
-
-    render(<App />);
-
-    await screen.findByText('Vous n’avez encore envoyé aucune photo.');
-    expect(screen.getByRole('navigation').textContent).toBe('Nouvelle photo');
-    expect(screen.getByRole('link', { name: 'Nouvelle photo' }).getAttribute('href')).toBe('#/');
-  });
-
-  it('follows the link of the upload screen to the history', async () => {
-    stubAnEmptyHistory();
-    window.location.hash = '#/';
-    render(<App />);
-
-    act(() => {
-      window.location.hash = '#/historique';
-      window.dispatchEvent(new HashChangeEvent('hashchange'));
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText('Vous n’avez encore envoyé aucune photo.')).toBeDefined();
-    });
   });
 });

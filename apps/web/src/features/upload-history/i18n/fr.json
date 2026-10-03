@@ -24,5 +24,19 @@
     "offline": "Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.",
     "rateLimited": "Trop de demandes en peu de temps. Patientez une minute puis réessayez.",
     "unexpected": "Une erreur inattendue est survenue. Réessayez dans quelques instants."
+  },
+  "books": {
+    "none": "Aucun livre détecté sur cette photo.",
+    "byAuthor": " — {{author}}"
+  },
+  "detail": {
+    "loading": "Chargement de l’envoi…",
+    "back": "Historique",
+    "photo": "Photo de l’étagère envoyée",
+    "photoUnavailable": "Photo indisponible",
+    "failed": "L’analyse de cette photo a échoué.",
+    "notStarted": "L’analyse de cette photo n’a pas été lancée.",
+    "notFound": "Cet envoi est introuvable.",
+    "retry": "Réessayer"
   }
 }
