@@ -4,10 +4,22 @@ import type { DailyScanQuotaExceeded } from './daily-scan-quota-exceeded.error.j
 import type { DetectedBook } from './detected-book.js';
 import type { OwnerId } from './owner-id.js';
 import type { ShelfPhotoMediaType } from './shelf-photo.js';
+import type { ThumbnailMediaType } from './shelf-photo-thumbnail.js';
 import type { ShelfScanAlreadyProcessed } from './shelf-scan-already-processed.error.js';
 import type { ShelfScanId } from './shelf-scan-id.js';
 import type { ShelfScanInProgress } from './shelf-scan-in-progress.error.js';
 import type { ShelfScanNotFound } from './shelf-scan-not-found.error.js';
+
+/**
+ * The reference of the thumbnail the browser made of a photo (specs/002-upload-history,
+ * research.md §5, §6): where it is in the bucket and what it is. Its id is the photo's — a
+ * thumbnail has no identity of its own outside `infrastructure`.
+ */
+export interface StoredThumbnail {
+  readonly bucketKey: string;
+  readonly mediaType: ThumbnailMediaType;
+  readonly sizeBytes: number;
+}
 
 interface StoredShelfPhoto {
   readonly id: ShelfScanId;
@@ -23,6 +35,11 @@ interface StoredShelfPhoto {
   readonly originalFilename: string;
   /** When the photo was stored — not when its scan ended. */
   readonly createdAt: Date;
+  /**
+   * The thumbnail, if a valid one came with the photo. Absent for every scan sent before
+   * thumbnails, and for a photo the browser could not shrink.
+   */
+  readonly thumbnail: StoredThumbnail | undefined;
 }
 
 /**
@@ -40,8 +57,38 @@ export type ShelfScanRecord = StoredShelfPhoto &
     | { readonly status: 'failed'; readonly detectedBooks: undefined }
   );
 
-/** What it takes to create a pending record: everything the scan has not decided yet. */
-export type NewShelfScan = Omit<StoredShelfPhoto, 'createdAt'>;
+/**
+ * What it takes to create a pending record: everything the scan has not decided yet. The
+ * thumbnail is the one thing it may go without.
+ */
+export type NewShelfScan = Omit<StoredShelfPhoto, 'createdAt' | 'thumbnail'> & {
+  readonly thumbnail?: StoredThumbnail;
+};
+
+/**
+ * A position in the history: the date of the last scan seen, and its id to tell apart two scans
+ * sent at the same instant. A cursor, not an offset, so that a scan arriving while the user
+ * scrolls neither skips nor repeats one (research.md §4).
+ */
+export interface ShelfScanCursor {
+  readonly createdAt: Date;
+  readonly id: ShelfScanId;
+}
+
+export interface ShelfScanPageQuery {
+  readonly ownerId: OwnerId;
+  /** How many scans at most; validated, in 1..50, by the use case. */
+  readonly limit: number;
+  /** Where the previous page ended; absent for the first page. */
+  readonly after: ShelfScanCursor | undefined;
+}
+
+export interface ShelfScanPage {
+  /** Newest first — by date, then by id. */
+  readonly records: readonly ShelfScanRecord[];
+  /** Where this page ended, or absent on the last one. */
+  readonly next: ShelfScanCursor | undefined;
+}
 
 /** Why a record could not move: it does not exist, or it already has an outcome. */
 export type ShelfScanTransitionFailure = ShelfScanNotFound | ShelfScanAlreadyProcessed;
@@ -83,6 +130,8 @@ export interface ScanAttemptPolicy {
 export interface ShelfScanRepositoryPort {
   createPending(scan: NewShelfScan): Promise<void>;
   get(id: ShelfScanId): Promise<ShelfScanRecord | undefined>;
+  /** One page of an owner's scans, newest first. Reads only. */
+  list(query: ShelfScanPageQuery): Promise<ShelfScanPage>;
   startAttempt(
     id: ShelfScanId,
     policy: ScanAttemptPolicy,

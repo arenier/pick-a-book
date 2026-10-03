@@ -1,7 +1,9 @@
 import {
   ShelfPhoto,
+  ShelfPhotoThumbnail,
   type ShelfPhotoMediaType,
   type ShelfPhotoStoragePort,
+  type ThumbnailMediaType,
 } from '@pick-a-book/recognition-domain';
 import { unwrap } from '@pick-a-book/shared-result';
 
@@ -14,6 +16,7 @@ import { unwrap } from '@pick-a-book/shared-result';
  */
 export class InMemoryShelfPhotoStorage implements ShelfPhotoStoragePort {
   readonly objects = new Map<string, ShelfPhoto>();
+  readonly thumbnails = new Map<string, ShelfPhotoThumbnail>();
 
   async store(photo: ShelfPhoto, key: string): Promise<void> {
     this.objects.set(key, photo);
@@ -26,5 +29,21 @@ export class InMemoryShelfPhotoStorage implements ShelfPhotoStoragePort {
     }
 
     return unwrap(ShelfPhoto.of(photo.bytes, mediaType));
+  }
+
+  async storeThumbnail(thumbnail: ShelfPhotoThumbnail, key: string): Promise<void> {
+    this.thumbnails.set(key, thumbnail);
+  }
+
+  async retrieveThumbnail(
+    key: string,
+    mediaType: ThumbnailMediaType,
+  ): Promise<ShelfPhotoThumbnail> {
+    const thumbnail = this.thumbnails.get(key);
+    if (thumbnail === undefined) {
+      throw new Error(`no object at ${key}`);
+    }
+
+    return unwrap(ShelfPhotoThumbnail.of(thumbnail.bytes, mediaType));
   }
 }

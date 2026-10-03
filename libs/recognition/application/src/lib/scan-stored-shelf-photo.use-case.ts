@@ -1,7 +1,6 @@
 import {
   ShelfScanId,
   ShelfScanNotFound,
-  type DetectedBook,
   type ScanAttemptRefusal,
   type ScanAttemptPolicy,
   type ShelfPhotoStoragePort,
@@ -11,8 +10,9 @@ import {
 } from '@pick-a-book/recognition-domain';
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
-import type { DetectedBookDto, ScanShelfResult } from './scan-shelf.dto.js';
+import type { ScanShelfResult } from './scan-shelf.dto.js';
 import type { ScanStoredShelfPhotoCommand } from './shelf-photo.dto.js';
+import { toDetectedBookDto } from './to-shelf-scan-dto.js';
 
 /**
  * Why a stored photo was not scanned, or its scan not kept — each one an HTTP status. The
@@ -90,7 +90,7 @@ export class ScanStoredShelfPhotoUseCase {
         return marked;
       }
 
-      return ok({ books: scanned.value.map((book) => toDto(book)) });
+      return ok({ books: scanned.value.map((book) => toDetectedBookDto(book)) });
     } finally {
       if (!recorded) {
         await this.recordFailure(id);
@@ -115,12 +115,4 @@ export class ScanStoredShelfPhotoUseCase {
       console.error(reason, error);
     }
   }
-}
-
-function toDto(book: DetectedBook): DetectedBookDto {
-  return {
-    author: book.author?.value,
-    title: book.title.value,
-    confidence: book.confidence.value,
-  };
 }

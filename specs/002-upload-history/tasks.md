@@ -259,11 +259,11 @@ le bon résumé (quickstart, scénarios 1 et 2).
 
 ### Domaine : vignette et lecture paginée
 
-- [ ] T030 [P] [US1] Écrire les tests (doivent échouer) dans `libs/recognition/domain/src/lib/shelf-photo-thumbnail.spec.ts` :
+- [X] T030 [P] [US1] Écrire les tests (doivent échouer) dans `libs/recognition/domain/src/lib/shelf-photo-thumbnail.spec.ts` :
   - `ShelfPhotoThumbnail.of(bytes, mediaType)` accepte `'image/jpeg' | 'image/png' | 'image/webp'` jusqu'à **262 144 octets** (256 Ko) inclus ;
   - il rejette un contenu vide, 262 145 octets, `image/heic` et tout autre type, avec `InvalidShelfPhotoThumbnail`.
-- [ ] T031 [US1] Créer `libs/recognition/domain/src/lib/shelf-photo-thumbnail.ts` (avec le type `ThumbnailMediaType`) et `libs/recognition/domain/src/lib/invalid-shelf-photo-thumbnail.error.ts`, puis les exporter. Fait passer T030. Dépend de T030.
-- [ ] T032 [US1] Étendre `libs/recognition/domain/src/lib/shelf-scan-repository.port.spec.ts` (test d'abord) puis `shelf-scan-repository.port.ts` :
+- [X] T031 [US1] Créer `libs/recognition/domain/src/lib/shelf-photo-thumbnail.ts` (avec le type `ThumbnailMediaType`) et `libs/recognition/domain/src/lib/invalid-shelf-photo-thumbnail.error.ts`, puis les exporter. Fait passer T030. Dépend de T030.
+- [X] T032 [US1] Étendre `libs/recognition/domain/src/lib/shelf-scan-repository.port.spec.ts` (test d'abord) puis `shelf-scan-repository.port.ts` :
   - `StoredThumbnail { bucketKey: string; mediaType: ThumbnailMediaType; sizeBytes: number }` ;
   - `ShelfScanRecord.thumbnail: StoredThumbnail | undefined` et `NewShelfScan.thumbnail?: StoredThumbnail` ;
   - `ShelfScanCursor { createdAt: Date; id: ShelfScanId }` et `ShelfScanPageQuery { ownerId: OwnerId; limit: number; after: ShelfScanCursor | undefined }` ;
@@ -271,22 +271,22 @@ le bon résumé (quickstart, scénarios 1 et 2).
   - `list(query): Promise<ShelfScanPage>`, trié `created_at desc, id desc`.
 
   Dépend de T031.
-- [ ] T033 [US1] Étendre `libs/recognition/domain/src/lib/shelf-photo-storage.port.spec.ts` (test d'abord) puis `shelf-photo-storage.port.ts` : `storeThumbnail(thumbnail: ShelfPhotoThumbnail, key: string): Promise<void>` et `retrieveThumbnail(key: string, mediaType: ThumbnailMediaType): Promise<ShelfPhotoThumbnail>`. Ajouter l'erreur `ShelfPhotoThumbnailNotFound(id)` dans `libs/recognition/domain/src/lib/shelf-photo-thumbnail-not-found.error.ts`. Dépend de T031.
-- [ ] T034 [US1] Étendre les doubles en mémoire pour `list`, en respectant l'ordre et le curseur, pour `thumbnail`, `storeThumbnail` et `retrieveThumbnail`, dans `libs/recognition/application/src/lib/testing/in-memory-shelf-scan-repository.ts`, `libs/recognition/application/src/lib/testing/in-memory-shelf-photo-storage.ts` et `apps/api/src/recognition/testing/shelf-photos-controller.fixture.ts`. Dépend de T032 et T033.
+- [X] T033 [US1] Étendre `libs/recognition/domain/src/lib/shelf-photo-storage.port.spec.ts` (test d'abord) puis `shelf-photo-storage.port.ts` : `storeThumbnail(thumbnail: ShelfPhotoThumbnail, key: string): Promise<void>` et `retrieveThumbnail(key: string, mediaType: ThumbnailMediaType): Promise<ShelfPhotoThumbnail>`. Ajouter l'erreur `ShelfPhotoThumbnailNotFound(id)` dans `libs/recognition/domain/src/lib/shelf-photo-thumbnail-not-found.error.ts`. Dépend de T031.
+- [X] T034 [US1] Étendre les doubles en mémoire pour `list`, en respectant l'ordre et le curseur, pour `thumbnail`, `storeThumbnail` et `retrieveThumbnail`, dans `libs/recognition/application/src/lib/testing/in-memory-shelf-scan-repository.ts`, `libs/recognition/application/src/lib/testing/in-memory-shelf-photo-storage.ts` et `apps/api/src/recognition/testing/shelf-photos-controller.fixture.ts`. Dépend de T032 et T033.
 
 ### Application : envoi avec vignette, liste, lecture de la vignette
 
-- [ ] T035 [P] [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/store-shelf-photo.use-case.spec.ts` :
+- [X] T035 [P] [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/store-shelf-photo.use-case.spec.ts` :
   - avec une vignette valide, elle est stockée sous `{ownerId}/shelf_photo_thumbnail/{id}` après la photo, et `createPending` reçoit `thumbnail: { bucketKey, mediaType, sizeBytes }` ;
   - avec une vignette invalide (HEIC, 300 Ko, vide), l'envoi réussit **sans** vignette, et un avertissement est journalisé (logger injecté) ;
   - sans vignette, le comportement de la spec 001 est inchangé ;
   - une photo invalide ne stocke ni photo ni vignette (spec 001, FR-013).
 
   Dépend de T034.
-- [ ] T036 [US1] Étendre `StoreShelfPhotoCommand` avec `thumbnail?: { bytes: Uint8Array; mediaType: string }` dans `libs/recognition/application/src/lib/shelf-photo.dto.ts`, et `libs/recognition/application/src/lib/store-shelf-photo.use-case.ts` en conséquence. Fait passer T035. Dépend de T035.
-- [ ] T037 [P] [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/shelf-scan-cursor.spec.ts` : aller-retour `encodeCursor` / `decodeCursor` en base64url de `createdAt ISO|uuid`. `decodeCursor` lève `InvalidShelfScanCursor` sur une chaîne non base64url, un séparateur absent, une date invalide ou un id qui n'est pas un UUID.
-- [ ] T038 [US1] Créer `libs/recognition/application/src/lib/shelf-scan-cursor.ts` et `libs/recognition/application/src/lib/invalid-shelf-scan-cursor.error.ts`. Fait passer T037. Dépend de T037.
-- [ ] T039 [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/list-shelf-scans.use-case.spec.ts` :
+- [X] T036 [US1] Étendre `StoreShelfPhotoCommand` avec `thumbnail?: { bytes: Uint8Array; mediaType: string }` dans `libs/recognition/application/src/lib/shelf-photo.dto.ts`, et `libs/recognition/application/src/lib/store-shelf-photo.use-case.ts` en conséquence. Fait passer T035. Dépend de T035.
+- [X] T037 [P] [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/shelf-scan-cursor.spec.ts` : aller-retour `encodeCursor` / `decodeCursor` en base64url de `createdAt ISO|uuid`. `decodeCursor` lève `InvalidShelfScanCursor` sur une chaîne non base64url, un séparateur absent, une date invalide ou un id qui n'est pas un UUID.
+- [X] T038 [US1] Créer `libs/recognition/application/src/lib/shelf-scan-cursor.ts` et `libs/recognition/application/src/lib/invalid-shelf-scan-cursor.error.ts`. Fait passer T037. Dépend de T037.
+- [X] T039 [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/list-shelf-scans.use-case.spec.ts` :
   - `limit` absent donne 20 ; `limit` hors de 1..50 ou non entier donne `InvalidShelfScanPageSize` ;
   - `list` reçoit l'`ownerId` configuré ;
   - chaque `ShelfScanSummaryDto` vaut `{ id, createdAt (ISO), outcome, bookCount?, hasThumbnail }`, avec `bookCount` présent si et seulement si `outcome === 'completed'` (0 pour une liste vide) ;
@@ -295,14 +295,14 @@ le bon résumé (quickstart, scénarios 1 et 2).
   - trois pages successives couvrent 45 envois sans doublon ni trou.
 
   Dépend de T034 et T038.
-- [ ] T040 [US1] Créer `libs/recognition/application/src/lib/shelf-scan-history.dto.ts` avec `ShelfScanOutcomeDto`, `ShelfScanSummaryDto`, `ShelfScanPageDto`, `ShelfScanDetailDto` et `StoredImageDto`, en reprenant les formes de data-model.md mot pour mot. Créer aussi `libs/recognition/application/src/lib/list-shelf-scans.use-case.ts` et `InvalidShelfScanPageSize`, puis exporter le tout depuis `libs/recognition/application/src/index.ts`. Fait passer T039. Dépend de T039.
-- [ ] T041 [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.spec.ts`, pour le type `'thumbnail'` :
+- [X] T040 [US1] Créer `libs/recognition/application/src/lib/shelf-scan-history.dto.ts` avec `ShelfScanOutcomeDto`, `ShelfScanSummaryDto`, `ShelfScanPageDto`, `ShelfScanDetailDto` et `StoredImageDto`, en reprenant les formes de data-model.md mot pour mot. Créer aussi `libs/recognition/application/src/lib/list-shelf-scans.use-case.ts` et `InvalidShelfScanPageSize`, puis exporter le tout depuis `libs/recognition/application/src/index.ts`. Fait passer T039. Dépend de T039.
+- [X] T041 [US1] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.spec.ts`, pour le type `'thumbnail'` :
   - rend `{ bytes, mediaType }` ;
   - un envoi sans vignette donne `ShelfPhotoThumbnailNotFound` ;
   - un id inconnu, malformé ou d'un autre propriétaire donne `ShelfScanNotFound`.
 
   Dépend de T034.
-- [ ] T042 [US1] Créer `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.ts`, avec `execute({ id, kind: 'thumbnail' })` pour l'instant ; US2 ajoute `'photo'` (T060). Fait passer T041. Dépend de T041.
+- [X] T042 [US1] Créer `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.ts`, avec `execute({ id, kind: 'thumbnail' })` pour l'instant ; US2 ajoute `'photo'` (T060). Fait passer T041. Dépend de T041.
 
 ### Infrastructure : vignette dans le bucket et en base, page par curseur
 

@@ -1,4 +1,5 @@
 import type { ShelfPhoto, ShelfPhotoMediaType } from './shelf-photo.js';
+import type { ShelfPhotoThumbnail, ThumbnailMediaType } from './shelf-photo-thumbnail.js';
 
 /**
  * Outbound port that keeps shelf photos (ADR 0004: a bucket).
@@ -13,6 +14,8 @@ import type { ShelfPhoto, ShelfPhotoMediaType } from './shelf-photo.js';
 export interface ShelfPhotoStoragePort {
   store(photo: ShelfPhoto, key: string): Promise<void>;
   retrieve(key: string, mediaType: ShelfPhotoMediaType): Promise<ShelfPhoto>;
+  storeThumbnail(thumbnail: ShelfPhotoThumbnail, key: string): Promise<void>;
+  retrieveThumbnail(key: string, mediaType: ThumbnailMediaType): Promise<ShelfPhotoThumbnail>;
 }
 
 /** Injection token for the port — a string, the domain knowing no container. */

@@ -1,6 +1,6 @@
 import { InvalidShelfPhoto, OwnerId, ShelfScanId } from '@pick-a-book/recognition-domain';
 import { err, unwrap } from '@pick-a-book/shared-result';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { StoreShelfPhotoUseCase } from './store-shelf-photo.use-case.js';
 import { InMemoryShelfPhotoStorage } from './testing/in-memory-shelf-photo-storage.js';
@@ -89,6 +89,84 @@ describe('StoreShelfPhotoUseCase, with an image it refuses', () => {
     );
 
     expect(storage.objects.size).toBe(0);
+    expect(repository.records.size).toBe(0);
+  });
+});
+
+const aThumbnail = { bytes: new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 9]), mediaType: 'image/jpeg' };
+
+// specs/002-upload-history, research.md §5, §6: the browser sends a smaller image along with the
+// photo; it is kept under its own key, and referenced by the record.
+describe('StoreShelfPhotoUseCase, with a thumbnail', () => {
+  it('stores it under {ownerId}/shelf_photo_thumbnail/{id}, after the photo', async () => {
+    const { storage, useCase } = aUseCase('someone');
+    const photo = vi.spyOn(storage, 'store');
+    const thumbnail = vi.spyOn(storage, 'storeThumbnail');
+
+    const { id } = unwrap(await useCase.execute({ ...aJpeg, thumbnail: aThumbnail }));
+
+    expect([...storage.thumbnails.keys()]).toStrictEqual([`someone/shelf_photo_thumbnail/${id}`]);
+    expect(photo).toHaveBeenCalledBefore(thumbnail);
+  });
+
+  it('has the record reference it, by key, media type and weight', async () => {
+    const { repository, useCase } = aUseCase('someone');
+
+    const { id } = unwrap(await useCase.execute({ ...aJpeg, thumbnail: aThumbnail }));
+
+    const record = await repository.get(unwrap(ShelfScanId.of(id)));
+    expect(record?.thumbnail).toStrictEqual({
+      bucketKey: `someone/shelf_photo_thumbnail/${id}`,
+      mediaType: 'image/jpeg',
+      sizeBytes: 5,
+    });
+  });
+
+  it('answers with the id alone', async () => {
+    const { useCase } = aUseCase();
+
+    const result = unwrap(await useCase.execute({ ...aJpeg, thumbnail: aThumbnail }));
+
+    expect(Object.keys(result)).toStrictEqual(['id']);
+  });
+});
+
+// An unusable thumbnail never costs the user their photo: the upload goes on without it, and the
+// history shows a neutral indicator (FR-008).
+describe('StoreShelfPhotoUseCase, with a thumbnail it refuses', () => {
+  it.each([
+    ['an HEIC', { bytes: new Uint8Array([1]), mediaType: 'image/heic' }, 'unsupported media type'],
+    [
+      'a 300 KB one',
+      { bytes: new Uint8Array(300_000), mediaType: 'image/jpeg' },
+      'image too large',
+    ],
+    ['an empty one', { bytes: new Uint8Array(0), mediaType: 'image/jpeg' }, 'empty image'],
+  ])('keeps the photo without it for %s, and says why', async (_label, thumbnail, reason) => {
+    const { storage, repository, useCase } = aUseCase();
+
+    const result = unwrap(await useCase.execute({ ...aJpeg, thumbnail }));
+
+    expect(storage.objects.size).toBe(1);
+    expect(storage.thumbnails.size).toBe(0);
+    expect((await repository.get(unwrap(ShelfScanId.of(result.id))))?.thumbnail).toBeUndefined();
+    expect(result.ignoredThumbnail).toContain(reason);
+  });
+});
+
+describe('StoreShelfPhotoUseCase, with a thumbnail and a photo it refuses', () => {
+  // FR-013 of spec 001: a photo refused before analysis leaves no trace — the thumbnail neither.
+  it('stores neither', async () => {
+    const { storage, repository, useCase } = aUseCase();
+
+    const result = await useCase.execute({
+      ...aJpeg,
+      mediaType: 'application/pdf',
+      thumbnail: aThumbnail,
+    });
+
+    expect(result.ok).toBe(false);
+    expect(storage.objects.size + storage.thumbnails.size).toBe(0);
     expect(repository.records.size).toBe(0);
   });
 });

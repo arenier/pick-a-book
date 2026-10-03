@@ -8,6 +8,8 @@ import {
   type ScanAttemptPolicy,
   type ScanAttemptRefusal,
   type ShelfScanId,
+  type ShelfScanPage,
+  type ShelfScanPageQuery,
   type ShelfScanRecord,
   type ShelfScanRepositoryPort,
   type ShelfScanTransitionFailure,
@@ -36,11 +38,30 @@ export class InMemoryScanRepository implements ShelfScanRepositoryPort {
       status: 'pending',
       detectedBooks: undefined,
       createdAt: new Date(),
+      thumbnail: scan.thumbnail,
     });
   }
 
   async get(id: ShelfScanId): Promise<ShelfScanRecord | undefined> {
     return this.records.get(id.value);
+  }
+
+  async list(query: ShelfScanPageQuery): Promise<ShelfScanPage> {
+    const { after } = query;
+    const newestFirst = [...this.records.values()]
+      .filter((record) => record.ownerId.equals(query.ownerId))
+      .reduce<ShelfScanRecord[]>((sorted, record) => insertNewestFirst(sorted, record), []);
+    const remaining =
+      after === undefined
+        ? newestFirst
+        : newestFirst.filter((record) => compareNewestFirst(record, after) > 0);
+    const records = remaining.slice(0, query.limit);
+    const last = records.at(-1);
+
+    return {
+      records,
+      next: remaining.length > records.length && last !== undefined ? last : undefined,
+    };
   }
 
   async startAttempt(
@@ -122,4 +143,26 @@ export class InMemoryScanRepository implements ShelfScanRepositoryPort {
 
 function dayOf(instant: Date, timeZone: string): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone }).format(instant);
+}
+
+/** Orders by date, newest first, then by id, highest first — what `created_at desc, id desc` is. */
+function compareNewestFirst(
+  a: { readonly createdAt: Date; readonly id: ShelfScanId },
+  b: { readonly createdAt: Date; readonly id: ShelfScanId },
+): number {
+  const byDate = b.createdAt.getTime() - a.createdAt.getTime();
+
+  return byDate === 0 ? b.id.value.localeCompare(a.id.value) : byDate;
+}
+
+/** Puts a record where it belongs in a list already newest first — a sort that mutates nothing. */
+function insertNewestFirst(
+  sorted: readonly ShelfScanRecord[],
+  record: ShelfScanRecord,
+): ShelfScanRecord[] {
+  const index = sorted.findIndex((other) => compareNewestFirst(record, other) < 0);
+
+  return index === -1
+    ? [...sorted, record]
+    : [...sorted.slice(0, index), record, ...sorted.slice(index)];
 }
