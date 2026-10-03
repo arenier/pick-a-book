@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "./out-tsc/vitest",
     "types": ["node"],
+    "lib": ["es2023"],
     "forceConsistentCasingInFileNames": true,
     // The adapter specs import their recorded provider answers directly, so tsc has to be
     // allowed to read a .json as a module (ADR 0005: replayed responses, no network).
@@ -13,6 +14,7 @@
     "src/**/*.test.ts",
     "src/**/*.spec.ts",
     "src/**/*.d.ts",
+    "src/**/testing/**/*.ts",
     "src/**/recorded/*.json"
   ],
   "references": [

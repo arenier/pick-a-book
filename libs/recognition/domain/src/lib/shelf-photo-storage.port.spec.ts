@@ -1,6 +1,7 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import type { ShelfPhoto, ShelfPhotoMediaType } from './shelf-photo.js';
+import type { ShelfPhotoThumbnail, ThumbnailMediaType } from './shelf-photo-thumbnail.js';
 import {
   SHELF_PHOTO_STORAGE_PORT,
   type ShelfPhotoStoragePort,
@@ -20,6 +21,17 @@ describe('ShelfPhotoStoragePort', () => {
   it('retrieves a photo from its key and known media type', () => {
     expectTypeOf<ShelfPhotoStoragePort['retrieve']>().toEqualTypeOf<
       (key: string, mediaType: ShelfPhotoMediaType) => Promise<ShelfPhoto>
+    >();
+  });
+
+  // Kept apart from the photo's methods rather than made generic: a thumbnail and a photo are not
+  // validated alike, and the port hands back an object already proven (data-model.md).
+  it('stores and retrieves a thumbnail the same way, by key and known media type', () => {
+    expectTypeOf<ShelfPhotoStoragePort['storeThumbnail']>().toEqualTypeOf<
+      (thumbnail: ShelfPhotoThumbnail, key: string) => Promise<void>
+    >();
+    expectTypeOf<ShelfPhotoStoragePort['retrieveThumbnail']>().toEqualTypeOf<
+      (key: string, mediaType: ThumbnailMediaType) => Promise<ShelfPhotoThumbnail>
     >();
   });
 

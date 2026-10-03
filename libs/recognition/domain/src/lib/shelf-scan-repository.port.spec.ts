@@ -15,6 +15,7 @@ import {
   type ShelfScanRecord,
   type ShelfScanTransitionFailure,
   type ShelfScanRepositoryPort,
+  type StoredThumbnail,
 } from './shelf-scan-repository.port.js';
 
 const anId = '1f9c2e3a-4b5d-4e6f-8a7b-9c0d1e2f3a4b';
@@ -70,9 +71,12 @@ describe('ShelfScanRecord', () => {
     >().toEqualTypeOf<undefined>();
   });
 
-  it('is created from everything but its status, books and timestamp', () => {
+  // The thumbnail is the one thing a new scan may go without (specs/002-upload-history).
+  it('is created from everything but its status, books and timestamp, the thumbnail optional', () => {
     expectTypeOf<NewShelfScan>().toEqualTypeOf<
-      Omit<ShelfScanRecord, 'status' | 'detectedBooks' | 'createdAt'>
+      Omit<ShelfScanRecord, 'status' | 'detectedBooks' | 'createdAt' | 'thumbnail'> & {
+        readonly thumbnail?: StoredThumbnail;
+      }
     >();
   });
 });

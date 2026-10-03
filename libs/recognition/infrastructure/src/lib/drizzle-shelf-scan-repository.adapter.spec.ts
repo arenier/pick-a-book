@@ -1,65 +1,12 @@
 import {
-  Author,
-  BookTitle,
-  Confidence,
-  DetectedBook,
-  OwnerId,
   ShelfScanAlreadyProcessed,
   ShelfScanId,
   ShelfScanNotFound,
-  type NewShelfScan,
 } from '@pick-a-book/recognition-domain';
-import { err, ok, unwrap } from '@pick-a-book/shared-result';
-import { Pool } from 'pg';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { err, ok } from '@pick-a-book/shared-result';
+import { describe, expect, it } from 'vitest';
 
-import { DrizzleShelfScanRepositoryAdapter } from './drizzle-shelf-scan-repository.adapter.js';
-import { MIGRATIONS_FOLDER, testDatabaseUrl } from './drizzle/test-database.js';
-import { migrateDatabase } from './migrate-database.js';
-
-/**
- * Runs against the Postgres of docker-compose, migrated with the committed migrations — the
- * same SQL the API applies at boot. Every test works on fresh ids, so runs never collide.
- *
- * Called inside each `describe`: registers the migration and the teardown of its own pool.
- */
-function aMigratedRepository() {
-  const pool = new Pool({ connectionString: testDatabaseUrl });
-
-  beforeAll(async () => {
-    await migrateDatabase(pool, MIGRATIONS_FOLDER);
-  });
-
-  afterAll(async () => {
-    await pool.end();
-  });
-
-  return { pool, repository: new DrizzleShelfScanRepositoryAdapter(pool) };
-}
-
-const ownerId = (raw: string) => unwrap(OwnerId.of(raw));
-
-const aNewScan = (): NewShelfScan => {
-  const id = ShelfScanId.generate();
-
-  return {
-    id,
-    ownerId: ownerId('default'),
-    photoBucketKey: `default/shelf_photo/${id.value}`,
-    photoMediaType: 'image/jpeg',
-    photoSizeBytes: 2_345_678,
-    originalFilename: 'IMG_0001.jpg',
-  };
-};
-
-const books = [
-  DetectedBook.of(
-    unwrap(Author.of('Annie Ernaux')),
-    unwrap(BookTitle.of('La Place')),
-    unwrap(Confidence.of(0.71)),
-  ),
-  DetectedBook.of(undefined, unwrap(BookTitle.of('Les Choses')), unwrap(Confidence.of(0.4))),
-];
+import { aMigratedRepository, aNewScan, books, ownerId } from './testing/test-repository.js';
 
 describe('DrizzleShelfScanRepositoryAdapter, creating a record', () => {
   const { pool, repository } = aMigratedRepository();
@@ -76,6 +23,7 @@ describe('DrizzleShelfScanRepositoryAdapter, creating a record', () => {
       status: 'pending',
       detectedBooks: undefined,
       createdAt: record?.createdAt,
+      thumbnail: undefined,
     });
     expect(record?.createdAt).toBeInstanceOf(Date);
   });
@@ -160,24 +108,17 @@ describe('DrizzleShelfScanRepositoryAdapter, recording a result', () => {
 describe('DrizzleShelfScanRepositoryAdapter, recording a result only once', () => {
   const { repository } = aMigratedRepository();
 
-  // The 409 of research.md §7, held where the write happens: a result is recorded once.
-  it('refuses to move a record that is no longer pending', async () => {
+  // The 409 of research.md §7, held where the write happens: books are recorded once.
+  it('refuses to move a record that already has its books', async () => {
     const completed = aNewScan();
     await repository.createPending(completed);
     await repository.markCompleted(completed.id, books);
-
-    const failed = aNewScan();
-    await repository.createPending(failed);
-    await repository.markFailed(failed.id);
 
     await expect(repository.markCompleted(completed.id, [])).resolves.toStrictEqual(
       err(new ShelfScanAlreadyProcessed(completed.id)),
     );
     await expect(repository.markFailed(completed.id)).resolves.toStrictEqual(
       err(new ShelfScanAlreadyProcessed(completed.id)),
-    );
-    await expect(repository.markCompleted(failed.id, books)).resolves.toStrictEqual(
-      err(new ShelfScanAlreadyProcessed(failed.id)),
     );
 
     const record = await repository.get(completed.id);
@@ -229,5 +170,28 @@ describe('DrizzleShelfScanRepositoryAdapter, reference of the stored photo', () 
       [scan.id.value],
     );
     expect(rows[0]?.bucket_key).not.toContain(scan.originalFilename);
+  });
+});
+
+// The schema holds that a thumbnail is the only upload without a name (`uploads_source_or_filename_check`),
+// but a nullable column no longer proves it to the type checker: a shelf photo row that has none is
+// a corrupted row, said out loud rather than read as a photo with a missing name.
+describe('DrizzleShelfScanRepositoryAdapter, reading a corrupted row', () => {
+  const { pool, repository } = aMigratedRepository();
+
+  it('refuses a shelf photo that has no original filename', async () => {
+    const scan = aNewScan();
+    await repository.createPending(scan);
+    const orphan = ShelfScanId.generate();
+    await pool.query(
+      `insert into uploads (id, owner_id, type, bucket_key, media_type, size_bytes, source_upload_id)
+       values ($1, 'default', 'shelf_photo', $2, 'image/jpeg', 10, $3)`,
+      [orphan.value, `default/shelf_photo/${orphan.value}`, scan.id.value],
+    );
+    await pool.query("insert into shelf_scans (upload_id, status) values ($1, 'pending')", [
+      orphan.value,
+    ]);
+
+    await expect(repository.get(orphan)).rejects.toThrow(/has no original filename/u);
   });
 });

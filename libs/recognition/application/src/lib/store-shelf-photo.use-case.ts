@@ -1,10 +1,12 @@
 import {
   ShelfPhoto,
+  ShelfPhotoThumbnail,
   type InvalidShelfPhoto,
   type OwnerId,
   ShelfScanId,
   type ShelfPhotoStoragePort,
   type ShelfScanRepositoryPort,
+  type StoredThumbnail,
 } from '@pick-a-book/recognition-domain';
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
@@ -20,6 +22,10 @@ import type { StoreShelfPhotoCommand, StoreShelfPhotoResult } from './shelf-phot
  *
  * A refused photo is an expected failure, answered as `InvalidShelfPhoto` (ADR 0013). A bucket
  * or a database that fails is not: it rejects, and the global HTTP filter catches it.
+ *
+ * The thumbnail the browser may send along is kept under `{ownerId}/shelf_photo_thumbnail/{id}`,
+ * after the photo, and referenced by the record. It is a convenience: an unusable one is dropped,
+ * and the reason handed back for the caller to log (specs/002-upload-history, research.md §5).
  */
 export class StoreShelfPhotoUseCase {
   constructor(
@@ -39,6 +45,7 @@ export class StoreShelfPhotoUseCase {
     const key = `${this.ownerId.value}/shelf_photo/${id.value}`;
 
     await this.storage.store(photo.value, key);
+    const thumbnail = await this.keepThumbnail(command.thumbnail, id);
     await this.repository.createPending({
       id,
       ownerId: this.ownerId,
@@ -46,8 +53,38 @@ export class StoreShelfPhotoUseCase {
       photoMediaType: photo.value.mediaType,
       photoSizeBytes: photo.value.bytes.byteLength,
       originalFilename: command.originalFilename,
+      ...(thumbnail.kept === undefined ? {} : { thumbnail: thumbnail.kept }),
     });
 
-    return ok({ id: id.value });
+    return ok(
+      thumbnail.ignored === undefined
+        ? { id: id.value }
+        : { id: id.value, ignoredThumbnail: thumbnail.ignored },
+    );
+  }
+
+  /** Stores the thumbnail if it is valid; otherwise says why it was dropped. Never fails the upload. */
+  private async keepThumbnail(
+    sent: StoreShelfPhotoCommand['thumbnail'],
+    id: ShelfScanId,
+  ): Promise<{ readonly kept?: StoredThumbnail; readonly ignored?: string }> {
+    if (sent === undefined) {
+      return {};
+    }
+    const thumbnail = ShelfPhotoThumbnail.of(sent.bytes, sent.mediaType);
+    if (!thumbnail.ok) {
+      return { ignored: thumbnail.error.message };
+    }
+
+    const bucketKey = `${this.ownerId.value}/shelf_photo_thumbnail/${id.value}`;
+    await this.storage.storeThumbnail(thumbnail.value, bucketKey);
+
+    return {
+      kept: {
+        bucketKey,
+        mediaType: thumbnail.value.mediaType,
+        sizeBytes: thumbnail.value.bytes.byteLength,
+      },
+    };
   }
 }

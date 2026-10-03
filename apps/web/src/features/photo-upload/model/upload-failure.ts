@@ -14,6 +14,11 @@ export const UPLOAD_FAILURES = [
   ...PHOTO_PROBLEMS,
   'refused',
   'upstream',
+  // The day's analyses are used up: the photo is kept, to be run again from the history
+  // (specs/002-upload-history, FR-015).
+  'dailyQuota',
+  // Too many requests from this source in a short time: a minute's wait (FR-014).
+  'rateLimited',
   'offline',
   'unexpected',
 ] as const;

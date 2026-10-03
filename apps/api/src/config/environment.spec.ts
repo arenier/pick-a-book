@@ -190,3 +190,27 @@ describe('loadEnvironment, shelf scanner selection (ADR 0005)', () => {
     });
   });
 });
+
+describe('loadEnvironment, DAILY_SCAN_LIMIT (specs/002-upload-history, FR-015)', () => {
+  it('defaults to 50 analyses a day', () => {
+    expect(load().dailyScanLimit).toBe(50);
+    expect(load({ DAILY_SCAN_LIMIT: '   ' }).dailyScanLimit).toBe(50);
+  });
+
+  it('reads a positive integer', () => {
+    expect(load({ DAILY_SCAN_LIMIT: '12' }).dailyScanLimit).toBe(12);
+  });
+
+  it.each(['0', '-3', '1.5', 'abc'])('rejects %p, and says which variable', (value) => {
+    expect(() => load({ DAILY_SCAN_LIMIT: value })).toThrow(InvalidEnvironment);
+    expect(() => load({ DAILY_SCAN_LIMIT: value })).toThrow(
+      new RegExp(`DAILY_SCAN_LIMIT is "${value}"`, 'u'),
+    );
+  });
+
+  it('lists it with the other problems', () => {
+    expect(() => load({ DAILY_SCAN_LIMIT: '0', PORT: 'x' })).toThrow(
+      /PORT[\s\S]*DAILY_SCAN_LIMIT/u,
+    );
+  });
+});

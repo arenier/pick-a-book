@@ -1,4 +1,8 @@
 {
   "title": "pick-a-book",
-  "tagline": "Take a photo of a shelf to see the books on it."
+  "tagline": "Take a photo of a shelf to see the books on it.",
+  "nav": {
+    "history": "History",
+    "newPhoto": "New photo"
+  }
 }

@@ -7,11 +7,22 @@ export interface StoreShelfPhotoCommand {
   readonly mediaType: string;
   /** As the browser sent it — kept for reference, never used to name anything (FR-015). */
   readonly originalFilename: string;
+  /**
+   * The smaller image the browser made of the photo, if it could (specs/002-upload-history,
+   * research.md §5). Optional, and never required to be valid: a refused one is dropped.
+   */
+  readonly thumbnail?: { readonly bytes: Uint8Array; readonly mediaType: string };
 }
 
 export interface StoreShelfPhotoResult {
   /** The id of the stored photo, to scan it with next. */
   readonly id: string;
+  /**
+   * Why the thumbnail that came with the photo was dropped, when it was. The photo is kept all
+   * the same: the caller logs it, nobody is told (an unusable thumbnail is not the user's
+   * mistake). Absent when there was none, or when it was kept.
+   */
+  readonly ignoredThumbnail?: string;
 }
 
 export interface ScanStoredShelfPhotoCommand {

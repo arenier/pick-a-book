@@ -1,8 +1,10 @@
 import { type Bucket, Storage } from '@google-cloud/storage';
 import {
   ShelfPhoto,
+  ShelfPhotoThumbnail,
   type ShelfPhotoMediaType,
   type ShelfPhotoStoragePort,
+  type ThumbnailMediaType,
 } from '@pick-a-book/recognition-domain';
 
 import { ShelfPhotoStorageFailed } from './shelf-photo-storage-failed.error.js';
@@ -18,9 +20,45 @@ export class GcsShelfPhotoStorageAdapter implements ShelfPhotoStoragePort {
   constructor(private readonly bucket: Bucket) {}
 
   async store(photo: ShelfPhoto, key: string): Promise<void> {
+    await this.write(key, photo.bytes, photo.mediaType);
+  }
+
+  async retrieve(key: string, mediaType: ShelfPhotoMediaType): Promise<ShelfPhoto> {
+    const photo = ShelfPhoto.of(await this.read(key), mediaType);
+    if (!photo.ok) {
+      // It was a valid photo when it was stored: an object that no longer is has been
+      // corrupted, which is the bucket's failure — not the caller's photo being refused.
+      throw new ShelfPhotoStorageFailed(`${key} is no longer a valid shelf photo`, {
+        cause: photo.error,
+      });
+    }
+
+    return photo.value;
+  }
+
+  /** A thumbnail is an object like a photo: its own key, the same refusal to overwrite. */
+  async storeThumbnail(thumbnail: ShelfPhotoThumbnail, key: string): Promise<void> {
+    await this.write(key, thumbnail.bytes, thumbnail.mediaType);
+  }
+
+  async retrieveThumbnail(
+    key: string,
+    mediaType: ThumbnailMediaType,
+  ): Promise<ShelfPhotoThumbnail> {
+    const thumbnail = ShelfPhotoThumbnail.of(await this.read(key), mediaType);
+    if (!thumbnail.ok) {
+      throw new ShelfPhotoStorageFailed(`${key} is no longer a valid shelf photo thumbnail`, {
+        cause: thumbnail.error,
+      });
+    }
+
+    return thumbnail.value;
+  }
+
+  private async write(key: string, bytes: Uint8Array, contentType: string): Promise<void> {
     try {
-      await this.bucket.file(key).save(Buffer.from(photo.bytes), {
-        contentType: photo.mediaType,
+      await this.bucket.file(key).save(Buffer.from(bytes), {
+        contentType,
         resumable: false,
         // Keys are generated ids: an object already there means a bug, never an update.
         // Generation 0 matches only an absent object, so the write fails instead of replacing.
@@ -31,24 +69,14 @@ export class GcsShelfPhotoStorageAdapter implements ShelfPhotoStoragePort {
     }
   }
 
-  async retrieve(key: string, mediaType: ShelfPhotoMediaType): Promise<ShelfPhoto> {
-    let contents: Buffer;
+  private async read(key: string): Promise<Uint8Array> {
     try {
-      [contents] = await this.bucket.file(key).download();
+      const [contents] = await this.bucket.file(key).download();
+
+      return new Uint8Array(contents);
     } catch (error) {
       throw new ShelfPhotoStorageFailed(`could not retrieve ${key}`, { cause: error });
     }
-
-    const photo = ShelfPhoto.of(new Uint8Array(contents), mediaType);
-    if (!photo.ok) {
-      // It was a valid photo when it was stored: an object that no longer is has been
-      // corrupted, which is the bucket's failure — not the caller's photo being refused.
-      throw new ShelfPhotoStorageFailed(`${key} is no longer a valid shelf photo`, {
-        cause: photo.error,
-      });
-    }
-
-    return photo.value;
   }
 }
 

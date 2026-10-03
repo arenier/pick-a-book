@@ -111,6 +111,12 @@ les migrations au démarrage, et les specs des adapters de `recognition-infrastr
 `tools/db-backup` appellent aussi `pg_dump`, `pg_restore` et `psql` du `PATH`, en **version 18 ou
 plus** (la majeure de la prod) : sans eux, `yarn check` échoue sur ce projet.
 
+L'API **plafonne** ce qui coûte (spec 002) : au plus `DAILY_SCAN_LIMIT` analyses par jour (50 par
+défaut, jour de Paris, comptées par propriétaire), et par source 300 requêtes par minute, 10 pour
+celles qui écrivent (`@nestjs/throttler`, en mémoire par instance). `DAILY_SCAN_LIMIT` se pose aussi
+dans `infra/envs/prod` (`daily_scan_limit`), avec la même valeur par défaut et la même validation :
+les deux se maintiennent à la main.
+
 Les **logs** de l'API sont structurés (`apps/api/src/logging/`, **pino** via `nestjs-pino`) : une ligne
 JSON par log, avec `severity` et `message` que Cloud Logging lit, la trace de `X-Cloud-Trace-Context`
 sous `logging.googleapis.com/trace`, et une ligne par requête (méthode, chemin, statut, durée — jamais
@@ -136,7 +142,7 @@ cibles que `yarn check` sur les seuls projets touchés — détail dans
 
 ```
 apps/api/                        # NestJS : composition root, orchestration inter-contextes
-apps/web/                        # React : feature-slice
+apps/web/                        # React : feature-slice ; le shell (`src/app/`) route par fragment d'URL (`#/historique`), faute de réécriture d'URL sur le bucket statique
 libs/recognition/domain/         # entités, value objects, ports — zéro dépendance technique
 libs/recognition/application/    # use cases, parlent aux ports
 libs/recognition/infrastructure/ # adapters (Gemini, Qwen, stub) derrière ShelfScannerPort
