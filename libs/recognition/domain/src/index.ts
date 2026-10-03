@@ -1,6 +1,7 @@
 export * from './lib/author.js';
 export * from './lib/book-title.js';
 export * from './lib/confidence.js';
+export * from './lib/daily-scan-quota-exceeded.error.js';
 export * from './lib/detected-book.js';
 export * from './lib/invalid-shelf-photo.error.js';
 export * from './lib/invalid-value.error.js';
@@ -11,4 +12,5 @@ export * from './lib/shelf-photo-storage.port.js';
 export * from './lib/shelf-scan-repository.port.js';
 export * from './lib/shelf-scan-already-processed.error.js';
 export * from './lib/shelf-scan-id.js';
+export * from './lib/shelf-scan-in-progress.error.js';
 export * from './lib/shelf-scan-not-found.error.js';

@@ -128,16 +128,16 @@ cette phase.
 
 ### Plafond quotidien et tentatives d'analyse (FR-015, research.md §8)
 
-- [ ] T006 [P] Écrire les tests (doivent échouer) de deux erreurs de domaine : `ShelfScanInProgress(id)` et `DailyScanQuotaExceeded(limit)`, avec leurs `name` et leurs messages, dans `libs/recognition/domain/src/lib/shelf-scan-in-progress.error.spec.ts` et `libs/recognition/domain/src/lib/daily-scan-quota-exceeded.error.spec.ts`.
-- [ ] T007 Créer `libs/recognition/domain/src/lib/shelf-scan-in-progress.error.ts` et `libs/recognition/domain/src/lib/daily-scan-quota-exceeded.error.ts`, puis les exporter depuis `libs/recognition/domain/src/index.ts`. Dépend de T006.
-- [ ] T008 Étendre `libs/recognition/domain/src/lib/shelf-scan-repository.port.spec.ts` (test d'abord) puis `shelf-scan-repository.port.ts` :
+- [X] T006 [P] Écrire les tests (doivent échouer) de deux erreurs de domaine : `ShelfScanInProgress(id)` et `DailyScanQuotaExceeded(limit)`, avec leurs `name` et leurs messages, dans `libs/recognition/domain/src/lib/shelf-scan-in-progress.error.spec.ts` et `libs/recognition/domain/src/lib/daily-scan-quota-exceeded.error.spec.ts`.
+- [X] T007 Créer `libs/recognition/domain/src/lib/shelf-scan-in-progress.error.ts` et `libs/recognition/domain/src/lib/daily-scan-quota-exceeded.error.ts`, puis les exporter depuis `libs/recognition/domain/src/index.ts`. Dépend de T006.
+- [X] T008 Étendre `libs/recognition/domain/src/lib/shelf-scan-repository.port.spec.ts` (test d'abord) puis `shelf-scan-repository.port.ts` :
   - ajouter `startAttempt(id: ShelfScanId, policy: ScanAttemptPolicy): Promise<void>` ;
   - ajouter `ScanAttemptPolicy { readonly dailyLimit: number; readonly timeZone: 'Europe/Paris'; readonly lease: number }`, avec `lease` en millisecondes ;
   - documenter l'ordre de vérification : `ShelfScanNotFound`, puis `ShelfScanAlreadyProcessed`, puis `ShelfScanInProgress`, puis `DailyScanQuotaExceeded`.
 
   Dans cette phase, l'envoi doit encore être `pending` : US3 élargit à `failed` (T068). Dépend de T007.
-- [ ] T009 Étendre les doubles en mémoire avec `startAttempt` (plafond compté sur un tableau de tentatives, bail, fermeture de la tentative par `markCompleted` et `markFailed`) et une horloge injectable, dans `libs/recognition/application/src/lib/testing/in-memory-shelf-scan-repository.ts` et `apps/api/src/recognition/testing/shelf-photos-controller.fixture.ts`. Dépend de T008.
-- [ ] T010 Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/scan-stored-shelf-photo.use-case.spec.ts` :
+- [X] T009 Étendre les doubles en mémoire avec `startAttempt` (plafond compté sur un tableau de tentatives, bail, fermeture de la tentative par `markCompleted` et `markFailed`) et une horloge injectable, dans `libs/recognition/application/src/lib/testing/in-memory-shelf-scan-repository.ts` et `apps/api/src/recognition/testing/shelf-photos-controller.fixture.ts`. Dépend de T008.
+- [X] T010 Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/scan-stored-shelf-photo.use-case.spec.ts` :
   - `startAttempt` est appelé avant `storage.retrieve` et avant `scanner.scan` ;
   - `DailyScanQuotaExceeded` et `ShelfScanInProgress` remontent sans appeler le scanner ;
   - un envoi refusé pour quota reste `pending` ;
@@ -145,7 +145,7 @@ cette phase.
   - **toute erreur après `startAttempt` referme la tentative** : si `storage.retrieve` échoue (photo absente du bucket), l'envoi passe `failed`, la tentative est fermée (le plafond ne la compte plus comme ouverte, une relance immédiate n'est pas refusée en `ShelfScanInProgress`), et l'erreur remonte telle quelle (research.md §8, analyse U1).
 
   Dépend de T009.
-- [ ] T011 Modifier `libs/recognition/application/src/lib/scan-stored-shelf-photo.use-case.ts` : il reçoit `ScanAttemptPolicy` à la construction, appelle `repository.startAttempt(id, policy)` avant de lire la photo, et ne teste plus lui-même `status !== 'pending'` (c'est `startAttempt` qui décide). Le `try` qui appelle `recordFailure` couvre désormais la lecture de la photo **et** l'appel au scanner. Fait passer T010. Dépend de T010.
+- [X] T011 Modifier `libs/recognition/application/src/lib/scan-stored-shelf-photo.use-case.ts` : il reçoit `ScanAttemptPolicy` à la construction, appelle `repository.startAttempt(id, policy)` avant de lire la photo, et ne teste plus lui-même `status !== 'pending'` (c'est `startAttempt` qui décide). Le `try` qui appelle `recordFailure` couvre désormais la lecture de la photo **et** l'appel au scanner. Fait passer T010. Dépend de T010.
 - [ ] T012 Écrire les tests (doivent échouer), contre Postgres, dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.spec.ts` :
   - `startAttempt` insère une ligne `scan_attempts` ;
   - un envoi inconnu donne `ShelfScanNotFound`, un envoi `completed` donne `ShelfScanAlreadyProcessed` ;

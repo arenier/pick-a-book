@@ -1,70 +1,13 @@
 import {
-  Author,
-  BookTitle,
-  Confidence,
-  DetectedBook,
-  OwnerId,
   ShelfScanAlreadyProcessed,
   ShelfScanFailed,
   ShelfScanId,
   ShelfScanNotFound,
-  type ShelfPhoto,
-  type ShelfScannerPort,
 } from '@pick-a-book/recognition-domain';
-import { err, ok, unwrap, type Result } from '@pick-a-book/shared-result';
+import { err, ok, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it, vi } from 'vitest';
 
-import { ScanStoredShelfPhotoUseCase } from './scan-stored-shelf-photo.use-case.js';
-import { StoreShelfPhotoUseCase } from './store-shelf-photo.use-case.js';
-import { InMemoryShelfPhotoStorage } from './testing/in-memory-shelf-photo-storage.js';
-import { InMemoryShelfScanRepository } from './testing/in-memory-shelf-scan-repository.js';
-
-/** A double of the scanner port: answers as told, and records what it saw. */
-class ShelfScannerStub implements ShelfScannerPort {
-  readonly seen: ShelfPhoto[] = [];
-
-  constructor(private readonly answer: Result<DetectedBook[], ShelfScanFailed>) {}
-
-  async scan(photo: ShelfPhoto): Promise<Result<DetectedBook[], ShelfScanFailed>> {
-    this.seen.push(photo);
-    return this.answer;
-  }
-}
-
-const aJpeg = {
-  bytes: new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2]),
-  mediaType: 'image/jpeg',
-  originalFilename: 'IMG_0001.jpg',
-};
-
-/** A photo already stored by the first step, and the second step wired to the same ports. */
-async function aStoredPhoto(scanner: ShelfScannerPort) {
-  const storage = new InMemoryShelfPhotoStorage();
-  const repository = new InMemoryShelfScanRepository();
-  const { id } = unwrap(
-    await new StoreShelfPhotoUseCase(unwrap(OwnerId.of('default')), storage, repository).execute(
-      aJpeg,
-    ),
-  );
-
-  return {
-    id,
-    repository,
-    useCase: new ScanStoredShelfPhotoUseCase(storage, repository, scanner),
-  };
-}
-
-const books = [
-  DetectedBook.of(
-    unwrap(Author.of('Annie Ernaux')),
-    unwrap(BookTitle.of('Les Annees')),
-    unwrap(Confidence.of(0.91)),
-  ),
-  DetectedBook.of(undefined, unwrap(BookTitle.of('Les Choses')), unwrap(Confidence.of(0.4))),
-];
-
-const scanning = (answer: DetectedBook[]) => new ShelfScannerStub(ok(answer));
-const failing = () => new ShelfScannerStub(err(new ShelfScanFailed('provider unavailable')));
+import { aJpeg, aStoredPhoto, books, failing, scanning } from './testing/scan-fixtures.js';
 
 describe('ScanStoredShelfPhotoUseCase', () => {
   it('scans the photo stored under the id', async () => {
