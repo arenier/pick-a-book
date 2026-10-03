@@ -109,6 +109,9 @@ locals {
     BUCKET_NAME          = module.bucket_shelf_photos.bucket_name
     WEB_ORIGIN           = regex("^https://[^/]+", module.static_site.public_base_url)
     GOOGLE_CLOUD_PROJECT = var.project_id
+    # Not a secret: the cap on analyses a day (specs/002-upload-history, FR-015), as a string
+    # like every Cloud Run variable.
+    DAILY_SCAN_LIMIT = tostring(var.daily_scan_limit)
   }
 }
 

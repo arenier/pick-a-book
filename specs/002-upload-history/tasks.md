@@ -173,14 +173,14 @@ variable Terraform, avec la même validation. Les deux se maintiennent à la mai
 épinglages de Node (CLAUDE.md, *Outillage*). Le passer explicitement en Terraform rend le plafond
 visible et modifiable là où la prod se configure, sans redéploiement de code.
 
-- [ ] T017 [P] Écrire les tests (doivent échouer) dans `infra/envs/prod/tests/prod.tftest.hcl`, en `command = plan` avec les `mock_provider` existants :
+- [X] T017 [P] Écrire les tests (doivent échouer) dans `infra/envs/prod/tests/prod.tftest.hcl`, en `command = plan` avec les `mock_provider` existants :
   - `run "the_api_receives_the_default_daily_scan_limit"` : sans variable, `local.api_env["DAILY_SCAN_LIMIT"] == "50"` ;
   - `run "the_daily_scan_limit_is_configurable"` : avec `variables { daily_scan_limit = 12 }`, la valeur vaut `"12"` ;
   - `run "the_daily_scan_limit_rejects_zero"` et `run "the_daily_scan_limit_rejects_a_fraction"` : avec `0` puis `1.5`, `expect_failures = [var.daily_scan_limit]` ;
   - `run "the_api_env_keeps_node_env_production"` : `local.api_env["NODE_ENV"] == "production"`, pour ne rien perdre en extrayant la map.
 
   Chaque `error_message` explique la conséquence, comme les runs existants. Si `terraform test` refuse de référencer un `local` du module racine, exposer la map par un output non sensible `api_plain_env` et asserter sur `output.api_plain_env`.
-- [ ] T018 Implémenter dans `infra/envs/prod/` :
+- [X] T018 Implémenter dans `infra/envs/prod/` :
   - dans `variables.tf`, `variable "daily_scan_limit"` : `type = number`, `default = 50`, et une `validation` qui vérifie `var.daily_scan_limit >= 1 && floor(var.daily_scan_limit) == var.daily_scan_limit`. La description cite spec 002 FR-015 et la double tenue avec `environment.ts` ;
   - dans `main.tf`, `locals { api_env = { NODE_ENV = "production", DAILY_SCAN_LIMIT = tostring(var.daily_scan_limit) } }`, et `env = local.api_env` sur `module.cloud_run_api`. Ce n'est pas un secret : pas de `secret_env`.
 
