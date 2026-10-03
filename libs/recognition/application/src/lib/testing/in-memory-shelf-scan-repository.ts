@@ -127,13 +127,13 @@ export class InMemoryShelfScanRepository implements ShelfScanRepositoryPort {
     return ok();
   }
 
-  /** The record an id names, if it can still be analysed: it has no result yet. */
+  /** The record an id names, if it can still be analysed: it has no books yet. */
   private analysable(id: ShelfScanId): Result<ShelfScanRecord, ShelfScanTransitionFailure> {
     const record = this.records.get(id.value);
     if (record === undefined) {
       return err(new ShelfScanNotFound(id.value));
     }
-    if (record.status !== 'pending') {
+    if (record.status === 'completed') {
       return err(new ShelfScanAlreadyProcessed(id));
     }
 

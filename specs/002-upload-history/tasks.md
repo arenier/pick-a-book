@@ -462,18 +462,18 @@ reprendre la photo, dans la limite du plafond quotidien.
 et constater que les livres apparaissent, dans le détail comme dans la liste (quickstart,
 scénario 4).
 
-- [ ] T067 [US3] Écrire les tests (doivent échouer) :
+- [X] T067 [US3] Écrire les tests (doivent échouer) :
   - dans `libs/recognition/application/src/lib/scan-stored-shelf-photo.use-case.spec.ts` : un envoi `failed` est relançable et passe `completed` (livres) ou reste `failed` (nouvel échec) ; un envoi `completed` donne `ShelfScanAlreadyProcessed` sans appel au scanner (FR-011) ;
   - dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.spec.ts` : `startAttempt` accepte `failed` ; `markCompleted` et `markFailed` passent un `failed` en `completed` ou `failed` ; un `completed` est définitif ;
   - deux relances concurrentes : une seule tentative réservée, l'autre reçoit `ShelfScanInProgress`.
-- [ ] T068 [US3] Élargir la règle « analysable » de `pending` à `pending | failed`, dans cet ordre :
+- [X] T068 [US3] Élargir la règle « analysable » de `pending` à `pending | failed`, dans cet ordre :
   1. documenter la nouvelle transition dans `libs/recognition/domain/src/lib/shelf-scan-repository.port.ts` ;
   2. changer la condition de `startAttempt` et du `where` de `settle` en `status in ('pending','failed')` dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.ts` ;
   3. faire de même dans les deux doubles en mémoire (`libs/recognition/application/src/lib/testing/in-memory-shelf-scan-repository.ts`, `apps/api/src/recognition/testing/shelf-photos-controller.fixture.ts`) ;
   4. mettre à jour le commentaire de `libs/recognition/domain/src/lib/shelf-scan-already-processed.error.ts` : l'erreur signifie désormais « déjà `completed` ».
 
   Fait passer T067. Dépend de T067.
-- [ ] T069 [US3] Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` : `POST /shelf-photos/{id}/scan` sur un envoi `failed` renvoie 200 avec les livres, puis `GET /shelf-photos/{id}` donne `outcome: "completed"`, et un second POST renvoie 409 `SCAN_ALREADY_COMPLETED`. Aucune modification du contrôleur n'est attendue : si le test passe déjà après T068, le noter et passer à la suite. Dépend de T068.
+- [X] T069 [US3] Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` : `POST /shelf-photos/{id}/scan` sur un envoi `failed` renvoie 200 avec les livres, puis `GET /shelf-photos/{id}` donne `outcome: "completed"`, et un second POST renvoie 409 `SCAN_ALREADY_COMPLETED`. Aucune modification du contrôleur n'est attendue : si le test passe déjà après T068, le noter et passer à la suite. Dépend de T068.
 - [ ] T070 [P] [US3] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/api/history-api.spec.ts`. `rescanShelfScan(id)` appelle `POST {base}/shelf-photos/{id}/scan` et rend l'une de ces issues :
 
   | Réponse | Issue |

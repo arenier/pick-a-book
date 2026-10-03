@@ -127,13 +127,13 @@ export class InMemoryScanRepository implements ShelfScanRepositoryPort {
     return ok();
   }
 
-  /** The record an id names, if it has no result yet — the transition rule of Postgres. */
+  /** The record an id names, if it has no books yet — the transition rule of Postgres. */
   private analysable(id: ShelfScanId): Result<ShelfScanRecord, ShelfScanTransitionFailure> {
     const record = this.records.get(id.value);
     if (record === undefined) {
       return err(new ShelfScanNotFound(id.value));
     }
-    if (record.status !== 'pending') {
+    if (record.status === 'completed') {
       return err(new ShelfScanAlreadyProcessed(id));
     }
 

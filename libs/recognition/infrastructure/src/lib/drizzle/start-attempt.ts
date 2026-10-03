@@ -35,7 +35,8 @@ export async function refusalOf(
   if (scan === undefined) {
     return new ShelfScanNotFound(id.value);
   }
-  if (scan.status !== 'pending') {
+  // Books are final; a scan that failed, or never started, can be run again.
+  if (scan.status === 'completed') {
     return new ShelfScanAlreadyProcessed(id);
   }
   if (await hasRunningAttempt(tx, id, policy.lease)) {

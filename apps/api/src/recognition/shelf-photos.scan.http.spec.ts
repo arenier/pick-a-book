@@ -1,5 +1,12 @@
-import { ok } from '@pick-a-book/shared-result';
-import { DetectedBook, type ShelfScannerPort } from '@pick-a-book/recognition-domain';
+import { err, ok, unwrap } from '@pick-a-book/shared-result';
+import {
+  Author,
+  BookTitle,
+  Confidence,
+  DetectedBook,
+  ShelfScanFailed,
+  type ShelfScannerPort,
+} from '@pick-a-book/recognition-domain';
 import { describe, expect, it } from 'vitest';
 
 import { errorBodyOf } from '../http/testing/error-body';
@@ -94,5 +101,62 @@ describe('POST /shelf-photos/:id/scan, once it has its books', () => {
     const body = await errorBodyOf(response);
     expect(body).toMatchObject({ statusCode: 409, code: 'SCAN_ALREADY_COMPLETED' });
     expect(body.message).toContain(id);
+  });
+});
+
+/** A scanner that is down until told it is back: the provider of a failed analysis, then its relaunch. */
+function aScannerThatComesBack() {
+  let up = false;
+  const book = DetectedBook.of(
+    unwrap(Author.of('Albert Camus')),
+    unwrap(BookTitle.of('La Peste')),
+    unwrap(Confidence.of(0.92)),
+  );
+  const scanner: ShelfScannerPort = {
+    scan: async () => (up ? ok([book]) : err(new ShelfScanFailed('provider unavailable'))),
+  };
+
+  return {
+    scanner,
+    comeBack: () => {
+      up = true;
+    },
+  };
+}
+
+// specs/002-upload-history, US3, FR-011: the same route scans a photo and runs a failed one again.
+describe('POST /shelf-photos/:id/scan, on an upload whose analysis failed', () => {
+  const service = aScannerThatComesBack();
+  const { upload, scan, get } = aRunningApi(service.scanner);
+
+  it('runs it again, and the upload then shows its books', async () => {
+    const id = idOf(await (await upload(aJpeg())).json());
+    expect((await scan(id)).status).toBe(502);
+    await expect(get(`/shelf-photos/${id}`).then(async (r) => r.json())).resolves.toMatchObject({
+      outcome: 'failed',
+    });
+    service.comeBack();
+
+    const relaunched = await scan(id);
+
+    expect(relaunched.status).toBe(200);
+    await expect(relaunched.json()).resolves.toStrictEqual({
+      books: [{ author: 'Albert Camus', title: 'La Peste', confidence: 0.92 }],
+    });
+    await expect(get(`/shelf-photos/${id}`).then(async (r) => r.json())).resolves.toMatchObject({
+      outcome: 'completed',
+      books: [{ title: 'La Peste' }],
+    });
+  });
+
+  it('refuses a third run: the books are final', async () => {
+    const id = idOf(await (await upload(aJpeg())).json());
+    service.comeBack();
+    await scan(id);
+
+    const again = await scan(id);
+
+    expect(again.status).toBe(409);
+    await expect(errorBodyOf(again)).resolves.toMatchObject({ code: 'SCAN_ALREADY_COMPLETED' });
   });
 });

@@ -24,11 +24,16 @@ import { InMemoryShelfScanRepository } from './in-memory-shelf-scan-repository.j
 export class ShelfScannerStub implements ShelfScannerPort {
   readonly seen: ShelfPhoto[] = [];
 
-  constructor(private readonly answer: Result<DetectedBook[], ShelfScanFailed>) {}
+  constructor(private answer: Result<DetectedBook[], ShelfScanFailed>) {}
 
   async scan(photo: ShelfPhoto): Promise<Result<DetectedBook[], ShelfScanFailed>> {
     this.seen.push(photo);
     return this.answer;
+  }
+
+  /** The service came back — or went down: what the next scan answers. */
+  answerWith(answer: Result<DetectedBook[], ShelfScanFailed>): void {
+    this.answer = answer;
   }
 }
 

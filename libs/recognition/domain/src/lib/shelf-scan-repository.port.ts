@@ -45,10 +45,11 @@ interface StoredShelfPhoto {
 /**
  * The durable trace of a submitted shelf photo (US3, FR-011).
  *
- * Created `pending` as soon as the photo is stored, then moved once — and only once — to
- * `completed` or `failed` when the scanner has answered. A discriminated union rather than
- * an optional list: detected books exist if and only if the scan completed, and an empty list
- * means "no book on the shelf", never "not scanned yet".
+ * Created `pending` as soon as the photo is stored, then moved to `completed` or `failed` when the
+ * scanner has answered. `failed` can be run again — it moves to `completed`, or stays `failed` —
+ * but `completed` is final: a photo never carries two results (specs/002-upload-history, FR-011).
+ * A discriminated union rather than an optional list: detected books exist if and only if the scan
+ * completed, and an empty list means "no book on the shelf", never "not scanned yet".
  */
 export type ShelfScanRecord = StoredShelfPhoto &
   (
@@ -90,7 +91,7 @@ export interface ShelfScanPage {
   readonly next: ShelfScanCursor | undefined;
 }
 
-/** Why a record could not move: it does not exist, or it already has an outcome. */
+/** Why a record could not move: it does not exist, or it already has its books. */
 export type ShelfScanTransitionFailure = ShelfScanNotFound | ShelfScanAlreadyProcessed;
 
 /**
@@ -117,9 +118,10 @@ export interface ScanAttemptPolicy {
 /**
  * Outbound port that keeps shelf scan records (ADR 0006: Postgres).
  *
- * `markCompleted` and `markFailed` only ever move a record that has no result yet, and answer
- * `ShelfScanAlreadyProcessed` otherwise: the transition is enforced where the write happens,
- * so two concurrent scans of the same photo cannot both record a result. A database that is
+ * `markCompleted` and `markFailed` only ever move a record that has no books yet — `pending`, or
+ * `failed` and run again — and answer `ShelfScanAlreadyProcessed` otherwise: the transition is
+ * enforced where the write happens, so two concurrent scans of the same photo cannot both record
+ * books. A database that is
  * down is not part of that vocabulary: the promise rejects, and the global HTTP filter of
  * `apps/api` catches it (ADR 0013).
  *

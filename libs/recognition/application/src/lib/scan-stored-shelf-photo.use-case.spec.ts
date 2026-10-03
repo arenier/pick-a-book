@@ -141,13 +141,4 @@ describe('ScanStoredShelfPhotoUseCase, for an id it cannot scan', () => {
     );
     expect(scanner.seen).toHaveLength(1);
   });
-
-  it('answers ShelfScanAlreadyProcessed for a scan already failed', async () => {
-    const { id, useCase } = await aStoredPhoto(failing());
-    await useCase.execute({ id });
-
-    await expect(useCase.execute({ id })).resolves.toStrictEqual(
-      err(new ShelfScanAlreadyProcessed(unwrap(ShelfScanId.of(id)))),
-    );
-  });
 });

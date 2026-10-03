@@ -108,24 +108,17 @@ describe('DrizzleShelfScanRepositoryAdapter, recording a result', () => {
 describe('DrizzleShelfScanRepositoryAdapter, recording a result only once', () => {
   const { repository } = aMigratedRepository();
 
-  // The 409 of research.md §7, held where the write happens: a result is recorded once.
-  it('refuses to move a record that is no longer pending', async () => {
+  // The 409 of research.md §7, held where the write happens: books are recorded once.
+  it('refuses to move a record that already has its books', async () => {
     const completed = aNewScan();
     await repository.createPending(completed);
     await repository.markCompleted(completed.id, books);
-
-    const failed = aNewScan();
-    await repository.createPending(failed);
-    await repository.markFailed(failed.id);
 
     await expect(repository.markCompleted(completed.id, [])).resolves.toStrictEqual(
       err(new ShelfScanAlreadyProcessed(completed.id)),
     );
     await expect(repository.markFailed(completed.id)).resolves.toStrictEqual(
       err(new ShelfScanAlreadyProcessed(completed.id)),
-    );
-    await expect(repository.markCompleted(failed.id, books)).resolves.toStrictEqual(
-      err(new ShelfScanAlreadyProcessed(failed.id)),
     );
 
     const record = await repository.get(completed.id);

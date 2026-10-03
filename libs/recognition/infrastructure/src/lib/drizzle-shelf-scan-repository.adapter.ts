@@ -13,7 +13,7 @@ import {
   type ShelfScanTransitionFailure,
 } from '@pick-a-book/recognition-domain';
 import { err, ok, type Result } from '@pick-a-book/shared-result';
-import { and, eq, isNull, sql, type SQL } from 'drizzle-orm';
+import { and, eq, inArray, isNull, sql, type SQL } from 'drizzle-orm';
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { alias } from 'drizzle-orm/pg-core';
 import type { Pool } from 'pg';
@@ -175,9 +175,10 @@ export class DrizzleShelfScanRepositoryAdapter implements ShelfScanRepositoryPor
   }
 
   /**
-   * Moves a pending record, and only a pending one: the `status = 'pending'` condition is in
-   * the UPDATE itself, so two concurrent scans cannot both record a result. Zero rows updated
-   * then says which rule was broken — no record, or a record already settled — as an `Err`:
+   * Moves a record that has no books yet — `pending`, or `failed` and run again — and only
+   * that: the status condition is in the UPDATE itself, so two concurrent scans cannot both
+   * record books. Zero rows updated then says which rule was broken — no record, or a record
+   * that is already `completed` — as an `Err`:
    * both are outcomes the port declares (ADR 0013). The attempt that led here is closed in the
    * same transaction, whatever the outcome: it is over.
    */
@@ -189,7 +190,9 @@ export class DrizzleShelfScanRepositoryAdapter implements ShelfScanRepositoryPor
       const moved = await tx
         .update(shelfScans)
         .set(outcome)
-        .where(and(eq(shelfScans.uploadId, id.value), eq(shelfScans.status, 'pending')))
+        .where(
+          and(eq(shelfScans.uploadId, id.value), inArray(shelfScans.status, ['pending', 'failed'])),
+        )
         .returning({ id: shelfScans.id });
       await tx
         .update(scanAttempts)
