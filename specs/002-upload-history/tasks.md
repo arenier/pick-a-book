@@ -188,14 +188,14 @@ visible et modifiable là où la prod se configure, sans redéploiement de code.
 
 ### Codes d'erreur stables et traduction HTTP (research.md §10)
 
-- [ ] T019 Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` :
+- [X] T019 Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` :
   - `POST /shelf-photos/{id}/scan` au plafond donne **429** avec `code: "DAILY_SCAN_QUOTA_EXCEEDED"` ;
   - une analyse en cours donne **409** avec `code: "SCAN_IN_PROGRESS"` ;
   - un envoi `completed` donne **409** avec `code: "SCAN_ALREADY_COMPLETED"` ;
   - les corps gardent `statusCode`, `message` et `error`.
 
   Dépend de T009 et T016.
-- [ ] T020 Étendre `apps/api/src/recognition/recognition-exception.filter.ts` : `@Catch` couvre `ShelfScanInProgress` et `DailyScanQuotaExceeded`, et le corps de réponse ajoute un champ `code` pour ces deux erreurs et pour `ShelfScanAlreadyProcessed`. Fait passer T019. Dépend de T019.
+- [X] T020 Étendre `apps/api/src/recognition/recognition-exception.filter.ts` : `@Catch` couvre `ShelfScanInProgress` et `DailyScanQuotaExceeded`, et le corps de réponse ajoute un champ `code` pour ces deux erreurs et pour `ShelfScanAlreadyProcessed`. Fait passer T019. Dépend de T019.
 
 ### Limite de requêtes par source (FR-014, research.md §9)
 

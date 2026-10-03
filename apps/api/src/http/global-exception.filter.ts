@@ -11,6 +11,12 @@ import { HttpAdapterHost } from '@nestjs/core';
 export interface ErrorBody {
   readonly statusCode: number;
   readonly message: string;
+  /**
+   * A stable code, when the route that raised the error said one: it is what the front reads to
+   * choose a message where the status alone is ambiguous (specs/002-upload-history, research.md
+   * §10). Absent otherwise.
+   */
+  readonly code?: string;
   readonly timestamp: string;
   /** The path asked for, without its query string — which can carry what must not be echoed. */
   readonly path: string;
@@ -49,9 +55,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof HttpException) {
       const statusCode = exception.getStatus();
+      const response = exception.getResponse();
+      const code = codeOf(response);
       const body = {
         statusCode,
-        message: messageOf(exception.getResponse()),
+        message: messageOf(response),
+        ...(code === undefined ? {} : { code }),
         timestamp,
         path,
       } satisfies ErrorBody;
@@ -100,6 +109,15 @@ function messageOf(response: string | object): string {
   }
 
   return UNEXPECTED_MESSAGE;
+}
+
+/** The stable code of an `HttpException` response, if it carries one that is a string. */
+function codeOf(response: string | object): string | undefined {
+  if (typeof response === 'object' && 'code' in response && typeof response.code === 'string') {
+    return response.code;
+  }
+
+  return undefined;
 }
 
 function pathOf(url: string): string {
