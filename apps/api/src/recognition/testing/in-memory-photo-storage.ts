@@ -5,6 +5,7 @@ import {
   type ShelfPhotoStoragePort,
   type ThumbnailMediaType,
 } from '@pick-a-book/recognition-domain';
+import { ShelfPhotoStorageFailed } from '@pick-a-book/recognition-infrastructure';
 import { unwrap } from '@pick-a-book/shared-result';
 
 /** In-memory double of the photo storage port: a map of what was stored, by key. */
@@ -17,7 +18,13 @@ export class InMemoryPhotoStorage implements ShelfPhotoStoragePort {
   }
 
   async retrieve(key: string, mediaType: ShelfPhotoMediaType): Promise<ShelfPhoto> {
-    return unwrap(ShelfPhoto.of(this.objects.get(key)?.bytes ?? new Uint8Array(), mediaType));
+    const stored = this.objects.get(key);
+    if (stored === undefined) {
+      // What the real adapter does for a key that holds nothing.
+      throw new ShelfPhotoStorageFailed(`could not retrieve ${key}`);
+    }
+
+    return unwrap(ShelfPhoto.of(stored.bytes, mediaType));
   }
 
   async storeThumbnail(thumbnail: ShelfPhotoThumbnail, key: string): Promise<void> {

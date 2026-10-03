@@ -5,7 +5,7 @@ import {
   ShelfScanNotFound,
 } from '@pick-a-book/recognition-domain';
 import { err, unwrap } from '@pick-a-book/shared-result';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { GetShelfPhotoImageUseCase } from './get-shelf-photo-image.use-case.js';
 import { StoreShelfPhotoUseCase } from './store-shelf-photo.use-case.js';
@@ -32,7 +32,12 @@ async function aStoredScan(options: { readonly thumbnail: boolean }) {
     }),
   );
 
-  return { id, repository, useCase: new GetShelfPhotoImageUseCase(owner, storage, repository) };
+  return {
+    id,
+    storage,
+    repository,
+    useCase: new GetShelfPhotoImageUseCase(owner, storage, repository),
+  };
 }
 
 // What the history shows of a scan, read back from the bucket (specs/002-upload-history, US1).
@@ -50,6 +55,36 @@ describe('GetShelfPhotoImageUseCase, for a thumbnail', () => {
 
     await expect(useCase.execute({ id, kind: 'thumbnail' })).resolves.toStrictEqual(
       err(new ShelfPhotoThumbnailNotFound(id)),
+    );
+  });
+});
+
+// US2: the photo itself, in the type it was sent in — kept as it came, whatever the browser can show.
+describe('GetShelfPhotoImageUseCase, for the photo', () => {
+  it('answers its bytes and the media type it was stored with', async () => {
+    const { id, useCase } = await aStoredScan({ thumbnail: false });
+
+    const image = unwrap(await useCase.execute({ id, kind: 'photo' }));
+
+    expect(image).toStrictEqual({ bytes: aJpeg.bytes, mediaType: 'image/jpeg' });
+  });
+
+  // A bucket that fails is not an expected failure of the domain: it rejects (ADR 0013), and the
+  // HTTP boundary says 502 for it (contract §3).
+  it('lets a storage failure through, as it is', async () => {
+    const { id, storage, useCase } = await aStoredScan({ thumbnail: false });
+    const failure = new Error('could not retrieve default/shelf_photo/…');
+    vi.spyOn(storage, 'retrieve').mockRejectedValue(failure);
+
+    await expect(useCase.execute({ id, kind: 'photo' })).rejects.toBe(failure);
+  });
+
+  it('answers ShelfScanNotFound for an id it does not know', async () => {
+    const { useCase } = await aStoredScan({ thumbnail: false });
+    const id = ShelfScanId.generate().value;
+
+    await expect(useCase.execute({ id, kind: 'photo' })).resolves.toStrictEqual(
+      err(new ShelfScanNotFound(id)),
     );
   });
 });

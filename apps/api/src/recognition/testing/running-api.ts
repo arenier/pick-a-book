@@ -2,6 +2,7 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import {
   GetShelfPhotoImageUseCase,
+  GetShelfScanUseCase,
   ListShelfScansUseCase,
   ScanStoredShelfPhotoUseCase,
   StoreShelfPhotoUseCase,
@@ -37,6 +38,7 @@ async function startApi(fixture: ReturnType<typeof aShelfPhotosController>) {
       { provide: ScanStoredShelfPhotoUseCase, useValue: fixture.scanStoredShelfPhoto },
       { provide: ListShelfScansUseCase, useValue: fixture.listShelfScans },
       { provide: GetShelfPhotoImageUseCase, useValue: fixture.getShelfPhotoImage },
+      { provide: GetShelfScanUseCase, useValue: fixture.getShelfScan },
     ],
   }).compile();
   const app = moduleRef.createNestApplication<NestExpressApplication>();
@@ -81,6 +83,10 @@ export function aRunningApi(scanner?: ShelfScannerPort, policy?: ScanAttemptPoli
       return fetch(`${baseUrl}/shelf-photos`, { method: 'POST', body: form });
     },
     get: async (path: string) => fetch(url(path)),
+    /** Loses the photo, the way a bucket can: the scan stays, its object is gone. */
+    losePhotos: () => {
+      fixture.objects.clear();
+    },
     /** What the doubles hold, copied: two snapshots equal prove nothing was written between. */
     snapshot: () => ({
       records: new Map(fixture.records),

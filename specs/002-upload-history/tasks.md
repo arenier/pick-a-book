@@ -410,14 +410,14 @@ et la pagination fonctionnent, et le détail n'est encore qu'un emplacement vide
 photo et ses livres s'affichent. Ouvrir un id inconnu et constater le message « introuvable »
 (quickstart, scénario 3).
 
-- [ ] T057 [P] [US2] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/get-shelf-scan.use-case.spec.ts` :
+- [X] T057 [P] [US2] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/get-shelf-scan.use-case.spec.ts` :
   - `ShelfScanDetailDto` vaut `{ id, createdAt, outcome, books?, hasThumbnail }`, avec `books` présent si et seulement si `completed`, dans l'ordre stocké et `author` absent quand inconnu ;
   - un id inconnu, malformé ou d'un autre `ownerId` donne `ShelfScanNotFound` ;
   - pas de `originalFilename` (FR-009).
-- [ ] T058 [US2] Créer `libs/recognition/application/src/lib/get-shelf-scan.use-case.ts` et l'exporter. Fait passer T057. Dépend de T057.
-- [ ] T059 [P] [US2] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.spec.ts`, pour le type `'photo'` : rend les octets et le `mediaType` conservé. Une erreur de stockage (`ShelfPhotoStorageFailed`) remonte telle quelle.
-- [ ] T060 [US2] Ajouter le type `'photo'` à `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.ts`. Fait passer T059. Dépend de T059 et T042.
-- [ ] T061 [US2] Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` :
+- [X] T058 [US2] Créer `libs/recognition/application/src/lib/get-shelf-scan.use-case.ts` et l'exporter. Fait passer T057. Dépend de T057.
+- [X] T059 [P] [US2] Écrire les tests (doivent échouer) dans `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.spec.ts`, pour le type `'photo'` : rend les octets et le `mediaType` conservé. Une erreur de stockage (`ShelfPhotoStorageFailed`) remonte telle quelle.
+- [X] T060 [US2] Ajouter le type `'photo'` à `libs/recognition/application/src/lib/get-shelf-photo-image.use-case.ts`. Fait passer T059. Dépend de T059 et T042.
+- [X] T061 [US2] Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` :
   - `GET /shelf-photos/{id}` renvoie 200 avec le corps du contrat §2 ;
   - un id inconnu ou non-UUID renvoie 404 ;
   - `GET /shelf-photos/{id}/photo` renvoie 200 avec le `Content-Type` du type conservé et `Cache-Control: private, max-age=31536000, immutable` ;

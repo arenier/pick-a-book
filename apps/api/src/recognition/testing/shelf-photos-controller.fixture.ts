@@ -1,5 +1,6 @@
 import {
   GetShelfPhotoImageUseCase,
+  GetShelfScanUseCase,
   ListShelfScansUseCase,
   ScanStoredShelfPhotoUseCase,
   StoreShelfPhotoUseCase,
@@ -51,6 +52,7 @@ export function aShelfPhotosController(
 
   const listShelfScans = new ListShelfScansUseCase(owner, repository);
   const getShelfPhotoImage = new GetShelfPhotoImageUseCase(owner, storage, repository);
+  const getShelfScan = new GetShelfScanUseCase(owner, repository);
 
   return {
     controller: new ShelfPhotosController(
@@ -58,11 +60,13 @@ export function aShelfPhotosController(
       scanStoredShelfPhoto,
       listShelfScans,
       getShelfPhotoImage,
+      getShelfScan,
     ),
     storeShelfPhoto,
     scanStoredShelfPhoto,
     listShelfScans,
     getShelfPhotoImage,
+    getShelfScan,
     objects: memory.objects,
     thumbnails: memory.thumbnails,
     records: repository.records,

@@ -1,4 +1,5 @@
 export * from './lib/get-shelf-photo-image.use-case.js';
+export * from './lib/get-shelf-scan.use-case.js';
 export * from './lib/invalid-shelf-scan-cursor.error.js';
 export * from './lib/invalid-shelf-scan-page-size.error.js';
 export * from './lib/list-shelf-scans.use-case.js';

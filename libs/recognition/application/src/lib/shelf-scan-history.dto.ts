@@ -40,10 +40,16 @@ export interface StoredImageDto {
   readonly mediaType: string;
 }
 
+export interface GetShelfScanCommand {
+  /** As received — possibly not even a UUID, which reads as an unknown scan. */
+  readonly id: string;
+}
+
 export interface GetShelfPhotoImageCommand {
   /** As received — possibly not even a UUID, which reads as an unknown scan. */
   readonly id: string;
-  readonly kind: 'thumbnail';
+  /** The photo as it was sent, or the thumbnail made of it. */
+  readonly kind: 'photo' | 'thumbnail';
 }
 
 export interface ListShelfScansCommand {

@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { Inject, Module, type OnApplicationShutdown, type Provider } from '@nestjs/common';
 import {
   GetShelfPhotoImageUseCase,
+  GetShelfScanUseCase,
   ListShelfScansUseCase,
   ScanStoredShelfPhotoUseCase,
   StoreShelfPhotoUseCase,
@@ -108,6 +109,12 @@ function providersOfUseCases(environment: Environment): Provider[] {
       provide: ListShelfScansUseCase,
       useFactory: (repository: ShelfScanRepositoryPort) =>
         new ListShelfScansUseCase(environment.ownerId, repository),
+      inject: [SHELF_SCAN_REPOSITORY_PORT],
+    },
+    {
+      provide: GetShelfScanUseCase,
+      useFactory: (repository: ShelfScanRepositoryPort) =>
+        new GetShelfScanUseCase(environment.ownerId, repository),
       inject: [SHELF_SCAN_REPOSITORY_PORT],
     },
     {

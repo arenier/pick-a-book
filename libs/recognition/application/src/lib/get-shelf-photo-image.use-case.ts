@@ -1,6 +1,5 @@
 import {
   ShelfPhotoThumbnailNotFound,
-  ShelfScanId,
   ShelfScanNotFound,
   type OwnerId,
   type ShelfPhotoStoragePort,
@@ -8,13 +7,15 @@ import {
 } from '@pick-a-book/recognition-domain';
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
+import { findOwnedScan } from './owned-shelf-scan.js';
 import type { GetShelfPhotoImageCommand, StoredImageDto } from './shelf-scan-history.dto.js';
 
 /** Why an image was not given: no such scan, or the scan has no thumbnail — each a 404. */
 export type GetShelfPhotoImageFailure = ShelfScanNotFound | ShelfPhotoThumbnailNotFound;
 
 /**
- * An image of a scan, read back from the bucket (specs/002-upload-history, US1).
+ * An image of a scan, read back from the bucket (specs/002-upload-history, US1, US2): its
+ * thumbnail, or the photo itself.
  *
  * The scan has to be the configured owner's, or it is « not found » like any unknown id: access
  * is open, and no one's photos are reachable by guessing another's id (FR-012). Reads only
@@ -31,10 +32,15 @@ export class GetShelfPhotoImageUseCase {
   async execute(
     command: GetShelfPhotoImageCommand,
   ): Promise<Result<StoredImageDto, GetShelfPhotoImageFailure>> {
-    const id = ShelfScanId.of(command.id);
-    const record = id.ok ? await this.repository.get(id.value) : undefined;
-    if (record === undefined || !record.ownerId.equals(this.ownerId)) {
+    const record = await findOwnedScan(this.repository, this.ownerId, command.id);
+    if (record === undefined) {
       return err(new ShelfScanNotFound(command.id));
+    }
+
+    if (command.kind === 'photo') {
+      const photo = await this.storage.retrieve(record.photoBucketKey, record.photoMediaType);
+
+      return ok({ bytes: photo.bytes, mediaType: photo.mediaType });
     }
 
     const { thumbnail } = record;

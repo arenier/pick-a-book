@@ -1,4 +1,5 @@
 import {
+  BadGatewayException,
   BadRequestException,
   Controller,
   Get,
@@ -15,14 +16,17 @@ import {
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   GetShelfPhotoImageUseCase,
+  GetShelfScanUseCase,
   ListShelfScansUseCase,
   ScanStoredShelfPhotoUseCase,
   StoreShelfPhotoUseCase,
   type ScanShelfResult,
+  type ShelfScanDetailDto,
   type ShelfScanPageDto,
   type StoreShelfPhotoCommand,
   type StoreShelfPhotoResult,
 } from '@pick-a-book/recognition-application';
+import { ShelfPhotoStorageFailed } from '@pick-a-book/recognition-infrastructure';
 import type { Result } from '@pick-a-book/shared-result';
 
 import { toHttpException, type RecognitionError } from './recognition-http-error';
@@ -81,6 +85,7 @@ export class ShelfPhotosController {
     private readonly scanStoredShelfPhoto: ScanStoredShelfPhotoUseCase,
     private readonly listShelfScans: ListShelfScansUseCase,
     private readonly getShelfPhotoImage: GetShelfPhotoImageUseCase,
+    private readonly getShelfScan: GetShelfScanUseCase,
   ) {}
 
   @Post()
@@ -129,11 +134,20 @@ export class ShelfPhotosController {
   @Get(':id/thumbnail')
   @Header('Cache-Control', IMMUTABLE_PRIVATE_CACHE)
   async thumbnail(@Param('id') id: string): Promise<StreamableFile> {
-    const image = this.orRespondWithError(
-      await this.getShelfPhotoImage.execute({ id, kind: 'thumbnail' }),
-    );
+    return this.sendImage(id, 'thumbnail');
+  }
 
-    return new StreamableFile(image.bytes, { type: image.mediaType });
+  /** The photo as it was sent, straight from the bucket (contracts §3). */
+  @Get(':id/photo')
+  @Header('Cache-Control', IMMUTABLE_PRIVATE_CACHE)
+  async photo(@Param('id') id: string): Promise<StreamableFile> {
+    return this.sendImage(id, 'photo');
+  }
+
+  /** How an upload ended and, if it completed, its books (contracts §2). Reads only. */
+  @Get(':id')
+  async detail(@Param('id') id: string): Promise<ShelfScanDetailDto> {
+    return this.orRespondWithError(await this.getShelfScan.execute({ id }));
   }
 
   @Post(':id/scan')
@@ -141,6 +155,27 @@ export class ShelfPhotosController {
   @HttpCode(200)
   async scan(@Param('id') id: string): Promise<ScanShelfResult> {
     return this.orRespondWithError(await this.scanStoredShelfPhoto.execute({ id }));
+  }
+
+  /**
+   * An image of a scan, as a response. A bucket that lost it is the one failure of the context
+   * the domain does not name (ADR 0013), yet the contract tells it from any other: 502, where
+   * the `<img>` falls back like for any image that fails to load (contracts §3). The detail goes
+   * to the logs; the caller only learns that the storage is unavailable.
+   */
+  private async sendImage(id: string, kind: 'photo' | 'thumbnail'): Promise<StreamableFile> {
+    try {
+      const image = this.orRespondWithError(await this.getShelfPhotoImage.execute({ id, kind }));
+
+      return new StreamableFile(image.bytes, { type: image.mediaType });
+    } catch (error) {
+      if (error instanceof ShelfPhotoStorageFailed) {
+        this.logger.error(error.message, error.stack);
+        throw new BadGatewayException('The photo storage is unavailable');
+      }
+
+      throw error;
+    }
   }
 
   /**
