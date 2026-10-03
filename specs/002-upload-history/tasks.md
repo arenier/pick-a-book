@@ -394,7 +394,7 @@ le bon résumé (quickstart, scénarios 1 et 2).
   - un 429 `TOO_MANY_REQUESTS`, sur la première page comme sur une suivante, affiche « Trop de demandes en peu de temps. Patientez une minute puis réessayez. », distinct du message de panne (FR-014, analyse G2).
 
   Créer ensuite `apps/web/src/features/upload-history/ui/history-screen.tsx`, en classes Tailwind sur les tokens (amendement du 03/10/2026). Dépend de T054.
-- [ ] T056 [US1] Brancher la route `history` sur `HistoryScreen` dans `apps/web/src/app/app.tsx`, avec un lien « Nouvelle photo » vers `#/`. Compléter `apps/web/src/app/app.spec.tsx` (test d'abord) : `#/historique` affiche l'historique, et le lien ramène à l'écran d'envoi. Dépend de T029 et T055.
+- [X] T056 [US1] Brancher la route `history` sur `HistoryScreen` dans `apps/web/src/app/app.tsx`, avec un lien « Nouvelle photo » vers `#/`. Compléter `apps/web/src/app/app.spec.tsx` (test d'abord) : `#/historique` affiche l'historique, et le lien ramène à l'écran d'envoi. Dépend de T029 et T055.
 
 **Checkpoint** : US1 est livrable seule (quickstart, scénarios 1, 2 et 6). La liste, les vignettes
 et la pagination fonctionnent, et le détail n'est encore qu'un emplacement vide.

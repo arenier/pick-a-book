@@ -2,6 +2,7 @@ import { useMessages } from '@pick-a-book/shared-i18n';
 import { buttonVariants, cn } from '@pick-a-book/shared-ui';
 
 import { PhotoUploadScreen } from '../features/photo-upload/ui/photo-upload-screen';
+import { HistoryScreen } from '../features/upload-history/ui/history-screen';
 import { hrefFor, type Route } from './routes';
 import { useHashRoute } from './use-hash-route';
 
@@ -20,6 +21,7 @@ export function App() {
       <p className="text-muted-foreground">{t('tagline')}</p>
       <Navigation route={route} />
       {route.name === 'upload' && <PhotoUploadScreen />}
+      {route.name === 'history' && <HistoryScreen />}
     </main>
   );
 }
