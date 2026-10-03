@@ -42,6 +42,9 @@ export async function submitShelfPhoto(
   if (stored.status === 400 || stored.status === 413) {
     return failure('refused');
   }
+  if (stored.status === 429) {
+    return failure(failureOfTooManyRequests(stored.body));
+  }
   if (stored.status !== 201 || !isStoredPhoto(stored.body)) {
     return failure('unexpected');
   }
@@ -53,6 +56,9 @@ export async function submitShelfPhoto(
   }
   if (scanned.status === 502) {
     return failure('upstream');
+  }
+  if (scanned.status === 429) {
+    return failure(failureOfTooManyRequests(scanned.body));
   }
   if (scanned.status !== 200 || !isScanResult(scanned.body)) {
     return failure('unexpected');
@@ -84,6 +90,22 @@ async function ask(send: typeof fetch, url: string, init: RequestInit): Promise<
   return { reached: true, status: response.status, body };
 }
 
+/**
+ * Two different 429 (specs/002-upload-history, research.md §10): the daily cap, which keeps the
+ * photo, and the limit by source, which asks for a minute. Only the `code` tells them apart,
+ * never the `message`; a 429 without a code this front knows is unexpected.
+ */
+function failureOfTooManyRequests(body: unknown): UploadFailure {
+  if (!hasErrorCode(body)) {
+    return 'unexpected';
+  }
+  if (body.code === 'DAILY_SCAN_QUOTA_EXCEEDED') {
+    return 'dailyQuota';
+  }
+
+  return body.code === 'TOO_MANY_REQUESTS' ? 'rateLimited' : 'unexpected';
+}
+
 function failure(kind: UploadFailure): UploadState {
   return { status: 'error', failure: kind };
 }
@@ -98,6 +120,10 @@ interface WireBook {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
+}
+
+function hasErrorCode(value: unknown): value is { readonly code: string } {
+  return isRecord(value) && typeof value['code'] === 'string';
 }
 
 function isStoredPhoto(value: unknown): value is { readonly id: string } {

@@ -225,23 +225,23 @@ visible et modifiable là où la prod se configure, sans redéploiement de code.
 
 ### Écran d'envoi : distinguer les deux 429 (spec FR-014, FR-015)
 
-- [ ] T024 [P] Écrire les tests (doivent échouer) :
+- [X] T024 [P] Écrire les tests (doivent échouer) :
   - dans `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts` : un scan 429 avec `code: "DAILY_SCAN_QUOTA_EXCEEDED"` rend l'échec `dailyQuota` ; un 429 avec `code: "TOO_MANY_REQUESTS"`, sur l'envoi ou sur le scan, rend `rateLimited` ; un 429 sans code ou avec un code inconnu rend `unexpected` ;
   - dans `apps/web/src/features/photo-upload/ui/failure-message.spec.tsx` : `dailyQuota` affiche « Limite d'analyses du jour atteinte. Votre photo est conservée : vous pourrez relancer l'analyse demain depuis l'historique. », et `rateLimited` affiche « Trop de demandes en peu de temps. Patientez une minute puis réessayez. ».
-- [ ] T025 Ajouter `dailyQuota` et `rateLimited` à `UPLOAD_FAILURES` dans `apps/web/src/features/photo-upload/model/upload-failure.ts`. Les rendre depuis `apps/web/src/features/photo-upload/api/scan-shelf-photo.ts`, avec un garde de type `hasErrorCode(body): body is { code: string }`, sans `as`. Ajouter les deux formulations à la table de `apps/web/src/features/photo-upload/ui/failure-message.tsx` et les clés `failure.dailyQuota` et `failure.rateLimited` à `apps/web/src/features/photo-upload/i18n/fr.json` et `en.json`. Fait passer T024. Dépend de T024.
+- [X] T025 Ajouter `dailyQuota` et `rateLimited` à `UPLOAD_FAILURES` dans `apps/web/src/features/photo-upload/model/upload-failure.ts`. Les rendre depuis `apps/web/src/features/photo-upload/api/scan-shelf-photo.ts`, avec un garde de type `hasErrorCode(body): body is { code: string }`, sans `as`. Ajouter les deux formulations à la table de `apps/web/src/features/photo-upload/ui/failure-message.tsx` et les clés `failure.dailyQuota` et `failure.rateLimited` à `apps/web/src/features/photo-upload/i18n/fr.json` et `en.json`. Fait passer T024. Dépend de T024.
 
 ### Routage du front (research.md §2, §3)
 
-- [ ] T026 [P] Écrire les tests (doivent échouer) dans `apps/web/src/app/use-hash-route.spec.ts` et `apps/web/src/app/routes.spec.ts` :
+- [X] T026 [P] Écrire les tests (doivent échouer) dans `apps/web/src/app/use-hash-route.spec.ts` et `apps/web/src/app/routes.spec.ts` :
   - `''`, `#` et `#/` donnent `{ name: 'upload' }` ;
   - `#/historique` donne `{ name: 'history' }` ;
   - `#/historique/<uuid>` donne `{ name: 'entry', id }` ;
   - tout autre fragment donne `{ name: 'upload' }` ;
   - le hook suit `hashchange` et se désabonne au démontage ;
   - `hrefFor(route)` produit le fragment inverse.
-- [ ] T027 Créer `apps/web/src/app/routes.ts` (union `Route`, `parseRoute`, `hrefFor`) et `apps/web/src/app/use-hash-route.ts`, un hook fondé sur `useSyncExternalStore` et `hashchange`. Fait passer T026. Dépend de T026.
-- [ ] T028 Créer le namespace de la slice : `apps/web/src/features/upload-history/i18n/fr.json` et `en.json`, déclarés dans `apps/web/src/i18n/resources.ts` sous la clé `'upload-history'`. Ajouter au catalogue du shell (`apps/web/src/app/i18n/fr.json` et `en.json`) les clés `nav.history` (« Historique » / « History ») et `nav.newPhoto` (« Nouvelle photo » / « New photo »). Le test de parité existant (`apps/web/src/i18n/catalogs.spec.ts`) et la cible `translations` servent de test : ils doivent passer. Les clés de la slice arrivent avec les tâches d'UI qui les affichent.
-- [ ] T029 Écrire le test (doit échouer) dans `apps/web/src/app/app.spec.tsx` : sur `#/`, l'écran d'envoi est affiché avec un lien « Historique » vers `#/historique` (FR-001). Puis modifier `apps/web/src/app/app.tsx` pour monter l'écran selon la route, en gardant l'écran d'envoi inchangé sur `upload`. Les écrans d'historique et de détail sont des emplacements vides jusqu'à US1 et US2. Dépend de T027 et T028.
+- [X] T027 Créer `apps/web/src/app/routes.ts` (union `Route`, `parseRoute`, `hrefFor`) et `apps/web/src/app/use-hash-route.ts`, un hook fondé sur `useSyncExternalStore` et `hashchange`. Fait passer T026. Dépend de T026.
+- [X] T028 Créer le namespace de la slice : `apps/web/src/features/upload-history/i18n/fr.json` et `en.json`, déclarés dans `apps/web/src/i18n/resources.ts` sous la clé `'upload-history'`. Ajouter au catalogue du shell (`apps/web/src/app/i18n/fr.json` et `en.json`) les clés `nav.history` (« Historique » / « History ») et `nav.newPhoto` (« Nouvelle photo » / « New photo »). Le test de parité existant (`apps/web/src/i18n/catalogs.spec.ts`) et la cible `translations` servent de test : ils doivent passer. Les clés de la slice arrivent avec les tâches d'UI qui les affichent.
+- [X] T029 Écrire le test (doit échouer) dans `apps/web/src/app/app.spec.tsx` : sur `#/`, l'écran d'envoi est affiché avec un lien « Historique » vers `#/historique` (FR-001). Puis modifier `apps/web/src/app/app.tsx` pour monter l'écran selon la route, en gardant l'écran d'envoi inchangé sur `upload`. Les écrans d'historique et de détail sont des emplacements vides jusqu'à US1 et US2. Dépend de T027 et T028.
 
 **Checkpoint** : `yarn check` passe. L'écran d'envoi existant fonctionne, plafonné et limité, et
 affiche les nouveaux messages de 429. Le routage est en place.
