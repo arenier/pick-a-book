@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { StrictMode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { HistoryEntry } from '../model/history-entry';
@@ -65,6 +66,23 @@ describe('HistoryScreen, loading', () => {
     render(<HistoryScreen list={server.list} />);
 
     expect(screen.getByRole('status').textContent).toContain('Chargement');
+  });
+
+  // React runs an effect twice in development to flush out the ones that are not safe to repeat:
+  // asking the API for the same page twice is what that would show.
+  it('asks for the first page once, even when React runs its effects twice', async () => {
+    const server = aServer(aPage([0]));
+
+    render(
+      <StrictMode>
+        <HistoryScreen list={server.list} />
+      </StrictMode>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getAllByRole('link')).toHaveLength(1);
+    });
+    expect(server.cursors).toStrictEqual([undefined]);
   });
 
   it('asks for the first page, with no cursor', async () => {

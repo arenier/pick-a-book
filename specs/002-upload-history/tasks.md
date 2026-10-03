@@ -446,7 +446,7 @@ photo et ses livres s'affichent. Ouvrir un id inconnu et constater le message «
   - la position de défilement est restaurée.
 
   Dépend de T056 et T064.
-- [ ] T066 [US2] Vérifier la mise en page à 360 px (SC-004), dans les classes Tailwind des écrans de la slice : la photo du détail tient en `max-width: 100%`, et ni la liste ni le détail ne défilent à l'horizontale. Le vérifier dans le navigateur en émulation mobile (quickstart, scénario 8). Dépend de T064.
+- [X] T066 [US2] Vérifier la mise en page à 360 px (SC-004), dans les classes Tailwind des écrans de la slice : la photo du détail tient en `max-width: 100%`, et ni la liste ni le détail ne défilent à l'horizontale. Le vérifier dans le navigateur en émulation mobile (quickstart, scénario 8). Dépend de T064.
 
 **Checkpoint** : US1 et US2 forment ensemble le minimum utile. On peut retrouver les livres d'un
 envoi ancien sans renvoyer la photo (SC-001).

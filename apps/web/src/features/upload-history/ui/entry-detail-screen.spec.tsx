@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { StrictMode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { DetectedBook } from '../model/detected-book';
@@ -56,6 +57,21 @@ describe('EntryDetailScreen, loading', () => {
     await waitFor(() => {
       expect(server.asked).toStrictEqual([anId]);
     });
+  });
+});
+
+describe('EntryDetailScreen, in development', () => {
+  it('asks for the upload once, even when React runs its effects twice', async () => {
+    const server = aServer(found({ kind: 'books', count: 2 }, { books: CAMUS }));
+
+    render(
+      <StrictMode>
+        <EntryDetailScreen id={anId} load={server.load} />
+      </StrictMode>,
+    );
+
+    await screen.findByRole('list');
+    expect(server.asked).toStrictEqual([anId]);
   });
 });
 

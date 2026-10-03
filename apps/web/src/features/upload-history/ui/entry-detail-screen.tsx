@@ -33,7 +33,10 @@ export function EntryDetailScreen({ id, load = loadFromApi }: EntryDetailScreenP
 
   return (
     <section className="flex min-w-0 flex-col gap-4">
-      <a className={cn(buttonVariants({ variant: 'outline' }), 'w-full')} href="#/historique">
+      <a
+        className={cn(buttonVariants({ variant: 'ghost' }), 'w-full justify-start')}
+        href="#/historique"
+      >
         {t('detail.back')}
       </a>
       {state.status === 'loading' && (

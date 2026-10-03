@@ -48,9 +48,16 @@ export function useHistory(list: ListPage) {
     setState((now) => (now.status === 'loaded' ? withNextPage(now, answer) : now));
   }, [list]);
 
+  // Once per `list`, not once per run of the effect: in development React runs it twice to flush
+  // out the ones that are not safe to repeat, and the API would be asked for the same page twice.
+  // A real remount is a new component, and starts from nothing.
+  const startedFor = useRef<ListPage | null>(null);
   useEffect(() => {
-    void loadFirst();
-  }, [loadFirst]);
+    if (startedFor.current !== list) {
+      startedFor.current = list;
+      void loadFirst();
+    }
+  }, [list, loadFirst]);
 
   return { state, loadFirst, loadMore };
 }

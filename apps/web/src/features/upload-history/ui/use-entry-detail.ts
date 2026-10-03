@@ -24,9 +24,15 @@ export function useEntryDetail(id: string, load: LoadDetail) {
     }
   }, [id, load]);
 
+  // Once per upload, not once per run of the effect (see `useHistory`): a move to another upload,
+  // or another loader, is what asks again.
+  const startedFor = useRef<{ readonly id: string; readonly load: LoadDetail } | null>(null);
   useEffect(() => {
-    void reload();
-  }, [reload]);
+    if (startedFor.current?.id !== id || startedFor.current.load !== load) {
+      startedFor.current = { id, load };
+      void reload();
+    }
+  }, [id, load, reload]);
 
   return { state, reload };
 }
