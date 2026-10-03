@@ -13,7 +13,8 @@ export interface DetectedBook {
   readonly confidence: number;
 }
 
-interface WireBook {
+/** A book of a response, as it travels (contracts §2). */
+export interface WireBook {
   readonly author?: unknown;
   readonly title: string;
   readonly confidence: number;

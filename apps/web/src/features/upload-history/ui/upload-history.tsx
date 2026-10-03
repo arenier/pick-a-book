@@ -2,13 +2,16 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { EntryDetailScreen } from './entry-detail-screen';
 import { HistoryScreen, type HistoryScreenProps } from './history-screen';
-import type { LoadDetail } from './use-entry-detail';
+import { createHistoryUpdates } from './history-updates';
+import type { LoadDetail, RescanShelfScan } from './use-entry-detail';
 
-export interface UploadHistoryProps extends HistoryScreenProps {
+export interface UploadHistoryProps extends Omit<HistoryScreenProps, 'updates'> {
   /** The upload whose detail to show; absent: the list. The shell reads it from the route. */
   readonly entryId?: string;
   /** Loads an upload; injected by the specs, the real API client otherwise. */
   readonly load?: LoadDetail;
+  /** Runs the analysis of an upload again; injected by the specs, the real API client otherwise. */
+  readonly rescan?: RescanShelfScan;
 }
 
 /**
@@ -20,7 +23,9 @@ export interface UploadHistoryProps extends HistoryScreenProps {
  * (scenario 4). It is only mounted once the user has been to it: opening an upload from its address
  * asks for that upload, not for a list nobody sees.
  */
-export function UploadHistory({ entryId, load, list, observeEnd }: UploadHistoryProps) {
+export function UploadHistory({ entryId, load, rescan, list, observeEnd }: UploadHistoryProps) {
+  // The channel from the detail to the list: one, for as long as the history is on screen.
+  const [updates] = useState(createHistoryUpdates);
   const [listMounted, setListMounted] = useState(entryId === undefined);
   if (entryId === undefined && !listMounted) {
     setListMounted(true);
@@ -31,10 +36,12 @@ export function UploadHistory({ entryId, load, list, observeEnd }: UploadHistory
     <>
       {listMounted && (
         <div hidden={entryId !== undefined}>
-          <HistoryScreen list={list} observeEnd={observeEnd} />
+          <HistoryScreen list={list} observeEnd={observeEnd} updates={updates} />
         </div>
       )}
-      {entryId !== undefined && <EntryDetailScreen id={entryId} load={load} />}
+      {entryId !== undefined && (
+        <EntryDetailScreen id={entryId} load={load} rescan={rescan} onRescanned={updates.publish} />
+      )}
     </>
   );
 }

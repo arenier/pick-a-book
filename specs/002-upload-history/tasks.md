@@ -474,7 +474,7 @@ scénario 4).
 
   Fait passer T067. Dépend de T067.
 - [X] T069 [US3] Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` : `POST /shelf-photos/{id}/scan` sur un envoi `failed` renvoie 200 avec les livres, puis `GET /shelf-photos/{id}` donne `outcome: "completed"`, et un second POST renvoie 409 `SCAN_ALREADY_COMPLETED`. Aucune modification du contrôleur n'est attendue : si le test passe déjà après T068, le noter et passer à la suite. Dépend de T068.
-- [ ] T070 [P] [US3] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/api/history-api.spec.ts`. `rescanShelfScan(id)` appelle `POST {base}/shelf-photos/{id}/scan` et rend l'une de ces issues :
+- [X] T070 [P] [US3] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/api/history-api.spec.ts`. `rescanShelfScan(id)` appelle `POST {base}/shelf-photos/{id}/scan` et rend l'une de ces issues :
 
   | Réponse | Issue |
   |---|---|
@@ -487,7 +487,7 @@ scénario 4).
   | échec réseau | `offline` |
 
   Puis étendre `apps/web/src/features/upload-history/api/history-api.ts`.
-- [ ] T071 [US3] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/entry-detail-screen.spec.tsx` :
+- [X] T071 [US3] Écrire les tests (doivent échouer) dans `apps/web/src/features/upload-history/ui/entry-detail-screen.spec.tsx` :
   - un bouton « Relancer l'analyse » n'apparaît que pour `failed` et `pending` (US3, scénario 4) ;
   - pendant la relance, un chargement s'affiche et le bouton est désactivé (US3, scénario 2) ;
   - au succès, les livres s'affichent et le bouton disparaît ;
@@ -497,7 +497,7 @@ scénario 4).
   - `alreadyCompleted` recharge le détail.
 
   Implémenter ensuite dans `apps/web/src/features/upload-history/ui/entry-detail-screen.tsx`. Dépend de T070.
-- [ ] T072 [US3] Faire refléter une relance réussie dans l'entrée correspondante de l'historique déjà chargé, sans recharger la liste (US3, scénario 1). Par exemple, `HistoryScreen` expose un `updateEntry(id, outcome)` que le shell passe au détail : le shell compose, aucune slice n'importe l'autre. Test d'abord dans `apps/web/src/app/app.spec.tsx`, puis modifier `apps/web/src/app/app.tsx` et `apps/web/src/features/upload-history/ui/history-screen.tsx`. Dépend de T065 et T071.
+- [X] T072 [US3] Faire refléter une relance réussie dans l'entrée correspondante de l'historique déjà chargé, sans recharger la liste (US3, scénario 1). Par exemple, `HistoryScreen` expose un `updateEntry(id, outcome)` que le shell passe au détail : le shell compose, aucune slice n'importe l'autre. Test d'abord dans `apps/web/src/app/app.spec.tsx`, puis modifier `apps/web/src/app/app.tsx` et `apps/web/src/features/upload-history/ui/history-screen.tsx`. Dépend de T065 et T071.
 
 **Checkpoint** : les trois stories fonctionnent. Un envoi en échec peut être ramené à un résultat en
 une seule action (SC-005), dans la limite du plafond quotidien (SC-006).

@@ -1,22 +1,27 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useMessages } from '@pick-a-book/shared-i18n';
-import { Button, FallbackImage, Spinner, buttonVariants, cn } from '@pick-a-book/shared-ui';
+import { Button, Spinner, buttonVariants, cn } from '@pick-a-book/shared-ui';
 
-import { getShelfScan, photoUrl, thumbnailUrl } from '../api/history-api';
-import type { DetectedBook } from '../model/detected-book';
-import type { HistoryEntry } from '../model/history-entry';
-import { DetectedBooksList } from './detected-books-list';
+import { getShelfScan, rescanShelfScan } from '../api/history-api';
+import type { HistoryOutcome } from '../model/history-entry';
 import { HistoryFailureMessage } from './history-failure-message';
-import { useEntryDetail, type LoadDetail } from './use-entry-detail';
+import { LoadedEntry } from './loaded-entry';
+import { useEntryDetail, type LoadDetail, type RescanShelfScan } from './use-entry-detail';
 
 export interface EntryDetailScreenProps {
   /** The upload to show — the one the route names. */
   readonly id: string;
   /** Loads it; injected by the specs, the real API client otherwise. */
   readonly load?: LoadDetail;
+  /** Runs its analysis again; injected by the specs, the real API client otherwise. */
+  readonly rescan?: RescanShelfScan;
+  /** Told what the upload now is once its analysis ran again, to keep the list in step. */
+  readonly onRescanned?: (id: string, outcome: HistoryOutcome) => void;
 }
 
 const loadFromApi: LoadDetail = async (id) => getShelfScan(id);
+
+const rescanFromApi: RescanShelfScan = async (id) => rescanShelfScan(id);
 
 /**
  * One upload of the history: its photo, and what the analysis found on it
@@ -24,12 +29,20 @@ const loadFromApi: LoadDetail = async (id) => getShelfScan(id);
  * from a pasted address — an upload that is not there has its own message, apart from a server
  * that cannot be reached.
  */
-export function EntryDetailScreen({ id, load = loadFromApi }: EntryDetailScreenProps) {
+export function EntryDetailScreen({
+  id,
+  load = loadFromApi,
+  rescan = rescanFromApi,
+  onRescanned,
+}: EntryDetailScreenProps) {
   const { t } = useMessages('upload-history');
-  const { state, reload } = useEntryDetail(id, load);
+  const { state, reload, runAgain } = useEntryDetail(id, load, rescan, onRescanned);
   const onRetry = useCallback(() => {
     void reload();
   }, [reload]);
+  const onRescan = useCallback(() => {
+    void runAgain();
+  }, [runAgain]);
 
   return (
     <section className="flex min-w-0 flex-col gap-4">
@@ -54,46 +67,14 @@ export function EntryDetailScreen({ id, load = loadFromApi }: EntryDetailScreenP
           </Button>
         </>
       )}
-      {state.status === 'loaded' && <LoadedEntry entry={state.entry} books={state.books} />}
+      {state.status === 'loaded' && (
+        <LoadedEntry
+          entry={state.entry}
+          books={state.books}
+          rescan={state.rescan}
+          onRescan={onRescan}
+        />
+      )}
     </section>
   );
-}
-
-interface LoadedEntryProps {
-  readonly entry: HistoryEntry;
-  readonly books: readonly DetectedBook[] | undefined;
-}
-
-function LoadedEntry({ entry, books }: LoadedEntryProps) {
-  const { t } = useMessages('upload-history');
-  // The photo first; then its thumbnail, which still shows the shelf, if there is one; then the
-  // neutral indicator. A HEIC a browser cannot draw, or a photo the bucket lost, never leaves a
-  // broken image (FR-008).
-  const sources = useMemo(
-    () =>
-      entry.hasThumbnail ? [photoUrl(entry.id), thumbnailUrl(entry.id)] : [photoUrl(entry.id)],
-    [entry.hasThumbnail, entry.id],
-  );
-
-  return (
-    <>
-      <time className="text-sm text-muted-foreground" dateTime={entry.sentAt.toISOString()}>
-        {t('entry.sentAt', { date: entry.sentAt })}
-      </time>
-      <FallbackImage
-        className="max-h-[70vh] w-full rounded-lg object-contain"
-        sources={sources}
-        alt={t('detail.photo')}
-        placeholderLabel={t('detail.photoUnavailable')}
-      />
-      {books === undefined ? <NoBooks entry={entry} /> : <DetectedBooksList books={books} />}
-    </>
-  );
-}
-
-/** Why an upload has no books to list: its analysis failed, or never started. */
-function NoBooks({ entry }: { readonly entry: HistoryEntry }) {
-  const { t } = useMessages('upload-history');
-
-  return <p>{entry.outcome.kind === 'failed' ? t('detail.failed') : t('detail.notStarted')}</p>;
 }

@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { HistoryEntry } from '../model/history-entry';
 import type { PageAnswer } from '../model/history-state';
 import { HistoryScreen, type ObserveEnd } from './history-screen';
+import { createHistoryUpdates } from './history-updates';
 import type { ListPage } from './use-history';
 
 const anEntry = (index: number): HistoryEntry => ({
@@ -235,5 +236,57 @@ describe('HistoryScreen, when a next page fails', () => {
     expect(alert.textContent).toBe(
       'Trop de demandes en peu de temps. Patientez une minute puis réessayez.',
     );
+  });
+});
+
+// US3, scenario 1: an upload whose analysis ran again, from its detail, reads as what it now is in
+// the list already on screen — without asking for the list again.
+describe('HistoryScreen, an upload that was analysed again', () => {
+  const failedFirst = (): PageAnswer => ({
+    status: 'page',
+    entries: [{ ...anEntry(0), outcome: { kind: 'failed' } }, anEntry(1)],
+    next: null,
+  });
+
+  it('shows its new outcome, and leaves the other entries alone', async () => {
+    const updates = createHistoryUpdates();
+    const server = aServer(failedFirst());
+    render(<HistoryScreen list={server.list} updates={updates} />);
+    await waitFor(() => {
+      expect(screen.getByText('Analyse en échec')).toBeDefined();
+    });
+
+    act(() => {
+      updates.publish(anEntry(0).id, { kind: 'books', count: 4 });
+    });
+
+    expect(screen.getByText('4 livres détectés')).toBeDefined();
+    expect(screen.queryByText('Analyse en échec')).toBeNull();
+    expect(screen.getByText('2 livres détectés')).toBeDefined();
+    // And the list was not asked for again.
+    expect(server.cursors).toStrictEqual([undefined]);
+  });
+});
+
+describe('HistoryScreen, keeping up with the detail', () => {
+  const failedFirst = (): PageAnswer => ({
+    status: 'page',
+    entries: [{ ...anEntry(0), outcome: { kind: 'failed' } }, anEntry(1)],
+    next: null,
+  });
+
+  it('stops listening once the list is gone', async () => {
+    const updates = createHistoryUpdates();
+    const server = aServer(failedFirst());
+    const { unmount } = render(<HistoryScreen list={server.list} updates={updates} />);
+    await waitFor(() => {
+      expect(screen.getByText('Analyse en échec')).toBeDefined();
+    });
+
+    unmount();
+
+    expect(() => {
+      updates.publish(anEntry(0).id, { kind: 'none' });
+    }).not.toThrow();
   });
 });

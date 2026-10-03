@@ -1,3 +1,4 @@
+import type { DetectedBook } from './detected-book';
 import type { EntryDetail } from './entry-detail';
 import type { HistoryEntry } from './history-entry';
 
@@ -33,6 +34,36 @@ export type DetailAnswer =
   | { readonly status: 'error'; readonly failure: HistoryFailure };
 
 /**
+ * Why an analysis run again did not happen (specs/002-upload-history, US3). A kind, never a
+ * sentence (ADR 0011). `upstream`: the recognition service is down. `dailyQuota`: the day's
+ * analyses are used up. `rateLimited`: too many requests from this source. `inProgress`: an
+ * analysis of this upload is already running.
+ */
+export const RESCAN_FAILURES = [
+  'upstream',
+  'dailyQuota',
+  'rateLimited',
+  'inProgress',
+  'offline',
+  'unexpected',
+] as const;
+
+export type RescanFailure = (typeof RESCAN_FAILURES)[number];
+
+/**
+ * What running the analysis of an upload again comes back with. `alreadyCompleted` is not a
+ * failure to show: the upload has its books already — another tab got there first — and the screen
+ * reloads it to show them.
+ */
+export type RescanAnswer =
+  | { readonly status: 'completed'; readonly books: readonly DetectedBook[] }
+  | { readonly status: 'alreadyCompleted' }
+  | { readonly status: 'error'; readonly failure: RescanFailure };
+
+/** Where running the analysis again stands, for a detail that offers it. */
+export type RescanState = 'idle' | 'running' | { readonly failure: RescanFailure };
+
+/**
  * What the history screen shows — one state at a time. `error` is never `empty` (FR-010): an
  * history that could not be loaded must not read as an history with nothing in it.
  */
@@ -56,6 +87,6 @@ export type HistoryState =
  */
 export type EntryDetailState =
   | { readonly status: 'loading' }
-  | ({ readonly status: 'loaded' } & EntryDetail)
+  | ({ readonly status: 'loaded'; readonly rescan: RescanState } & EntryDetail)
   | { readonly status: 'notFound' }
   | { readonly status: 'error'; readonly failure: HistoryFailure };

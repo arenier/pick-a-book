@@ -38,5 +38,17 @@
     "notStarted": "L’analyse de cette photo n’a pas été lancée.",
     "notFound": "Cet envoi est introuvable.",
     "retry": "Réessayer"
+  },
+  "rescan": {
+    "button": "Relancer l’analyse",
+    "running": "Analyse de la photo en cours, cela peut prendre une trentaine de secondes…",
+    "failure": {
+      "upstream": "Le service de reconnaissance ne répond pas pour le moment. Réessayez plus tard.",
+      "dailyQuota": "Limite d’analyses du jour atteinte : réessayez demain.",
+      "inProgress": "Une analyse de cette photo est déjà en cours.",
+      "rateLimited": "Trop de demandes en peu de temps. Patientez une minute puis réessayez.",
+      "offline": "Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.",
+      "unexpected": "Une erreur inattendue est survenue. Réessayez dans quelques instants."
+    }
   }
 }

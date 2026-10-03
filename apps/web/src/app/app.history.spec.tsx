@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import App from './app';
@@ -29,9 +29,9 @@ const oneUploadApi = (url: string) =>
       })
     : notFound();
 
-function stubApi(answer: (url: string) => Response) {
-  const fetchDouble = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(async (url) =>
-    answer(url),
+function stubApi(answer: (url: string, init?: RequestInit) => Response) {
+  const fetchDouble = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(
+    async (url, init) => answer(url, init),
   );
   vi.stubGlobal('fetch', fetchDouble);
 
@@ -138,6 +138,57 @@ describe('App, the detail of an upload', () => {
     await waitFor(() => {
       expect(screen.getByText('Analyse non lancée')).toBeDefined();
     });
+    expect(fetchDouble.mock.calls.filter(([url]) => isListRequest(url))).toHaveLength(1);
+  });
+});
+
+/** An upload whose analysis failed, that the API runs again — to find one book — when asked to. */
+const failedUploadApi = (url: string, init?: RequestInit) => {
+  if (url.endsWith('/scan') && init?.method === 'POST') {
+    return Response.json({
+      books: [{ author: 'Albert Camus', title: 'La Peste', confidence: 0.9 }],
+    });
+  }
+  if (isListRequest(url)) {
+    return Response.json({
+      items: [
+        { id: anId, createdAt: '2026-09-27T14:03:12.481Z', outcome: 'failed', hasThumbnail: false },
+      ],
+      nextCursor: null,
+    });
+  }
+
+  return Response.json({
+    id: anId,
+    createdAt: '2026-09-27T14:03:12.481Z',
+    outcome: 'failed',
+    hasThumbnail: false,
+  });
+};
+
+// US3, scenario 1: the list already loaded says what the upload became, with no request for it.
+describe('App, running an analysis again', () => {
+  afterEach(resetBrowser);
+
+  it('shows the new outcome in the list, without asking for the list again', async () => {
+    const fetchDouble = stubApi(failedUploadApi);
+    window.location.hash = '#/historique';
+    render(<App />);
+    await waitFor(() => {
+      expect(screen.getByText('Analyse en échec')).toBeDefined();
+    });
+
+    navigateTo(`#/historique/${anId}`);
+    fireEvent.click(await screen.findByRole('button', { name: 'Relancer l’analyse' }));
+    await waitFor(() => {
+      expect(screen.getByText('La Peste', { exact: false })).toBeDefined();
+    });
+    navigateTo('#/historique');
+
+    await waitFor(() => {
+      expect(screen.getByText('1 livre détecté')).toBeDefined();
+    });
+    expect(screen.queryByText('Analyse en échec')).toBeNull();
     expect(fetchDouble.mock.calls.filter(([url]) => isListRequest(url))).toHaveLength(1);
   });
 });

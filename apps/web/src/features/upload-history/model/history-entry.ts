@@ -79,12 +79,15 @@ export function toHistoryEntry(summary: WireSummary): HistoryEntry {
   };
 }
 
+/** The outcome of an analysis that completed: how many books it found, or « none » (FR-005). */
+export function outcomeOfCount(count: number): HistoryOutcome {
+  return count > 0 ? { kind: 'books', count } : { kind: 'none' };
+}
+
 function outcomeOf(summary: WireSummary): HistoryOutcome {
   switch (summary.outcome) {
     case 'completed': {
-      const count = summary.bookCount ?? 0;
-
-      return count > 0 ? { kind: 'books', count } : { kind: 'none' };
+      return outcomeOfCount(summary.bookCount ?? 0);
     }
     case 'failed': {
       return { kind: 'failed' };

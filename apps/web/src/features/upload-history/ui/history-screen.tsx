@@ -6,6 +6,7 @@ import { listShelfScans } from '../api/history-api';
 import type { HistoryState } from '../model/history-state';
 import { HistoryEntryCard } from './history-entry-card';
 import { HistoryFailureMessage } from './history-failure-message';
+import type { HistoryUpdates } from './history-updates';
 import { useHistory, type ListPage } from './use-history';
 
 /**
@@ -42,6 +43,8 @@ export interface HistoryScreenProps {
   readonly list?: ListPage;
   /** Watches the end of the list; injected by the specs, the browser's otherwise. */
   readonly observeEnd?: ObserveEnd;
+  /** What the detail says uploads became, to show it without loading the list again. */
+  readonly updates?: HistoryUpdates;
 }
 
 /**
@@ -51,9 +54,12 @@ export interface HistoryScreenProps {
 export function HistoryScreen({
   list = listFromApi,
   observeEnd = observeWithBrowser,
+  updates,
 }: HistoryScreenProps) {
   const { t } = useMessages('upload-history');
-  const { state, loadFirst, loadMore } = useHistory(list);
+  const { state, loadFirst, loadMore, updateOutcome } = useHistory(list);
+
+  useEffect(() => updates?.subscribe(updateOutcome), [updates, updateOutcome]);
 
   if (state.status === 'loading') {
     return (

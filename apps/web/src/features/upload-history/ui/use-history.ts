@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { HistoryEntry } from '../model/history-entry';
+import type { HistoryEntry, HistoryOutcome } from '../model/history-entry';
 import type { HistoryState, PageAnswer } from '../model/history-state';
 
 export type ListPage = (request: { readonly cursor?: string }) => Promise<PageAnswer>;
@@ -32,7 +32,7 @@ export function useHistory(list: ListPage) {
 
   const loadMore = useCallback(async () => {
     const before = current.current;
-    // One page at a time: a second call while one is on its way, or past the last page, does nothing.
+    // One page at a time: a call while one is on its way, or past the last page, does nothing.
     if (before.status !== 'loaded' || before.next === null || before.loadingMore) {
       return;
     }
@@ -48,18 +48,27 @@ export function useHistory(list: ListPage) {
     setState((now) => (now.status === 'loaded' ? withNextPage(now, answer) : now));
   }, [list]);
 
-  // Once per `list`, not once per run of the effect: in development React runs it twice to flush
-  // out the ones that are not safe to repeat, and the API would be asked for the same page twice.
-  // A real remount is a new component, and starts from nothing.
-  const startedFor = useRef<ListPage | null>(null);
-  useEffect(() => {
-    if (startedFor.current !== list) {
-      startedFor.current = list;
-      void loadFirst();
-    }
-  }, [list, loadFirst]);
+  useFirstLoad(list, loadFirst);
 
-  return { state, loadFirst, loadMore };
+  // What an upload became, told by its detail: written into the entry already on screen, so the
+  // list is neither asked for again nor shown out of date (specs/002-upload-history, US3).
+  const updateOutcome = useCallback((id: string, outcome: HistoryOutcome) => {
+    setState((now) => withOutcome(now, id, outcome));
+  }, []);
+
+  return { state, loadFirst, loadMore, updateOutcome };
+}
+
+/** The history with one entry's outcome replaced; the same state when there is no such entry. */
+function withOutcome(state: HistoryState, id: string, outcome: HistoryOutcome): HistoryState {
+  if (state.status !== 'loaded') {
+    return state;
+  }
+
+  return {
+    ...state,
+    entries: state.entries.map((entry) => (entry.id === id ? { ...entry, outcome } : entry)),
+  };
 }
 
 function firstPageOf(answer: PageAnswer): HistoryState {
@@ -94,3 +103,18 @@ const concat = (first: readonly HistoryEntry[], second: readonly HistoryEntry[])
   ...first,
   ...second,
 ];
+
+/**
+ * Loads the first page once per `list`, not once per run of the effect: React runs it twice in
+ * development, and the API would be asked for the same page twice. A real remount starts from
+ * nothing.
+ */
+function useFirstLoad(list: ListPage, loadFirst: () => Promise<void>): void {
+  const startedFor = useRef<ListPage | null>(null);
+  useEffect(() => {
+    if (startedFor.current !== list) {
+      startedFor.current = list;
+      void loadFirst();
+    }
+  }, [list, loadFirst]);
+}
