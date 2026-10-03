@@ -1,4 +1,4 @@
-import type { INestApplication } from '@nestjs/common';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import {
   ScanStoredShelfPhotoUseCase,
@@ -31,7 +31,7 @@ export function idOf(body: unknown): string {
  * ephemeral port, the use cases running over in-memory ports. Called inside a `describe`.
  */
 export function aRunningApi(scanner?: ShelfScannerPort, policy?: ScanAttemptPolicy) {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let baseUrl = '';
 
   beforeAll(async () => {
@@ -43,7 +43,7 @@ export function aRunningApi(scanner?: ShelfScannerPort, policy?: ScanAttemptPoli
         { provide: ScanStoredShelfPhotoUseCase, useValue: scanStoredShelfPhoto },
       ],
     }).compile();
-    app = moduleRef.createNestApplication();
+    app = moduleRef.createNestApplication<NestExpressApplication>();
     // The API as it boots: the status codes below are the controller's work, their body the
     // global filter's.
     applyHttpBoundary(app, { webOrigin: 'http://localhost:4200' });

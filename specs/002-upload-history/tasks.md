@@ -66,6 +66,12 @@ acceptés depuis ; la spec repasse avant le code)* :
 - **Limite de requêtes (T022).** Plutôt qu'un filtre qui recopie un en-tête posé par le throttler,
   une sous-classe de `ThrottlerGuard` surcharge `throwThrottlingException` : elle pose `Retry-After`
   et lance une `HttpException` 429 portant `code: 'TOO_MANY_REQUESTS'`, que le filtre global habille.
+- **Palier `write` (T023).** Il se décide sur la **méthode HTTP** (`skipIf` : GET, HEAD et OPTIONS
+  ne comptent pas contre lui), et non par `@SkipThrottle({ write: true })` route par route : un
+  contrôleur de lecture ajouté demain tombe dans le bon palier sans qu'on y pense, et rien n'est à
+  retirer des routes de lecture de US1 et US2. `/health` porte `@SkipThrottle({ default: true,
+  write: true })`. `trust proxy` est posé par `applyHttpBoundary` (donc par les specs aussi), et non
+  par `main.ts`.
 - **Vignette invalide (T035, T036).** `application` ne connaît aucun logger (CLAUDE.md) : le use
   case rend la raison (`ignoredThumbnail`) dans son résultat, et c'est le contrôleur qui journalise
   l'avertissement avec le `Logger` de Nest.
@@ -199,7 +205,7 @@ visible et modifiable là où la prod se configure, sans redéploiement de code.
 
 ### Limite de requêtes par source (FR-014, research.md §9)
 
-- [ ] T021 Écrire les tests (doivent échouer) dans `apps/api/src/http/throttling.http.spec.ts`. Le test monte le vrai `AppModule` avec `Test.createTestingModule({ imports: [AppModule.withEnvironment(testEnvironment)] })`, puis `.overrideProvider('ShelfScanArchive')` avec un objet `{ storage, repository, close }` construit sur les doubles de `apps/api/src/recognition/testing/shelf-photos-controller.fixture.ts` (à exporter si besoin). Ainsi ni Postgres ni le bucket ne sont touchés, et la migration n'est pas lancée. Cas à couvrir :
+- [X] T021 Écrire les tests (doivent échouer) dans `apps/api/src/http/throttling.http.spec.ts`. Le test monte le vrai `AppModule` avec `Test.createTestingModule({ imports: [AppModule.withEnvironment(testEnvironment)] })`, puis `.overrideProvider('ShelfScanArchive')` avec un objet `{ storage, repository, close }` construit sur les doubles de `apps/api/src/recognition/testing/shelf-photos-controller.fixture.ts` (à exporter si besoin). Ainsi ni Postgres ni le bucket ne sont touchés, et la migration n'est pas lancée. Cas à couvrir :
   - la 11ᵉ requête `POST` sur `/shelf-photos/{id}/scan` en moins d'une minute, depuis la même source, donne **429** avec `code: "TOO_MANY_REQUESTS"` et un en-tête `Retry-After` ;
   - une autre source n'est pas limitée ;
   - `GET /health` répond 200 même au-delà de 300 requêtes par minute ;
@@ -207,8 +213,8 @@ visible et modifiable là où la prod se configure, sans redéploiement de code.
   - l'en-tête s'appelle bien `Retry-After`, sans suffixe, **pour les deux paliers**. `@nestjs/throttler` suffixe ses en-têtes par le nom des paliers nommés (`Retry-After-write`) : c'est le filtre qui pose l'en-tête du contrat (analyse U3).
 
   Dépend de T001.
-- [ ] T022 Créer `apps/api/src/http/too-many-requests.filter.ts` : il attrape `ThrottlerException` et répond 429 `{ statusCode: 429, message, error: 'Too Many Requests', code: 'TOO_MANY_REQUESTS' }` via `HttpAdapterHost`, sur le modèle de `RecognitionExceptionFilter`. Il pose aussi `Retry-After` (secondes), recopié depuis l'en-tête `Retry-After-<palier>` que le throttler a déjà posé sur la réponse, à défaut 60. Dépend de T021.
-- [ ] T023 Configurer la limite :
+- [X] T022 Créer `apps/api/src/http/too-many-requests.filter.ts` : il attrape `ThrottlerException` et répond 429 `{ statusCode: 429, message, error: 'Too Many Requests', code: 'TOO_MANY_REQUESTS' }` via `HttpAdapterHost`, sur le modèle de `RecognitionExceptionFilter`. Il pose aussi `Retry-After` (secondes), recopié depuis l'en-tête `Retry-After-<palier>` que le throttler a déjà posé sur la réponse, à défaut 60. Dépend de T021.
+- [X] T023 Configurer la limite :
   - dans `apps/api/src/app/app.module.ts`, `ThrottlerModule.forRoot` avec deux paliers, `default` à 300 requêtes par 60 000 ms et `write` à 10 requêtes par 60 000 ms ;
   - `ThrottlerGuard` en `APP_GUARD` et le filtre de T022 en `APP_FILTER` ;
   - `@SkipThrottle()` sur `apps/api/src/health/health.controller.ts` ;
