@@ -1,4 +1,5 @@
 import type { DetectedBook } from '../model/detected-book';
+import { makeThumbnail as makeBrowserThumbnail } from '../model/make-thumbnail';
 import type { UploadFailure } from '../model/upload-failure';
 import type { UploadState } from '../model/upload-state';
 
@@ -11,6 +12,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000
 export interface SubmitOptions {
   readonly baseUrl?: string;
   readonly fetch?: typeof fetch;
+  /** Makes the smaller image sent along with the photo; the browser's, unless a spec hands one in. */
+  readonly makeThumbnail?: (photo: File) => Promise<Blob | undefined>;
 }
 
 type Answer =
@@ -34,6 +37,12 @@ export async function submitShelfPhoto(
 
   const form = new FormData();
   form.append('photo', photo);
+  // No thumbnail is not a failure: the photo goes up without one (specs/002-upload-history,
+  // research.md §5), and the history shows a neutral indicator in its place.
+  const thumbnail = await (options.makeThumbnail ?? makeBrowserThumbnail)(photo);
+  if (thumbnail !== undefined) {
+    form.append('thumbnail', thumbnail, 'thumbnail.jpg');
+  }
 
   const stored = await ask(send, `${baseUrl}/shelf-photos`, { method: 'POST', body: form });
   if (!stored.reached) {

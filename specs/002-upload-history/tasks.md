@@ -347,14 +347,14 @@ le bon résumé (quickstart, scénarios 1 et 2).
 
 ### Front : vignette à l'envoi
 
-- [ ] T049 [P] [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/photo-upload/model/make-thumbnail.spec.ts`, avec `createImageBitmap` et le canvas injectés :
+- [X] T049 [P] [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/photo-upload/model/make-thumbnail.spec.ts`, avec `createImageBitmap` et le canvas injectés :
   - la largeur cible vaut 480 px, ratio conservé, sans agrandir une image plus petite ;
   - l'export est en `image/jpeg`, qualité 0,7 ;
   - `imageOrientation: 'from-image'` est demandé ;
   - un échec de décodage rend `undefined` (pas d'exception) ;
   - un résultat de plus de 262 144 octets rend `undefined`.
-- [ ] T050 [US1] Créer `apps/web/src/features/photo-upload/model/make-thumbnail.ts`. Fait passer T049. Dépend de T049.
-- [ ] T051 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts` : le `FormData` porte `thumbnail` quand la vignette existe, et ne le porte pas sinon ; l'envoi part dans les deux cas. Puis modifier `apps/web/src/features/photo-upload/api/scan-shelf-photo.ts` pour recevoir un `makeThumbnail` injectable (par défaut celui du module) et joindre la vignette. Dépend de T050.
+- [X] T050 [US1] Créer `apps/web/src/features/photo-upload/model/make-thumbnail.ts`. Fait passer T049. Dépend de T049.
+- [X] T051 [US1] Écrire les tests (doivent échouer) dans `apps/web/src/features/photo-upload/api/scan-shelf-photo.spec.ts` : le `FormData` porte `thumbnail` quand la vignette existe, et ne le porte pas sinon ; l'envoi part dans les deux cas. Puis modifier `apps/web/src/features/photo-upload/api/scan-shelf-photo.ts` pour recevoir un `makeThumbnail` injectable (par défaut celui du module) et joindre la vignette. Dépend de T050.
 
 ### Front : slice `upload-history`, liste
 
