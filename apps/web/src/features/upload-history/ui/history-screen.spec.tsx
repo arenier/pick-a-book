@@ -51,7 +51,11 @@ function anObserver() {
     return stopWatching;
   };
 
-  return { observeEnd, reachEnd: () => reached.at(-1)?.() };
+  return {
+    observeEnd,
+    isWatching: () => reached.length > 0,
+    reachEnd: () => reached.at(-1)?.(),
+  };
 }
 
 const screenOf = (server: ReturnType<typeof aServer>, observer = anObserver()) => {
@@ -180,8 +184,10 @@ describe('HistoryScreen, reaching the end of the list', () => {
   // The button is the accessible fallback; reaching the end of the list does the same.
   it('loads the next page when the end of the list comes into view', async () => {
     const server = aServer(aPage([0], 'cursor-1'), aPage([1]));
-    const { reachEnd } = screenOf(server);
-    await screen.findAllByRole('link');
+    const { reachEnd, isWatching } = screenOf(server);
+    await waitFor(() => {
+      expect(isWatching()).toBe(true);
+    });
 
     act(() => {
       reachEnd();
@@ -194,8 +200,10 @@ describe('HistoryScreen, reaching the end of the list', () => {
 
   it('does not ask twice for the same page', async () => {
     const server = aServer(aPage([0], 'cursor-1'), aPage([1]));
-    const { reachEnd } = screenOf(server);
-    await screen.findAllByRole('link');
+    const { reachEnd, isWatching } = screenOf(server);
+    await waitFor(() => {
+      expect(isWatching()).toBe(true);
+    });
 
     act(() => {
       reachEnd();
@@ -263,7 +271,6 @@ describe('HistoryScreen, an upload that was analysed again', () => {
     expect(screen.getByText('4 livres détectés')).toBeDefined();
     expect(screen.queryByText('Analyse en échec')).toBeNull();
     expect(screen.getByText('2 livres détectés')).toBeDefined();
-    // And the list was not asked for again.
     expect(server.cursors).toStrictEqual([undefined]);
   });
 });
