@@ -306,9 +306,9 @@ le bon résumé (quickstart, scénarios 1 et 2).
 
 ### Infrastructure : vignette dans le bucket et en base, page par curseur
 
-- [ ] T043 [P] [US1] Écrire les tests (doivent échouer), contre l'émulateur, dans `libs/recognition/infrastructure/src/lib/gcs-shelf-photo-storage.adapter.spec.ts` : `storeThumbnail` puis `retrieveThumbnail` rendent les mêmes octets, un second `storeThumbnail` sur la même clé échoue (`ifGenerationMatch: 0`), et une clé absente donne `ShelfPhotoStorageFailed`.
-- [ ] T044 [US1] Implémenter `storeThumbnail` et `retrieveThumbnail` dans `libs/recognition/infrastructure/src/lib/gcs-shelf-photo-storage.adapter.ts`. Fait passer T043. Dépend de T043.
-- [ ] T045 [US1] Écrire les tests (doivent échouer), contre Postgres, dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.spec.ts` :
+- [X] T043 [P] [US1] Écrire les tests (doivent échouer), contre l'émulateur, dans `libs/recognition/infrastructure/src/lib/gcs-shelf-photo-storage.adapter.spec.ts` : `storeThumbnail` puis `retrieveThumbnail` rendent les mêmes octets, un second `storeThumbnail` sur la même clé échoue (`ifGenerationMatch: 0`), et une clé absente donne `ShelfPhotoStorageFailed`.
+- [X] T044 [US1] Implémenter `storeThumbnail` et `retrieveThumbnail` dans `libs/recognition/infrastructure/src/lib/gcs-shelf-photo-storage.adapter.ts`. Fait passer T043. Dépend de T043.
+- [X] T045 [US1] Écrire les tests (doivent échouer), contre Postgres, dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.spec.ts` :
   - `createPending` avec vignette écrit **deux** lignes `uploads` dans la même transaction. La vignette a `type = 'shelf_photo_thumbnail'`, `original_filename` null et `source_upload_id` égal à l'id de la photo ;
   - `get` rend `thumbnail` (et `undefined` sans vignette) ;
   - `list` ne rend que `type = 'shelf_photo'` du bon `owner_id`, triés `created_at desc, id desc` ;
@@ -317,7 +317,7 @@ le bon résumé (quickstart, scénarios 1 et 2).
   - un envoi inséré entre deux pages n'en décale aucune.
 
   Dépend de T005 et T032.
-- [ ] T046 [US1] Implémenter dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.ts` :
+- [X] T046 [US1] Implémenter dans `libs/recognition/infrastructure/src/lib/drizzle-shelf-scan-repository.adapter.ts` :
   - l'écriture de la ligne vignette dans `createPending` ;
   - la lecture de la vignette par une auto-jointure `left join` d'`uploads` sur `source_upload_id`, dans `get` et `list` ;
   - la pagination de `list` par comparaison du couple `(created_at, id)`, en lisant `limit + 1` lignes pour savoir s'il reste une page.
@@ -326,7 +326,7 @@ le bon résumé (quickstart, scénarios 1 et 2).
 
 ### API : `GET /shelf-photos`, `GET …/thumbnail`, champ multipart `thumbnail`
 
-- [ ] T047 [US1] Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` :
+- [X] T047 [US1] Écrire les tests (doivent échouer) dans `apps/api/src/recognition/shelf-photos.http.spec.ts` :
   - `GET /shelf-photos` renvoie 200 et `{ items, nextCursor }` (contrat §1) ;
   - `?limit=51`, `?limit=abc` et `?cursor=abc` renvoient **400** ;
   - `GET /shelf-photos/{id}/thumbnail` renvoie 200 avec le bon `Content-Type` et `Cache-Control: private, max-age=31536000, immutable` ;
@@ -337,7 +337,7 @@ le bon résumé (quickstart, scénarios 1 et 2).
   - après `GET /shelf-photos` et `GET …/thumbnail`, l'état des doubles (enregistrements, tentatives, objets stockés) est identique à celui d'avant : la consultation ne modifie rien (FR-013, analyse G1).
 
   Dépend de T034, T036, T040 et T042.
-- [ ] T048 [US1] Modifier `apps/api/src/recognition/shelf-photos.controller.ts` :
+- [X] T048 [US1] Modifier `apps/api/src/recognition/shelf-photos.controller.ts` :
   - `FileFieldsInterceptor([{ name: 'photo', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }])`, la limite de 20 Mo restant celle de `photo` ;
   - la route `@Get()`, qui lit `limit` et `cursor` depuis la query string ;
   - la route `@Get(':id/thumbnail')`, qui répond via `@Res({ passthrough: true })` avec `Content-Type` et `Cache-Control` ;

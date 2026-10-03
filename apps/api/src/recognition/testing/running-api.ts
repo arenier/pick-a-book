@@ -1,6 +1,8 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import {
+  GetShelfPhotoImageUseCase,
+  ListShelfScansUseCase,
   ScanStoredShelfPhotoUseCase,
   StoreShelfPhotoUseCase,
 } from '@pick-a-book/recognition-application';
@@ -26,29 +28,39 @@ export function idOf(body: unknown): string {
   return body.id;
 }
 
+/** The routes of the controller, on an ephemeral port, the way the API boots them. */
+async function startApi(fixture: ReturnType<typeof aShelfPhotosController>) {
+  const moduleRef = await Test.createTestingModule({
+    controllers: [ShelfPhotosController],
+    providers: [
+      { provide: StoreShelfPhotoUseCase, useValue: fixture.storeShelfPhoto },
+      { provide: ScanStoredShelfPhotoUseCase, useValue: fixture.scanStoredShelfPhoto },
+      { provide: ListShelfScansUseCase, useValue: fixture.listShelfScans },
+      { provide: GetShelfPhotoImageUseCase, useValue: fixture.getShelfPhotoImage },
+    ],
+  }).compile();
+  const app = moduleRef.createNestApplication<NestExpressApplication>();
+  // The API as it boots: the status codes below are the controller's work, their body the
+  // global filter's.
+  applyHttpBoundary(app, { webOrigin: 'http://localhost:4200' });
+  await app.listen(0, '127.0.0.1');
+
+  return { app, baseUrl: await app.getUrl() };
+}
+
 /**
- * The two routes over real HTTP — status codes, multipart parsing by multer — on an
+ * The routes over real HTTP — status codes, multipart parsing by multer — on an
  * ephemeral port, the use cases running over in-memory ports. Called inside a `describe`.
  */
 export function aRunningApi(scanner?: ShelfScannerPort, policy?: ScanAttemptPolicy) {
   let app: NestExpressApplication;
   let baseUrl = '';
+  // The use cases and the ports under them, built once: the spec reads the doubles to prove what a
+  // route did — or did not — change.
+  const fixture = aShelfPhotosController({ scanner, policy });
 
   beforeAll(async () => {
-    const { storeShelfPhoto, scanStoredShelfPhoto } = aShelfPhotosController({ scanner, policy });
-    const moduleRef = await Test.createTestingModule({
-      controllers: [ShelfPhotosController],
-      providers: [
-        { provide: StoreShelfPhotoUseCase, useValue: storeShelfPhoto },
-        { provide: ScanStoredShelfPhotoUseCase, useValue: scanStoredShelfPhoto },
-      ],
-    }).compile();
-    app = moduleRef.createNestApplication<NestExpressApplication>();
-    // The API as it boots: the status codes below are the controller's work, their body the
-    // global filter's.
-    applyHttpBoundary(app, { webOrigin: 'http://localhost:4200' });
-    await app.listen(0, '127.0.0.1');
-    baseUrl = await app.getUrl();
+    ({ app, baseUrl } = await startApi(fixture));
   });
 
   afterAll(async () => {
@@ -60,10 +72,21 @@ export function aRunningApi(scanner?: ShelfScannerPort, policy?: ScanAttemptPoli
   return {
     url,
     scan: async (id: string) => fetch(url(`/shelf-photos/${id}/scan`), { method: 'POST' }),
-    upload: async (file: Blob, name = 'IMG_0001.jpg') => {
+    upload: async (file: Blob, name = 'IMG_0001.jpg', thumbnail?: Blob) => {
       const form = new FormData();
       form.append('photo', file, name);
+      if (thumbnail !== undefined) {
+        form.append('thumbnail', thumbnail, 'thumbnail.jpg');
+      }
       return fetch(`${baseUrl}/shelf-photos`, { method: 'POST', body: form });
     },
+    get: async (path: string) => fetch(url(path)),
+    /** What the doubles hold, copied: two snapshots equal prove nothing was written between. */
+    snapshot: () => ({
+      records: new Map(fixture.records),
+      attempts: fixture.repository.attempts,
+      objects: new Map(fixture.objects),
+      thumbnails: new Map(fixture.thumbnails),
+    }),
   };
 }

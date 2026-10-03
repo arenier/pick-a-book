@@ -1,4 +1,6 @@
 import {
+  GetShelfPhotoImageUseCase,
+  ListShelfScansUseCase,
   ScanStoredShelfPhotoUseCase,
   StoreShelfPhotoUseCase,
 } from '@pick-a-book/recognition-application';
@@ -38,11 +40,8 @@ export function aShelfPhotosController(
   const repository = new InMemoryScanRepository();
   const storage = overrides.storage ?? memory;
   const scanner = overrides.scanner ?? new StubShelfScannerAdapter();
-  const storeShelfPhoto = new StoreShelfPhotoUseCase(
-    unwrap(OwnerId.of('default')),
-    storage,
-    repository,
-  );
+  const owner = unwrap(OwnerId.of('default'));
+  const storeShelfPhoto = new StoreShelfPhotoUseCase(owner, storage, repository);
   const scanStoredShelfPhoto = new ScanStoredShelfPhotoUseCase(
     storage,
     repository,
@@ -50,11 +49,22 @@ export function aShelfPhotosController(
     overrides.policy ?? defaultPolicy,
   );
 
+  const listShelfScans = new ListShelfScansUseCase(owner, repository);
+  const getShelfPhotoImage = new GetShelfPhotoImageUseCase(owner, storage, repository);
+
   return {
-    controller: new ShelfPhotosController(storeShelfPhoto, scanStoredShelfPhoto),
+    controller: new ShelfPhotosController(
+      storeShelfPhoto,
+      scanStoredShelfPhoto,
+      listShelfScans,
+      getShelfPhotoImage,
+    ),
     storeShelfPhoto,
     scanStoredShelfPhoto,
+    listShelfScans,
+    getShelfPhotoImage,
     objects: memory.objects,
+    thumbnails: memory.thumbnails,
     records: repository.records,
     repository,
   };

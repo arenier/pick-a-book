@@ -23,6 +23,7 @@ describe('DrizzleShelfScanRepositoryAdapter, creating a record', () => {
       status: 'pending',
       detectedBooks: undefined,
       createdAt: record?.createdAt,
+      thumbnail: undefined,
     });
     expect(record?.createdAt).toBeInstanceOf(Date);
   });

@@ -1,6 +1,11 @@
 import {
+  InvalidShelfScanCursor,
+  InvalidShelfScanPageSize,
+} from '@pick-a-book/recognition-application';
+import {
   DailyScanQuotaExceeded,
   InvalidShelfPhoto,
+  ShelfPhotoThumbnailNotFound,
   ShelfScanAlreadyProcessed,
   ShelfScanFailed,
   ShelfScanId,
@@ -92,6 +97,44 @@ describe('toHttpException, for a provider that fails', () => {
       statusCode: 502,
       message: 'The recognition service is unavailable',
       error: 'Bad Gateway',
+    });
+  });
+});
+
+// What the history asks of its caller, and what it may not find (specs/002-upload-history).
+describe('toHttpException, for the reads of the history', () => {
+  it('says InvalidShelfScanCursor as 400', () => {
+    const http = toHttpException(new InvalidShelfScanCursor());
+
+    expect(http.getStatus()).toBe(400);
+    expect(http.getResponse()).toStrictEqual({
+      statusCode: 400,
+      message: 'Invalid cursor',
+      error: 'Bad Request',
+    });
+  });
+
+  it('says InvalidShelfScanPageSize as 400', () => {
+    const http = toHttpException(new InvalidShelfScanPageSize());
+
+    expect(http.getStatus()).toBe(400);
+    expect(http.getResponse()).toStrictEqual({
+      statusCode: 400,
+      message: 'Invalid page size: expected a whole number from 1 to 50',
+      error: 'Bad Request',
+    });
+  });
+
+  // The front asks for a thumbnail only when the scan says it has one: a 404 still shows the
+  // neutral indicator (contract §4).
+  it('says ShelfPhotoThumbnailNotFound as 404', () => {
+    const http = toHttpException(new ShelfPhotoThumbnailNotFound(anId));
+
+    expect(http.getStatus()).toBe(404);
+    expect(http.getResponse()).toStrictEqual({
+      statusCode: 404,
+      message: `Shelf photo thumbnail not found: ${anId}`,
+      error: 'Not Found',
     });
   });
 });

@@ -7,8 +7,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import type {
+  InvalidShelfScanCursor,
+  InvalidShelfScanPageSize,
+} from '@pick-a-book/recognition-application';
+import type {
   DailyScanQuotaExceeded,
   InvalidShelfPhoto,
+  ShelfPhotoThumbnailNotFound,
   ShelfScanAlreadyProcessed,
   ShelfScanFailed,
   ShelfScanInProgress,
@@ -19,6 +24,9 @@ import type {
 export type RecognitionError =
   | DailyScanQuotaExceeded
   | InvalidShelfPhoto
+  | InvalidShelfScanCursor
+  | InvalidShelfScanPageSize
+  | ShelfPhotoThumbnailNotFound
   | ShelfScanAlreadyProcessed
   | ShelfScanFailed
   | ShelfScanInProgress
@@ -28,8 +36,10 @@ export type RecognitionError =
  * Says the recognition context's errors in HTTP — once, for every route of the context,
  * rather than in a `try/catch` per handler (contracts/scan-api.md):
  *
- * - `InvalidShelfPhoto` → 400: the photo is the caller's mistake;
+ * - `InvalidShelfPhoto`, `InvalidShelfScanCursor`, `InvalidShelfScanPageSize` → 400: the photo,
+ *   the cursor and the page size are the caller's mistake;
  * - `ShelfScanNotFound` → 404: no such photo, or an id that is not even a UUID;
+ * - `ShelfPhotoThumbnailNotFound` → 404: the scan has no thumbnail (specs/002-upload-history);
  * - `ShelfScanAlreadyProcessed` → 409 `SCAN_ALREADY_COMPLETED`: scanning again would overwrite
  *   a result, or pay for a VLM call nobody asked for (research.md §7);
  * - `ShelfScanInProgress` → 409 `SCAN_IN_PROGRESS`: another analysis of the photo is running,
@@ -55,10 +65,13 @@ export type RecognitionError =
  */
 export function toHttpException(error: RecognitionError): HttpException {
   switch (error.kind) {
-    case 'invalid-shelf-photo': {
+    case 'invalid-shelf-photo':
+    case 'invalid-shelf-scan-cursor':
+    case 'invalid-shelf-scan-page-size': {
       return new BadRequestException(error.message);
     }
-    case 'shelf-scan-not-found': {
+    case 'shelf-scan-not-found':
+    case 'shelf-photo-thumbnail-not-found': {
       return new NotFoundException(error.message);
     }
     case 'shelf-scan-already-processed': {

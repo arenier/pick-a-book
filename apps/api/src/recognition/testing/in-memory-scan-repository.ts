@@ -17,7 +17,7 @@ import {
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
 /** One reserved analysis, as `scan_attempts` holds it. */
-interface Attempt {
+export interface Attempt {
   readonly id: ShelfScanId;
   readonly startedAt: Date;
   readonly finishedAt: Date | undefined;

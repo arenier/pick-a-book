@@ -1,18 +1,25 @@
 import {
   BadRequestException,
   Controller,
+  Get,
+  Header,
   HttpCode,
   Logger,
   Param,
   Post,
-  UploadedFile,
+  Query,
+  StreamableFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
+  GetShelfPhotoImageUseCase,
+  ListShelfScansUseCase,
   ScanStoredShelfPhotoUseCase,
   StoreShelfPhotoUseCase,
   type ScanShelfResult,
+  type ShelfScanPageDto,
   type StoreShelfPhotoCommand,
   type StoreShelfPhotoResult,
 } from '@pick-a-book/recognition-application';
@@ -33,8 +40,24 @@ export interface UploadedImage {
   readonly originalname: string;
 }
 
+/**
+ * The files of the multipart form of an upload: the photo, and the thumbnail the browser made of
+ * it, if it could (specs/002-upload-history, contracts §5). Multer hands each field over as a
+ * list.
+ */
+export interface UploadedFiles {
+  readonly photo?: readonly UploadedImage[];
+  readonly thumbnail?: readonly UploadedImage[];
+}
+
 /** 20 MB, matching what `ShelfPhoto` accepts — rejected by multer before reaching us. */
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
+
+/**
+ * An image never changes under its id, so the browser never asks again — and it is the user's
+ * own, so no shared cache keeps it (specs/002-upload-history, research.md §7).
+ */
+const IMMUTABLE_PRIVATE_CACHE = 'private, max-age=31536000, immutable';
 
 /**
  * A shelf photo is scanned in two requests (specs/001-photo-upload, research.md §7):
@@ -56,18 +79,61 @@ export class ShelfPhotosController {
   constructor(
     private readonly storeShelfPhoto: StoreShelfPhotoUseCase,
     private readonly scanStoredShelfPhoto: ScanStoredShelfPhotoUseCase,
+    private readonly listShelfScans: ListShelfScansUseCase,
+    private readonly getShelfPhotoImage: GetShelfPhotoImageUseCase,
   ) {}
 
   @Post()
   @HttpCode(201)
-  @UseInterceptors(FileInterceptor('photo', { limits: { fileSize: MAX_UPLOAD_BYTES } }))
-  async store(@UploadedFile() file?: UploadedImage): Promise<StoreShelfPhotoResult> {
-    const command = readImage(file);
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'photo', maxCount: 1 },
+        { name: 'thumbnail', maxCount: 1 },
+      ],
+      // 20 MB for the photo; the thumbnail is judged by the domain (256 KB), which keeps the
+      // photo and drops it when it is too heavy — it is never a reason to refuse the upload.
+      { limits: { fileSize: MAX_UPLOAD_BYTES } },
+    ),
+  )
+  async store(@UploadedFiles() files?: UploadedFiles): Promise<StoreShelfPhotoResult> {
+    const command = readUpload(files);
 
     // Rebuilt field by field: whatever else the use case may one day return, the id is the
-    // only thing that leaves (FR-015).
-    const { id } = this.orRespondWithError(await this.storeShelfPhoto.execute(command));
+    // only thing that leaves (FR-015). A thumbnail it dropped is for the logs, not the caller.
+    const { id, ignoredThumbnail } = this.orRespondWithError(
+      await this.storeShelfPhoto.execute(command),
+    );
+    if (ignoredThumbnail !== undefined) {
+      this.logger.warn(`Thumbnail of ${id} ignored: ${ignoredThumbnail}`);
+    }
+
     return { id };
+  }
+
+  /** One page of the history, newest first (contracts §1). Reads only. */
+  @Get()
+  async list(
+    @Query('limit') limit?: unknown,
+    @Query('cursor') cursor?: unknown,
+  ): Promise<ShelfScanPageDto> {
+    return this.orRespondWithError(
+      await this.listShelfScans.execute({
+        limit: readLimit(limit),
+        cursor: typeof cursor === 'string' ? cursor : undefined,
+      }),
+    );
+  }
+
+  /** The thumbnail of a scan, straight from the bucket (contracts §4). */
+  @Get(':id/thumbnail')
+  @Header('Cache-Control', IMMUTABLE_PRIVATE_CACHE)
+  async thumbnail(@Param('id') id: string): Promise<StreamableFile> {
+    const image = this.orRespondWithError(
+      await this.getShelfPhotoImage.execute({ id, kind: 'thumbnail' }),
+    );
+
+    return new StreamableFile(image.bytes, { type: image.mediaType });
   }
 
   @Post(':id/scan')
@@ -95,17 +161,35 @@ export class ShelfPhotosController {
 }
 
 /**
- * Multipart only (contracts/scan-api.md §1). No file means nothing to store: a 400, whatever
- * else the body carries.
+ * Multipart only (contracts/scan-api.md §1). No photo means nothing to store: a 400, whatever
+ * else the body carries. The thumbnail is optional, and goes through as it came.
  */
-function readImage(file: UploadedImage | undefined): StoreShelfPhotoCommand {
-  if (file === undefined) {
+function readUpload(files: UploadedFiles | undefined): StoreShelfPhotoCommand {
+  const photo = files?.photo?.at(0);
+  if (photo === undefined) {
     throw new BadRequestException('Send the photo as the multipart field "photo"');
   }
+  const thumbnail = files?.thumbnail?.at(0);
 
   return {
-    bytes: new Uint8Array(file.buffer),
-    mediaType: file.mimetype,
-    originalFilename: file.originalname,
+    bytes: new Uint8Array(photo.buffer),
+    mediaType: photo.mimetype,
+    originalFilename: photo.originalname,
+    ...(thumbnail === undefined
+      ? {}
+      : { thumbnail: { bytes: new Uint8Array(thumbnail.buffer), mediaType: thumbnail.mimetype } }),
   };
+}
+
+/**
+ * The page size of a query string: absent, or the number it spells. Anything else — text, an
+ * empty value, a parameter given twice — is `NaN`, which the use case refuses as a bad page
+ * size, so the 400 is the domain's word and not an HTTP convention of ours.
+ */
+function readLimit(raw: unknown): number | undefined {
+  if (raw === undefined) {
+    return undefined;
+  }
+
+  return typeof raw === 'string' && raw.trim() !== '' ? Number(raw) : Number.NaN;
 }

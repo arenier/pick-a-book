@@ -10,11 +10,14 @@ const jpegBytes = Buffer.from([0xff, 0xd8, 0xff, 0xe0]);
 
 const aJpegUpload = { buffer: jpegBytes, mimetype: 'image/jpeg', originalname: 'IMG_0001.jpg' };
 
+/** The files of an upload that carries the photo alone, as multer hands them over. */
+const aPhotoOnly = { photo: [aJpegUpload] };
+
 describe('ShelfPhotosController', () => {
   it('stores an uploaded photo and answers with its id', async () => {
     const { controller, records } = aShelfPhotosController();
 
-    const { id } = await controller.store(aJpegUpload);
+    const { id } = await controller.store(aPhotoOnly);
 
     expect(records.get(id)?.status).toBe('pending');
   });
@@ -23,14 +26,14 @@ describe('ShelfPhotosController', () => {
   it('answers with the id alone', async () => {
     const { controller } = aShelfPhotosController();
 
-    const response = await controller.store(aJpegUpload);
+    const response = await controller.store(aPhotoOnly);
 
     expect(Object.keys(response)).toStrictEqual(['id']);
   });
 
   it('answers the scan of a stored photo with the detected books', async () => {
     const { controller } = aShelfPhotosController();
-    const { id } = await controller.store(aJpegUpload);
+    const { id } = await controller.store(aPhotoOnly);
 
     const result = await controller.scan(id);
 
@@ -60,7 +63,9 @@ describe('ShelfPhotosController says the errors of the context in HTTP', () => {
     ['an unsupported media type', { ...aJpegUpload, mimetype: 'application/pdf' }],
     ['an image over 20 MB', { ...aJpegUpload, buffer: Buffer.alloc(20 * 1024 * 1024 + 1) }],
   ])('400, for %s', async (_label, upload) => {
-    await expect(aShelfPhotosController().controller.store(upload)).rejects.toMatchObject({
+    await expect(
+      aShelfPhotosController().controller.store({ photo: [upload] }),
+    ).rejects.toMatchObject({
       status: 400,
     });
   });
@@ -73,7 +78,7 @@ describe('ShelfPhotosController says the errors of the context in HTTP', () => {
 
   it('409, for a photo scanned twice', async () => {
     const { controller } = aShelfPhotosController();
-    const { id } = await controller.store(aJpegUpload);
+    const { id } = await controller.store(aPhotoOnly);
     await controller.scan(id);
 
     await expect(controller.scan(id)).rejects.toMatchObject({ status: 409 });
@@ -84,7 +89,7 @@ describe('ShelfPhotosController says the errors of the context in HTTP', () => {
   it('502, for a scanner that failed, logging what the provider said', async () => {
     const failure = new ShelfScanFailed('provider unavailable');
     const { controller } = aShelfPhotosController({ scanner: { scan: async () => err(failure) } });
-    const { id } = await controller.store(aJpegUpload);
+    const { id } = await controller.store(aPhotoOnly);
     const log = vi.spyOn(Logger.prototype, 'error').mockReturnValue();
 
     await expect(controller.scan(id)).rejects.toMatchObject({ status: 502 });
@@ -94,20 +99,59 @@ describe('ShelfPhotosController says the errors of the context in HTTP', () => {
   });
 });
 
+const down = async (): Promise<never> => {
+  throw new Error('bucket unavailable');
+};
+
 describe('ShelfPhotosController lets infrastructure failures through', () => {
   // A bucket that fails is not the caller's mistake: nothing turns it into a 4xx. It stays an
   // exception, for the global filter of the API to catch.
   it('and a storage failure, as is', async () => {
     const failingStorage: ShelfPhotoStoragePort = {
-      store: async () => {
-        throw new Error('bucket unavailable');
-      },
-      retrieve: async () => {
-        throw new Error('bucket unavailable');
-      },
+      store: down,
+      retrieve: down,
+      storeThumbnail: down,
+      retrieveThumbnail: down,
     };
     const { controller } = aShelfPhotosController({ storage: failingStorage });
 
-    await expect(controller.store(aJpegUpload)).rejects.not.toHaveProperty('status');
+    await expect(controller.store(aPhotoOnly)).rejects.not.toHaveProperty('status');
+  });
+});
+
+// specs/002-upload-history, research.md §5: the thumbnail rides along with the photo, and an
+// unusable one is the API's to log — never the user's to hear about.
+describe('ShelfPhotosController, with a thumbnail', () => {
+  const aThumbnailUpload = {
+    buffer: Buffer.from([0xff, 0xd8, 0xff, 0xdb]),
+    mimetype: 'image/jpeg',
+    originalname: 'thumbnail.jpg',
+  };
+
+  it('keeps it with the photo, and answers with the id alone', async () => {
+    const { controller, thumbnails } = aShelfPhotosController();
+
+    const response = await controller.store({
+      photo: [aJpegUpload],
+      thumbnail: [aThumbnailUpload],
+    });
+
+    expect(Object.keys(response)).toStrictEqual(['id']);
+    expect(thumbnails.size).toBe(1);
+  });
+
+  it('logs a warning, and keeps the photo, when the thumbnail is refused', async () => {
+    const warn = vi.spyOn(Logger.prototype, 'warn').mockReturnValue();
+    const { controller, objects, thumbnails } = aShelfPhotosController();
+
+    await controller.store({
+      photo: [aJpegUpload],
+      thumbnail: [{ ...aThumbnailUpload, mimetype: 'image/heic' }],
+    });
+
+    expect(objects.size).toBe(1);
+    expect(thumbnails.size).toBe(0);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('unsupported media type'));
+    warn.mockRestore();
   });
 });
