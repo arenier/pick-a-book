@@ -79,9 +79,9 @@ interface ShelfScanRepositoryPort {
   createPending(scan: NewShelfScan): Promise<void>;          // + scan.thumbnail?: StoredThumbnail
   get(id: ShelfScanId): Promise<ShelfScanRecord | undefined>; // + record.thumbnail
   list(query: ShelfScanPageQuery): Promise<ShelfScanPage>;    // nouveau
-  startAttempt(id: ShelfScanId, policy: ScanAttemptPolicy): Promise<void>; // nouveau
-  markCompleted(id: ShelfScanId, books: readonly DetectedBook[]): Promise<void>; // accepte pending|failed
-  markFailed(id: ShelfScanId): Promise<void>;                                     // accepte pending|failed
+  startAttempt(id: ShelfScanId, policy: ScanAttemptPolicy): Promise<ScanAttemptId>; // nouveau
+  markCompleted(id: ShelfScanId, attempt: ScanAttemptId, books: readonly DetectedBook[]): Promise<void>; // accepte pending|failed
+  markFailed(id: ShelfScanId, attempt: ScanAttemptId): Promise<void>;                                    // accepte pending|failed
 }
 
 interface ShelfScanPageQuery {
@@ -107,7 +107,8 @@ interface ScanAttemptPolicy {
 - `startAttempt` est **atomique** (research.md §8). Elle lève `ShelfScanNotFound`,
   `ShelfScanAlreadyProcessed` (envoi `completed`), `ShelfScanInProgress` ou
   `DailyScanQuotaExceeded`, dans cet ordre de vérification.
-- `markCompleted` et `markFailed` referment la tentative ouverte et ne bougent qu'un envoi non
+- `markCompleted` et `markFailed` referment **la tentative qu'on leur donne** (celle que `startAttempt`
+  a rendue), et elle seule, et ne bougent qu'un envoi non
   `completed`. Un envoi `completed` produit `ShelfScanAlreadyProcessed`, comme aujourd'hui pour un
   envoi non `pending`.
 - `ScanStoredShelfPhotoUseCase` appelle `markFailed` pour **toute** erreur survenue après

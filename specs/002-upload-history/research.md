@@ -199,7 +199,10 @@ du domaine. À revoir si la mémoire de l'instance (512 Mo) devient un souci.
      Paris (`Europe/Paris`), sinon `DailyScanQuotaExceeded`.
 
   La tentative est ensuite insérée, puis refermée (`finished_at`) par `markCompleted` ou
-  `markFailed`.
+  `markFailed`. *(Amendement du 04/10/2026, revue de la PR #82)* `startAttempt` rend l'**identifiant
+  de la tentative** (`ScanAttemptId`), que les deux autres reçoivent en retour : une analyse ne
+  referme que la sienne. Une analyse qui a dépassé son bail ne referme donc pas la tentative de
+  celle qui a démarré après elle.
 - **Toute erreur après la réservation referme la tentative** *(ajouté le 27/09/2026, après
   `/speckit-analyze`)*. Une photo introuvable dans le bucket, ou une erreur de lecture, passe
   l'envoi en `failed`, comme un échec du scanner, et referme la tentative. Sinon, la tentative
