@@ -100,8 +100,9 @@ async function ask(send: typeof fetch, url: string, init: RequestInit): Promise<
 }
 
 /**
- * Two different 429 (specs/002-upload-history, research.md §10): the daily cap, which keeps the
- * photo, and the limit by source, which asks for a minute. Only the `code` tells them apart,
+ * Three different 429 (specs/002-upload-history, research.md §10): the daily cap on analyses, which
+ * keeps the photo, the daily cap on uploads, which does not (FR-017), and the limit by source,
+ * which asks for a minute. Only the `code` tells them apart,
  * never the `message`; a 429 without a code this front knows is unexpected.
  */
 function failureOfTooManyRequests(body: unknown): UploadFailure {
@@ -110,6 +111,9 @@ function failureOfTooManyRequests(body: unknown): UploadFailure {
   }
   if (body.code === 'DAILY_SCAN_QUOTA_EXCEEDED') {
     return 'dailyQuota';
+  }
+  if (body.code === 'DAILY_UPLOAD_QUOTA_EXCEEDED') {
+    return 'dailyUploadQuota';
   }
 
   return body.code === 'TOO_MANY_REQUESTS' ? 'rateLimited' : 'unexpected';

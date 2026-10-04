@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { submitShelfPhoto } from './scan-shelf-photo';
 
@@ -25,6 +25,26 @@ const storingThen = (scan: () => Response) => {
 
 const submit = async (fetchDouble: typeof fetch) =>
   submitShelfPhoto(aPhoto(), { baseUrl: 'http://api.test', fetch: fetchDouble });
+
+describe('submitShelfPhoto, on a 429 of the upload', () => {
+  it('reads DAILY_UPLOAD_QUOTA_EXCEEDED as the daily cap on uploads', async () => {
+    const state = await submit(async () =>
+      json(429, { statusCode: 429, code: 'DAILY_UPLOAD_QUOTA_EXCEEDED' }),
+    );
+
+    expect(state).toStrictEqual({ status: 'error', failure: 'dailyUploadQuota' });
+  });
+
+  it('never goes on to the scan: nothing was kept', async () => {
+    const fetchDouble = vi.fn<typeof fetch>(async () =>
+      json(429, { statusCode: 429, code: 'DAILY_UPLOAD_QUOTA_EXCEEDED' }),
+    );
+
+    await submit(fetchDouble);
+
+    expect(fetchDouble).toHaveBeenCalledOnce();
+  });
+});
 
 describe('submitShelfPhoto, on a 429 of the scan', () => {
   it('reads DAILY_SCAN_QUOTA_EXCEEDED as the daily cap', async () => {

@@ -20,6 +20,7 @@
     "refused": "La photo a été refusée : elle doit être une image JPEG, PNG, WebP ou HEIC de moins de 20 Mo.",
     "upstream": "Le service de reconnaissance ne répond pas pour le moment. Réessayez dans quelques instants.",
     "dailyQuota": "Limite d’analyses du jour atteinte. Votre photo est conservée : vous pourrez relancer l’analyse demain depuis l’historique.",
+    "dailyUploadQuota": "Limite d’envois du jour atteinte. Votre photo n’a pas été conservée : renvoyez-la demain.",
     "rateLimited": "Trop de demandes en peu de temps. Patientez une minute puis réessayez.",
     "offline": "Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.",
     "unexpected": "Une erreur inattendue est survenue. Réessayez dans quelques instants."

@@ -39,6 +39,13 @@ describe('FailureMessage', () => {
     );
   });
 
+  // specs/002-upload-history, FR-017: a refused upload is not kept — the user sends it again.
+  it('tells the daily cap on uploads apart: the photo is not kept, send it again tomorrow', () => {
+    expect(wordingOf('dailyUploadQuota')).toBe(
+      'Limite d’envois du jour atteinte. Votre photo n’a pas été conservée : renvoyez-la demain.',
+    );
+  });
+
   it('tells the limit by source apart: wait a minute', () => {
     expect(wordingOf('rateLimited')).toBe(
       'Trop de demandes en peu de temps. Patientez une minute puis réessayez.',
