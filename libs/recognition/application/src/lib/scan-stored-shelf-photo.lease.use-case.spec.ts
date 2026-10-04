@@ -12,7 +12,7 @@ import { InMemoryShelfPhotoStorage } from './testing/in-memory-shelf-photo-stora
 import { InMemoryShelfScanRepository } from './testing/in-memory-shelf-scan-repository.js';
 import { ScanStoredShelfPhotoUseCase } from './scan-stored-shelf-photo.use-case.js';
 import { StoreShelfPhotoUseCase } from './store-shelf-photo.use-case.js';
-import { aJpeg, books, policy } from './testing/scan-fixtures.js';
+import { aJpeg, books, policy, uploadPolicy } from './testing/scan-fixtures.js';
 
 /**
  * An analysis that outlives its lease (specs/002-upload-history, research.md §8): a second one is
@@ -53,7 +53,7 @@ describe('ScanStoredShelfPhotoUseCase, an analysis that outlived its lease', () 
     const storage = new InMemoryShelfPhotoStorage();
     const owner = unwrap(OwnerId.of('default'));
     const { id } = unwrap(
-      await new StoreShelfPhotoUseCase(owner, storage, repository).execute(aJpeg),
+      await new StoreShelfPhotoUseCase(owner, storage, repository, uploadPolicy).execute(aJpeg),
     );
     const slow = new GatedScanner();
     const first = new ScanStoredShelfPhotoUseCase(owner, storage, repository, slow, policy);

@@ -2,6 +2,7 @@ import { InvalidShelfPhoto, OwnerId, ShelfScanId } from '@pick-a-book/recognitio
 import { err, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it, vi } from 'vitest';
 
+import { uploadPolicy } from './testing/scan-fixtures.js';
 import { StoreShelfPhotoUseCase } from './store-shelf-photo.use-case.js';
 import { InMemoryShelfPhotoStorage } from './testing/in-memory-shelf-photo-storage.js';
 import { InMemoryShelfScanRepository } from './testing/in-memory-shelf-scan-repository.js';
@@ -16,7 +17,12 @@ function aUseCase(ownerId = 'default') {
   const storage = new InMemoryShelfPhotoStorage();
   const repository = new InMemoryShelfScanRepository();
 
-  const useCase = new StoreShelfPhotoUseCase(unwrap(OwnerId.of(ownerId)), storage, repository);
+  const useCase = new StoreShelfPhotoUseCase(
+    unwrap(OwnerId.of(ownerId)),
+    storage,
+    repository,
+    uploadPolicy,
+  );
 
   return { storage, repository, useCase };
 }

@@ -8,6 +8,7 @@ import { err, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it, vi } from 'vitest';
 
 import { GetShelfPhotoImageUseCase } from './get-shelf-photo-image.use-case.js';
+import { uploadPolicy } from './testing/scan-fixtures.js';
 import { StoreShelfPhotoUseCase } from './store-shelf-photo.use-case.js';
 import { InMemoryShelfPhotoStorage } from './testing/in-memory-shelf-photo-storage.js';
 import { InMemoryShelfScanRepository } from './testing/in-memory-shelf-scan-repository.js';
@@ -26,7 +27,7 @@ async function aStoredScan(options: { readonly thumbnail: boolean }) {
   const storage = new InMemoryShelfPhotoStorage();
   const repository = new InMemoryShelfScanRepository();
   const { id } = unwrap(
-    await new StoreShelfPhotoUseCase(owner, storage, repository).execute({
+    await new StoreShelfPhotoUseCase(owner, storage, repository, uploadPolicy).execute({
       ...aJpeg,
       ...(options.thumbnail ? { thumbnail: aThumbnail } : {}),
     }),

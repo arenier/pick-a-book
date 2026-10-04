@@ -1,12 +1,14 @@
 import {
   ShelfPhoto,
   ShelfPhotoThumbnail,
+  type DailyUploadQuotaExceeded,
   type InvalidShelfPhoto,
   type OwnerId,
   ShelfScanId,
   type ShelfPhotoStoragePort,
   type ShelfScanRepositoryPort,
   type StoredThumbnail,
+  type UploadQuotaPolicy,
 } from '@pick-a-book/recognition-domain';
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
@@ -16,11 +18,14 @@ import type { StoreShelfPhotoCommand, StoreShelfPhotoResult } from './shelf-phot
  * First step of a scan: keeps the photo, before the long and failure-prone VLM call can lose
  * it (specs/001-photo-upload, research.md §7, FR-014).
  *
- * Validates, stores the bytes under `{ownerId}/shelf_photo/{id}`, then creates the `pending`
- * record — in that order, so a photo refused by `ShelfPhoto` leaves no trace at all (FR-013).
+ * Validates, asks whether the day's uploads are used up, stores the bytes under
+ * `{ownerId}/shelf_photo/{id}`, then creates the `pending` record — in that order, so a photo
+ * refused by `ShelfPhoto` or by the cap leaves no trace at all (FR-013, FR-017: the cap is asked
+ * before the bucket, or every refusal would leave an object behind — research.md §13).
  * The id is generated here, never derived from the file name (FR-015).
  *
- * A refused photo is an expected failure, answered as `InvalidShelfPhoto` (ADR 0013). A bucket
+ * A refused photo is an expected failure, answered as `InvalidShelfPhoto`, and a day used up as
+ * `DailyUploadQuotaExceeded` (ADR 0013). A bucket
  * or a database that fails is not: it rejects, and the global HTTP filter catches it.
  *
  * The thumbnail the browser may send along is kept under `{ownerId}/shelf_photo_thumbnail/{id}`,
@@ -32,14 +37,19 @@ export class StoreShelfPhotoUseCase {
     private readonly ownerId: OwnerId,
     private readonly storage: ShelfPhotoStoragePort,
     private readonly repository: ShelfScanRepositoryPort,
+    private readonly policy: UploadQuotaPolicy,
   ) {}
 
   async execute(
     command: StoreShelfPhotoCommand,
-  ): Promise<Result<StoreShelfPhotoResult, InvalidShelfPhoto>> {
+  ): Promise<Result<StoreShelfPhotoResult, InvalidShelfPhoto | DailyUploadQuotaExceeded>> {
     const photo = ShelfPhoto.of(command.bytes, command.mediaType);
     if (!photo.ok) {
       return err(photo.error);
+    }
+    const room = await this.repository.checkUploadQuota(this.ownerId, this.policy);
+    if (!room.ok) {
+      return room;
     }
     const id = ShelfScanId.generate();
     const key = `${this.ownerId.value}/shelf_photo/${id.value}`;
