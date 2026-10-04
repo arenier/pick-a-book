@@ -4,10 +4,8 @@ import { describe, expectTypeOf, it } from 'vitest';
 import type { DetectedBook } from './detected-book.js';
 import type { ScanAttemptId } from './scan-attempt-id.js';
 import type { ShelfScanId } from './shelf-scan-id.js';
-import type {
-  ShelfScanRepositoryPort,
-  ShelfScanTransitionFailure,
-} from './shelf-scan-repository.port.js';
+import type { ShelfScanTransitionFailure } from './scan-attempt.js';
+import type { ShelfScanRepositoryPort } from './shelf-scan-repository.port.js';
 
 // An analysis settles its own attempt (specs/002-upload-history, research.md §8): the attempt
 // `startAttempt` handed over is what `markCompleted` and `markFailed` ask for back, so that one

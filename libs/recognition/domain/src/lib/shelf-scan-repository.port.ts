@@ -3,12 +3,16 @@ import type { Result } from '@pick-a-book/shared-result';
 import type { DetectedBook } from './detected-book.js';
 import type { OwnerId } from './owner-id.js';
 import type { ScanAttemptId } from './scan-attempt-id.js';
-import type { ScanAttemptPolicy, ScanAttemptRefusal } from './scan-attempt.js';
+import type {
+  ScanAttemptPolicy,
+  ScanAttemptRefusal,
+  ShelfScanTransitionFailure,
+} from './scan-attempt.js';
 import type { ShelfPhotoMediaType } from './shelf-photo.js';
 import type { ThumbnailMediaType } from './shelf-photo-thumbnail.js';
-import type { ShelfScanAlreadyProcessed } from './shelf-scan-already-processed.error.js';
 import type { ShelfScanId } from './shelf-scan-id.js';
-import type { ShelfScanNotFound } from './shelf-scan-not-found.error.js';
+import type { DailyUploadQuotaExceeded } from './daily-upload-quota-exceeded.error.js';
+import type { UploadQuotaPolicy } from './upload-quota.js';
 
 /**
  * The reference of the thumbnail the browser made of a photo (specs/002-upload-history,
@@ -91,9 +95,6 @@ export interface ShelfScanPage {
   readonly next: ShelfScanCursor | undefined;
 }
 
-/** Why a record could not move: it does not exist, or it already has its books. */
-export type ShelfScanTransitionFailure = ShelfScanNotFound | ShelfScanAlreadyProcessed;
-
 /**
  * Outbound port that keeps shelf scan records (ADR 0006: Postgres).
  *
@@ -111,6 +112,16 @@ export type ShelfScanTransitionFailure = ShelfScanNotFound | ShelfScanAlreadyPro
  * close the attempt of the one that started after it.
  */
 export interface ShelfScanRepositoryPort {
+  /**
+   * Whether the owner may still send a photo today (specs/002-upload-history, FR-017). Asked
+   * **before** anything is written — a refusal leaves no object behind — and a plain count, with no
+   * lock: an upload has no unit cost, so a few simultaneous ones past the cap are acceptable
+   * (research.md §13).
+   */
+  checkUploadQuota(
+    ownerId: OwnerId,
+    policy: UploadQuotaPolicy,
+  ): Promise<Result<void, DailyUploadQuotaExceeded>>;
   createPending(scan: NewShelfScan): Promise<void>;
   get(id: ShelfScanId): Promise<ShelfScanRecord | undefined>;
   /** One page of an owner's scans, newest first. Reads only. */
