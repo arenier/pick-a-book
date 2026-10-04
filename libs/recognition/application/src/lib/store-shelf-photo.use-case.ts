@@ -63,7 +63,12 @@ export class StoreShelfPhotoUseCase {
     );
   }
 
-  /** Stores the thumbnail if it is valid; otherwise says why it was dropped. Never fails the upload. */
+  /**
+   * Stores the thumbnail if it is valid; otherwise says why it was dropped. An invalid one never
+   * fails the upload — but a bucket that refuses it does, like it would the photo: that failure is
+   * not in the port's vocabulary (ADR 0013), so it rejects, and the photo written just before
+   * stays in the bucket without a record (docs/tech-debt/photo-orpheline-apres-vignette.md).
+   */
   private async keepThumbnail(
     sent: StoreShelfPhotoCommand['thumbnail'],
     id: ShelfScanId,
