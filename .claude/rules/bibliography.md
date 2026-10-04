@@ -9,14 +9,14 @@ Pourquoi : [ADR 0014](../../docs/adr/0014-referentiel-bibliographique-bnf.md) (r
 appariement, enrichissement), [ADR 0005](../../docs/adr/0005-reconnaissance-livres-photo-etagere.md)
 (la réconciliation est le filet anti-hallucination),
 [ADR 0013](../../docs/adr/0013-politique-d-erreur-result-aux-frontieres.md) (échecs attendus). Les
-réglages (seuils, marge, pages de résultats, ordre de la cascade) vivent dans la spec 002, pas ici.
+réglages (seuils, marge, pages de résultats, ordre de la cascade) vivent dans la spec de réconciliation, pas ici.
 
 ## La BnF décide, les compléments complètent
 
 - **Seule la BnF tranche la réconciliation.** Aucune autre source ne crée, ne change ni ne
   confirme un statut (confirmé, ambigu, non trouvé, non vérifié).
 - **L'appel à la BnF est critique.** Il a un délai et des nouvelles tentatives, bornés par le budget
-  de la spec 002. Son échec est un `Err` du port de recherche, qui donne **non vérifié**, jamais
+  de la spec de réconciliation. Son échec est un `Err` du port de recherche, qui donne **non vérifié**, jamais
   **non trouvé**.
 - **Un appel de complément (Google Books…) est toléré.** Il passe par un port d'enrichissement
   distinct du port de recherche. Il n'est appelé qu'après le verdict, pour les seuls confirmés, avec
@@ -62,5 +62,5 @@ réglages (seuils, marge, pages de résultats, ordre de la cascade) vivent dans 
 
 - Confirmer un livre parce que Google Books le trouve alors que la BnF ne le trouve pas.
 - Mettre « non trouvé » sur un livre dont l'appel à la BnF a échoué.
-- Faire échouer une réconciliation, ou dépasser l'échéance de la spec 002, à cause d'un complément.
+- Faire échouer une réconciliation, ou dépasser l'échéance de la spec de réconciliation, à cause d'un complément.
 - Additionner ou moyenner la confiance du VLM et le score de réconciliation.

@@ -15,7 +15,7 @@ Le cadre est déjà posé :
 - surtout de l'édition française de poche : Folio, Points, Livre de Poche ;
 - traitement synchrone dans la requête (ADR 0003).
 
-La spec 002 (PR #74) a construit la réconciliation sans attendre le référentiel. Elle y définit :
+La spec de réconciliation bibliographique ([PR #74](https://github.com/arenier/pick-a-book/pull/74)) a construit la réconciliation sans attendre le référentiel. Elle y définit :
 - quatre statuts : **confirmé**, **ambigu**, **non trouvé**, **non vérifié** ;
 - un port de recherche ;
 - des réglages provisoires (seuil 0,85, marge 0,1, 4 recherches en parallèle, 8 s par
@@ -90,7 +90,7 @@ de la notice. OpenLibrary n'est pas interrogé : c'est le repli nommé par les c
 ### Appariement
 
 Cet ADR fixe les principes. Les réglages (séparateurs, taille des pages de résultats, pondération,
-marge, ordre détaillé des étapes) relèvent de la spec 002 ; leurs valeurs mesurées sont dans
+marge, ordre détaillé des étapes) relèvent de la spec de réconciliation ; leurs valeurs mesurées sont dans
 l'étude.
 
 1. **Comparaison floue, des deux côtés normalisée** par `libs/shared/text-match`. Le seuil est de
@@ -110,18 +110,18 @@ l'étude.
 5. **Un rapprochement partiel ne confirme pas seul.** Quand seul un segment du titre lu
    correspond, le reste de la lecture doit s'expliquer par la notice. Sinon le livre est **ambigu**.
 6. **Un candidat ambigu est signalé, jamais rejeté ni tranché d'office** : c'est l'utilisateur qui
-   choisit (spec 002, US2). La confiance de lecture du VLM n'entre pas dans le verdict : sans
+   choisit (spec de réconciliation, US2). La confiance de lecture du VLM n'entre pas dans le verdict : sans
    notice, un livre est non trouvé, quelle que soit sa confiance (FR-004).
 
 ### Deux appels, deux exigences
 
 - **L'appel à la BnF est critique : il ne doit pas échouer.** Il porte le verdict. Il a son délai
-  et ses nouvelles tentatives, bornés par le budget de la spec 002. S'il échoue malgré tout, le
+  et ses nouvelles tentatives, bornés par le budget de la spec de réconciliation. S'il échoue malgré tout, le
   livre est **non vérifié**, jamais « non trouvé ». La lecture étant stockée, sa réconciliation
   se rejoue plus tard.
 - **Les appels de complément sont tolérés : leur échec ne bloque rien.** Google Books n'est
   appelé qu'après le verdict, pour les livres confirmés. Il a un délai court et aucune nouvelle
-  tentative dans la requête. S'il échoue, ou s'il n'a pas répondu à l'échéance de la spec 002, le
+  tentative dans la requête. S'il échoue, ou s'il n'a pas répondu à l'échéance de la spec de réconciliation, le
   livre reste confirmé et son enrichissement est marqué **incomplet**, à compléter plus tard.
   Toute source de complément ajoutée ensuite suit le même régime.
 
@@ -149,7 +149,7 @@ et une lecture hésitante peut tomber sur une notice certaine.
   éprouvé sur les témoins négatifs. Trouver le même livre chez lui pourrait alors corroborer la
   BnF.
 
-La formule relève de la spec 002.
+La formule relève de la spec de réconciliation.
 
 ### Périmètre : éditions françaises, traductions comprises
 
@@ -251,7 +251,7 @@ cascade) sont trop grands pour qu'un réglage les inverse.
    nombreux doublons d'œuvres, et l'identifiant d'une œuvre fusionnée devient une redirection.
 6. **(🟠 latence)** Une étagère de 30 livres se réconcilie en **8 s médiane, 10 s au 90ᵉ
    centile**, en simulation sur des latences relevées un seul jour. C'est dans le budget de SC-003
-   et dans les réglages de la spec 002, que cet ADR confirme, à condition que la requête « auteur
+   et dans les réglages de la spec de réconciliation, que cet ADR confirme, à condition que la requête « auteur
    seul » passe en format léger. Google Books s'inscrit dans le temps restant. Sa latence n'est
    pas mesurée, et ce qui dépasse l'échéance est marqué incomplet.
 7. **(🟢 attributs) Google Books, pour le résumé.** La BnF n'a un résumé que pour 17 % des livres
@@ -298,7 +298,7 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
   dans le même cycle de vie synchrone. Google Books est une seconde source, mais elle ne remplit
   que des champs vides et n'a aucun désaccord à arbitrer avec la BnF. Aucun des signaux de
   scission de l'ADR 0010 n'est présent.
-- **La spec 002 est à réaligner avant son implémentation**, la spec passant avant le code
+- **La spec de réconciliation est à réaligner avant son implémentation**, la spec passant avant le code
   (`CLAUDE.md`) :
   - le port de recherche accepte une requête sans titre (auteur seul) et un nombre de notices ;
   - la notice expose ses auteurs secondaires et son contexte (série, collection, tome, éditeur) ;
@@ -326,7 +326,7 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
   du domaine, ou par ISBN pour une édition exacte.
 - **La notice représentative d'une œuvre est un choix du domaine**, pas un accident d'ordre de
   réponse : une adaptation en BD retenue pour un roman fait décrire le mauvais livre à
-  l'enrichissement. La règle de choix relève de la spec 002.
+  l'enrichissement. La règle de choix relève de la spec de réconciliation.
 - **Attribution** : la Licence Ouverte impose de citer la source. L'interface mentionne la BnF
   partout où une notice s'affiche, et Google Books à côté de ce qui vient de lui. La date de
   consultation est stockée.
@@ -354,7 +354,7 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
 - **« Ambigu » est surtout de la prudence** : le bon livre est presque toujours parmi les
   candidats. Le coût est un choix de plus pour l'utilisateur, pas un risque pour le filet. Le
   premier gisement de confirmés est la confusion entre une série et son tome, à traiter dans la
-  spec 002.
+  spec de réconciliation.
 - **Les rayons BD et cuisine restent faibles** : 64 % et 40 % de confirmés, sur 44 et 20 livres.
   Le catalogue y a des trous, et les tranches portent des séries ou pas d'auteur. C'est accepté
   pour un usage centré sur le poche.
