@@ -48,6 +48,7 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
 |---|---|---|
 | **ADR** | `docs/adr/` | *Pourquoi* une décision transverse, et à quelles conditions on en changerait. Figé une fois accepté. |
 | **Note de décision** | `docs/decisions/` | Un choix de niveau inférieur, sans impact architectural. |
+| **Dette technique** | `docs/tech-debt/` | Un défaut connu et accepté, laissé hors d'une PR : le constat, pourquoi on a reporté, quand la reprendre. Disparaît quand elle est payée. |
 | **Rule** | `.claude/rules/` | *Quoi faire* en écrivant le code. Vivante, courte, impérative ; renvoie à son ADR sans le recopier. |
 | **Spec** | `specs/NNN-*/` | Le comportement et le scope d'une feature (Spec Kit). |
 | **Constitution** | `.specify/memory/constitution.md` | Les principes, relus par `/speckit-plan` et `/speckit-implement`. |
@@ -155,6 +156,7 @@ tools/db-backup/                 # pg_dump hebdomadaire vers le bucket (Cloud Ru
 docker/                          # Dockerfile des apps et du job de sauvegarde — contexte de build : la racine
 docs/adr/                        # décisions d'architecture : le pourquoi
 docs/decisions/                  # notes de décision de niveau inférieur (pas des ADR)
+docs/tech-debt/                  # dette connue et acceptée, une fiche par sujet
 infra/                           # infrastructure GCP en Terraform — voir infra/README.md
 .claude/rules/                   # règles d'écriture du code : le quoi (voir « Rules » plus haut)
 .specify/                        # Spec Kit : constitution, templates, scripts (voir plus bas)

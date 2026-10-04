@@ -509,7 +509,7 @@ une seule action (SC-005), dans la limite du plafond quotidien (SC-006).
 - [X] T073 [P] Ajouter, en tête de `specs/001-photo-upload/contracts/scan-api.md`, une note datée qui renvoie aux amendements de `specs/002-upload-history/contracts/shelf-photos-history-api.md` §5 : champ `thumbnail`, relance depuis `failed`, codes des 409 et 429.
 - [X] T074 [P] Mettre à jour `CLAUDE.md`, section *Commandes* ou *Architecture*, seulement si une commande ou un emplacement change. Le routage par hash d'`apps/web/src/app/` mérite une ligne dans l'arborescence.
 - [X] T075 Ouvrir une issue GitHub ([#68](https://github.com/arenier/pick-a-book/issues/68)) pour le prérequis de déploiement hors scope (plan.md, *Prérequis hors scope*, point 3) : bucket privé de photos dans `infra/envs/prod/main.tf`, droit `roles/storage.objectAdmin` du compte de service de l'API sur ce bucket, variable `BUCKET_NAME` sur `cloud_run_api` (`DAILY_SCAN_LIMIT` y est déjà, T018). L'issue référence les specs 001 et 002.
-- [ ] T076 *(non faite : elle demande un iPhone, que cette session n'a pas ; à faire avant le merge)* Vérification manuelle sur un iPhone (Safari), à tracer dans la PR : une photo portrait HEIC produit une vignette **droite** (orientation EXIF, research.md §5), et l'historique l'affiche.
+- [ ] T076 *(non faite : elle demande un iPhone, que cette session n'a pas ; non bloquante pour le merge, suivie dans [`docs/tech-debt/verifications-hors-ci.md`](../../docs/tech-debt/verifications-hors-ci.md))* Vérification manuelle sur un iPhone (Safari), à tracer dans la PR : une photo portrait HEIC produit une vignette **droite** (orientation EXIF, research.md §5), et l'historique l'affiche.
 - [X] T077 Dérouler `specs/002-upload-history/quickstart.md`, scénarios 1 à 8, et noter les écarts dans la PR.
 - [X] T078 Faire passer `yarn check` : lint (oxlint type-aware et frontières ESLint), format, typecheck, test et build, sur tous les projets.
 
@@ -631,7 +631,7 @@ deux fois en développement (corrigé, avec test) ; `history` et `entry` étant 
 distincts du shell, React démontait l'historique en passant de l'un à l'autre (corrigé, avec un test
 de navigation).
 
-**Reste** : T076 (iPhone), la vérification sur une révision déployée que `X-Forwarded-For` forgé ne
-change pas la source comptée (research.md §9, `trust proxy` = 1), et la PR elle-même, que cette
-session n'ouvre pas.
+**Reste** : T076 (iPhone) et la vérification sur une révision déployée que `X-Forwarded-For` forgé ne
+change pas la source comptée (research.md §9, `trust proxy` = 1), toutes deux suivies dans
+[`docs/tech-debt/verifications-hors-ci.md`](../../docs/tech-debt/verifications-hors-ci.md).
 
