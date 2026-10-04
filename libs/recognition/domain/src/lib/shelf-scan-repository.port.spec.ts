@@ -1,4 +1,3 @@
-import type { Result } from '@pick-a-book/shared-result';
 import { err, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
@@ -13,7 +12,6 @@ import {
   SHELF_SCAN_REPOSITORY_PORT,
   type NewShelfScan,
   type ShelfScanRecord,
-  type ShelfScanTransitionFailure,
   type ShelfScanRepositoryPort,
   type StoredThumbnail,
 } from './shelf-scan-repository.port.js';
@@ -88,20 +86,6 @@ describe('ShelfScanRepositoryPort', () => {
     >();
     expectTypeOf<ShelfScanRepositoryPort['get']>().toEqualTypeOf<
       (id: ShelfScanId) => Promise<ShelfScanRecord | undefined>
-    >();
-  });
-
-  // The two transitions say what can go wrong in their type: a caller cannot ignore that the
-  // record was missing, or already settled. A database that is down is not modelled — it
-  // rejects, and the global HTTP filter catches it (ADR 0013).
-  it('reports a missing or settled record in the result of a transition', () => {
-    type Outcome = Promise<Result<void, ShelfScanTransitionFailure>>;
-
-    expectTypeOf<ShelfScanRepositoryPort['markCompleted']>().toEqualTypeOf<
-      (id: ShelfScanId, books: readonly DetectedBook[]) => Outcome
-    >();
-    expectTypeOf<ShelfScanRepositoryPort['markFailed']>().toEqualTypeOf<
-      (id: ShelfScanId) => Outcome
     >();
   });
 

@@ -14,8 +14,16 @@ import { GetShelfScanUseCase } from './get-shelf-scan.use-case.js';
 import { StoreShelfPhotoUseCase } from './store-shelf-photo.use-case.js';
 import { InMemoryShelfPhotoStorage } from './testing/in-memory-shelf-photo-storage.js';
 import { InMemoryShelfScanRepository } from './testing/in-memory-shelf-scan-repository.js';
+import { policy } from './testing/scan-fixtures.js';
 
 const owner = unwrap(OwnerId.of('default'));
+
+/** The scan and the attempt reserved on it, as the use case that settles the scan holds them. */
+async function anAttemptOn(repository: InMemoryShelfScanRepository, id: string) {
+  const scanId = unwrap(ShelfScanId.of(id));
+
+  return [scanId, unwrap(await repository.startAttempt(scanId, policy))] as const;
+}
 
 const aJpeg = {
   bytes: new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2]),
@@ -48,7 +56,7 @@ async function aStoredScan() {
 describe('GetShelfScanUseCase, a completed analysis', () => {
   it('answers its books, in the order they were stored, the author left out when unknown', async () => {
     const { id, repository, useCase } = await aStoredScan();
-    await repository.markCompleted(unwrap(ShelfScanId.of(id)), books);
+    await repository.markCompleted(...(await anAttemptOn(repository, id)), books);
 
     const detail = unwrap(await useCase.execute({ id }));
 
@@ -67,7 +75,7 @@ describe('GetShelfScanUseCase, a completed analysis', () => {
 
   it('answers an empty list for an analysis that found no book', async () => {
     const { id, repository, useCase } = await aStoredScan();
-    await repository.markCompleted(unwrap(ShelfScanId.of(id)), []);
+    await repository.markCompleted(...(await anAttemptOn(repository, id)), []);
 
     expect(unwrap(await useCase.execute({ id })).books).toStrictEqual([]);
   });
@@ -85,7 +93,7 @@ describe('GetShelfScanUseCase, an analysis with no books', () => {
 
   it('answers no books at all for a scan that failed', async () => {
     const { id, repository, useCase } = await aStoredScan();
-    await repository.markFailed(unwrap(ShelfScanId.of(id)));
+    await repository.markFailed(...(await anAttemptOn(repository, id)));
 
     const detail = unwrap(await useCase.execute({ id }));
 

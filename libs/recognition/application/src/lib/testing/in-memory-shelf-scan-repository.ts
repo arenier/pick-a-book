@@ -2,6 +2,7 @@ import {
   DailyScanQuotaExceeded,
   ShelfScanAlreadyProcessed,
   ShelfScanInProgress,
+  ScanAttemptId,
   ShelfScanNotFound,
   type DetectedBook,
   type NewShelfScan,
@@ -18,7 +19,8 @@ import { err, ok, type Result } from '@pick-a-book/shared-result';
 
 /** One reserved analysis, as `scan_attempts` holds it. */
 export interface ScanAttempt {
-  readonly id: ShelfScanId;
+  readonly id: ScanAttemptId;
+  readonly scanId: ShelfScanId;
   readonly startedAt: Date;
   readonly finishedAt: Date | undefined;
 }
@@ -70,7 +72,7 @@ export class InMemoryShelfScanRepository implements ShelfScanRepositoryPort {
   async startAttempt(
     id: ShelfScanId,
     policy: ScanAttemptPolicy,
-  ): Promise<Result<void, ScanAttemptRefusal>> {
+  ): Promise<Result<ScanAttemptId, ScanAttemptRefusal>> {
     const record = this.analysable(id);
     if (!record.ok) {
       return record;
@@ -79,7 +81,7 @@ export class InMemoryShelfScanRepository implements ShelfScanRepositoryPort {
     const now = this.now();
     const inProgress = this.attempts.some(
       (attempt) =>
-        attempt.id.equals(id) &&
+        attempt.scanId.equals(id) &&
         attempt.finishedAt === undefined &&
         now.getTime() - attempt.startedAt.getTime() < policy.lease,
     );
@@ -90,20 +92,25 @@ export class InMemoryShelfScanRepository implements ShelfScanRepositoryPort {
     const today = dayOf(now, policy.timeZone);
     const startedToday = this.attempts.filter(
       (attempt) =>
-        this.records.get(attempt.id.value)?.ownerId.equals(record.value.ownerId) === true &&
+        this.records.get(attempt.scanId.value)?.ownerId.equals(record.value.ownerId) === true &&
         dayOf(attempt.startedAt, policy.timeZone) === today,
     );
     if (startedToday.length >= policy.dailyLimit) {
       return err(new DailyScanQuotaExceeded(policy.dailyLimit));
     }
 
-    this.attempts = [...this.attempts, { id, startedAt: now, finishedAt: undefined }];
+    const attempt = ScanAttemptId.generate();
+    this.attempts = [
+      ...this.attempts,
+      { id: attempt, scanId: id, startedAt: now, finishedAt: undefined },
+    ];
 
-    return ok();
+    return ok(attempt);
   }
 
   async markCompleted(
     id: ShelfScanId,
+    attempt: ScanAttemptId,
     books: readonly DetectedBook[],
   ): Promise<Result<void, ShelfScanTransitionFailure>> {
     const record = this.analysable(id);
@@ -111,18 +118,21 @@ export class InMemoryShelfScanRepository implements ShelfScanRepositoryPort {
       return record;
     }
     this.records.set(id.value, { ...record.value, status: 'completed', detectedBooks: books });
-    this.closeAttempts(id);
+    this.closeAttempt(attempt);
 
     return ok();
   }
 
-  async markFailed(id: ShelfScanId): Promise<Result<void, ShelfScanTransitionFailure>> {
+  async markFailed(
+    id: ShelfScanId,
+    attempt: ScanAttemptId,
+  ): Promise<Result<void, ShelfScanTransitionFailure>> {
     const record = this.analysable(id);
     if (!record.ok) {
       return record;
     }
     this.records.set(id.value, { ...record.value, status: 'failed', detectedBooks: undefined });
-    this.closeAttempts(id);
+    this.closeAttempt(attempt);
 
     return ok();
   }
@@ -140,10 +150,11 @@ export class InMemoryShelfScanRepository implements ShelfScanRepositoryPort {
     return ok(record);
   }
 
-  private closeAttempts(id: ShelfScanId): void {
+  /** Closes the attempt it is given — never another open one of the same scan. */
+  private closeAttempt(closing: ScanAttemptId): void {
     const finishedAt = this.now();
     this.attempts = this.attempts.map((attempt) =>
-      attempt.id.equals(id) && attempt.finishedAt === undefined
+      attempt.id.equals(closing) && attempt.finishedAt === undefined
         ? { ...attempt, finishedAt }
         : attempt,
     );

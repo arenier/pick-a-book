@@ -7,6 +7,8 @@ export * from './lib/invalid-shelf-photo-thumbnail.error.js';
 export * from './lib/invalid-shelf-photo.error.js';
 export * from './lib/invalid-value.error.js';
 export * from './lib/owner-id.js';
+export * from './lib/scan-attempt-id.js';
+export * from './lib/scan-attempt.js';
 export * from './lib/shelf-photo-thumbnail-not-found.error.js';
 export * from './lib/shelf-photo-thumbnail.js';
 export * from './lib/shelf-photo.js';

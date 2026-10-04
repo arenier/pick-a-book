@@ -9,7 +9,13 @@ import type { Pool } from 'pg';
 import { describe, expect, it } from 'vitest';
 
 import type { DrizzleShelfScanRepositoryAdapter } from './drizzle-shelf-scan-repository.adapter.js';
-import { aMigratedRepository, aNewScan, books, ownerId } from './testing/test-repository.js';
+import {
+  aMigratedRepository,
+  aNewScan,
+  anAttemptOn,
+  books,
+  ownerId,
+} from './testing/test-repository.js';
 
 /**
  * The history against Postgres (specs/002-upload-history, research.md §4, §6): thumbnails as
@@ -134,7 +140,7 @@ describe('DrizzleShelfScanRepositoryAdapter, listing the history', () => {
     const owner = anOwner();
     const scan = { ...aNewScan(owner), thumbnail: undefined };
     await repository.createPending({ ...scan, thumbnail: aThumbnailOf(scan) });
-    await repository.markCompleted(scan.id, books);
+    await repository.markCompleted(scan.id, await anAttemptOn(repository, scan.id), books);
 
     const page = await repository.list({ ownerId: owner, limit: 10, after: undefined });
 

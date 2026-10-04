@@ -3,7 +3,7 @@ import {
   ShelfScanInProgress,
   type ScanAttemptPolicy,
 } from '@pick-a-book/recognition-domain';
-import { err, ok } from '@pick-a-book/shared-result';
+import { err, ok, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
 import type { DrizzleShelfScanRepositoryAdapter } from './drizzle-shelf-scan-repository.adapter.js';
@@ -23,8 +23,7 @@ const anOwner = () => ownerId(`relaunch-${crypto.randomUUID()}`);
 async function aFailedScan(repository: DrizzleShelfScanRepositoryAdapter) {
   const scan = aNewScan(anOwner());
   await repository.createPending(scan);
-  await repository.startAttempt(scan.id, policy);
-  await repository.markFailed(scan.id);
+  await repository.markFailed(scan.id, unwrap(await repository.startAttempt(scan.id, policy)));
 
   return scan;
 }
@@ -35,14 +34,14 @@ describe('DrizzleShelfScanRepositoryAdapter, running a failed scan again', () =>
   it('reserves an attempt for it', async () => {
     const scan = await aFailedScan(repository);
 
-    await expect(repository.startAttempt(scan.id, policy)).resolves.toStrictEqual(ok());
+    await expect(repository.startAttempt(scan.id, policy)).resolves.toMatchObject({ ok: true });
   });
 
   it('completes it, with the books of the new analysis', async () => {
     const scan = await aFailedScan(repository);
-    await repository.startAttempt(scan.id, policy);
+    const attempt = unwrap(await repository.startAttempt(scan.id, policy));
 
-    await expect(repository.markCompleted(scan.id, books)).resolves.toStrictEqual(ok());
+    await expect(repository.markCompleted(scan.id, attempt, books)).resolves.toStrictEqual(ok());
 
     await expect(repository.get(scan.id)).resolves.toMatchObject({
       status: 'completed',
@@ -52,9 +51,9 @@ describe('DrizzleShelfScanRepositoryAdapter, running a failed scan again', () =>
 
   it('keeps it failed when the new analysis fails too', async () => {
     const scan = await aFailedScan(repository);
-    await repository.startAttempt(scan.id, policy);
+    const attempt = unwrap(await repository.startAttempt(scan.id, policy));
 
-    await expect(repository.markFailed(scan.id)).resolves.toStrictEqual(ok());
+    await expect(repository.markFailed(scan.id, attempt)).resolves.toStrictEqual(ok());
 
     await expect(repository.get(scan.id)).resolves.toMatchObject({ status: 'failed' });
   });
@@ -65,13 +64,13 @@ describe('DrizzleShelfScanRepositoryAdapter, a scan that ended with its books', 
 
   it('is no longer possible once it has its books: they are final', async () => {
     const scan = await aFailedScan(repository);
-    await repository.startAttempt(scan.id, policy);
-    await repository.markCompleted(scan.id, books);
+    const attempt = unwrap(await repository.startAttempt(scan.id, policy));
+    await repository.markCompleted(scan.id, attempt, books);
 
     await expect(repository.startAttempt(scan.id, policy)).resolves.toStrictEqual(
       err(new ShelfScanAlreadyProcessed(scan.id)),
     );
-    await expect(repository.markFailed(scan.id)).resolves.toStrictEqual(
+    await expect(repository.markFailed(scan.id, attempt)).resolves.toStrictEqual(
       err(new ShelfScanAlreadyProcessed(scan.id)),
     );
   });

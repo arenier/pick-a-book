@@ -1,4 +1,5 @@
 import {
+  ScanAttemptId,
   ShelfScanAlreadyProcessed,
   ShelfScanId,
   ShelfScanNotFound,
@@ -6,7 +7,13 @@ import {
 import { err, ok } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
-import { aMigratedRepository, aNewScan, books, ownerId } from './testing/test-repository.js';
+import {
+  aMigratedRepository,
+  aNewScan,
+  anAttemptOn,
+  books,
+  ownerId,
+} from './testing/test-repository.js';
 
 describe('DrizzleShelfScanRepositoryAdapter, creating a record', () => {
   const { pool, repository } = aMigratedRepository();
@@ -74,7 +81,9 @@ describe('DrizzleShelfScanRepositoryAdapter, recording a result', () => {
     const scan = aNewScan();
     await repository.createPending(scan);
 
-    await expect(repository.markCompleted(scan.id, books)).resolves.toStrictEqual(ok());
+    await expect(
+      repository.markCompleted(scan.id, await anAttemptOn(repository, scan.id), books),
+    ).resolves.toStrictEqual(ok());
 
     const record = await repository.get(scan.id);
     expect(record?.status).toBe('completed');
@@ -86,7 +95,9 @@ describe('DrizzleShelfScanRepositoryAdapter, recording a result', () => {
     const scan = aNewScan();
     await repository.createPending(scan);
 
-    await expect(repository.markCompleted(scan.id, [])).resolves.toStrictEqual(ok());
+    await expect(
+      repository.markCompleted(scan.id, await anAttemptOn(repository, scan.id), []),
+    ).resolves.toStrictEqual(ok());
 
     const record = await repository.get(scan.id);
     expect(record?.status).toBe('completed');
@@ -97,7 +108,9 @@ describe('DrizzleShelfScanRepositoryAdapter, recording a result', () => {
     const scan = aNewScan();
     await repository.createPending(scan);
 
-    await expect(repository.markFailed(scan.id)).resolves.toStrictEqual(ok());
+    await expect(
+      repository.markFailed(scan.id, await anAttemptOn(repository, scan.id)),
+    ).resolves.toStrictEqual(ok());
 
     const record = await repository.get(scan.id);
     expect(record?.status).toBe('failed');
@@ -112,14 +125,18 @@ describe('DrizzleShelfScanRepositoryAdapter, recording a result only once', () =
   it('refuses to move a record that already has its books', async () => {
     const completed = aNewScan();
     await repository.createPending(completed);
-    await repository.markCompleted(completed.id, books);
+    await repository.markCompleted(
+      completed.id,
+      await anAttemptOn(repository, completed.id),
+      books,
+    );
 
-    await expect(repository.markCompleted(completed.id, [])).resolves.toStrictEqual(
-      err(new ShelfScanAlreadyProcessed(completed.id)),
-    );
-    await expect(repository.markFailed(completed.id)).resolves.toStrictEqual(
-      err(new ShelfScanAlreadyProcessed(completed.id)),
-    );
+    await expect(
+      repository.markCompleted(completed.id, ScanAttemptId.generate(), []),
+    ).resolves.toStrictEqual(err(new ShelfScanAlreadyProcessed(completed.id)));
+    await expect(
+      repository.markFailed(completed.id, ScanAttemptId.generate()),
+    ).resolves.toStrictEqual(err(new ShelfScanAlreadyProcessed(completed.id)));
 
     const record = await repository.get(completed.id);
     expect(record?.detectedBooks).toStrictEqual(books);
@@ -129,10 +146,10 @@ describe('DrizzleShelfScanRepositoryAdapter, recording a result only once', () =
     const first = ShelfScanId.generate();
     const second = ShelfScanId.generate();
 
-    await expect(repository.markCompleted(first, books)).resolves.toStrictEqual(
-      err(new ShelfScanNotFound(first.value)),
-    );
-    await expect(repository.markFailed(second)).resolves.toStrictEqual(
+    await expect(
+      repository.markCompleted(first, ScanAttemptId.generate(), books),
+    ).resolves.toStrictEqual(err(new ShelfScanNotFound(first.value)));
+    await expect(repository.markFailed(second, ScanAttemptId.generate())).resolves.toStrictEqual(
       err(new ShelfScanNotFound(second.value)),
     );
   });

@@ -1,4 +1,5 @@
 import {
+  ScanAttemptId,
   ShelfScanAlreadyProcessed,
   ShelfScanId,
   ShelfScanNotFound,
@@ -12,7 +13,7 @@ import {
   type ShelfScanRepositoryPort,
   type ShelfScanTransitionFailure,
 } from '@pick-a-book/recognition-domain';
-import { err, ok, type Result } from '@pick-a-book/shared-result';
+import { err, ok, unwrap, type Result } from '@pick-a-book/shared-result';
 import { and, eq, inArray, isNull, sql, type SQL } from 'drizzle-orm';
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { alias } from 'drizzle-orm/pg-core';
@@ -130,7 +131,7 @@ export class DrizzleShelfScanRepositoryAdapter implements ShelfScanRepositoryPor
   async startAttempt(
     id: ShelfScanId,
     policy: ScanAttemptPolicy,
-  ): Promise<Result<void, ScanAttemptRefusal>> {
+  ): Promise<Result<ScanAttemptId, ScanAttemptRefusal>> {
     return this.db.transaction(async (tx) => {
       await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${ATTEMPT_LOCK_NAME}))`);
 
@@ -138,24 +139,36 @@ export class DrizzleShelfScanRepositoryAdapter implements ShelfScanRepositoryPor
       if (refusal !== undefined) {
         return err(refusal);
       }
-      await tx.insert(scanAttempts).values({ uploadId: id.value });
+      const inserted = (
+        await tx
+          .insert(scanAttempts)
+          .values({ uploadId: id.value })
+          .returning({ id: scanAttempts.id })
+      ).at(0);
+      if (inserted === undefined) {
+        throw new Error('The insert of the attempt of a scan returned no row');
+      }
 
-      return ok();
+      return ok(unwrap(ScanAttemptId.of(inserted.id)));
     });
   }
 
   async markCompleted(
     id: ShelfScanId,
+    attempt: ScanAttemptId,
     books: readonly DetectedBook[],
   ): Promise<Result<void, ShelfScanTransitionFailure>> {
-    return this.settle(id, {
+    return this.settle(id, attempt, {
       status: 'completed',
       detectedBooks: books.map((book) => toStored(book)),
     });
   }
 
-  async markFailed(id: ShelfScanId): Promise<Result<void, ShelfScanTransitionFailure>> {
-    return this.settle(id, { status: 'failed', detectedBooks: null });
+  async markFailed(
+    id: ShelfScanId,
+    attempt: ScanAttemptId,
+  ): Promise<Result<void, ShelfScanTransitionFailure>> {
+    return this.settle(id, attempt, { status: 'failed', detectedBooks: null });
   }
 
   /**
@@ -180,10 +193,12 @@ export class DrizzleShelfScanRepositoryAdapter implements ShelfScanRepositoryPor
    * record books. Zero rows updated then says which rule was broken — no record, or a record
    * that is already `completed` — as an `Err`:
    * both are outcomes the port declares (ADR 0013). The attempt that led here is closed in the
-   * same transaction, whatever the outcome: it is over.
+   * same transaction, whatever the outcome: it is over. That one, and no other: an analysis that
+   * outlived its lease must not close the attempt of the one that started after it.
    */
   private async settle(
     id: ShelfScanId,
+    attempt: ScanAttemptId,
     outcome: { status: 'completed' | 'failed'; detectedBooks: StoredDetectedBook[] | null },
   ): Promise<Result<void, ShelfScanTransitionFailure>> {
     const updated = await this.db.transaction(async (tx) => {
@@ -197,7 +212,7 @@ export class DrizzleShelfScanRepositoryAdapter implements ShelfScanRepositoryPor
       await tx
         .update(scanAttempts)
         .set({ finishedAt: sql`now()` })
-        .where(and(eq(scanAttempts.uploadId, id.value), isNull(scanAttempts.finishedAt)));
+        .where(and(eq(scanAttempts.id, attempt.value), isNull(scanAttempts.finishedAt)));
 
       return moved;
     });

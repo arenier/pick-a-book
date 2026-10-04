@@ -2,6 +2,7 @@ import {
   ShelfScanId,
   ShelfScanNotFound,
   type OwnerId,
+  type ScanAttemptId,
   type ScanAttemptRefusal,
   type ScanAttemptPolicy,
   type ShelfPhotoStoragePort,
@@ -67,6 +68,9 @@ export class ScanStoredShelfPhotoUseCase {
     if (!started.ok) {
       return started;
     }
+    // Closed by this analysis and by no other: one that outlived its lease must not close the
+    // attempt of the one that started after it.
+    const attempt = started.value;
 
     // `finally` rather than a `catch` that rethrows: the failure is not this layer's to read
     // (ADR 0013), it only has to leave the attempt closed on its way up.
@@ -79,12 +83,12 @@ export class ScanStoredShelfPhotoUseCase {
         // The photo stays, and its record says the scan failed (US3, FR-011) — then the
         // failure goes on up, for HTTP to report it.
         recorded = true;
-        await this.recordFailure(id);
+        await this.recordFailure(id, attempt);
         return scanned;
       }
 
       recorded = true;
-      const marked = await this.repository.markCompleted(id, scanned.value);
+      const marked = await this.repository.markCompleted(id, attempt, scanned.value);
       if (!marked.ok) {
         return marked;
       }
@@ -92,7 +96,7 @@ export class ScanStoredShelfPhotoUseCase {
       return ok({ books: scanned.value.map((book) => toDetectedBookDto(book)) });
     } finally {
       if (!recorded) {
-        await this.recordFailure(id);
+        await this.recordFailure(id, attempt);
       }
     }
   }
@@ -103,10 +107,10 @@ export class ScanStoredShelfPhotoUseCase {
    * record stays pending — a state the spec already allows (FR-014). The same goes for a
    * record another request settled in the meantime.
    */
-  private async recordFailure(id: ShelfScanId): Promise<void> {
+  private async recordFailure(id: ShelfScanId, attempt: ScanAttemptId): Promise<void> {
     const reason = `Could not record the failed scan of ${id.value}; it stays pending`;
     try {
-      const marked = await this.repository.markFailed(id);
+      const marked = await this.repository.markFailed(id, attempt);
       if (!marked.ok) {
         console.error(reason, marked.error);
       }

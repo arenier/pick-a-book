@@ -1,13 +1,13 @@
 import type { Result } from '@pick-a-book/shared-result';
 
-import type { DailyScanQuotaExceeded } from './daily-scan-quota-exceeded.error.js';
 import type { DetectedBook } from './detected-book.js';
 import type { OwnerId } from './owner-id.js';
+import type { ScanAttemptId } from './scan-attempt-id.js';
+import type { ScanAttemptPolicy, ScanAttemptRefusal } from './scan-attempt.js';
 import type { ShelfPhotoMediaType } from './shelf-photo.js';
 import type { ThumbnailMediaType } from './shelf-photo-thumbnail.js';
 import type { ShelfScanAlreadyProcessed } from './shelf-scan-already-processed.error.js';
 import type { ShelfScanId } from './shelf-scan-id.js';
-import type { ShelfScanInProgress } from './shelf-scan-in-progress.error.js';
 import type { ShelfScanNotFound } from './shelf-scan-not-found.error.js';
 
 /**
@@ -95,27 +95,6 @@ export interface ShelfScanPage {
 export type ShelfScanTransitionFailure = ShelfScanNotFound | ShelfScanAlreadyProcessed;
 
 /**
- * Why an analysis was not allowed to start, in the order the port checks them: the scan does
- * not exist, it already has a result, another analysis of it is running, the day's analyses
- * are used up.
- */
-export type ScanAttemptRefusal =
-  | ShelfScanNotFound
-  | ShelfScanAlreadyProcessed
-  | ShelfScanInProgress
-  | DailyScanQuotaExceeded;
-
-/** What `startAttempt` enforces, handed over by the composition root (`DAILY_SCAN_LIMIT`). */
-export interface ScanAttemptPolicy {
-  /** Analyses allowed per day, uploads and re-scans together (FR-015). */
-  readonly dailyLimit: number;
-  /** Where the day starts: « tomorrow » is read at the user's midnight, not UTC's. */
-  readonly timeZone: 'Europe/Paris';
-  /** Milliseconds an open attempt blocks another analysis of the same scan. */
-  readonly lease: number;
-}
-
-/**
  * Outbound port that keeps shelf scan records (ADR 0006: Postgres).
  *
  * `markCompleted` and `markFailed` only ever move a record that has no books yet — `pending`, or
@@ -127,7 +106,9 @@ export interface ScanAttemptPolicy {
  *
  * `startAttempt` reserves an analysis, atomically, before the scanner is called: it is what
  * enforces the daily cap and keeps two analyses of one scan from running at once
- * (specs/002-upload-history, research.md §8). `markCompleted` and `markFailed` close it.
+ * (specs/002-upload-history, research.md §8) and answers the id of the attempt; `markCompleted` and
+ * `markFailed` close that attempt, and only that one: an analysis that outlived its lease must not
+ * close the attempt of the one that started after it.
  */
 export interface ShelfScanRepositoryPort {
   createPending(scan: NewShelfScan): Promise<void>;
@@ -137,12 +118,16 @@ export interface ShelfScanRepositoryPort {
   startAttempt(
     id: ShelfScanId,
     policy: ScanAttemptPolicy,
-  ): Promise<Result<void, ScanAttemptRefusal>>;
+  ): Promise<Result<ScanAttemptId, ScanAttemptRefusal>>;
   markCompleted(
     id: ShelfScanId,
+    attempt: ScanAttemptId,
     books: readonly DetectedBook[],
   ): Promise<Result<void, ShelfScanTransitionFailure>>;
-  markFailed(id: ShelfScanId): Promise<Result<void, ShelfScanTransitionFailure>>;
+  markFailed(
+    id: ShelfScanId,
+    attempt: ScanAttemptId,
+  ): Promise<Result<void, ShelfScanTransitionFailure>>;
 }
 
 /** Injection token for the port. */

@@ -6,11 +6,17 @@ import {
   ShelfScanNotFound,
   type ScanAttemptPolicy,
 } from '@pick-a-book/recognition-domain';
-import { err, ok } from '@pick-a-book/shared-result';
+import { err, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
 import type { DrizzleShelfScanRepositoryAdapter } from './drizzle-shelf-scan-repository.adapter.js';
-import { aMigratedRepository, aNewScan, books, ownerId } from './testing/test-repository.js';
+import {
+  aMigratedRepository,
+  aNewScan,
+  anAttemptOn,
+  books,
+  ownerId,
+} from './testing/test-repository.js';
 
 /**
  * The reservation of an analysis against Postgres (specs/002-upload-history, research.md §8).
@@ -36,7 +42,7 @@ describe('DrizzleShelfScanRepositoryAdapter, reserving an attempt', () => {
     const scan = aNewScan(anOwner());
     await repository.createPending(scan);
 
-    await expect(repository.startAttempt(scan.id, policy)).resolves.toStrictEqual(ok());
+    await expect(repository.startAttempt(scan.id, policy)).resolves.toMatchObject({ ok: true });
 
     const { rows } = await pool.query<{ finished_at: Date | null }>(
       'select finished_at from scan_attempts where upload_id = $1',
@@ -56,7 +62,7 @@ describe('DrizzleShelfScanRepositoryAdapter, reserving an attempt', () => {
   it('answers ShelfScanAlreadyProcessed for a scan that has its books', async () => {
     const scan = aNewScan(anOwner());
     await repository.createPending(scan);
-    await repository.markCompleted(scan.id, books);
+    await repository.markCompleted(scan.id, await anAttemptOn(repository, scan.id), books);
 
     await expect(repository.startAttempt(scan.id, policy)).resolves.toStrictEqual(
       err(new ShelfScanAlreadyProcessed(scan.id)),
@@ -87,7 +93,7 @@ describe('DrizzleShelfScanRepositoryAdapter, the lease of an attempt', () => {
       [scan.id.value],
     );
 
-    await expect(repository.startAttempt(scan.id, policy)).resolves.toStrictEqual(ok());
+    await expect(repository.startAttempt(scan.id, policy)).resolves.toMatchObject({ ok: true });
   });
 
   it('counts the lease from the policy, not from a constant', async () => {
@@ -101,7 +107,7 @@ describe('DrizzleShelfScanRepositoryAdapter, the lease of an attempt', () => {
 
     await expect(
       repository.startAttempt(scan.id, { ...policy, lease: 60_000 }),
-    ).resolves.toStrictEqual(ok());
+    ).resolves.toMatchObject({ ok: true });
   });
 });
 
@@ -145,7 +151,7 @@ describe('DrizzleShelfScanRepositoryAdapter, the daily cap', () => {
     const other = aNewScan(anOwner());
     await repository.createPending(other);
 
-    await expect(repository.startAttempt(other.id, capped)).resolves.toStrictEqual(ok());
+    await expect(repository.startAttempt(other.id, capped)).resolves.toMatchObject({ ok: true });
   });
 });
 
@@ -165,7 +171,7 @@ describe('DrizzleShelfScanRepositoryAdapter, the turn of the day in Paris', () =
     const { first, second, third } = await aDayAtTheCap(repository);
     await shiftAttempts('-30 minutes', first.id, second.id);
 
-    await expect(repository.startAttempt(third.id, capped)).resolves.toStrictEqual(ok());
+    await expect(repository.startAttempt(third.id, capped)).resolves.toMatchObject({ ok: true });
   });
 
   // 00:30 in Paris is still yesterday in UTC: the day is Paris's, not UTC's.
@@ -227,9 +233,9 @@ describe('DrizzleShelfScanRepositoryAdapter, closing the attempt', () => {
   it('fills finished_at when the scan is marked completed', async () => {
     const scan = aNewScan(anOwner());
     await repository.createPending(scan);
-    await repository.startAttempt(scan.id, policy);
+    const attempt = unwrap(await repository.startAttempt(scan.id, policy));
 
-    await repository.markCompleted(scan.id, books);
+    await repository.markCompleted(scan.id, attempt, books);
 
     expect((await finishedAt(scan.id)).rows[0]?.finished_at).toBeInstanceOf(Date);
   });
@@ -237,9 +243,9 @@ describe('DrizzleShelfScanRepositoryAdapter, closing the attempt', () => {
   it('fills finished_at when the scan is marked failed', async () => {
     const scan = aNewScan(anOwner());
     await repository.createPending(scan);
-    await repository.startAttempt(scan.id, policy);
+    const attempt = unwrap(await repository.startAttempt(scan.id, policy));
 
-    await repository.markFailed(scan.id);
+    await repository.markFailed(scan.id, attempt);
 
     expect((await finishedAt(scan.id)).rows[0]?.finished_at).toBeInstanceOf(Date);
   });

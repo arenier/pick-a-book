@@ -6,6 +6,8 @@ import {
   OwnerId,
   ShelfScanId,
   type NewShelfScan,
+  type ScanAttemptId,
+  type ScanAttemptPolicy,
 } from '@pick-a-book/recognition-domain';
 import { unwrap } from '@pick-a-book/shared-result';
 import { Pool } from 'pg';
@@ -58,3 +60,18 @@ export const books = [
   ),
   DetectedBook.of(undefined, unwrap(BookTitle.of('Les Choses')), unwrap(Confidence.of(0.4))),
 ];
+
+/** What an analysis is allowed here: the cap and the lease of the specs that do not test them. */
+export const anyPolicy = {
+  dailyLimit: 1_000,
+  timeZone: 'Europe/Paris',
+  lease: 300_000,
+} satisfies ScanAttemptPolicy;
+
+/** The attempt an analysis of the scan reserved — what a scan is settled with. */
+export async function anAttemptOn(
+  repository: DrizzleShelfScanRepositoryAdapter,
+  id: ShelfScanId,
+): Promise<ScanAttemptId> {
+  return unwrap(await repository.startAttempt(id, anyPolicy));
+}
