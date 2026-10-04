@@ -61,7 +61,7 @@ Légende : 🔴 fort · 🟠 moyen · 🟢 faible · ⚪ à clarifier
 
 ## Étude des candidats
 
-Quatre candidats ont été examinés. ISBNdb est écarté sur son coût. **BnF** (API SRU du catalogue
+Cinq sources ont été examinées. ISBNdb est écarté sur son coût. **BnF** (API SRU du catalogue
 général) et **OpenLibrary** ont été mesurés comme référentiels sur les 552 livres de la vérité
 terrain du bench (#10) :
 - sur une lecture parfaite ;
@@ -70,9 +70,19 @@ terrain du bench (#10) :
 
 Chaque variante de stratégie a été rejouée sur les mêmes réponses, puis un échantillon de verdicts
 a été relu à la main. La stratégie a enfin été appliquée sans réglage aux sorties réelles de deux
-VLM, sur 8 photos jamais vues : c'est [le jeu de validation](https://github.com/arenier/pick-a-book/issues/20#issuecomment-5979222261). **Google Books** n'est pas un référentiel possible : il demande une clé, son
-quota est partagé, sa recherche par champ est en panne, et une édition retrouvée sur cinq seulement
-est celle de la notice BnF. Il a été mesuré comme source d'enrichissement. Méthode, chiffres, contrôle manuel et limites sont dans
+VLM, sur 8 photos jamais vues : c'est
+[le jeu de validation](https://github.com/arenier/pick-a-book/issues/20#issuecomment-5979222261).
+
+Deux sources ne peuvent pas servir de référentiel, et n'ont été mesurées que pour l'enrichissement :
+
+- **Google Books** demande une clé, son quota est partagé, sa recherche par champ est en panne, et
+  une édition retrouvée sur cinq seulement est celle de la notice BnF.
+- **Wikidata** ne connaît qu'environ 37 % des œuvres que la BnF confirme. Pour l'enrichissement,
+  ses prix sont surtout rattachés à l'auteur, rarement au livre, et une réception critique n'existe
+  que pour 13 % des œuvres : il n'est pas retenu (voir les questions ouvertes). Les variantes de
+  nom d'auteur qu'il connaît sont aussi dans les notices d'autorité de la BnF.
+
+Méthode, chiffres, contrôle manuel et limites sont dans
 [l'étude de l'issue #20](https://github.com/arenier/pick-a-book/issues/20#issuecomment-5978322572).
 
 ## Solution retenue
@@ -100,16 +110,23 @@ l'étude.
    tome et titre, ou plusieurs noms : on compare chaque segment et chaque nom lu. Côté notice, on
    prend en compte tous les auteurs, y compris illustrateurs et traducteurs, et le contexte
    (série, collection, tome, éditeur).
-3. **Une cascade de requêtes**, de la plus précise à la plus large (titre et auteur, auteur seul,
+3. **Un auteur se reconnaît sous toutes ses formes.** Quand le titre correspond mais pas l'auteur
+   lu, l'auteur lu est comparé aux formes rejetées de la notice d'autorité BnF de chaque auteur de
+   la notice, retrouvée par son identifiant. Elles portent les translittérations, les pseudonymes
+   et les variantes de prénom : la tranche « Alaa El Aswany » répond à la notice « Aswānī, ʿAlāʾ
+   al- » par sa forme rejetée « Aswany, Alaa el- ». La notice n'est écartée qu'ensuite. L'appel ne
+   se fait que dans ce cas, et il se met en cache. On reste dans la même source : c'est la BnF qui
+   reconnaît la forme.
+4. **Une cascade de requêtes**, de la plus précise à la plus large (titre et auteur, auteur seul,
    titre seul, segments), arrêtée au premier verdict. Elle vit dans **`application`**, et l'adapter
    n'exécute qu'une requête à la fois. La raison : l'arrêt dépend du verdict du domaine, qui doit
    être le même quel que soit le référentiel, et testable sans infrastructure.
-4. **Le verdict est une règle du domaine.** Les notices qui passent les seuils sont regroupées par
+5. **Le verdict est une règle du domaine.** Les notices qui passent les seuils sont regroupées par
    œuvre selon notre règle, et non d'après l'identifiant du référentiel. Une seule œuvre donne
    **confirmé**, plusieurs donnent **ambigu**.
-5. **Un rapprochement partiel ne confirme pas seul.** Quand seul un segment du titre lu
+6. **Un rapprochement partiel ne confirme pas seul.** Quand seul un segment du titre lu
    correspond, le reste de la lecture doit s'expliquer par la notice. Sinon le livre est **ambigu**.
-6. **Un candidat ambigu est signalé, jamais rejeté ni tranché d'office** : c'est l'utilisateur qui
+7. **Un candidat ambigu est signalé, jamais rejeté ni tranché d'office** : c'est l'utilisateur qui
    choisit (spec de réconciliation, US2). La confiance de lecture du VLM n'entre pas dans le verdict : sans
    notice, un livre est non trouvé, quelle que soit sa confiance (FR-004).
 
@@ -302,6 +319,8 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
   (`CLAUDE.md`) :
   - le port de recherche accepte une requête sans titre (auteur seul) et un nombre de notices ;
   - la notice expose ses auteurs secondaires et son contexte (série, collection, tome, éditeur) ;
+  - la notice expose l'identifiant d'autorité de ses auteurs, et un port rend les formes rejetées
+    d'une autorité ;
   - la clé d'œuvre calculée par l'adapter disparaît, au profit du regroupement par la règle du
     domaine ;
   - la cascade et le rapprochement partiel rejoignent la règle d'appariement, avec leurs réglages
@@ -315,6 +334,7 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
   - série et tome : « Percy Jackson - La Mer des Monstres » ;
   - un nombre qui distingue deux œuvres : « 17 lunes » face à « 18 lunes » ;
   - une mention de tome lue : « Éternels (tome 3) » ;
+  - un auteur translittéré autrement que sur la tranche : « Alaa El Aswany » ;
   - roman et adaptation en BD de même titre : « Le Mystère des pavots blancs » ;
   - illustrateur cosignataire : « D. Pennac - J. Ferrandez » ;
   - fausse ambiguïté d'éditions : « Exercices de style » ;

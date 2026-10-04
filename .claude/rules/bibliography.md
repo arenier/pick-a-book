@@ -32,6 +32,9 @@ réglages (seuils, marge, pages de résultats, ordre de la cascade) vivent dans 
 - **Le verdict et le regroupement par œuvre sont des règles de `domain`.** On ne regroupe jamais
   d'après l'identifiant d'œuvre du référentiel.
 - **On compare avec `libs/shared/text-match`**, des deux côtés, sans réimplémenter de normalisation.
+- **Avant d'écarter une notice dont le titre correspond mais pas l'auteur**, comparer l'auteur lu
+  aux formes rejetées de la notice d'autorité BnF de ses auteurs. L'appel n'est fait que dans ce
+  cas, et il est mis en cache.
 - **Un nombre distingue deux titres**, et une mention de tome lue se compare au numéro de la notice.
 - **La confiance du VLM n'entre jamais dans le verdict.**
 
