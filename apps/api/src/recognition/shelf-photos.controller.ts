@@ -3,7 +3,6 @@ import {
   BadRequestException,
   Controller,
   Get,
-  Header,
   HttpCode,
   Logger,
   Param,
@@ -29,6 +28,7 @@ import {
 import { ShelfPhotoStorageFailed } from '@pick-a-book/recognition-infrastructure';
 import type { Result } from '@pick-a-book/shared-result';
 
+import { ImmutablePrivateCacheInterceptor } from '../http/immutable-private-cache.interceptor';
 import { toHttpException, type RecognitionError } from './recognition-http-error';
 
 /**
@@ -49,19 +49,13 @@ export interface UploadedImage {
  * it, if it could (specs/002-upload-history, contracts §5). Multer hands each field over as a
  * list.
  */
-export interface UploadedFiles {
+export interface UploadedFields {
   readonly photo?: readonly UploadedImage[];
   readonly thumbnail?: readonly UploadedImage[];
 }
 
 /** 20 MB, matching what `ShelfPhoto` accepts — rejected by multer before reaching us. */
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
-
-/**
- * An image never changes under its id, so the browser never asks again — and it is the user's
- * own, so no shared cache keeps it (specs/002-upload-history, research.md §7).
- */
-const IMMUTABLE_PRIVATE_CACHE = 'private, max-age=31536000, immutable';
 
 /**
  * A shelf photo is scanned in two requests (specs/001-photo-upload, research.md §7):
@@ -101,7 +95,7 @@ export class ShelfPhotosController {
       { limits: { fileSize: MAX_UPLOAD_BYTES } },
     ),
   )
-  async store(@UploadedFiles() files?: UploadedFiles): Promise<StoreShelfPhotoResult> {
+  async store(@UploadedFiles() files?: UploadedFields): Promise<StoreShelfPhotoResult> {
     const command = readUpload(files);
 
     // Rebuilt field by field: whatever else the use case may one day return, the id is the
@@ -132,14 +126,14 @@ export class ShelfPhotosController {
 
   /** The thumbnail of a scan, straight from the bucket (contracts §4). */
   @Get(':id/thumbnail')
-  @Header('Cache-Control', IMMUTABLE_PRIVATE_CACHE)
+  @UseInterceptors(ImmutablePrivateCacheInterceptor)
   async thumbnail(@Param('id') id: string): Promise<StreamableFile> {
     return this.sendImage(id, 'thumbnail');
   }
 
   /** The photo as it was sent, straight from the bucket (contracts §3). */
   @Get(':id/photo')
-  @Header('Cache-Control', IMMUTABLE_PRIVATE_CACHE)
+  @UseInterceptors(ImmutablePrivateCacheInterceptor)
   async photo(@Param('id') id: string): Promise<StreamableFile> {
     return this.sendImage(id, 'photo');
   }
@@ -199,7 +193,7 @@ export class ShelfPhotosController {
  * Multipart only (contracts/scan-api.md §1). No photo means nothing to store: a 400, whatever
  * else the body carries. The thumbnail is optional, and goes through as it came.
  */
-function readUpload(files: UploadedFiles | undefined): StoreShelfPhotoCommand {
+function readUpload(files: UploadedFields | undefined): StoreShelfPhotoCommand {
   const photo = files?.photo?.at(0);
   if (photo === undefined) {
     throw new BadRequestException('Send the photo as the multipart field "photo"');

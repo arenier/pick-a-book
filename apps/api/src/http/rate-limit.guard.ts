@@ -1,19 +1,7 @@
 import { type ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ThrottlerGuard, type ThrottlerLimitDetail } from '@nestjs/throttler';
 
-/** The part of a response this guard writes to: a header, nothing else. */
-interface HeaderWritable {
-  setHeader(name: string, value: string): unknown;
-}
-
-function canSetHeader(value: unknown): value is HeaderWritable {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'setHeader' in value &&
-    typeof value.setHeader === 'function'
-  );
-}
+import { canSetHeader } from './writable-response';
 
 /**
  * The global limit on requests per source (specs/002-upload-history, FR-014, research.md §9),
