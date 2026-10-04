@@ -40,7 +40,15 @@ export function UploadHistory({ entryId, load, rescan, list, observeEnd }: Uploa
         </div>
       )}
       {entryId !== undefined && (
-        <EntryDetailScreen id={entryId} load={load} rescan={rescan} onRescanned={updates.publish} />
+        // One screen per upload: what a run in flight left in the state of the last one — its
+        // books, its "running" guard — must not follow the user to the next.
+        <EntryDetailScreen
+          key={entryId}
+          id={entryId}
+          load={load}
+          rescan={rescan}
+          onRescanned={updates.publish}
+        />
       )}
     </>
   );
