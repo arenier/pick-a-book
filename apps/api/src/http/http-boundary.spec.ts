@@ -54,6 +54,14 @@ describe('applyHttpBoundary, CORS', () => {
     expect(response.headers.get('access-control-allow-origin')).toBe(front);
   });
 
+  // `Retry-After` is not in the list a browser lets a cross-origin script read: the front, on
+  // another origin, only sees it if the API names it.
+  it('lets the front read Retry-After on a call it made', async () => {
+    const response = await request({ headers: { origin: front } });
+
+    expect(response.headers.get('access-control-expose-headers')).toBe('Retry-After');
+  });
+
   it('answers the preflight of any other origin without naming it', async () => {
     const response = await preflight('https://evil.example');
 

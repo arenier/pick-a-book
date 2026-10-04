@@ -25,7 +25,9 @@ export function applyHttpBoundary(
   // A list, even of one: `cors` names an origin in its answer only when the request comes from
   // one of them, where a bare string would be echoed to every caller — and a preflight from
   // elsewhere then gets no `Access-Control-Allow-Origin` at all, which is a refusal.
-  app.enableCors({ origin: [environment.webOrigin] });
+  // `Retry-After` is exposed: the browser hides it from a cross-origin script otherwise, and the
+  // 429 of the contract promises it (specs/002-upload-history, contracts §Erreurs communes).
+  app.enableCors({ origin: [environment.webOrigin], exposedHeaders: ['Retry-After'] });
   // One hop: Cloud Run's front end appends the address it saw as the LAST entry of
   // `X-Forwarded-For`, which a client cannot forge — it only writes the entries on the left.
   // Trusting more hops would let a forged entry become the source. Without a proxy (local, the
