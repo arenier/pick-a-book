@@ -68,8 +68,9 @@ livres de la vérité terrain du bench (#10) :
 - sur une lecture avec une faute ;
 - sur 240 témoins négatifs (livres inexistants).
 
-Chaque variante de stratégie a été rejouée sur les mêmes réponses. Un échantillon de 80 verdicts a
-ensuite été relu à la main. Méthode, chiffres, contrôle et limites sont consignés dans l'issue #20.
+Chaque variante de stratégie a été rejouée sur les mêmes réponses, puis un échantillon de verdicts
+a été relu à la main. Méthode, chiffres, contrôle manuel et limites sont dans
+[l'étude de l'issue #20](https://github.com/arenier/pick-a-book/issues/20#issuecomment-5978322572).
 
 ## Solution retenue
 
@@ -85,8 +86,8 @@ de la notice. OpenLibrary n'est pas interrogé : c'est le repli nommé par les c
 ### Appariement
 
 Cet ADR fixe les principes. Les réglages (séparateurs, taille des pages de résultats, pondération,
-marge, ordre détaillé des étapes) relèvent de la spec 002. Leurs valeurs mesurées sont dans
-l'issue #20.
+marge, ordre détaillé des étapes) relèvent de la spec 002 ; leurs valeurs mesurées sont dans
+l'étude.
 
 1. **Comparaison floue, des deux côtés normalisée** par `libs/shared/text-match`. Le seuil est de
    **0,85** sur le titre, et sur l'auteur quand un auteur est lu. Un auteur lu qui ne correspond
@@ -152,19 +153,9 @@ vit dans `libs/bibliography/infrastructure` (ADR 0006), fixé avec le code.
 
 ### Portée des mesures
 
-Les chiffres qui suivent sont des **ordres de grandeur**, pas des garanties :
-
-- la stratégie a été réglée en regardant les échecs des 552 livres qui servent à l'évaluer, sans
-  jeu de validation séparé : les taux sont optimistes ;
-- ils partent d'une lecture parfaite, le bruit de lecture n'étant que simulé ;
-- les témoins négatifs sont grossiers (titres recollés, auteurs permutés), loin d'une
-  hallucination plausible ;
-- les petits échantillons (rayons BD et cuisine, titres étrangers) ne donnent qu'une tendance.
-
-Le contrôle manuel de 50 confirmés ne trouve aucune œuvre étrangère au livre lu, et au plus un
-mauvais tome. Cela borne les confirmés à tort à quelques pourcents, sans prouver SC-002.
-
-**La décision tient malgré ces limites.** Les écarts qui la fondent (BnF contre OpenLibrary,
+Les chiffres qui suivent sont des **ordres de grandeur**, optimistes : mesurés sur une lecture
+parfaite, avec une stratégie réglée sur les livres qui l'évaluent (limites détaillées dans
+l'étude). La décision tient malgré tout, car les écarts qui la fondent (BnF contre OpenLibrary,
 requête unique contre cascade) sont trop grands pour qu'un réglage les inverse. Les chiffres, eux,
 ne seront établis que par le bench sur sorties VLM réelles : c'est la première condition de
 bascule.
@@ -232,7 +223,7 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
   - la cascade et le rapprochement partiel rejoignent la règle d'appariement, avec leurs réglages
     mesurés dans l'issue #20.
 - **TDD** : les tests d'appariement s'écrivent sur des **réponses BnF enregistrées**, avant le code.
-  L'étude en donne le premier jeu, contrôle manuel compris :
+  L'étude en donne le premier jeu :
   - série et tome : « Percy Jackson - La Mer des Monstres » ;
   - un nombre qui distingue deux œuvres : « 17 lunes » face à « 18 lunes » ;
   - une mention de tome lue : « Éternels (tome 3) » ;
@@ -244,9 +235,8 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
   `curation` ne peut pas détecter un doublon par égalité d'ARK. Elle compare par la règle d'œuvre
   du domaine, ou par ISBN pour une édition exacte.
 - **La notice représentative d'une œuvre est un choix du domaine**, pas un accident d'ordre de
-  réponse. Le contrôle manuel trouve une adaptation en BD retenue pour un roman dans 2 à 3
-  confirmés sur 50 : l'enrichissement décrirait alors le mauvais livre. La règle de choix relève de
-  la spec 002.
+  réponse : une adaptation en BD retenue pour un roman fait décrire le mauvais livre à
+  l'enrichissement. La règle de choix relève de la spec 002.
 - **Attribution** : la Licence Ouverte impose de citer la source. L'interface mentionne la BnF
   partout où une notice s'affiche, et la date de consultation est stockée.
 - **Le produit n'appelle la BnF qu'à la réconciliation.** La notice est stockée ; l'historique et
@@ -261,10 +251,10 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
   cas, une notice correspond à la lecture, ce qui est la preuve attendue du filet ; l'ambiguïté
   porte sur *quelle* œuvre, pas sur son existence. Son plafond mesuré côté référentiel est de
   **92,2 %**.
-- **« Ambigu » est surtout de la prudence.** Dans le contrôle manuel, le bon livre est parmi les
-  candidats 27 fois sur 30, et l'ambiguïté n'est réelle que 8 fois. Le coût est un choix de plus
-  pour l'utilisateur, pas un risque pour le filet. Le premier gisement est la confusion entre une
-  série et son tome, à traiter dans la spec 002.
+- **« Ambigu » est surtout de la prudence** : le bon livre est presque toujours parmi les
+  candidats. Le coût est un choix de plus pour l'utilisateur, pas un risque pour le filet. Le
+  premier gisement de confirmés est la confusion entre une série et son tome, à traiter dans la
+  spec 002.
 - **Les rayons BD et cuisine restent faibles** : 64 % et 40 % de confirmés, sur 44 et 20 livres.
   Le catalogue y a des trous, et les tranches portent des séries ou pas d'auteur. C'est accepté
   pour un usage centré sur le poche.
