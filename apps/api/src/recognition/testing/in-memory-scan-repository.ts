@@ -1,11 +1,13 @@
 import {
   DailyScanQuotaExceeded,
+  DailyUploadQuotaExceeded,
   ScanAttemptId,
   ShelfScanAlreadyProcessed,
   ShelfScanInProgress,
   ShelfScanNotFound,
   type DetectedBook,
   type NewShelfScan,
+  type OwnerId,
   type ScanAttemptPolicy,
   type ScanAttemptRefusal,
   type ShelfScanId,
@@ -14,6 +16,7 @@ import {
   type ShelfScanRecord,
   type ShelfScanRepositoryPort,
   type ShelfScanTransitionFailure,
+  type UploadQuotaPolicy,
 } from '@pick-a-book/recognition-domain';
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
@@ -33,6 +36,21 @@ export interface Attempt {
 export class InMemoryScanRepository implements ShelfScanRepositoryPort {
   readonly records = new Map<string, ShelfScanRecord>();
   attempts: readonly Attempt[] = [];
+
+  async checkUploadQuota(
+    ownerId: OwnerId,
+    policy: UploadQuotaPolicy,
+  ): Promise<Result<void, DailyUploadQuotaExceeded>> {
+    const today = dayOf(new Date(), policy.timeZone);
+    const uploadsToday = [...this.records.values()].filter(
+      (record) =>
+        record.ownerId.equals(ownerId) && dayOf(record.createdAt, policy.timeZone) === today,
+    );
+
+    return uploadsToday.length >= policy.dailyLimit
+      ? err(new DailyUploadQuotaExceeded(policy.dailyLimit))
+      : ok();
+  }
 
   async createPending(scan: NewShelfScan): Promise<void> {
     this.records.set(scan.id.value, {

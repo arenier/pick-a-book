@@ -75,6 +75,29 @@ const failingScanner: ShelfScannerPort = {
 };
 
 // Domain errors of the scan, as HTTP says them (contracts/scan-api.md §2).
+// FR-017: the cap is decided before anything is written, so a refused upload leaves nothing in
+// the bucket and no record (research.md §13).
+describe('POST /shelf-photos, over the daily cap on uploads', () => {
+  const { upload, snapshot } = aRunningApi(undefined, undefined, {
+    dailyLimit: 1,
+    timeZone: 'Europe/Paris',
+  });
+
+  it('answers 429 DAILY_UPLOAD_QUOTA_EXCEEDED, and stores nothing', async () => {
+    await upload(aJpeg());
+    const before = snapshot();
+
+    const response = await upload(aJpeg(), 'IMG_2.jpg', aJpeg());
+
+    expect(response.status).toBe(429);
+    await expect(response.json()).resolves.toMatchObject({
+      statusCode: 429,
+      code: 'DAILY_UPLOAD_QUOTA_EXCEEDED',
+    });
+    expect(snapshot()).toStrictEqual(before);
+  });
+});
+
 describe('POST /shelf-photos/:id/scan, for a photo it cannot scan', () => {
   const { upload, scan } = aRunningApi();
 

@@ -4,6 +4,7 @@ import {
 } from '@pick-a-book/recognition-application';
 import {
   DailyScanQuotaExceeded,
+  DailyUploadQuotaExceeded,
   InvalidShelfPhoto,
   ShelfPhotoThumbnailNotFound,
   ShelfScanAlreadyProcessed,
@@ -82,6 +83,19 @@ describe('toHttpException, for the refusals of an analysis', () => {
       message: 'Daily scan quota exceeded: 50 analyses a day at most',
       error: 'Too Many Requests',
       code: 'DAILY_SCAN_QUOTA_EXCEEDED',
+    });
+  });
+
+  // The photo is not kept: the front tells the user to send it again tomorrow (FR-017).
+  it('says DailyUploadQuotaExceeded as 429 DAILY_UPLOAD_QUOTA_EXCEEDED', () => {
+    const http = toHttpException(new DailyUploadQuotaExceeded(100));
+
+    expect(http.getStatus()).toBe(429);
+    expect(http.getResponse()).toStrictEqual({
+      statusCode: 429,
+      message: 'Daily upload quota exceeded: 100 uploads a day at most',
+      error: 'Too Many Requests',
+      code: 'DAILY_UPLOAD_QUOTA_EXCEEDED',
     });
   });
 });

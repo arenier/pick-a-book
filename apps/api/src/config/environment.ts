@@ -2,6 +2,7 @@ import { OwnerId } from '@pick-a-book/recognition-domain';
 import { unwrap } from '@pick-a-book/shared-result';
 
 import { readDailyScanLimit } from './daily-scan-limit';
+import { readDailyUploadLimit } from './daily-upload-limit';
 
 /**
  * Configuration validation at startup.
@@ -44,6 +45,7 @@ export interface Environment {
    * is open (specs/002-upload-history, FR-015).
    */
   readonly dailyScanLimit: number;
+  readonly dailyUploadLimit: number;
   /** Origin of the frontend, the one CORS lets through (ADR 0004: two origins). */
   readonly webOrigin: string;
   /**
@@ -138,6 +140,7 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
 
   const photoStorage = readPhotoStorage(source, problems);
   const dailyScanLimit = readDailyScanLimit(optional(source, 'DAILY_SCAN_LIMIT'), problems);
+  const dailyUploadLimit = readDailyUploadLimit(optional(source, 'DAILY_UPLOAD_LIMIT'), problems);
   const webOrigin = readWebOrigin(source, nodeEnv, problems);
 
   if (problems.length > 0) {
@@ -151,6 +154,7 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
     shelfScanner,
     ...photoStorage,
     dailyScanLimit,
+    dailyUploadLimit,
     webOrigin,
     googleCloudProject: optional(source, 'GOOGLE_CLOUD_PROJECT'),
   };

@@ -102,7 +102,10 @@ function providersOfUseCases(environment: Environment): Provider[] {
     {
       provide: StoreShelfPhotoUseCase,
       useFactory: (storage: ShelfPhotoStoragePort, repository: ShelfScanRepositoryPort) =>
-        new StoreShelfPhotoUseCase(environment.ownerId, storage, repository),
+        new StoreShelfPhotoUseCase(environment.ownerId, storage, repository, {
+          dailyLimit: environment.dailyUploadLimit,
+          timeZone: 'Europe/Paris',
+        }),
       inject: [SHELF_PHOTO_STORAGE_PORT, SHELF_SCAN_REPOSITORY_PORT],
     },
     {
