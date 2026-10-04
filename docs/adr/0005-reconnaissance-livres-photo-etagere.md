@@ -1,6 +1,6 @@
 # ADR 0005 — Source de reconnaissance des livres sur photo d'étagère
 
-Statut : proposé · Date : 2026-07-29 · Phase 1 · Couplé à l'ADR d'enrichissement (à écrire)
+Statut : proposé · Date : 2026-07-29 · Phase 1 · Couplé à l'ADR [0014](0014-referentiel-bibliographique-bnf.md) (référentiel bibliographique)
 
 ## Contexte
 

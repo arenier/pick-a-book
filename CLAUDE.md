@@ -26,7 +26,13 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
   [0007](docs/adr/0007-vite-et-vitest-outillage-unique.md)
 - **Lint et format** — **oxlint** (strict) + **oxfmt**, écosystème Oxc. ESLint conservé pour les
   seules frontières de modules Nx · [0008](docs/adr/0008-lint-et-format-oxlint-oxfmt.md)
-- **Enrichissement bibliographique** — ADR à écrire, contraint par 0005
+- **Référentiel bibliographique** — catalogue général de la **BnF** (API SRU), seul juge de la
+  réconciliation (appel critique) ; **Google Books** en complément d'enrichissement (appel toléré,
+  ne remplit que les champs vides) ; éditions françaises, traductions comprises ; appariement en
+  cascade piloté par `application`, verdict et regroupement par œuvre par une règle du domaine,
+  seuils 0,85 ; score de réconciliation distinct de la confiance du VLM ; résultats des appels
+  stockés ·
+  [0014](docs/adr/0014-referentiel-bibliographique-bnf.md)
 - **Internationalisation** de `apps/web` — **i18next** + react-i18next, français (source) et anglais,
   langue du navigateur avec repli sur le français, un catalogue par slice. L'API ne renvoie jamais
   de texte destiné à l'utilisateur · [0011](docs/adr/0011-internationalisation-de-l-interface.md)
@@ -71,6 +77,7 @@ que le fichier ne soit chargé.
 | [`domain-modeling.md`](.claude/rules/domain-modeling.md) | `libs/*/{domain,application}` | Value object à constructeur privé et `of()` → `Result` ; port = interface + jeton chaîne ; use case `execute()` qui rend des DTO |
 | [`adapters.md`](.claude/rules/adapters.md) | `libs/*/infrastructure`, `apps/api` | Réponse externe validée par `zod`, tout ou rien ; transport injecté ; fixtures à provenance ; migrations générées ; config validée au démarrage |
 | [`module-boundaries.md`](.claude/rules/module-boundaries.md) | `apps/`, `libs/`, `tools/` | `domain` → rien, `application` → `domain` ; un contexte n'importe jamais un autre ; trois tags Nx sur chaque projet |
+| [`bibliography.md`](.claude/rules/bibliography.md) | `libs/bibliography` | La **BnF seule tranche** (appel critique, échec → non vérifié) ; compléments tolérés, après le verdict, champs vides seulement ; cascade dans `application`, verdict dans `domain` ; score de réconciliation jamais fusionné avec la confiance du VLM ; résultat de chaque appel stocké |
 | [`web-interface.md`](.claude/rules/web-interface.md) | `apps/web`, `libs/shared/{i18n,ui}` | Aucun texte en dur : catalogue i18next fr + en ; composants dans `libs/shared/ui` ; classes Tailwind sur les tokens |
 | [`infra.md`](.claude/rules/infra.md) | `infra/` | Un module par ressource, câblés par l'env seul ; tests `plan` hermétiques d'abord ; secrets vides ; jamais d'`apply` sans `plan` relu |
 | [`toolchain.md`](.claude/rules/toolchain.md) | configs, `docker/`, CI | Versions dans `mise.toml` seul, à l'exact ; Vite/Vitest, SWC pour l'API ; oxlint type-aware, ESLint pour les frontières |

@@ -28,6 +28,11 @@ Un couple est « correct » si **auteur ET titre** correspondent, à la faute d'
 (`shared-text-match`, seuil 0.85). Une tranche illisible non détectée est un **faux négatif**,
 pas une erreur ; une photo sans livre lisible se lit en **tableau vide**.
 
+`shelf-fixture-11.jpg` est un **témoin négatif** : une étagère photographiée de trop loin, sans
+aucune tranche lisible. Toute détection y est une hallucination. Un VLM qui y « lit » des livres
+en invente de vrais, que la réconciliation confirme puisqu'ils existent (issue #20) : c'est la
+photo qui écarte un tel fournisseur.
+
 ## Pré-requis
 
 1. **Photos de référence** dans `fixtures/reference-photos/` (gitignoré). Source de vérité : le
