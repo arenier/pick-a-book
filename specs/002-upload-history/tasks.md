@@ -519,20 +519,20 @@ une seule action (SC-005), dans la limite du plafond quotidien (SC-006).
 tâche de code suit son test, qui échoue d'abord. Né de la revue de la PR #82 ; remplace la fiche
 `docs/tech-debt/plafond-envois-en-attente.md`.
 
-- [ ] T080 [P] Tests du domaine (doivent échouer) : `DailyUploadQuotaExceeded` (`kind: 'daily-upload-quota-exceeded'`, porte `limit`, message), et le type de `checkUploadQuota` dans `shelf-scan-repository.port.spec.ts` (`Promise<Result<void, DailyUploadQuotaExceeded>>`).
-- [ ] T081 Créer `libs/recognition/domain/src/lib/daily-upload-quota-exceeded.error.ts`, `UploadQuotaPolicy` et `checkUploadQuota` sur le port ; les exporter. Fait passer T080. Dépend de T080.
-- [ ] T082 [P] Tests de l'application (doivent échouer) dans `store-shelf-photo.use-case.spec.ts` : au plafond, `execute` rend `DailyUploadQuotaExceeded`, n'écrit **ni photo ni vignette** dans le stockage et ne crée aucune ligne ; sous le plafond, rien ne change ; le plafond est vérifié **avant** l'écriture. Étendre les doubles (`in-memory-shelf-scan-repository.ts`, jumeau d'`apps/api`).
-- [ ] T083 `StoreShelfPhotoUseCase` reçoit `UploadQuotaPolicy` et appelle `checkUploadQuota` avant d'écrire. Fait passer T082. Dépend de T081 et T082.
-- [ ] T084 [P] Tests de l'adapter contre Postgres (doivent échouer), `drizzle-shelf-scan-repository.upload-quota.adapter.spec.ts` : compte les `uploads` de type `shelf_photo` du propriétaire depuis minuit à Paris (jamais les vignettes, jamais un autre propriétaire, jamais ceux d'hier ; 00:30 à Paris compte), refuse à la limite.
-- [ ] T085 Implémenter `checkUploadQuota` dans `drizzle-shelf-scan-repository.adapter.ts` (comptage, sans verrou, research.md §13). Fait passer T084. Dépend de T081 et T084.
-- [ ] T086 [P] Tests de l'API (doivent échouer) : `recognition-http-error.spec.ts` (`daily-upload-quota-exceeded` → 429 `DAILY_UPLOAD_QUOTA_EXCEEDED`), `shelf-photos.http.spec.ts` (au plafond : 429 avec ce code, rien stocké), `environment.spec.ts` (`DAILY_UPLOAD_LIMIT` : défaut 100, entier ≥ 1, valeur fausse listée au démarrage).
-- [ ] T087 Traduction HTTP (le `switch` exhaustif), `apps/api/src/config/daily-upload-limit.ts` et `environment.ts`, câblage du module, `.env.example`. Fait passer T086. Dépend de T083, T085 et T086.
-- [ ] T088 [P] Tests Terraform (doivent échouer) dans `infra/envs/prod/tests/prod.tftest.hcl`, sur le modèle de `daily_scan_limit` : défaut 100, valeur passée à l'API, refus de 0 et d'une valeur négative.
-- [ ] T089 Variable `daily_upload_limit` dans `infra/envs/prod/variables.tf` et `local.api_env.DAILY_UPLOAD_LIMIT` dans `main.tf`. Fait passer T088. Dépend de T088.
-- [ ] T090 [P] Tests du front (doivent échouer) : `scan-shelf-photo.codes.spec.ts` (un 429 `DAILY_UPLOAD_QUOTA_EXCEEDED` sur l'envoi rend l'échec `dailyUploadQuota`) et `failure-message.spec.tsx` (« Limite d'envois du jour atteinte. Votre photo n'a pas été conservée : réessayez demain. »).
-- [ ] T091 Ajouter `dailyUploadQuota` aux échecs de `photo-upload` (type, `scan-shelf-photo.ts`, table de `failure-message.tsx`, clés `failure.dailyUploadQuota` dans `fr.json` et `en.json`). Fait passer T090. Dépend de T090.
-- [ ] T092 Mettre à jour `CLAUDE.md` (paragraphe des plafonds : `DAILY_UPLOAD_LIMIT`), supprimer `docs/tech-debt/plafond-envois-en-attente.md` et sa ligne dans `docs/tech-debt/README.md`, dérouler le scénario 5 bis du quickstart.
-- [ ] T093 `yarn check` (hors `db-backup`, dont les tests exigent `pg_dump` ≥ 18), `terraform fmt/validate/test`, tflint, checkov.
+- [X] T080 [P] Tests du domaine (doivent échouer) : `DailyUploadQuotaExceeded` (`kind: 'daily-upload-quota-exceeded'`, porte `limit`, message), et le type de `checkUploadQuota` dans `shelf-scan-repository.port.spec.ts` (`Promise<Result<void, DailyUploadQuotaExceeded>>`).
+- [X] T081 Créer `libs/recognition/domain/src/lib/daily-upload-quota-exceeded.error.ts`, `UploadQuotaPolicy` et `checkUploadQuota` sur le port ; les exporter. Fait passer T080. Dépend de T080.
+- [X] T082 [P] Tests de l'application (doivent échouer) dans `store-shelf-photo.use-case.spec.ts` : au plafond, `execute` rend `DailyUploadQuotaExceeded`, n'écrit **ni photo ni vignette** dans le stockage et ne crée aucune ligne ; sous le plafond, rien ne change ; le plafond est vérifié **avant** l'écriture. Étendre les doubles (`in-memory-shelf-scan-repository.ts`, jumeau d'`apps/api`).
+- [X] T083 `StoreShelfPhotoUseCase` reçoit `UploadQuotaPolicy` et appelle `checkUploadQuota` avant d'écrire. Fait passer T082. Dépend de T081 et T082.
+- [X] T084 [P] Tests de l'adapter contre Postgres (doivent échouer), `drizzle-shelf-scan-repository.upload-quota.adapter.spec.ts` : compte les `uploads` de type `shelf_photo` du propriétaire depuis minuit à Paris (jamais les vignettes, jamais un autre propriétaire, jamais ceux d'hier ; 00:30 à Paris compte), refuse à la limite.
+- [X] T085 Implémenter `checkUploadQuota` dans `drizzle-shelf-scan-repository.adapter.ts` (comptage, sans verrou, research.md §13). Fait passer T084. Dépend de T081 et T084.
+- [X] T086 [P] Tests de l'API (doivent échouer) : `recognition-http-error.spec.ts` (`daily-upload-quota-exceeded` → 429 `DAILY_UPLOAD_QUOTA_EXCEEDED`), `shelf-photos.http.spec.ts` (au plafond : 429 avec ce code, rien stocké), `environment.spec.ts` (`DAILY_UPLOAD_LIMIT` : défaut 100, entier ≥ 1, valeur fausse listée au démarrage).
+- [X] T087 Traduction HTTP (le `switch` exhaustif), `apps/api/src/config/daily-upload-limit.ts` et `environment.ts`, câblage du module, `.env.example`. Fait passer T086. Dépend de T083, T085 et T086.
+- [X] T088 [P] Tests Terraform (doivent échouer) dans `infra/envs/prod/tests/prod.tftest.hcl`, sur le modèle de `daily_scan_limit` : défaut 100, valeur passée à l'API, refus de 0 et d'une valeur négative.
+- [X] T089 Variable `daily_upload_limit` dans `infra/envs/prod/variables.tf` et `local.api_env.DAILY_UPLOAD_LIMIT` dans `main.tf`. Fait passer T088. Dépend de T088.
+- [X] T090 [P] Tests du front (doivent échouer) : `scan-shelf-photo.codes.spec.ts` (un 429 `DAILY_UPLOAD_QUOTA_EXCEEDED` sur l'envoi rend l'échec `dailyUploadQuota`) et `failure-message.spec.tsx` (« Limite d'envois du jour atteinte. Votre photo n'a pas été conservée : réessayez demain. »).
+- [X] T091 Ajouter `dailyUploadQuota` aux échecs de `photo-upload` (type, `scan-shelf-photo.ts`, table de `failure-message.tsx`, clés `failure.dailyUploadQuota` dans `fr.json` et `en.json`). Fait passer T090. Dépend de T090.
+- [X] T092 Mettre à jour `CLAUDE.md` (paragraphe des plafonds : `DAILY_UPLOAD_LIMIT`), supprimer `docs/tech-debt/plafond-envois-en-attente.md` et sa ligne dans `docs/tech-debt/README.md`, dérouler le scénario 5 bis du quickstart.
+- [X] T093 `yarn check` (hors `db-backup`, dont les tests exigent `pg_dump` ≥ 18), `terraform fmt/validate/test`, tflint, checkov.
 
 ---
 

@@ -113,10 +113,12 @@ les migrations au démarrage, et les specs des adapters de `recognition-infrastr
 plus** (la majeure de la prod) : sans eux, `yarn check` échoue sur ce projet.
 
 L'API **plafonne** ce qui coûte (spec 002) : au plus `DAILY_SCAN_LIMIT` analyses par jour (50 par
-défaut, jour de Paris, comptées par propriétaire), et par source 300 requêtes par minute, 10 pour
-celles qui écrivent (`@nestjs/throttler`, en mémoire par instance). `DAILY_SCAN_LIMIT` se pose aussi
-dans `infra/envs/prod` (`daily_scan_limit`), avec la même valeur par défaut et la même validation :
-les deux se maintiennent à la main.
+défaut, jour de Paris, comptées par propriétaire), `DAILY_UPLOAD_LIMIT` envois par jour (100 par
+défaut, vérifiés **avant** d'écrire dans le bucket : un envoi refusé ne laisse rien), et par source
+300 requêtes par minute, 10 pour celles qui écrivent (`@nestjs/throttler`, en mémoire par
+instance). Les deux plafonds du jour se posent aussi dans `infra/envs/prod` (`daily_scan_limit`,
+`daily_upload_limit`), avec les mêmes valeurs par défaut et la même validation : ils se maintiennent
+à la main.
 
 Les **logs** de l'API sont structurés (`apps/api/src/logging/`, **pino** via `nestjs-pino`) : une ligne
 JSON par log, avec `severity` et `message` que Cloud Logging lit, la trace de `X-Cloud-Trace-Context`
