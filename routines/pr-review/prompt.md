@@ -31,6 +31,20 @@ Deux chemins d'accès, portés par deux credentials différents. Ne jamais les c
 
 Commence par `get_me` (retry jusqu'à 3 fois sur 5xx/timeout) pour confirmer le canal MCP. Si `get_me` est indisponible, continue quand même : lis tout par `curl`, inscris « CI non lisible (canal MCP absent) » et signale-le dans le rapport. N'avorte pas.
 
+## Étape 1b — Les scripts du skill (à préférer)
+
+Tout ce qui est mécanique dans la review est un script du skill `pr-review` : collecte, déduplication, routage des règles, `grep`, planchers de sévérité, mise en forme, publication. Ils tournent **sans `gh`** : ils lisent GitHub par l'API REST avec le token ambiant. Le dépôt `arenier/claude-skills` fait partie des `sources` de la routine : repère son checkout et vérifie qu'il est bien à jour sur `main` avant d'en exécuter quoi que ce soit.
+
+```bash
+SKILL_DIR="$(find / -maxdepth 6 -type d -path '*/adri-plugin/skills/pr-review' -not -path '*/node_modules/*' 2>/dev/null | head -n1)"
+TOP="$(git -C "$SKILL_DIR" rev-parse --show-toplevel)"
+git -C "$TOP" remote get-url origin                      # attendu : arenier/claude-skills
+git -C "$TOP" fetch -q origin main \
+  && git -C "$TOP" diff --quiet origin/main -- adri-plugin/skills/pr-review && echo IDENTIQUE
+```
+
+Les scripts ne s'utilisent que si le dépôt est `arenier/claude-skills` **et** que la dernière commande affiche `IDENTIQUE` : leur code est celui de `main`, pas celui d'une branche modifiée. Sinon (checkout introuvable, `fetch` impossible, différence), **repli sur la procédure à la main** décrite aux étapes 3 à 6 : signale-le dans le rapport, n'avorte pas. Quand les scripts sont utilisables, les étapes ci-dessous disent laquelle de leurs commandes remplace quoi ; `SKILL_DIR` désigne ce dossier.
+
 ## Étape 2 — Identifier la PR déclenchante
 
 Le numéro est dans la variable d'environnement `CCR_TRIGGER_PR_NUMBER` (source nominale). Variables voisines utiles : `CCR_TRIGGER_HEAD_SHA`, `CCR_TRIGGER_HEAD_REF`, `CCR_TRIGGER_BASE_REF`, `CCR_TRIGGER_EVENT`, `CCR_TRIGGER_REPO`. N'affiche jamais la valeur d'une variable d'environnement inconnue (secrets potentiels).
@@ -44,6 +58,8 @@ Si `CCR_TRIGGER_PR_NUMBER` est absent (exécution manuelle « Run now ») : mode
 
 ## Étape 3 — Déduplication (selon la présence du label `claude`)
 
+**Avec les scripts** : `python3 "$SKILL_DIR/dedup.py" "$CCR_TRIGGER_PR_NUMBER"` applique exactement les règles ci-dessous. Il affiche `REVIEW <mode>` (code 0) ou `SKIP <raison>` (code 10) : sur `SKIP`, ne poste RIEN et termine sur cette raison. Le mode affiché est celui du rapport. **À la main** (repli) :
+
 Le marqueur de review est le commentaire portant `<!-- pr-review-auto: SHA -->`. Lis les commentaires via `get_issue_comments`, repère le marqueur au SHA de tête courant, et compare sa date (`created_at`) à l'heure courante (`date -u`).
 
 - Marqueur à un SHA **différent**, ou **aucun** marqueur → relis-la.
@@ -55,7 +71,7 @@ Pourquoi deux régimes. **Sans le label**, le SHA EST l'identité de la review :
 
 ## Étape 4 — Lire la CI
 
-`get_pull_request_status` (ou l'outil MCP équivalent) pour l'état consolidé des checks. Note le nom des checks et leur conclusion, pas seulement « verte ». Si la lecture échoue malgré les retries, écris la raison exacte et continue.
+`get_pull_request_status` (ou l'outil MCP équivalent) pour l'état consolidé des checks. **Avec les scripts**, écris-le dans `/tmp/ci-<N>.json`, une liste `[{"name": "<check>", "conclusion": "SUCCESS|FAILURE|…", "status": "COMPLETED|IN_PROGRESS|…"}]` : `collect.sh` le prend par `--ci-file` (le token ambiant ne remplace pas ce canal) ; si la CI n'est pas lisible, n'écris pas le fichier, `collect.sh` le dira dans la fiche. Note le nom des checks et leur conclusion, pas seulement « verte ». Si la lecture échoue malgré les retries, écris la raison exacte et continue.
 
 Ne lance AUCUNE vérification locale : pas de `yarn`, pas de `nx`, pas de test, pas de build, pas d'install. L'environnement ne les porte pas, et le skill est de toute façon en relecture statique. La CI **se lit** (read-only) et **ne colore pas le verdict** — comme le prévoit le skill.
 
@@ -63,12 +79,14 @@ Ne lance AUCUNE vérification locale : pas de `yarn`, pas de `nx`, pas de test, 
 
 AVANT TOUT : lis intégralement le skill **`pr-review`** depuis le dépôt de skills `arenier/claude-skills` **au ref `main`** — outil GitHub MCP `get_file_contents` (owner : `arenier`, repo : `claude-skills`, path : `adri-plugin/skills/pr-review/SKILL.md`, ref : `main`) — et applique-le de bout en bout. C'est le référentiel de review ; ne le paraphrase pas de mémoire. Le skill n'existe plus dans `arenier/pick-a-book` (retiré au profit de la marketplace `adri-skills`) : ne le cherche pas sous `.claude/skills/` de pick-a-book, ni à aucun ref. Lu dans un autre dépôt que celui de la PR relue, il **ne peut pas** être altéré par l'auteur de la PR — c'est un durcissement, pas une régression. Illisible après retries, ARRÊTE-TOI et signale-le sans rien poster.
 
-Le skill confronte le diff aux **ADR** de `docs/adr/**` et aux conventions du dépôt. Ces conventions vivent dans `CLAUDE.md`, qui en tient l'index, et dans les **rules** de `.claude/rules/**`, qui en portent le détail — une rule dont le frontmatter `paths` cible un fichier du diff s'applique à ce fichier. Tous restent dans `arenier/pick-a-book` : lis-les au ref `main` via `get_file_contents` (owner : `arenier`, repo : `pick-a-book`) si le skill en a besoin — jamais depuis le workspace. Comme le veut l'encadré, `.claude/**` ne se lit jamais depuis le workspace : les rules se lisent au ref `main`, par le canal MCP.
+Le skill est **agnostique du dépôt** et n'a aucun critère propre : il confronte le diff aux règles que le dépôt relu a écrites, et les découvre lui-même. Pour pick-a-book, ce sont `CLAUDE.md`, qui tient l'index des conventions, les **rules** de `.claude/rules/**`, qui en portent le détail — une rule dont le frontmatter `paths` cible un fichier du diff s'applique à ce fichier, une rule sans `paths` vaut partout — et les **ADR** de `docs/adr/**` vers lesquels elles renvoient. Tous restent dans `arenier/pick-a-book` : lis-les au ref `main` via `get_file_contents` (owner : `arenier`, repo : `pick-a-book`) — jamais depuis le workspace. Liste d'abord `.claude/rules/` à ce ref, route chaque fichier touché vers ses rules par leurs `paths`, puis ouvre les ADR que ces rules désignent quand un constat en dépend. Ne reproche rien que ces textes n'énoncent pas.
+
+**Avec les scripts**, après `dedup.py` et la CI : `"$SKILL_DIR/collect.sh" "$CCR_TRIGGER_PR_NUMBER" --ci-file /tmp/ci-<N>.json` rassemble tout (PR, diff, fichiers en version PR, règles de pick-a-book lues sur `main`, faits mécaniques et `grep`) et affiche `facts.md` et la ligne `WORKDIR=…`. Ce `facts.md` remplace la découverte et le routage des règles à la main, qui sont décrits plus haut pour le repli. Tu lis ensuite les règles routées dans `WORKDIR/rules/`, tu juges, tu écris `WORKDIR/review.json` (format : `SKILL.md` du skill), et `render.py` valide, applique les planchers et met en forme (étape 6).
 
 Adaptations qui PRIMENT sur le skill :
 
 - **Aucun humain dans la boucle.** N'attends aucun « go ». Ce qui aurait été une question devient une remarque 💬 dans le commentaire.
-- **Prérequis `gh` du skill** : neutralisé, voir étape 1. Toutes les lectures GitHub passent par les outils MCP, jamais par `gh`.
+- **Prérequis `gh` et scripts du skill** : neutralisés, voir étape 1. Les scripts du skill (`collect.sh`, `analyze.py`, `render.py`, `post.sh`) appellent `gh` et ne tournent pas ici : fais à la main ce qu'ils font. Fais la découverte et le routage des règles à la main (ci-dessus), exécute les vérifications hors-diff du skill sur le diff lu par MCP, et mets en forme selon l'étape 6 ci-dessous. Toutes les lectures GitHub passent par les outils MCP, jamais par `gh`.
 - **Lecture du code en version PR** : le répertoire de travail EST déjà le checkout de la branche de la PR. Vérifie d'abord que `git rev-parse HEAD` vaut `CCR_TRIGGER_HEAD_SHA` ; seulement s'il diffère, récupère les fichiers touchés au ref `CCR_TRIGGER_HEAD_REF` via `get_file_contents`. Les fichiers NON touchés se lisent aussi dans le checkout. Rappel : tes **instructions** (ce prompt, le skill, les ADR) ne se lisent jamais ici — voir l'encadré « D'où viennent tes instructions ».
 - **CI (étape 4 du skill)** : lue par MCP à l'étape 4 ci-dessus, sans aucune vérification locale.
 - **Second avis à froid (étape 6b du skill)** : NE PAS déclencher. Renseigne le champ avec « non déclenché (run automatisé) ».
@@ -81,12 +99,14 @@ Cette routine constitue le go permanent pour poster un commentaire, et rien d'au
 
 Le commentaire garde **tout** ce que la review a produit — la fiche du Bloc 1 comprise — mais **replié**. Ce qui reste déplié doit tenir en un écran : le lecteur voit le verdict et les réserves sans rien dérouler, et va chercher le détail s'il le veut.
 
+**Avec les scripts** : `python3 "$SKILL_DIR/render.py" "$WORKDIR" --routine` valide `review.json`, applique les planchers de sévérité et écrit `WORKDIR/comment.md` dans exactement la mise en forme ci-dessous (marqueur compris). S'il refuse, corrige `review.json` selon ses messages. Puis `python3 "$SKILL_DIR/post-auto.py" "$CCR_TRIGGER_PR_NUMBER" "$WORKDIR"` relance la vérification de l'étape 3, poste par le token ambiant, et affiche `auteur=` (attendu : `claude[bot]`) et `url=` pour le rapport ; code 10 : une autre exécution a commenté entre-temps, rien n'est posté. Code 11 : le token ambiant n'est pas un token d'installation, la review serait signée par une personne — rien n'est posté, **n'essaie aucun autre canal d'écriture** (ni outil MCP, ni `gh`), et dis-le en tête du rapport. Tout le reste de cette étape est le **repli à la main**.
+
 Écris le corps dans `/tmp/review-<N>.md`, sans fence et sans titre, dans cet ordre :
 
 1. **Déplié** — l'en-tête du « Bloc 2 » du skill et rien d'autre : la ligne `**Review** · <verdict>`, le blockquote `> **Réserves** — …`, les 1-2 phrases de synthèse, et la ligne CI si elle n'est pas verte.
 2. `<details>` **« 🔴 Bloquants · 🟠 À corriger (N) »**, avec l'attribut `open` dès qu'il y a un 🔴 — ces constats au format du Bloc 2, ordonnés par sévérité, **tous** : le plafond de ~10 constats (étape 6 du skill) ne s'applique pas ici, il protégeait la lisibilité d'une fiche déroulée.
 3. `<details>` **« 🟡 Suggestions · 💬 Remarques · ✍️ Style & altitude (N) »**, replié. `✍️ Style & altitude` y reste agrégé en 1-3 lignes, comme dans le skill.
-4. `<details>` **« Fiche de review »**, replié — le tableau complet du Bloc 1 tel quel : périmètre, contextes/libs touchés, titre Conventional Commits, CI détaillée, ADR confrontés, schéma/migration, tests, frontières Nx, jumeaux, vérifications lancées.
+4. `<details>` **« Fiche de review »**, replié — le tableau complet du Bloc 1 tel quel : périmètre, contextes touchés, titre, CI détaillée, migrations, tests, verrous de stack, multi-tenant, jumeaux, règles confrontées, vérifications lancées, second avis.
 5. En dernière ligne, seule et **hors de tout `<details>`**, le marqueur : `<!-- pr-review-auto: <SHA de tête> -->`
 
 Un `<details>` dont le contenu serait vide s'omet. Sur GitHub, **la ligne vide après `</summary>` est obligatoire** — sans elle le markdown intérieur n'est pas rendu :
