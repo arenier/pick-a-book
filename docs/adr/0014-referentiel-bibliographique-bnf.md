@@ -1,4 +1,4 @@
-# ADR 0014 — Référentiel bibliographique : catalogue général de la BnF, appariement en cascade
+# ADR 0014 — Référentiel bibliographique : catalogue général de la BnF, appariement en cascade, Google Books en complément
 
 Statut : proposé · Date : 2026-09-30 · Couplé aux ADR [0005](0005-reconnaissance-livres-photo-etagere.md) (réconciliation comme filet anti-hallucination), [0010](0010-decoupage-bounded-contexts.md) (contexte `bibliography`) et [0003](0003-orchestration-sans-event-bus.md) (traitement synchrone)
 
@@ -61,22 +61,25 @@ Légende : 🔴 fort · 🟠 moyen · 🟢 faible · ⚪ à clarifier
 
 ## Étude des candidats
 
-Quatre candidats ont été examinés. Google Books (clé, quota partagé) et ISBNdb (payant) sont écartés
-sur le coût. **BnF** (API SRU du catalogue général) et **OpenLibrary** ont été mesurés sur les 552
-livres de la vérité terrain du bench (#10) :
+Quatre candidats ont été examinés. ISBNdb est écarté sur son coût. **BnF** (API SRU du catalogue
+général) et **OpenLibrary** ont été mesurés comme référentiels sur les 552 livres de la vérité
+terrain du bench (#10) :
 - sur une lecture parfaite ;
 - sur une lecture avec une faute ;
 - sur 240 témoins négatifs (livres inexistants).
 
 Chaque variante de stratégie a été rejouée sur les mêmes réponses, puis un échantillon de verdicts
-a été relu à la main. Méthode, chiffres, contrôle manuel et limites sont dans
+a été relu à la main. **Google Books** n'est pas un référentiel possible : il demande une clé, son
+quota est partagé, sa recherche par champ est en panne, et une édition retrouvée sur cinq seulement
+est celle de la notice BnF. Il a été mesuré comme source d'enrichissement. Méthode, chiffres, contrôle manuel et limites sont dans
 [l'étude de l'issue #20](https://github.com/arenier/pick-a-book/issues/20#issuecomment-5978322572).
 
 ## Solution retenue
 
-**Le catalogue général de la BnF, seul, pour réconcilier et pour enrichir.** L'appariement est une
-cascade de requêtes pilotée par le contexte, et le verdict une règle du domaine, indépendante du
-référentiel.
+**Le catalogue général de la BnF, seul juge de la réconciliation et première source
+d'enrichissement. Google Books complète l'enrichissement, sans jamais décider.** L'appariement est
+une cascade de requêtes pilotée par le contexte, et le verdict une règle du domaine, indépendante
+du référentiel.
 
 ### Référentiel
 
@@ -109,6 +112,39 @@ l'étude.
    choisit (spec 002, US2). La confiance de lecture du VLM n'entre pas dans le verdict : sans
    notice, un livre est non trouvé, quelle que soit sa confiance (FR-004).
 
+### Deux appels, deux exigences
+
+- **L'appel à la BnF est critique : il ne doit pas échouer.** Il porte le verdict. Il a son délai
+  et ses nouvelles tentatives, bornés par le budget de la spec 002. S'il échoue malgré tout, le
+  livre est **non vérifié**, jamais « non trouvé ». La lecture étant stockée, sa réconciliation
+  se rejoue plus tard.
+- **Les appels de complément sont tolérés : leur échec ne bloque rien.** Google Books n'est
+  appelé qu'après le verdict, pour les livres confirmés. Il a un délai court et aucune nouvelle
+  tentative dans la requête. S'il échoue, ou s'il n'a pas répondu à l'échéance de la spec 002, le
+  livre reste confirmé et son enrichissement est marqué **incomplet**, à compléter plus tard.
+  Toute source de complément ajoutée ensuite suit le même régime.
+
+### Deux scores : la lecture et la réconciliation se notent à part
+
+La confiance du VLM dit **à quel point la tranche a été bien lue** (ADR 0005). La réconciliation
+produit son propre **score de résultat**, calculé par le domaine, qui dit **à quel point le livre
+retenu est sûr**. Les deux ne sont jamais fusionnés : un titre bien lu peut ne correspondre à rien,
+et une lecture hésitante peut tomber sur une notice certaine.
+
+- **Le score de réconciliation** vient de l'appel à la BnF : similarité du titre et de l'auteur,
+  étape de la cascade qui a trouvé (titre et auteur avant segment), rapprochement partiel, nombre
+  de candidats.
+- **L'état de l'enrichissement** vient des appels de complément : pour chaque source, réussi, en
+  échec ou sans résultat. Un complément en échec rend l'enrichissement incomplet sans abaisser le
+  score de réconciliation.
+- **Le statut reste le verdict** (confirmé, ambigu, non trouvé, non vérifié). Le score le qualifie
+  pour l'affichage, le tri et les alertes. Il ne le remplace pas.
+- **Google Books n'entre pas dans le score de réconciliation** tant que son appariement n'a pas été
+  éprouvé sur les témoins négatifs. Trouver le même livre chez lui pourrait alors corroborer la
+  BnF.
+
+La formule relève de la spec 002.
+
 ### Périmètre : éditions françaises, traductions comprises
 
 Le référentiel couvre ce que la BnF reçoit au dépôt légal, c'est-à-dire tout ce qui est publié en
@@ -128,8 +164,7 @@ Les alphabets non latins ne sont pas mesurés et restent hors périmètre.
 
 ### Ce qui est enrichi et stocké
 
-L'enrichissement est la notice BnF retenue, lue dans la même réponse que la réconciliation. Il ne
-demande aucun appel ni aucune source de plus.
+L'enrichissement est d'abord la notice BnF retenue, lue dans la même réponse que la réconciliation.
 
 | Donnée | Disponibilité | Usage produit |
 |---|---:|---|
@@ -148,8 +183,27 @@ demande aucun appel ni aucune source de plus.
 | ISNI des auteurs | 94 % | relier l'auteur à sa notice d'autorité (data.bnf.fr, Wikidata, VIAF) |
 | Date de consultation | 100 % | attribution exigée par la licence |
 
-Le libellé des codes de genre reste à établir sur la table officielle avant de l'afficher. Le schéma
-vit dans `libs/bibliography/infrastructure` (ADR 0006), fixé avec le code.
+Le libellé des codes de genre reste à établir sur la table officielle avant de l'afficher.
+
+**Google Books complète ce que la BnF n'a pas**. Sa recherche plein texte part du titre et des
+auteurs de la notice BnF, et l'appariement suit la même règle du domaine :
+
+| Donnée | Disponibilité, sur les livres qu'il retrouve | Usage produit |
+|---|---:|---|
+| Description, une quatrième de couverture d'éditeur | 75 % | le résumé, quand la BnF n'en a pas |
+| Couverture | 51 % | idem, quand la BnF n'en sert pas |
+| Catégorie (« Fiction », « Juvenile Fiction »…) | 56 % | appoint pour `curation` |
+| Identifiant du volume | 100 % | clé de la donnée stockée, lien vers la fiche |
+
+Il retrouve 83 % des livres confirmés par la BnF. **Sur un champ que les deux fournissent, la BnF
+l'emporte** : Google Books ne remplit que des champs vides. Il n'y a donc aucun désaccord à
+arbitrer. Ses notes ne sont pas reprises : une ou deux notes par livre, inexploitables.
+
+**Le résultat de chaque appel est stocké.** Pour la BnF, ce sont les notices retenues et, pour un
+livre ambigu, les candidats. Pour Google Books, c'est le volume retenu. Chacun est stocké avec sa
+source, son identifiant, sa date de consultation et le statut de l'appel. Un livre déjà réconcilié
+ne rappelle personne : l'historique et l'affichage lisent la base. Le schéma vit dans
+`libs/bibliography/infrastructure` (ADR 0006), fixé avec le code.
 
 ### Portée des mesures
 
@@ -180,7 +234,14 @@ bascule.
 6. **(🟠 latence)** Une étagère de 30 livres se réconcilie en **8 s médiane, 10 s au 90ᵉ
    centile**, en simulation sur des latences relevées un seul jour. C'est dans le budget de SC-003
    et dans les réglages de la spec 002, que cet ADR confirme, à condition que la requête « auteur
-   seul » passe en format léger.
+   seul » passe en format léger. Google Books s'inscrit dans le temps restant. Sa latence n'est
+   pas mesurée, et ce qui dépasse l'échéance est marqué incomplet.
+7. **(🟢 attributs) Google Books, pour le résumé.** La BnF n'a un résumé que pour 17 % des livres
+   confirmés. Google Books en donne un pour les trois quarts de ceux qu'il retrouve, et une
+   couverture pour la moitié. Il enfreint le critère « sans clé ni quota partagé ». C'est accepté
+   parce qu'il ne porte pas le verdict et que son échec est toléré. Son quota courant (de l'ordre
+   de 1 000 requêtes par jour) dépasse largement le besoin : quelques centaines de livres par jour
+   au plus.
 
 **Repli nommé : OpenLibrary**. Il est gratuit, sans clé et plus rapide. Il couvre nettement moins
 bien, et son identifiant d'œuvre ne suffit pas à regrouper.
@@ -208,12 +269,17 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
   référentiel, interrogé quand la BnF ne trouve rien. L'ADR 0010 n'est pas rouvert pour autant : les
   deux sources ne se contredisent pas, l'une prend le relais de l'autre.
 - **Retrait de l'API SRU ou changement de licence** : OpenLibrary, en acceptant sa couverture.
+- **Google Books** est retiré dans trois cas, et le résumé redevient « quand la BnF l'a » :
+  - ses conditions d'utilisation interdisent de conserver ce qu'il renvoie ;
+  - son quota ne suffit plus ;
+  - plus de **5 %** de descriptions décrivent un autre livre, sur un contrôle manuel.
 
 ### Conséquences
 
-- **Un seul contexte, confirmé** (ADR 0010). La notice qui réconcilie est celle qui enrichit, dans
-  la même réponse et le même cycle de vie synchrone. Il n'y a ni seconde source ni arbitrage de
-  désaccords : aucun des signaux de scission de l'ADR 0010 n'est présent.
+- **Un seul contexte, confirmé** (ADR 0010). La notice qui réconcilie est celle qui enrichit d'abord,
+  dans le même cycle de vie synchrone. Google Books est une seconde source, mais elle ne remplit
+  que des champs vides et n'a aucun désaccord à arbitrer avec la BnF. Aucun des signaux de
+  scission de l'ADR 0010 n'est présent.
 - **La spec 002 est à réaligner avant son implémentation**, la spec passant avant le code
   (`CLAUDE.md`) :
   - le port de recherche accepte une requête sans titre (auteur seul) et un nombre de notices ;
@@ -221,7 +287,11 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
   - la clé d'œuvre calculée par l'adapter disparaît, au profit du regroupement par la règle du
     domaine ;
   - la cascade et le rapprochement partiel rejoignent la règle d'appariement, avec leurs réglages
-    mesurés dans l'issue #20.
+    mesurés dans l'issue #20 ;
+  - le livre réconcilié porte un score de réconciliation, distinct de la confiance du VLM, et
+    l'état de son enrichissement par source ;
+  - un port d'enrichissement, distinct du port de recherche, porte Google Books. Son échec est une
+    valeur attendue (ADR 0013), pas une exception.
 - **TDD** : les tests d'appariement s'écrivent sur des **réponses BnF enregistrées**, avant le code.
   L'étude en donne le premier jeu :
   - série et tome : « Percy Jackson - La Mer des Monstres » ;
@@ -231,6 +301,8 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
   - illustrateur cosignataire : « D. Pennac - J. Ferrandez » ;
   - fausse ambiguïté d'éditions : « Exercices de style » ;
   - titre fauté ; témoins permutés et fabriqués.
+
+  L'adapter Google Books se teste de même, sur des réponses enregistrées.
 - **L'ARK identifie une édition, pas une œuvre.** Deux éditions d'un même livre ont deux ARK :
   `curation` ne peut pas détecter un doublon par égalité d'ARK. Elle compare par la règle d'œuvre
   du domaine, ou par ISBN pour une édition exacte.
@@ -238,9 +310,16 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
   réponse : une adaptation en BD retenue pour un roman fait décrire le mauvais livre à
   l'enrichissement. La règle de choix relève de la spec 002.
 - **Attribution** : la Licence Ouverte impose de citer la source. L'interface mentionne la BnF
-  partout où une notice s'affiche, et la date de consultation est stockée.
-- **Le produit n'appelle la BnF qu'à la réconciliation.** La notice est stockée ; l'historique et
-  l'affichage n'en dépendent plus ensuite.
+  partout où une notice s'affiche, et Google Books à côté de ce qui vient de lui. La date de
+  consultation est stockée.
+- **Les conditions d'utilisation de Google Books sont à relire avant d'implémenter**, en
+  particulier sur la conservation des descriptions et des couvertures : elles n'ont pas pu être
+  consultées pendant l'étude. Si elles limitent la conservation, le stockage de ces champs suit
+  leur règle. Sinon, c'est la condition de bascule qui s'applique.
+- **Une clé d'API entre dans la configuration.** C'est un secret, validé au démarrage comme les
+  autres (`adapters.md`) et posé par l'infrastructure, jamais dans le dépôt.
+- **Le produit n'appelle les sources qu'à la réconciliation**, puis, pour compléter un
+  enrichissement incomplet, plus tard. Ensuite, l'historique et l'affichage n'en dépendent plus.
 - **Usage poli d'un service public** : 4 requêtes en parallèle au plus, un `User-Agent` qui
   identifie le projet.
 - **Le filet a une limite de construction.** Il attrape un livre qui n'existe pas. Il n'attrape
@@ -259,11 +338,23 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
   Le catalogue y a des trous, et les tranches portent des séries ou pas d'auteur. C'est accepté
   pour un usage centré sur le poche.
 
-## Question ouverte
+## Questions ouvertes
 
-- **Couverture du livre** : la BnF en sert une pour 20 % des notices confirmées. L'API de
-  couvertures d'OpenLibrary la donne par ISBN, pour 76 % des œuvres qu'il confirme. À décider avec
-  l'interface. Ce serait une seconde source **sans arbitrage de conflit** (un attribut nouveau, pas
-  disputé) : cela ne rouvre pas l'ADR 0010 à soi seul.
-- **Matière pour `curation`** : le genre est là (85 %), le résumé rarement (17 %). Ce qu'il faut de
-  plus à la préférence en texte libre est à instruire avec l'ADR de `curation`.
+- **Quand compléter un enrichissement incomplet** : à la consultation suivante du livre, ou par un
+  rattrapage périodique. C'est à trancher dans la spec, sans event bus (ADR 0003).
+- **Prix littéraires** : Wikidata les donne par l'ISNI de l'auteur. Ils sont surtout rattachés à
+  l'auteur, et rarement au livre. S'ils sont ajoutés, c'est comme une information sur l'auteur, et
+  comme un complément toléré.
+- **Couverture du livre** : la BnF et Google Books réunis en couvrent une partie. L'API de
+  couvertures d'OpenLibrary reste disponible, par ISBN, si l'interface en demande davantage.
+- **Matière pour `curation`** : le genre (85 %) et désormais le résumé. Ce qu'il faut de plus à
+  la préférence en texte libre est à instruire avec l'ADR de `curation`.
+
+## Parking
+
+- **Construire notre propre donnée bibliographique** plutôt qu'appeler les sources à chaque
+  réconciliation. Il s'agirait d'une base locale, alimentée par les résultats stockés et, à terme,
+  par les exports du catalogue de la BnF sous Licence Ouverte. Elle serait interrogée en premier,
+  avant tout appel réseau. Les résultats stockés dès le MVP en sont la première brique. C'est à
+  rouvrir si la disponibilité ou la latence de la BnF déclenchent leur condition de bascule, ou
+  quand le volume le justifie. Ce serait un nouvel ADR.
