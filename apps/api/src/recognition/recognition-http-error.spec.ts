@@ -85,7 +85,9 @@ describe('toHttpException, for the refusals of an analysis', () => {
       code: 'DAILY_SCAN_QUOTA_EXCEEDED',
     });
   });
+});
 
+describe('toHttpException, for the daily caps', () => {
   // The photo is not kept: the front tells the user to send it again tomorrow (FR-017).
   it('says DailyUploadQuotaExceeded as 429 DAILY_UPLOAD_QUOTA_EXCEEDED', () => {
     const http = toHttpException(new DailyUploadQuotaExceeded(100));
