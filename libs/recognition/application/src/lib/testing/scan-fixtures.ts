@@ -60,8 +60,17 @@ export async function aStoredPhoto(
 ) {
   const storage = options.storage ?? new InMemoryShelfPhotoStorage();
   const repository = new InMemoryShelfScanRepository();
-  const store = new StoreShelfPhotoUseCase(unwrap(OwnerId.of('default')), storage, repository);
+  const owner = unwrap(OwnerId.of('default'));
+  const store = new StoreShelfPhotoUseCase(owner, storage, repository);
   const { id } = unwrap(await store.execute(aJpeg));
+  const scanAs = (someone: OwnerId) =>
+    new ScanStoredShelfPhotoUseCase(
+      someone,
+      storage,
+      repository,
+      scanner,
+      options.policy ?? policy,
+    );
 
   return {
     id,
@@ -69,12 +78,9 @@ export async function aStoredPhoto(
     repository,
     /** Another photo, stored through the same ports: the daily cap counts across them. */
     storeAnother: async () => unwrap(await store.execute(aJpeg)).id,
-    useCase: new ScanStoredShelfPhotoUseCase(
-      storage,
-      repository,
-      scanner,
-      options.policy ?? policy,
-    ),
+    useCase: scanAs(owner),
+    /** The same second step, asked by someone else: the owner is who the use case answers for. */
+    scanAs: (someone: OwnerId) => scanAs(someone),
   };
 }
 

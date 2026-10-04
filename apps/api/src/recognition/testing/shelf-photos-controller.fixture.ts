@@ -44,6 +44,7 @@ export function aShelfPhotosController(
   const owner = unwrap(OwnerId.of('default'));
   const storeShelfPhoto = new StoreShelfPhotoUseCase(owner, storage, repository);
   const scanStoredShelfPhoto = new ScanStoredShelfPhotoUseCase(
+    owner,
     storage,
     repository,
     scanner,

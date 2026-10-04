@@ -1,6 +1,7 @@
 import {
   ShelfScanId,
   ShelfScanNotFound,
+  type OwnerId,
   type ScanAttemptRefusal,
   type ScanAttemptPolicy,
   type ShelfPhotoStoragePort,
@@ -10,6 +11,7 @@ import {
 } from '@pick-a-book/recognition-domain';
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
+import { findOwnedScan } from './owned-shelf-scan.js';
 import type { ScanShelfResult } from './scan-shelf.dto.js';
 import type { ScanStoredShelfPhotoCommand } from './shelf-photo.dto.js';
 import { toDetectedBookDto } from './to-shelf-scan-dto.js';
@@ -41,6 +43,7 @@ export type ScanStoredShelfPhotoFailure = ScanAttemptRefusal | ShelfScanFailed;
  */
 export class ScanStoredShelfPhotoUseCase {
   constructor(
+    private readonly ownerId: OwnerId,
     private readonly storage: ShelfPhotoStoragePort,
     private readonly repository: ShelfScanRepositoryPort,
     private readonly scanner: ShelfScannerPort,
@@ -50,17 +53,13 @@ export class ScanStoredShelfPhotoUseCase {
   async execute(
     command: ScanStoredShelfPhotoCommand,
   ): Promise<Result<ScanShelfResult, ScanStoredShelfPhotoFailure>> {
-    // An id that is not even a UUID matches no record: it is unknown, not malformed input.
-    const parsedId = ShelfScanId.of(command.id);
-    if (!parsedId.ok) {
-      return err(new ShelfScanNotFound(command.id));
-    }
-    const id = parsedId.value;
-
-    const record = await this.repository.get(id);
+    // The owner's alone (FR-012): an id that is not a UUID, one that matches no record and one
+    // that is someone else's are the same answer — unknown, and nothing is paid.
+    const record = await findOwnedScan(this.repository, this.ownerId, command.id);
     if (record === undefined) {
       return err(new ShelfScanNotFound(command.id));
     }
+    const id = record.id;
 
     // Whether it can be scanned at all — it exists, has no result yet, is not being scanned,
     // the day is not used up — is decided here, atomically, before anything is read or paid.

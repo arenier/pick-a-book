@@ -130,7 +130,7 @@ function providersOfUseCases(environment: Environment): Provider[] {
         repository: ShelfScanRepositoryPort,
         scanner: ShelfScannerPort,
       ) =>
-        new ScanStoredShelfPhotoUseCase(storage, repository, scanner, {
+        new ScanStoredShelfPhotoUseCase(environment.ownerId, storage, repository, scanner, {
           dailyLimit: environment.dailyScanLimit,
           timeZone: 'Europe/Paris',
           lease: ATTEMPT_LEASE_MS,
