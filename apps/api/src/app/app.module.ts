@@ -9,12 +9,6 @@ import { RateLimitGuard } from '../http/rate-limit.guard';
 import { buildLoggerOptions } from '../logging/logger-options';
 import { RecognitionModule } from '../recognition/recognition.module';
 
-/**
- * Root module. It assembles; it carries no business rule (ADR 0003).
- *
- * Configuration is validated before the module is built and injected as is: no provider
- * reads `process.env` again.
- */
 /** One minute, the window of both tiers of the limit by source. */
 const RATE_LIMIT_WINDOW_MS = 60_000;
 
@@ -37,6 +31,12 @@ function readsOnly(context: ExecutionContext): boolean {
   );
 }
 
+/**
+ * Root module. It assembles; it carries no business rule (ADR 0003).
+ *
+ * Configuration is validated before the module is built and injected as is: no provider
+ * reads `process.env` again.
+ */
 @Module({})
 export class AppModule {
   static withEnvironment(environment: Environment) {
@@ -56,6 +56,9 @@ export class AppModule {
           ],
           // `RateLimitGuard` writes the one header the contract names.
           setHeaders: false,
+          // A budget per tier and source, shared by every route: the package keys it on the
+          // handler too, which would give each route a budget of its own.
+          generateKey: (_context, tracker, throttlerName) => `${throttlerName}-${tracker}`,
         }),
         RecognitionModule.withEnvironment(environment),
       ],
