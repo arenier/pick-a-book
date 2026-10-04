@@ -39,10 +39,11 @@ Le `prompt.md` de la routine vit ici ; le skill `pr-review` vit dans le dépôt 
 Le skill de review : `adri-plugin/skills/pr-review/SKILL.md` dans `arenier/claude-skills`, lu au ref
 `main`.
 
-Le skill est agnostique du dépôt. Ce qui est propre à pick-a-book — routes chemin → ADR, interdits,
-vérifications schéma ↔ migration et frontières Nx — vit dans le profil
-[`.claude/pr-review.json`](../../.claude/pr-review.json), lu au ref `main` comme le reste des
-conventions. Son format est décrit dans `PROFILE.md`, à côté du skill.
+Le skill est agnostique du dépôt et n'a aucun critère propre : il découvre les règles que pick-a-book a
+écrites — [`.claude/rules/**`](../../.claude/rules), [`CLAUDE.md`](../../CLAUDE.md) et les ADR vers
+lesquels ils renvoient — et y route le diff par le frontmatter `paths` de chaque rule. Une convention
+que la review doit faire respecter s'écrit donc dans une rule (ou dans un ADR qu'une rule lie), pas dans
+un fichier de configuration de la review.
 
 > **Le durcissement.** Le workspace d'un run événementiel est le checkout de **la branche de la PR
 > relue** — modifiable par l'auteur de la PR. Aucune instruction n'y est donc lue : tout passe par le
