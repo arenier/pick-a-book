@@ -39,6 +39,8 @@ réglages (seuils, marge, pages de résultats, ordre de la cascade) vivent dans 
 
 - **Le score de réconciliation est calculé par `domain`.** Il reste à part de la confiance du VLM :
   aucun champ, aucun calcul ne fusionne les deux. Un complément n'y entre pas.
+- **Une confirmation sans auteur lu a un score plus bas** qu'une confirmation où l'auteur
+  correspond : un titre seul est une preuve faible. Le statut, lui, ne change pas.
 - **L'état de l'enrichissement se tient par source** (réussi, en échec, sans résultat), sans
   toucher au score de réconciliation.
 - **Le résultat de chaque appel est stocké** : ce qui est retenu, la source, l'identifiant (ARK,

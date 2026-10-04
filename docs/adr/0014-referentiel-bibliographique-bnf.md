@@ -69,7 +69,8 @@ terrain du bench (#10) :
 - sur 240 témoins négatifs (livres inexistants).
 
 Chaque variante de stratégie a été rejouée sur les mêmes réponses, puis un échantillon de verdicts
-a été relu à la main. **Google Books** n'est pas un référentiel possible : il demande une clé, son
+a été relu à la main. La stratégie a enfin été appliquée sans réglage aux sorties réelles de deux
+VLM, sur 8 photos jamais vues : c'est [le jeu de validation](https://github.com/arenier/pick-a-book/issues/20#issuecomment-5979222261). **Google Books** n'est pas un référentiel possible : il demande une clé, son
 quota est partagé, sa recherche par champ est en panne, et une édition retrouvée sur cinq seulement
 est celle de la notice BnF. Il a été mesuré comme source d'enrichissement. Méthode, chiffres, contrôle manuel et limites sont dans
 [l'étude de l'issue #20](https://github.com/arenier/pick-a-book/issues/20#issuecomment-5978322572).
@@ -134,6 +135,11 @@ et une lecture hésitante peut tomber sur une notice certaine.
 - **Le score de réconciliation** vient de l'appel à la BnF : similarité du titre et de l'auteur,
   étape de la cascade qui a trouvé (titre et auteur avant segment), rapprochement partiel, nombre
   de candidats.
+- **Une confirmation sans auteur lu vaut moins.** Le score baisse quand la lecture ne porte qu'un
+  titre. Sur le jeu de validation, presque toutes les fausses confirmations hors invention viennent
+  de lectures sans auteur : un nom d'autrice lu comme titre, un morceau de titre, un titre mal lu
+  qui en rencontre un autre. Le statut reste « confirmé » : c'est l'affichage et les alertes qui
+  en tiennent compte.
 - **L'état de l'enrichissement** vient des appels de complément : pour chaque source, réussi, en
   échec ou sans résultat. Un complément en échec rend l'enrichissement incomplet sans abaisser le
   score de réconciliation.
@@ -207,12 +213,16 @@ ne rappelle personne : l'historique et l'affichage lisent la base. Le schéma vi
 
 ### Portée des mesures
 
-Les chiffres qui suivent sont des **ordres de grandeur**, optimistes : mesurés sur une lecture
-parfaite, avec une stratégie réglée sur les livres qui l'évaluent (limites détaillées dans
-l'étude). La décision tient malgré tout, car les écarts qui la fondent (BnF contre OpenLibrary,
-requête unique contre cascade) sont trop grands pour qu'un réglage les inverse. Les chiffres, eux,
-ne seront établis que par le bench sur sorties VLM réelles : c'est la première condition de
-bascule.
+Les chiffres de l'étude sont des **ordres de grandeur** : ils sont mesurés sur une lecture parfaite,
+avec une stratégie réglée sur les livres qui l'évaluent (limites détaillées dans l'étude).
+
+Le jeu de validation corrige cette réserve dans le bon sens pour la couverture. Gemini, le
+défaut de prod, y lit les auteurs : 89 lectures correctes sur 90 sont confirmées, et un seul livre
+sur 92 l'est à tort. Mais il n'a lu que 3 photos, et ces chiffres restent à consolider par le bench
+sur sorties VLM réelles : c'est la première condition de bascule.
+
+La décision tient, car les écarts qui la fondent (BnF contre OpenLibrary, requête unique contre
+cascade) sont trop grands pour qu'un réglage les inverse.
 
 ### Raisons
 
@@ -220,10 +230,18 @@ bascule.
    laisse **7,4 %** ambigus. OpenLibrary en confirme 55,8 %. Sur les romans de poche, la BnF
    confirme 93 %. Ajouter OpenLibrary en repli ne gagne que **0,9 point** : un second adapter, un
    second contrat, pour presque rien.
-2. **(🔴 filet)** Aucun témoin négatif n'est confirmé quand un auteur est lu, et 1 sur 120 sans
-   auteur. Deux principes tiennent ce résultat sans sacrifier la couverture : le rapprochement
-   partiel qui ne confirme pas seul ramène les titres fabriqués confirmés de 7,5 % à 0 %, et le
-   regroupement par notre règle fait passer les confirmés de 74,5 % à 84,8 % sans faux positif.
+2. **(🔴 filet)** Contre un livre qui **n'existe pas**, le filet tient. Aucun titre fabriqué ni
+   aucun auteur permuté n'est confirmé quand un auteur est lu, et 1 sur 120 l'est sans auteur. Sur
+   le jeu de validation, les lectures fautives de Gemini sont rejetées. Deux principes tiennent ce
+   résultat sans sacrifier la couverture : le rapprochement partiel qui ne confirme pas seul
+   ramène les titres fabriqués confirmés de 7,5 % à 0 %, et le regroupement par notre règle fait
+   passer les confirmés de 74,5 % à 84,8 % sans faux positif.
+
+   Contre un livre **réel** inventé par le VLM, il ne peut rien, quel que soit le référentiel.
+   Sur une photo où aucune tranche n'est lisible, Qwen 2.5-VL invente 49 livres, et la BnF en
+   confirme 35. Gemini substitue un titre du même auteur à celui de la tranche. Le reste du filet
+   est donc ailleurs : dans le choix du VLM, éprouvé par le témoin négatif du bench, et dans un
+   score qui pèse moins un titre lu seul.
 3. **(🔴 tolérance aux fautes)** Aucun référentiel ne la fournit : une requête stricte sur un titre
    fauté résout moins de 1 % des livres, chez les deux. La cascade la construit : **71,8 %** des
    titres fautés sont confirmés, pour 1,3 requête par livre en moyenne sur une lecture parfaite.
@@ -322,10 +340,13 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
   enrichissement incomplet, plus tard. Ensuite, l'historique et l'affichage n'en dépendent plus.
 - **Usage poli d'un service public** : 4 requêtes en parallèle au plus, un `User-Agent` qui
   identifie le projet.
-- **Le filet a une limite de construction.** Il attrape un livre qui n'existe pas. Il n'attrape
-  pas un livre **qui existe**, lu à la place d'un autre (« La Peste » pour « La Chute », même
-  auteur). Seul le bench sur sorties VLM le mesure : c'est la seconde condition de bascule de
-  l'ADR 0005.
+- **Le filet a une limite de construction, désormais mesurée.** Il attrape un livre qui n'existe
+  pas. Il n'attrape pas un livre **qui existe**, qu'il soit lu à la place d'un autre (« Souviens-toi »
+  pour « Douce nuit », même autrice) ou inventé sur une photo illisible. Seul le bench sur sorties
+  VLM le mesure : c'est la seconde condition de bascule de l'ADR 0005.
+- **Le bench porte un témoin négatif** : une photo sans aucune tranche lisible
+  (`shelf-fixture-11.jpg`). Un fournisseur qui y détecte des livres invente des livres réels que
+  la réconciliation confirmera. Le départager relève de l'ADR 0005 et de sa note de décision.
 - **Le « taux de résolution » de l'ADR 0005 se compte confirmés et ambigus ensemble.** Dans les deux
   cas, une notice correspond à la lecture, ce qui est la preuve attendue du filet ; l'ambiguïté
   porte sur *quelle* œuvre, pas sur son existence. Son plafond mesuré côté référentiel est de
@@ -358,3 +379,9 @@ bien, et son identifiant d'œuvre ne suffit pas à regrouper.
   avant tout appel réseau. Les résultats stockés dès le MVP en sont la première brique. C'est à
   rouvrir si la disponibilité ou la latence de la BnF déclenchent leur condition de bascule, ou
   quand le volume le justifie. Ce serait un nouvel ADR.
+- **Repérer une liste inventée au niveau de la photo.** Un livre réel inventé échappe à la
+  réconciliation. Mais une liste inventée laisse des traces : beaucoup de titres sans auteur, des
+  doublons, une série complète, une langue hors du périmètre, une photo dont la netteté ne permet
+  pas de lire. Ces signaux pourraient abaisser le score de toute la photo ou alerter
+  l'utilisateur. C'est à instruire dans une spec quand le bench montrera que le VLM de prod en a
+  besoin.
