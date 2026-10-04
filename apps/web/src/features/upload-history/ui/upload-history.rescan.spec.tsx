@@ -98,7 +98,7 @@ describe('UploadHistory, an analysis running again while the user moves to anoth
     slow.answer();
 
     await waitFor(() => {
-      expect(slow.rescan).toHaveBeenCalledTimes(1);
+      expect(slow.rescan).toHaveBeenCalledOnce();
     });
     expect(screen.queryByText('La Peste')).toBeNull();
     expect(button().disabled).toBe(false);
