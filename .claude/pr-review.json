@@ -1,0 +1,57 @@
+{
+  "index": ["CLAUDE.md"],
+  "decisions": "docs/adr",
+  "rules": ".claude/rules",
+  "stakes": "(?i)vlm|shelf-?scanner|/infrastructure/|migration|schema|postgres",
+  "import_zones": "^libs/[^/]+/(domain|application)/",
+  "routes": [
+    {"paths": "^libs/shared/", "refs": ["0002"], "read": "0002 (lib partagée : n'importe aucun contexte, pas de common/utils)"},
+    {"paths": "^libs/[^/]+/domain/", "refs": ["0002", "0013"], "read": "0002 (domain : ne dépend de rien, value objects) · 0013 (Result, jamais de throw)"},
+    {"paths": "^libs/[^/]+/application/", "refs": ["0002", "0003", "0013"], "read": "0002 (dépend du domain seul, parle aux ports) · 0003 (pas d'event bus) · 0013 (Result, jamais de throw)"},
+    {"paths": "^libs/[^/]+/infrastructure/", "refs": ["0002", "0006"], "read": "0002 (personne n'en dépend hors composition root) · 0006 (SQL, schéma, migrations ici)"},
+    {"paths": "^apps/api/", "refs": ["0003", "0013"], "read": "0003 (seul module multi-contextes, DTO de frontière, aucune règle métier) · 0013 (traduction HTTP des Err)"},
+    {"paths": "^apps/web/", "refs": ["0002", "0011", "0012"], "read": "0002 (feature-slice : pas d'import dans une autre slice) · 0011 (i18n) · 0012 (design system)"},
+    {"paths": "(?i)(vlm|shelf-?scanner)", "refs": ["0005"], "read": "0005 (derrière ShelfScannerPort, tests sur réponses enregistrées)"},
+    {"paths": "(^|/)(package\\.json|yarn\\.lock|\\.yarnrc\\.yml|\\.nvmrc|\\.node-version)$", "refs": ["0001"], "read": "0001 (Yarn 4, pins exacts, nodeLinker node-modules)"},
+    {"paths": "(^|/)(vite|vitest)\\.config\\.", "refs": ["0007"], "read": "0007 (Vite/Vitest, SWC pour apps/api)"},
+    {"paths": "(^|/)(docker-compose[^/]*\\.ya?ml|Dockerfile)$|(^|/)deploy[^/]*$", "refs": ["0004", "0006"], "read": "0004 (Cloud Run + bucket) · 0006 (Postgres managé, pas de gcsfuse/SQLite)"}
+  ],
+  "required": [
+    {"paths": "^(apps|libs)/.+/package\\.json$", "contains": "\"tags\"", "label": "pas de `nx.tags` trouvés — un projet sans tags échappe aux frontières."}
+  ],
+  "tests": {
+    "source": "\\.[jt]sx?$",
+    "test": "\\.(spec|test)\\.[jt]sx?$"
+  },
+  "locked": [
+    {"pattern": "@nestjs/cqrs|@nestjs/event-emitter|\\bEventEmitter\\b", "label": "event bus -> ADR 0003"},
+    {"pattern": "\\bjest\\b|@jest/", "label": "Jest -> ADR 0007"},
+    {"pattern": "\\bwebpack\\b", "label": "webpack -> ADR 0007"},
+    {"pattern": "nodeLinker:\\s*pnp|\\bpnp\\b", "label": "PnP -> ADR 0001"},
+    {"pattern": "yarn@1\\.|\"yarn\":\\s*\"1\\.", "label": "Yarn Classic -> ADR 0001"},
+    {"pattern": "(?i)gcsfuse|sqlite", "label": "gcsfuse / SQLite comme base -> ADR 0006"},
+    {"paths": "package\\.json$", "pattern": "\"[^\"]+\"\\s*:\\s*\"[\\^~><*]", "label": "plage de version -> ADR 0001"},
+    {"paths": "\\.tsx?$", "pattern": "\\bas\\s+(?!const\\b)[\\w{\\[(<]", "ignore": "^(import|export)\\b|^(//|\\*|/\\*)", "label": "assertion `as` -> rule typescript"}
+  ],
+  "companions": [
+    {
+      "id": "schema",
+      "label": "Schéma / migration",
+      "changed": "/infrastructure/.*(?i:entit|schema|table|model)",
+      "except": "(?i)migration",
+      "companion": "(?i)migration",
+      "warning": "schéma touché SANS migration dans le diff -> 🔴 si confirmé (ADR 0006)",
+      "judge": "le fichier touché modifie-t-il vraiment le schéma ?",
+      "if_confirmed": "🔴 sans discussion (ADR 0006)"
+    }
+  ],
+  "checks": [
+    {
+      "id": "boundaries",
+      "label": "Frontières Nx",
+      "judge": "chaque import listé franchit-il vraiment une frontière ? croiser avec `@nx/enforce-module-boundaries` dans `eslint.config.mjs` et `module-boundaries.md`.",
+      "if_confirmed": "🔴 -> ADR 0002"
+    }
+  ],
+  "notes": "Multi-tenant : non concerné, ce repo n'a pas de clé tenant (usage personnel, ADR 0006). Une feature qui traverse les couches (slice web + API + migration) est sa forme normale : ne pas la découper en fan-out."
+}

@@ -151,6 +151,7 @@ docs/adr/                        # décisions d'architecture : le pourquoi
 docs/decisions/                  # notes de décision de niveau inférieur (pas des ADR)
 infra/                           # infrastructure GCP en Terraform — voir infra/README.md
 .claude/rules/                   # règles d'écriture du code : le quoi (voir « Rules » plus haut)
+.claude/pr-review.json            # profil de relecture : routes chemin → ADR, interdits, vérifications — lu par le skill pr-review (arenier/claude-skills)
 .specify/                        # Spec Kit : constitution, templates, scripts (voir plus bas)
 specs/                           # une spec par feature, gardée durablement (Spec Kit)
 ```
