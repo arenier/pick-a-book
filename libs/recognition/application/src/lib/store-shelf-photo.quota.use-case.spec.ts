@@ -66,7 +66,9 @@ describe('StoreShelfPhotoUseCase, the quota of uploads', () => {
     expect(storage.thumbnails.size).toBe(0);
     expect(repository.records).toStrictEqual(records);
   });
+});
 
+describe('StoreShelfPhotoUseCase, when the cap is asked', () => {
   it('asks the cap before it writes the photo', async () => {
     const { storage, repository, useCase } = aUseCase();
     const ask = vi.spyOn(repository, 'checkUploadQuota');
