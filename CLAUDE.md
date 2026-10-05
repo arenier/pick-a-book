@@ -40,6 +40,10 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
   `libs/shared/ui` et mis aux normes du dépôt ; palette neutre, Literata pour les titres de livres,
   mode sombre qui suit le système · [0012](docs/adr/0012-design-system-de-l-interface.md),
   [note 0002](docs/decisions/0002-grandes-lignes-du-design-system.md)
+- **Déploiement par la CI** — **Workload Identity Federation** (aucune clé de service account),
+  une identité par rôle (déploiement, `plan`, `apply`) ; workflow déclenché à la main : build,
+  `plan`, `apply` sur le plan relu (transmis par bucket privé, jamais en artefact), puis déploiement ·
+  [0015](docs/adr/0015-deploiement-par-la-ci-wif-et-apply-approuve.md)
 - **Politique d'erreur** — `Result` aux frontières de `domain` et `application`, exceptions
   cantonnées à `infrastructure` et `apps` ·
   [0013](docs/adr/0013-politique-d-erreur-result-aux-frontieres.md)
@@ -79,7 +83,7 @@ que le fichier ne soit chargé.
 | [`module-boundaries.md`](.claude/rules/module-boundaries.md) | `apps/`, `libs/`, `tools/` | `domain` → rien, `application` → `domain` ; un contexte n'importe jamais un autre ; trois tags Nx sur chaque projet |
 | [`bibliography.md`](.claude/rules/bibliography.md) | `libs/bibliography` | La **BnF seule tranche** (appel critique, échec → non vérifié) ; compléments tolérés, après le verdict, champs vides seulement ; cascade dans `application`, verdict dans `domain` ; score de réconciliation jamais fusionné avec la confiance du VLM ; résultat de chaque appel stocké |
 | [`web-interface.md`](.claude/rules/web-interface.md) | `apps/web`, `libs/shared/{i18n,ui}` | Aucun texte en dur : catalogue i18next fr + en ; composants dans `libs/shared/ui` ; classes Tailwind sur les tokens |
-| [`infra.md`](.claude/rules/infra.md) | `infra/` | Un module par ressource, câblés par l'env seul ; tests `plan` hermétiques d'abord ; secrets vides ; jamais d'`apply` sans `plan` relu |
+| [`infra.md`](.claude/rules/infra.md) | `infra/` | Un module par ressource, câblés par l'env seul ; tests `plan` hermétiques d'abord ; secrets vides ; jamais d'`apply` sans `plan` relu ; CI : WIF, plan par bucket, jamais en artefact |
 | [`toolchain.md`](.claude/rules/toolchain.md) | configs, `docker/`, CI | Versions dans `mise.toml` seul, à l'exact ; Vite/Vitest, SWC pour l'API ; oxlint type-aware, ESLint pour les frontières |
 | [`adr.md`](.claude/rules/adr.md) | `docs/adr/`, rules, `CLAUDE.md` | Procédure de `docs/adr/README.md` ; un ADR accepté ne se réécrit pas ; ADR et rule vont ensemble |
 | [`commits-and-pull-requests.md`](.claude/rules/commits-and-pull-requests.md) | tout le dépôt | Commits et **titre de PR en anglais**, corps de PR en français |
