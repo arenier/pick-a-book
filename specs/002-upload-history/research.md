@@ -349,3 +349,40 @@ Le repli d'image (photo, vignette, indicateur neutre) devient un composant du de
 `FallbackImage`, puisqu'il ne dépend d'aucune slice. L'[ADR 0013](../../docs/adr/0013-politique-d-erreur-result-aux-frontieres.md)
 (`Result` aux frontières) est lui aussi accepté : les erreurs de ce document que le domaine
 « lève » sont des `Err` (voir l'amendement de `tasks.md`).
+
+## 13. Plafond d'envois (FR-017)
+
+*Amendement du 04/10/2026, revue de la PR #82.*
+
+**Décision** :
+- `StoreShelfPhotoUseCase` demande au dépôt, **avant d'écrire la photo dans le bucket**,
+  `checkUploadQuota(ownerId, policy)` : il compte les envois (`uploads` de type `shelf_photo`, jamais
+  les vignettes) du propriétaire depuis minuit, heure de Paris, et rend `DailyUploadQuotaExceeded`
+  quand il y en a déjà `DAILY_UPLOAD_LIMIT` (100 par défaut).
+- `DailyUploadQuotaExceeded` devient un **429** `DAILY_UPLOAD_QUOTA_EXCEEDED`. La photo n'est pas
+  conservée et aucune ligne n'est créée.
+- `DAILY_UPLOAD_LIMIT` se lit comme `DAILY_SCAN_LIMIT` : entier ≥ 1, optionnel, et posé aussi dans
+  `infra/envs/prod` (`daily_upload_limit`), avec la même valeur par défaut et la même validation.
+
+**Raison** :
+- **Avant le bucket, pas après.** Le use case écrit la photo, puis la vignette, puis la ligne. Un
+  plafond vérifié à la création de la ligne laisserait **un objet orphelin par envoi refusé** : le
+  bucket se remplirait précisément quand on abuse, ce que le plafond doit empêcher.
+- **Un simple comptage, sans verrou.** Contrairement aux analyses, l'envoi n'a pas de coût par
+  unité : le plafond protège le stockage, pas la facture. Deux envois simultanés proches du plafond
+  peuvent donc passer tous les deux. Le dépassement est borné par le nombre d'envois que la limite de
+  requêtes par source (research.md §9, 10 écritures par minute) laisse passer en parallèle, soit
+  quelques unités, et il ne se répète pas : l'envoi suivant voit le compte réel.
+- **Tous les envois, pas seulement ceux jamais analysés.** Un seul `count`, qui ne bouge pas quand
+  une analyse aboutit ; « en attente » obligerait à reconsidérer le compte à chaque transition.
+- **100 par jour.** Chaque analyse suit un envoi (au plus 50 par jour), et les photos envoyées une
+  fois le plafond d'analyses atteint doivent encore passer pour être relancées le lendemain.
+
+**Alternatives écartées** :
+- *Vérifier dans `createPending`, sous le verrou des tentatives.* Atomique, mais après le bucket :
+  un orphelin par refus.
+- *Écrire la ligne avant les objets.* Atomique et sans orphelin d'objet, mais un échec du bucket
+  laisse alors une ligne sans photo, visible dans l'historique (voir
+  `docs/tech-debt/photo-orpheline-apres-vignette.md`).
+- *Une table de réservations d'envoi.* Une table de plus pour borner un dépassement de quelques
+  unités.

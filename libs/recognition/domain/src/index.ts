@@ -15,6 +15,8 @@ export * from './lib/photo/shelf-photo-storage.port.js';
 export * from './lib/photo/shelf-photo-thumbnail-not-found.error.js';
 export * from './lib/photo/shelf-photo-thumbnail.js';
 export * from './lib/photo/shelf-photo.js';
+export * from './lib/quota/daily-upload-quota-exceeded.error.js';
+export * from './lib/quota/upload-quota.js';
 export * from './lib/scan/shelf-scan-already-processed.error.js';
 export * from './lib/scan/shelf-scan-id.js';
 export * from './lib/scan/shelf-scan-not-found.error.js';

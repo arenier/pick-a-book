@@ -10,6 +10,7 @@ import {
   type ScanAttemptPolicy,
   type ShelfPhotoStoragePort,
   type ShelfScannerPort,
+  type UploadQuotaPolicy,
 } from '@pick-a-book/recognition-domain';
 import { InMemoryShelfScanRepository } from '@pick-a-book/recognition-application/testing';
 import { StubShelfScannerAdapter } from '@pick-a-book/recognition-infrastructure';
@@ -25,6 +26,12 @@ export const defaultPolicy = {
   lease: 5 * 60 * 1000,
 } satisfies ScanAttemptPolicy;
 
+/** The cap on uploads of production, unless a spec wants another: 100 a day. */
+export const defaultUploadPolicy = {
+  dailyLimit: 100,
+  timeZone: 'Europe/Paris',
+} satisfies UploadQuotaPolicy;
+
 /**
  * The controller wired to real use cases over in-memory ports: its specs are about the HTTP
  * mapping, the adapters have their own specs against the real technologies. Excluded from
@@ -35,6 +42,7 @@ export function aShelfPhotosController(
     readonly scanner?: ShelfScannerPort;
     readonly storage?: ShelfPhotoStoragePort;
     readonly policy?: ScanAttemptPolicy;
+    readonly uploadPolicy?: UploadQuotaPolicy;
   } = {},
 ) {
   const memory = anInMemoryPhotoStorage();
@@ -42,7 +50,12 @@ export function aShelfPhotosController(
   const storage = overrides.storage ?? memory;
   const scanner = overrides.scanner ?? new StubShelfScannerAdapter();
   const owner = unwrap(OwnerId.of('default'));
-  const storeShelfPhoto = new StoreShelfPhotoUseCase(owner, storage, repository);
+  const storeShelfPhoto = new StoreShelfPhotoUseCase(
+    owner,
+    storage,
+    repository,
+    overrides.uploadPolicy ?? defaultUploadPolicy,
+  );
   const scanStoredShelfPhoto = new ScanStoredShelfPhotoUseCase(
     owner,
     storage,

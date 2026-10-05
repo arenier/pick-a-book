@@ -23,3 +23,6 @@ export interface ScanAttemptPolicy {
   /** Milliseconds an open attempt blocks another analysis of the same scan. */
   readonly lease: number;
 }
+
+/** Why a record could not move: it does not exist, or it already has its books. */
+export type ShelfScanTransitionFailure = ShelfScanNotFound | ShelfScanAlreadyProcessed;

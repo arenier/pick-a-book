@@ -1,4 +1,5 @@
 import {
+  DailyUploadQuotaExceeded,
   ScanAttemptId,
   ShelfScanAlreadyProcessed,
   ShelfScanId,
@@ -11,7 +12,9 @@ import {
   type ShelfScanPageQuery,
   type ShelfScanRecord,
   type ShelfScanRepositoryPort,
+  type OwnerId,
   type ShelfScanTransitionFailure,
+  type UploadQuotaPolicy,
 } from '@pick-a-book/recognition-domain';
 import { err, ok, unwrap, type Result } from '@pick-a-book/shared-result';
 import { and, eq, inArray, isNull, sql, type SQL } from 'drizzle-orm';
@@ -21,6 +24,7 @@ import type { Pool } from 'pg';
 
 import { scanAttempts, shelfScans, uploads, type StoredDetectedBook } from './drizzle/schema.js';
 import { refusalOf } from './drizzle/start-attempt.js';
+import { uploadsToday } from './drizzle/upload-quota.js';
 import {
   SHELF_PHOTO,
   SHELF_PHOTO_THUMBNAIL,
@@ -51,6 +55,19 @@ export class DrizzleShelfScanRepositoryAdapter implements ShelfScanRepositoryPor
 
   constructor(pool: Pool) {
     this.db = drizzle({ client: pool });
+  }
+
+  /**
+   * A plain count, with no lock (research.md §13): the caller asks it before writing anything,
+   * and an upload has no unit cost, so a few simultaneous ones past the cap do no harm.
+   */
+  async checkUploadQuota(
+    ownerId: OwnerId,
+    policy: UploadQuotaPolicy,
+  ): Promise<Result<void, DailyUploadQuotaExceeded>> {
+    const today = await uploadsToday(this.db, ownerId.value, policy.timeZone);
+
+    return today >= policy.dailyLimit ? err(new DailyUploadQuotaExceeded(policy.dailyLimit)) : ok();
   }
 
   async createPending(scan: NewShelfScan): Promise<void> {

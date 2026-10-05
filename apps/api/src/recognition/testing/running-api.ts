@@ -7,7 +7,11 @@ import {
   ScanStoredShelfPhotoUseCase,
   StoreShelfPhotoUseCase,
 } from '@pick-a-book/recognition-application';
-import type { ScanAttemptPolicy, ShelfScannerPort } from '@pick-a-book/recognition-domain';
+import type {
+  ScanAttemptPolicy,
+  ShelfScannerPort,
+  UploadQuotaPolicy,
+} from '@pick-a-book/recognition-domain';
 import { afterAll, beforeAll } from 'vitest';
 
 import { applyHttpBoundary } from '../../http/http-boundary';
@@ -54,12 +58,16 @@ async function startApi(fixture: ReturnType<typeof aShelfPhotosController>) {
  * The routes over real HTTP — status codes, multipart parsing by multer — on an
  * ephemeral port, the use cases running over in-memory ports. Called inside a `describe`.
  */
-export function aRunningApi(scanner?: ShelfScannerPort, policy?: ScanAttemptPolicy) {
+export function aRunningApi(
+  scanner?: ShelfScannerPort,
+  policy?: ScanAttemptPolicy,
+  uploadPolicy?: UploadQuotaPolicy,
+) {
   let app: NestExpressApplication;
   let baseUrl = '';
   // The use cases and the ports under them, built once: the spec reads the doubles to prove what a
   // route did — or did not — change.
-  const fixture = aShelfPhotosController({ scanner, policy });
+  const fixture = aShelfPhotosController({ scanner, policy, uploadPolicy });
 
   beforeAll(async () => {
     ({ app, baseUrl } = await startApi(fixture));

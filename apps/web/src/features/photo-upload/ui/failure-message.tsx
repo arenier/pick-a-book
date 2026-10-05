@@ -22,6 +22,7 @@ export function FailureMessage({ failure }: FailureMessageProps) {
     refused: () => t('failure.refused'),
     upstream: () => t('failure.upstream'),
     dailyQuota: () => t('failure.dailyQuota'),
+    dailyUploadQuota: () => t('failure.dailyUploadQuota'),
     rateLimited: () => t('failure.rateLimited'),
     offline: () => t('failure.offline'),
     unexpected: () => t('failure.unexpected'),

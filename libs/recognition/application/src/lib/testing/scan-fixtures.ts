@@ -8,6 +8,7 @@ import {
   type ScanAttemptPolicy,
   type ShelfPhoto,
   type ShelfScannerPort,
+  type UploadQuotaPolicy,
 } from '@pick-a-book/recognition-domain';
 import { err, ok, unwrap, type Result } from '@pick-a-book/shared-result';
 
@@ -50,6 +51,12 @@ export const policy = {
   lease: 300_000,
 } satisfies ScanAttemptPolicy;
 
+/** The cap on uploads, out of the way: the specs that do not test it never reach it. */
+export const uploadPolicy = {
+  dailyLimit: 1_000,
+  timeZone: 'Europe/Paris',
+} satisfies UploadQuotaPolicy;
+
 /** A photo already stored by the first step, and the second step wired to the same ports. */
 export async function aStoredPhoto(
   scanner: ShelfScannerPort,
@@ -61,7 +68,7 @@ export async function aStoredPhoto(
   const storage = options.storage ?? new InMemoryShelfPhotoStorage();
   const repository = new InMemoryShelfScanRepository();
   const owner = unwrap(OwnerId.of('default'));
-  const store = new StoreShelfPhotoUseCase(owner, storage, repository);
+  const store = new StoreShelfPhotoUseCase(owner, storage, repository, uploadPolicy);
   const { id } = unwrap(await store.execute(aJpeg));
   const scanAs = (someone: OwnerId) =>
     new ScanStoredShelfPhotoUseCase(

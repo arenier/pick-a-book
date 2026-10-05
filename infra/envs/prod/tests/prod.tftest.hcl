@@ -283,6 +283,54 @@ run "the_daily_scan_limit_rejects_a_fraction" {
   expect_failures = [var.daily_scan_limit]
 }
 
+run "the_api_receives_the_default_daily_upload_limit" {
+  command = plan
+
+  # specs/002-upload-history, FR-017: the cap on uploads a day is what bounds the storage while the
+  # API is open to anyone. The API reads it from DAILY_UPLOAD_LIMIT and defaults to the same 100
+  # (apps/api/src/config/daily-upload-limit.ts): passing it explicitly makes the cap visible, and
+  # changeable, where production is configured — with no code deploy.
+  assert {
+    condition     = local.api_env["DAILY_UPLOAD_LIMIT"] == "100"
+    error_message = "The API must be given the daily upload limit, 100 by default — left implicit, the production cap would only live in the API's code and nobody configuring the environment would see it"
+  }
+}
+
+run "the_daily_upload_limit_is_configurable" {
+  command = plan
+
+  variables {
+    daily_upload_limit = 12
+  }
+
+  assert {
+    condition     = local.api_env["DAILY_UPLOAD_LIMIT"] == "12"
+    error_message = "daily_upload_limit must reach the API as DAILY_UPLOAD_LIMIT, as a string — the cap is changed in prod.auto.tfvars, not by editing the API"
+  }
+}
+
+run "the_daily_upload_limit_rejects_zero" {
+  command = plan
+
+  variables {
+    daily_upload_limit = 0
+  }
+
+  # The API refuses 0 at boot (a positive integer): rejecting it here too turns a failed deploy
+  # into a failed plan.
+  expect_failures = [var.daily_upload_limit]
+}
+
+run "the_daily_upload_limit_rejects_a_fraction" {
+  command = plan
+
+  variables {
+    daily_upload_limit = 1.5
+  }
+
+  expect_failures = [var.daily_upload_limit]
+}
+
 run "the_api_env_keeps_node_env_production" {
   command = plan
 

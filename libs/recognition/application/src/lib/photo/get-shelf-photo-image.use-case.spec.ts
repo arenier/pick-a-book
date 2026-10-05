@@ -11,6 +11,7 @@ import { GetShelfPhotoImageUseCase } from './get-shelf-photo-image.use-case.js';
 import { StoreShelfPhotoUseCase } from '../store/store-shelf-photo.use-case.js';
 import { InMemoryShelfPhotoStorage } from '../../testing/in-memory-shelf-photo-storage.js';
 import { InMemoryShelfScanRepository } from '../../testing/in-memory-shelf-scan-repository.js';
+import { uploadPolicy } from '../testing/scan-fixtures.js';
 
 const aJpeg = {
   bytes: new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2]),
@@ -26,7 +27,7 @@ async function aStoredScan(options: { readonly thumbnail: boolean }) {
   const storage = new InMemoryShelfPhotoStorage();
   const repository = new InMemoryShelfScanRepository();
   const { id } = unwrap(
-    await new StoreShelfPhotoUseCase(owner, storage, repository).execute({
+    await new StoreShelfPhotoUseCase(owner, storage, repository, uploadPolicy).execute({
       ...aJpeg,
       ...(options.thumbnail ? { thumbnail: aThumbnail } : {}),
     }),

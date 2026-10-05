@@ -12,6 +12,7 @@ import type {
 } from '@pick-a-book/recognition-application';
 import type {
   DailyScanQuotaExceeded,
+  DailyUploadQuotaExceeded,
   InvalidShelfPhoto,
   ShelfPhotoThumbnailNotFound,
   ShelfScanAlreadyProcessed,
@@ -23,6 +24,7 @@ import type {
 /** Every failure the recognition context names, and so every one a route of it can answer. */
 export type RecognitionError =
   | DailyScanQuotaExceeded
+  | DailyUploadQuotaExceeded
   | InvalidShelfPhoto
   | InvalidShelfScanCursor
   | InvalidShelfScanPageSize
@@ -45,6 +47,8 @@ export type RecognitionError =
  * - `ShelfScanInProgress` → 409 `SCAN_IN_PROGRESS`: another analysis of the photo is running,
  *   and a second would pay for a call only one of them can keep (specs/002-upload-history,
  *   research.md §8);
+ * - `DailyUploadQuotaExceeded` → 429 `DAILY_UPLOAD_QUOTA_EXCEEDED`: the day's uploads are used up,
+ *   nothing was written (FR-017);
  * - `DailyScanQuotaExceeded` → 429 `DAILY_SCAN_QUOTA_EXCEEDED`: the day's analyses are used up,
  *   the photo stays kept (FR-015);
  * - `ShelfScanFailed` → 502: the provider is down or off-contract — an upstream failure,
@@ -83,6 +87,12 @@ export function toHttpException(error: RecognitionError): HttpException {
     case 'daily-scan-quota-exceeded': {
       return new HttpException(
         coded(429, 'Too Many Requests', error.message, 'DAILY_SCAN_QUOTA_EXCEEDED'),
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+    case 'daily-upload-quota-exceeded': {
+      return new HttpException(
+        coded(429, 'Too Many Requests', error.message, 'DAILY_UPLOAD_QUOTA_EXCEEDED'),
         HttpStatus.TOO_MANY_REQUESTS,
       );
     }

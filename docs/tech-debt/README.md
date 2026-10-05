@@ -16,5 +16,4 @@ dette, jamais avant.
 |---|---|
 | [`analyses-sans-delai.md`](analyses-sans-delai.md) | L'appel au scanner n'a pas de délai propre, et une base qui rejette `markCompleted` verrouille l'envoi |
 | [`photo-orpheline-apres-vignette.md`](photo-orpheline-apres-vignette.md) | Un bucket qui refuse la vignette laisse la photo sans ligne en base |
-| [`plafond-envois-en-attente.md`](plafond-envois-en-attente.md) | Seules les analyses sont plafonnées, pas les envois |
 | [`verifications-hors-ci.md`](verifications-hors-ci.md) | T076 (iPhone) et `X-Forwarded-For` sur une révision déployée |

@@ -68,6 +68,7 @@ ne la manipule pas comme entité : il n'en voit que les effets, via deux erreurs
 | `ShelfScanInProgress` | `startAttempt` | Une tentative de moins de 5 min est ouverte pour cet envoi. |
 | `DailyScanQuotaExceeded` | `startAttempt` | Le plafond du jour est atteint. L'envoi reste tel quel, photo conservée. |
 | `InvalidShelfPhotoThumbnail` | `ShelfPhotoThumbnail.of` | Vignette refusée, puis ignorée par l'appelant. |
+| `DailyUploadQuotaExceeded` *(04/10/2026)* | `checkUploadQuota` | Le plafond d'envois du jour est atteint : rien n'est écrit (research.md §13). |
 
 `ShelfScanAlreadyProcessed` existe déjà. Elle signifie désormais « déjà `completed` », et non plus
 « pas `pending` ».
@@ -79,6 +80,7 @@ interface ShelfScanRepositoryPort {
   createPending(scan: NewShelfScan): Promise<void>;          // + scan.thumbnail?: StoredThumbnail
   get(id: ShelfScanId): Promise<ShelfScanRecord | undefined>; // + record.thumbnail
   list(query: ShelfScanPageQuery): Promise<ShelfScanPage>;    // nouveau
+  checkUploadQuota(ownerId: OwnerId, policy: UploadQuotaPolicy): Promise<void>; // nouveau (04/10/2026), refuse DailyUploadQuotaExceeded
   startAttempt(id: ShelfScanId, policy: ScanAttemptPolicy): Promise<ScanAttemptId>; // nouveau
   markCompleted(id: ShelfScanId, attempt: ScanAttemptId, books: readonly DetectedBook[]): Promise<void>; // accepte pending|failed
   markFailed(id: ShelfScanId, attempt: ScanAttemptId): Promise<void>;                                    // accepte pending|failed
@@ -95,6 +97,11 @@ interface ShelfScanCursor { readonly createdAt: Date; readonly id: ShelfScanId }
 interface ShelfScanPage {
   readonly records: readonly ShelfScanRecord[]; // created_at desc, id desc
   readonly next: ShelfScanCursor | undefined;   // absent sur la dernière page
+}
+
+interface UploadQuotaPolicy {
+  readonly dailyLimit: number;       // DAILY_UPLOAD_LIMIT, 100 par défaut
+  readonly timeZone: 'Europe/Paris'; // borne du « jour » du plafond
 }
 
 interface ScanAttemptPolicy {
