@@ -7,7 +7,7 @@ import { err, ok, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
 import type { DrizzleShelfScanRepositoryAdapter } from './drizzle-shelf-scan-repository.adapter.js';
-import { aMigratedRepository, aNewScan, books, ownerId } from './testing/test-repository.js';
+import { aMigratedRepository, aNewScan, books, ownerId } from '../testing/test-repository.js';
 
 const policy = {
   dailyLimit: 50,

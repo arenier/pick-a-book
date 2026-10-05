@@ -2,7 +2,7 @@ import { ShelfPhotoThumbnail } from '@pick-a-book/recognition-domain';
 import { unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
-import { anAdapterOnAFreshBucket } from './testing/test-bucket.js';
+import { anAdapterOnAFreshBucket } from '../testing/test-bucket.js';
 
 /**
  * Thumbnails against the GCS emulator, like the photos (specs/002-upload-history, research.md

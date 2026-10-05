@@ -15,7 +15,7 @@ import {
   anAttemptOn,
   books,
   ownerId,
-} from './testing/test-repository.js';
+} from '../testing/test-repository.js';
 
 /**
  * The history against Postgres (specs/002-upload-history, research.md §4, §6): thumbnails as

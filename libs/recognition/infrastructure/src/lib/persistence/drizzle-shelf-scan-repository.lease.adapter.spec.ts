@@ -2,7 +2,7 @@ import type { ScanAttemptPolicy } from '@pick-a-book/recognition-domain';
 import { unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
-import { aMigratedRepository, aNewScan, books, ownerId } from './testing/test-repository.js';
+import { aMigratedRepository, aNewScan, books, ownerId } from '../testing/test-repository.js';
 
 /**
  * An analysis that outlives its lease (specs/002-upload-history, research.md §8), against

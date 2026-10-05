@@ -3,7 +3,7 @@ import { unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
 import { openShelfPhotoBucket } from './gcs-shelf-photo-storage.adapter.js';
-import { anAdapterOnAFreshBucket } from './testing/test-bucket.js';
+import { anAdapterOnAFreshBucket } from '../testing/test-bucket.js';
 
 const photo = unwrap(
   ShelfPhoto.of(new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3]), 'image/jpeg'),

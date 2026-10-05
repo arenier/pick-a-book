@@ -16,7 +16,7 @@ import {
   anAttemptOn,
   books,
   ownerId,
-} from './testing/test-repository.js';
+} from '../testing/test-repository.js';
 
 /**
  * The reservation of an analysis against Postgres (specs/002-upload-history, research.md §8).

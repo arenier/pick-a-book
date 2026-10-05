@@ -13,7 +13,7 @@ import {
   anAttemptOn,
   books,
   ownerId,
-} from './testing/test-repository.js';
+} from '../testing/test-repository.js';
 
 describe('DrizzleShelfScanRepositoryAdapter, creating a record', () => {
   const { pool, repository } = aMigratedRepository();

@@ -58,7 +58,7 @@ export class BookTitle {
 - **Ses entrées et sorties sont des DTO** (`<nom>.dto.ts`), interfaces `readonly` de types simples
   (chaînes, nombres, octets) : jamais un objet de domaine ne sort d'`application`. C'est ce que
   manipule l'orchestrateur.
-- Il se teste sans infra, avec les doubles en mémoire de `application/src/lib/testing/`. Un double
+- Il se teste sans infra, avec les doubles en mémoire de `recognition-application/testing` (`application/src/testing/`). Un double
   **porte les mêmes règles que l'adapter réel** (transitions d'état, unicité) : sinon les tests
   prouvent un comportement que la prod n'a pas.
 

@@ -6,6 +6,13 @@ Ne dependent que du domaine et ne parlent qu'aux ports (ADR 0002). Les types exp
 `scan-shelf.dto.ts` sont les **DTO de frontiere** du contexte : c'est tout ce que
 l'orchestrateur de `apps/api` a le droit de manipuler (ADR 0003).
 
+## Organisation
+
+`src/lib/` se range par ce que fait le use case : `scan/` (analyser une photo conservée, relance
+comprise), `store/` (conserver une photo), `history/` (lister, lire un envoi, curseur de page),
+`photo/` (relire une image), `dto/` (les DTO de frontière et leur conversion). `owned-shelf-scan.ts`,
+partagé par plusieurs use cases, reste à la racine.
+
 ## Doubles de test
 
 `src/testing/` porte les doubles en memoire des ports (`InMemoryShelfScanRepository`,
