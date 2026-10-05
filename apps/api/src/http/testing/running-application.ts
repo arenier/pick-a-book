@@ -1,13 +1,13 @@
 import { Controller, Get } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
+import { InMemoryShelfScanRepository } from '@pick-a-book/recognition-application/testing';
 import { LoggerModule } from 'nestjs-pino';
 import { afterAll, beforeAll } from 'vitest';
 
 import { AppModule } from '../../app/app.module';
 import { loadEnvironment } from '../../config/environment';
-import { InMemoryPhotoStorage } from '../../recognition/testing/in-memory-photo-storage';
-import { InMemoryScanRepository } from '../../recognition/testing/in-memory-scan-repository';
+import { anInMemoryPhotoStorage } from '../../recognition/testing/in-memory-photo-storage';
 import { applyHttpBoundary } from '../http-boundary';
 
 /**
@@ -46,8 +46,8 @@ export function aRunningApplication() {
       .useModule(LoggerModule.forRoot({ pinoHttp: { level: 'silent' } }))
       .overrideProvider('ShelfScanArchive')
       .useValue({
-        storage: new InMemoryPhotoStorage(),
-        repository: new InMemoryScanRepository(),
+        storage: anInMemoryPhotoStorage(),
+        repository: new InMemoryShelfScanRepository(),
         migrate: async (): Promise<void> => {
           // Nothing to migrate: there is no database.
         },

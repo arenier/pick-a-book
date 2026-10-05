@@ -17,5 +17,5 @@
       "path": "../domain/tsconfig.lib.json"
     }
   ],
-  "exclude": ["vitest.config.mts", "src/**/*.spec.ts", "src/**/*.test.ts", "src/**/testing/**"]
+  "exclude": ["vitest.config.mts", "src/**/*.spec.ts", "src/**/*.test.ts", "src/lib/**/testing/**"]
 }

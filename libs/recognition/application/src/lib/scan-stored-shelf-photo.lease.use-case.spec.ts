@@ -8,8 +8,8 @@ import {
 import { ok, unwrap, type Result } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
-import { InMemoryShelfPhotoStorage } from './testing/in-memory-shelf-photo-storage.js';
-import { InMemoryShelfScanRepository } from './testing/in-memory-shelf-scan-repository.js';
+import { InMemoryShelfPhotoStorage } from '../testing/in-memory-shelf-photo-storage.js';
+import { InMemoryShelfScanRepository } from '../testing/in-memory-shelf-scan-repository.js';
 import { ScanStoredShelfPhotoUseCase } from './scan-stored-shelf-photo.use-case.js';
 import { StoreShelfPhotoUseCase } from './store-shelf-photo.use-case.js';
 import { aJpeg, books, policy } from './testing/scan-fixtures.js';

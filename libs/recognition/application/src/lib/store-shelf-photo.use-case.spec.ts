@@ -3,8 +3,8 @@ import { err, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it, vi } from 'vitest';
 
 import { StoreShelfPhotoUseCase } from './store-shelf-photo.use-case.js';
-import { InMemoryShelfPhotoStorage } from './testing/in-memory-shelf-photo-storage.js';
-import { InMemoryShelfScanRepository } from './testing/in-memory-shelf-scan-repository.js';
+import { InMemoryShelfPhotoStorage } from '../testing/in-memory-shelf-photo-storage.js';
+import { InMemoryShelfScanRepository } from '../testing/in-memory-shelf-scan-repository.js';
 
 const aJpeg = {
   bytes: new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2]),

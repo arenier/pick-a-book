@@ -12,8 +12,8 @@ import { describe, expect, it } from 'vitest';
 
 import { GetShelfScanUseCase } from './get-shelf-scan.use-case.js';
 import { StoreShelfPhotoUseCase } from './store-shelf-photo.use-case.js';
-import { InMemoryShelfPhotoStorage } from './testing/in-memory-shelf-photo-storage.js';
-import { InMemoryShelfScanRepository } from './testing/in-memory-shelf-scan-repository.js';
+import { InMemoryShelfPhotoStorage } from '../testing/in-memory-shelf-photo-storage.js';
+import { InMemoryShelfScanRepository } from '../testing/in-memory-shelf-scan-repository.js';
 import { policy } from './testing/scan-fixtures.js';
 
 const owner = unwrap(OwnerId.of('default'));
