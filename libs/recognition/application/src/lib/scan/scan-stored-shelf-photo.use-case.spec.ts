@@ -7,7 +7,7 @@ import {
 import { err, ok, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it, vi } from 'vitest';
 
-import { aJpeg, aStoredPhoto, books, failing, scanning } from './testing/scan-fixtures.js';
+import { aJpeg, aStoredPhoto, books, failing, scanning } from '../testing/scan-fixtures.js';
 
 describe('ScanStoredShelfPhotoUseCase', () => {
   it('scans the photo stored under the id', async () => {

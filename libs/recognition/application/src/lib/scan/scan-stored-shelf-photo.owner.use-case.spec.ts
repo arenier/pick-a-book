@@ -2,7 +2,7 @@ import { OwnerId, ShelfScanId, ShelfScanNotFound } from '@pick-a-book/recognitio
 import { err, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
-import { aStoredPhoto, books, scanning } from './testing/scan-fixtures.js';
+import { aStoredPhoto, books, scanning } from '../testing/scan-fixtures.js';
 
 /**
  * Running an analysis is the owner's alone (specs/002-upload-history, FR-012): the scan of someone

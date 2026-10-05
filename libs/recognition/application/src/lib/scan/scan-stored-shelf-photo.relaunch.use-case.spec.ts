@@ -6,7 +6,7 @@ import {
 import { err, ok, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
-import { aStoredPhoto, books, failing } from './testing/scan-fixtures.js';
+import { aStoredPhoto, books, failing } from '../testing/scan-fixtures.js';
 
 /**
  * Running the analysis of a scan again (specs/002-upload-history, US3, FR-011): allowed for a scan

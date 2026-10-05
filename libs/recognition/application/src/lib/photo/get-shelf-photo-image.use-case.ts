@@ -7,8 +7,8 @@ import {
 } from '@pick-a-book/recognition-domain';
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
-import { findOwnedScan } from './owned-shelf-scan.js';
-import type { GetShelfPhotoImageCommand, StoredImageDto } from './shelf-scan-history.dto.js';
+import { findOwnedScan } from '../owned-shelf-scan.js';
+import type { GetShelfPhotoImageCommand, StoredImageDto } from '../dto/shelf-scan-history.dto.js';
 
 /** Why an image was not given: no such scan, or the scan has no thumbnail — each a 404. */
 export type GetShelfPhotoImageFailure = ShelfScanNotFound | ShelfPhotoThumbnailNotFound;

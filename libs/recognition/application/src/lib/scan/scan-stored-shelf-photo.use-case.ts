@@ -12,10 +12,10 @@ import {
 } from '@pick-a-book/recognition-domain';
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
-import { findOwnedScan } from './owned-shelf-scan.js';
-import type { ScanShelfResult } from './scan-shelf.dto.js';
-import type { ScanStoredShelfPhotoCommand } from './shelf-photo.dto.js';
-import { toDetectedBookDto } from './to-shelf-scan-dto.js';
+import { findOwnedScan } from '../owned-shelf-scan.js';
+import type { ScanShelfResult } from '../dto/scan-shelf.dto.js';
+import type { ScanStoredShelfPhotoCommand } from '../dto/shelf-photo.dto.js';
+import { toDetectedBookDto } from '../dto/to-shelf-scan-dto.js';
 
 /**
  * Why a stored photo was not scanned, or its scan not kept — each one an HTTP status. The

@@ -4,8 +4,8 @@ import { err, ok, type Result } from '@pick-a-book/shared-result';
 import type { InvalidShelfScanCursor } from './invalid-shelf-scan-cursor.error.js';
 import { InvalidShelfScanPageSize } from './invalid-shelf-scan-page-size.error.js';
 import { decodeCursor, encodeCursor } from './shelf-scan-cursor.js';
-import type { ListShelfScansCommand, ShelfScanPageDto } from './shelf-scan-history.dto.js';
-import { toSummaryDto } from './to-shelf-scan-dto.js';
+import type { ListShelfScansCommand, ShelfScanPageDto } from '../dto/shelf-scan-history.dto.js';
+import { toSummaryDto } from '../dto/to-shelf-scan-dto.js';
 
 /** Why a page of the history was not given: the caller's page size or cursor — each a 400. */
 export type ListShelfScansFailure = InvalidShelfScanPageSize | InvalidShelfScanCursor;

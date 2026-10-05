@@ -14,8 +14,8 @@ import { InvalidShelfScanCursor } from './invalid-shelf-scan-cursor.error.js';
 import { InvalidShelfScanPageSize } from './invalid-shelf-scan-page-size.error.js';
 import { ListShelfScansUseCase } from './list-shelf-scans.use-case.js';
 import { encodeCursor } from './shelf-scan-cursor.js';
-import type { ShelfScanPageDto, ShelfScanSummaryDto } from './shelf-scan-history.dto.js';
-import { InMemoryShelfScanRepository } from '../testing/in-memory-shelf-scan-repository.js';
+import type { ShelfScanPageDto, ShelfScanSummaryDto } from '../dto/shelf-scan-history.dto.js';
+import { InMemoryShelfScanRepository } from '../../testing/in-memory-shelf-scan-repository.js';
 
 const owner = unwrap(OwnerId.of('default'));
 

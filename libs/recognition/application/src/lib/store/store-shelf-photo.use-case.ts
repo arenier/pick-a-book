@@ -10,7 +10,7 @@ import {
 } from '@pick-a-book/recognition-domain';
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
-import type { StoreShelfPhotoCommand, StoreShelfPhotoResult } from './shelf-photo.dto.js';
+import type { StoreShelfPhotoCommand, StoreShelfPhotoResult } from '../dto/shelf-photo.dto.js';
 
 /**
  * First step of a scan: keeps the photo, before the long and failure-prone VLM call can lose

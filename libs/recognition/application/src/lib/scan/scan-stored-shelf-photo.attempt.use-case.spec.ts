@@ -8,8 +8,8 @@ import {
 import { err, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it, vi } from 'vitest';
 
-import { aStoredPhoto, books, failing, policy, scanning } from './testing/scan-fixtures.js';
-import { InMemoryShelfPhotoStorage } from '../testing/in-memory-shelf-photo-storage.js';
+import { aStoredPhoto, books, failing, policy, scanning } from '../testing/scan-fixtures.js';
+import { InMemoryShelfPhotoStorage } from '../../testing/in-memory-shelf-photo-storage.js';
 
 // Reserved before anything is read or paid for (specs/002-upload-history, research.md §8).
 describe('ScanStoredShelfPhotoUseCase, reserving the attempt', () => {

@@ -5,9 +5,9 @@ import {
 } from '@pick-a-book/recognition-domain';
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
-import { findOwnedScan } from './owned-shelf-scan.js';
-import type { GetShelfScanCommand, ShelfScanDetailDto } from './shelf-scan-history.dto.js';
-import { toDetailDto } from './to-shelf-scan-dto.js';
+import { findOwnedScan } from '../owned-shelf-scan.js';
+import type { GetShelfScanCommand, ShelfScanDetailDto } from '../dto/shelf-scan-history.dto.js';
+import { toDetailDto } from '../dto/to-shelf-scan-dto.js';
 
 /**
  * The detail of one upload: how its analysis ended and, when it completed, the books it found, in
