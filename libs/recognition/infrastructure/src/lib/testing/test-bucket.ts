@@ -1,7 +1,7 @@
 import { Storage } from '@google-cloud/storage';
 import { beforeAll } from 'vitest';
 
-import { GcsShelfPhotoStorageAdapter } from '../gcs-shelf-photo-storage.adapter.js';
+import { GcsShelfPhotoStorageAdapter } from '../storage/gcs-shelf-photo-storage.adapter.js';
 
 /**
  * Runs against the GCS emulator (fake-gcs-server) of docker-compose, not a double: adapters

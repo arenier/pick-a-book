@@ -1,9 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import { EntryDetailScreen } from './entry-detail-screen';
-import { HistoryScreen, type HistoryScreenProps } from './history-screen';
+import { EntryDetailScreen } from './detail/entry-detail-screen';
+import { HistoryScreen, type HistoryScreenProps } from './list/history-screen';
 import { createHistoryUpdates } from './history-updates';
-import type { LoadDetail, RescanShelfScan } from './use-entry-detail';
+import type { LoadDetail, RescanShelfScan } from './detail/use-entry-detail';
 
 export interface UploadHistoryProps extends Omit<HistoryScreenProps, 'updates'> {
   /** The upload whose detail to show; absent: the list. The shell reads it from the route. */

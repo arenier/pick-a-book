@@ -12,10 +12,10 @@ import {
 } from '@pick-a-book/recognition-domain';
 import { err, ok, unwrap, type Result } from '@pick-a-book/shared-result';
 
-import { ScanStoredShelfPhotoUseCase } from '../scan-stored-shelf-photo.use-case.js';
-import { StoreShelfPhotoUseCase } from '../store-shelf-photo.use-case.js';
-import { InMemoryShelfPhotoStorage } from './in-memory-shelf-photo-storage.js';
-import { InMemoryShelfScanRepository } from './in-memory-shelf-scan-repository.js';
+import { ScanStoredShelfPhotoUseCase } from '../scan/scan-stored-shelf-photo.use-case.js';
+import { StoreShelfPhotoUseCase } from '../store/store-shelf-photo.use-case.js';
+import { InMemoryShelfPhotoStorage } from '../../testing/in-memory-shelf-photo-storage.js';
+import { InMemoryShelfScanRepository } from '../../testing/in-memory-shelf-scan-repository.js';
 
 /**
  * What the specs of `ScanStoredShelfPhotoUseCase` share: a scanner double, a stored photo and

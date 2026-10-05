@@ -37,10 +37,21 @@ le mode de défaillance que l'ADR 0005 détecte le moins bien en aval.
 références de modèles bougent vite : `model` est surchargeable dans la configuration des deux
 adapters, précisément pour ne pas avoir à toucher au code quand cela se reproduit.
 
+## Organisation
+
+`src/lib/` se range par ce que l'adapter fait, un dossier par port :
+
+- `scanner/` : les trois adapters de `ShelfScannerPort` (Gemini, Qwen, stub), leur prompt commun, la
+  validation `zod` de la réponse et les réponses enregistrées (`recorded/`) ;
+- `storage/` : l'adapter GCS des photos et vignettes, et l'erreur `ShelfPhotoStorageFailed` ;
+- `persistence/` : le dépôt Drizzle (une classe, ses specs réparties par sujet), l'application des
+  migrations, le schéma et les migrations (`drizzle/`) ;
+- `testing/` : l'aide aux specs (Postgres et bucket de `docker compose`), exclue du build.
+
 ## Tests
 
 Déterministes, sans réseau ni clé : le transport (`fetch`) est **injecté** et remplacé par un
-stub qui rejoue une réponse enregistrée. Voir [`src/lib/recorded/README.md`](src/lib/recorded/README.md)
+stub qui rejoue une réponse enregistrée. Voir [`src/lib/scanner/recorded/README.md`](src/lib/scanner/recorded/README.md)
 pour la provenance de chaque fixture — celle de Gemini est un enregistrement réel, celle de
 Qwen est écrite à la main, et cette différence compte.
 
@@ -54,8 +65,8 @@ sa place en CI, où il coûterait un appel payant par run.
 | `GcsShelfPhotoStorageAdapter` | `ShelfPhotoStoragePort` | bucket Cloud Storage (ADR 0004), clé `{ownerId}/shelf_photo/{id}` |
 | `DrizzleShelfScanRepositoryAdapter` | `ShelfScanRepositoryPort` | Postgres via Drizzle (ADR 0006), tables `uploads` + `shelf_scans` |
 
-Le schéma vit dans `src/lib/drizzle/schema.ts` ; les migrations, **générées** par
-`yarn db:generate` et jamais écrites à la main, dans `src/lib/drizzle/migrations/`. L'API les
+Le schéma vit dans `src/lib/persistence/drizzle/schema.ts` ; les migrations, **générées** par
+`yarn db:generate` et jamais écrites à la main, dans `src/lib/persistence/drizzle/migrations/`. L'API les
 applique au démarrage (`migrateDatabase`, sous verrou consultatif Postgres), le build de l'API les
 copiant à côté du bundle.
 

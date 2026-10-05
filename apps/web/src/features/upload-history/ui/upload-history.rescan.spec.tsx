@@ -3,10 +3,10 @@ import { describe, expect, it, vi } from 'vitest';
 
 import type { DetectedBook } from '../model/detected-book';
 import type { DetailAnswer, RescanAnswer } from '../model/history-state';
-import type { ObserveEnd } from './history-screen';
+import type { ObserveEnd } from './list/history-screen';
 import { UploadHistory } from './upload-history';
-import type { LoadDetail, RescanShelfScan } from './use-entry-detail';
-import type { ListPage } from './use-history';
+import type { LoadDetail, RescanShelfScan } from './detail/use-entry-detail';
+import type { ListPage } from './list/use-history';
 
 /**
  * Going from one upload to another while an analysis runs again (specs/002-upload-history, US3):

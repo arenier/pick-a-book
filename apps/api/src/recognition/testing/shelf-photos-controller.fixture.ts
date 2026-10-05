@@ -12,12 +12,12 @@ import {
   type ShelfScannerPort,
   type UploadQuotaPolicy,
 } from '@pick-a-book/recognition-domain';
+import { InMemoryShelfScanRepository } from '@pick-a-book/recognition-application/testing';
 import { StubShelfScannerAdapter } from '@pick-a-book/recognition-infrastructure';
 import { unwrap } from '@pick-a-book/shared-result';
 
 import { ShelfPhotosController } from '../shelf-photos.controller';
-import { InMemoryPhotoStorage } from './in-memory-photo-storage';
-import { InMemoryScanRepository } from './in-memory-scan-repository';
+import { anInMemoryPhotoStorage } from './in-memory-photo-storage';
 
 /** The policy of production, unless a spec wants another: 50 a day, a 5 minute lease. */
 export const defaultPolicy = {
@@ -45,8 +45,8 @@ export function aShelfPhotosController(
     readonly uploadPolicy?: UploadQuotaPolicy;
   } = {},
 ) {
-  const memory = new InMemoryPhotoStorage();
-  const repository = new InMemoryScanRepository();
+  const memory = anInMemoryPhotoStorage();
+  const repository = new InMemoryShelfScanRepository();
   const storage = overrides.storage ?? memory;
   const scanner = overrides.scanner ?? new StubShelfScannerAdapter();
   const owner = unwrap(OwnerId.of('default'));

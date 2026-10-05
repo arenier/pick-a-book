@@ -13,9 +13,9 @@ import { unwrap } from '@pick-a-book/shared-result';
 import { Pool } from 'pg';
 import { afterAll, beforeAll } from 'vitest';
 
-import { DrizzleShelfScanRepositoryAdapter } from '../drizzle-shelf-scan-repository.adapter.js';
-import { migrateDatabase } from '../migrate-database.js';
-import { MIGRATIONS_FOLDER, testDatabaseUrl } from '../drizzle/test-database.js';
+import { DrizzleShelfScanRepositoryAdapter } from '../persistence/drizzle-shelf-scan-repository.adapter.js';
+import { migrateDatabase } from '../persistence/migrate-database.js';
+import { MIGRATIONS_FOLDER, testDatabaseUrl } from '../persistence/drizzle/test-database.js';
 
 /**
  * Runs against the Postgres of docker-compose, migrated with the committed migrations — the
