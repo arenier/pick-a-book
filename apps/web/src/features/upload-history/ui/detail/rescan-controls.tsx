@@ -1,7 +1,7 @@
 import { useMessages } from '@pick-a-book/shared-i18n';
 import { Alert, AlertDescription, Button, Spinner } from '@pick-a-book/shared-ui';
 
-import type { RescanFailure, RescanState } from '../model/history-state';
+import type { RescanFailure, RescanState } from '../../model/history-state';
 
 export interface RescanControlsProps {
   readonly state: RescanState;

@@ -1,9 +1,9 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { DetectedBook } from '../model/detected-book';
-import type { HistoryOutcome } from '../model/history-entry';
-import type { DetailAnswer, RescanAnswer, RescanFailure } from '../model/history-state';
+import type { DetectedBook } from '../../model/detected-book';
+import type { HistoryOutcome } from '../../model/history-entry';
+import type { DetailAnswer, RescanAnswer, RescanFailure } from '../../model/history-state';
 import { EntryDetailScreen } from './entry-detail-screen';
 import type { RescanShelfScan } from './use-entry-detail';
 import type { LoadDetail } from './use-entry-detail';

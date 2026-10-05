@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import type { DetectedBook } from '../model/detected-book';
+import type { DetectedBook } from '../../model/detected-book';
 import { DetectedBooksList } from './detected-books-list';
 
 const aBook = (title: string, author?: string): DetectedBook => ({

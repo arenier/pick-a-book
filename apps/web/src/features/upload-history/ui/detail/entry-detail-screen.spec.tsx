@@ -2,9 +2,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { StrictMode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { DetectedBook } from '../model/detected-book';
-import type { HistoryOutcome } from '../model/history-entry';
-import type { DetailAnswer } from '../model/history-state';
+import type { DetectedBook } from '../../model/detected-book';
+import type { HistoryOutcome } from '../../model/history-entry';
+import type { DetailAnswer } from '../../model/history-state';
 import { EntryDetailScreen } from './entry-detail-screen';
 import type { LoadDetail } from './use-entry-detail';
 

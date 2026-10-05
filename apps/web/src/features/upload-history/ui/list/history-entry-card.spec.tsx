@@ -2,8 +2,8 @@ import { createI18n, I18nProvider } from '@pick-a-book/shared-i18n';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { resources } from '../../../i18n/resources';
-import type { HistoryEntry, HistoryOutcome } from '../model/history-entry';
+import { resources } from '../../../../i18n/resources';
+import type { HistoryEntry, HistoryOutcome } from '../../model/history-entry';
 import { HistoryEntryCard } from './history-entry-card';
 
 const anId = '1f9c2e3a-4b5d-4e6f-8a7b-9c0d1e2f3a4b';

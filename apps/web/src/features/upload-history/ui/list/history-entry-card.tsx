@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { useMessages } from '@pick-a-book/shared-i18n';
 import { FallbackImage } from '@pick-a-book/shared-ui';
 
-import { thumbnailUrl } from '../api/history-api';
-import type { HistoryEntry, HistoryOutcome } from '../model/history-entry';
+import { thumbnailUrl } from '../../api/history-api';
+import type { HistoryEntry, HistoryOutcome } from '../../model/history-entry';
 
 export interface HistoryEntryCardProps {
   readonly entry: HistoryEntry;

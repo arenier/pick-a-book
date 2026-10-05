@@ -2,10 +2,10 @@ import { useMemo } from 'react';
 import { useMessages } from '@pick-a-book/shared-i18n';
 import { FallbackImage } from '@pick-a-book/shared-ui';
 
-import { photoUrl, thumbnailUrl } from '../api/history-api';
-import type { DetectedBook } from '../model/detected-book';
-import type { HistoryEntry } from '../model/history-entry';
-import type { RescanState } from '../model/history-state';
+import { photoUrl, thumbnailUrl } from '../../api/history-api';
+import type { DetectedBook } from '../../model/detected-book';
+import type { HistoryEntry } from '../../model/history-entry';
+import type { RescanState } from '../../model/history-state';
 import { DetectedBooksList } from './detected-books-list';
 import { RescanControls } from './rescan-controls';
 

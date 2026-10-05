@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { HistoryEntry, HistoryOutcome } from '../model/history-entry';
-import type { HistoryState, PageAnswer } from '../model/history-state';
+import type { HistoryEntry, HistoryOutcome } from '../../model/history-entry';
+import type { HistoryState, PageAnswer } from '../../model/history-state';
 
 export type ListPage = (request: { readonly cursor?: string }) => Promise<PageAnswer>;
 

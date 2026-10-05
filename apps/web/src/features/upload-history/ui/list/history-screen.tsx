@@ -2,11 +2,11 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useMessages } from '@pick-a-book/shared-i18n';
 import { Button, Spinner, buttonVariants, cn } from '@pick-a-book/shared-ui';
 
-import { listShelfScans } from '../api/history-api';
-import type { HistoryState } from '../model/history-state';
+import { listShelfScans } from '../../api/history-api';
+import type { HistoryState } from '../../model/history-state';
 import { HistoryEntryCard } from './history-entry-card';
-import { HistoryFailureMessage } from './history-failure-message';
-import type { HistoryUpdates } from './history-updates';
+import { HistoryFailureMessage } from '../history-failure-message';
+import type { HistoryUpdates } from '../history-updates';
 import { useHistory, type ListPage } from './use-history';
 
 /**

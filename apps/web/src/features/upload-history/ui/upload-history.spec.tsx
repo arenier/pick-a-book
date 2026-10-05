@@ -3,10 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { HistoryEntry } from '../model/history-entry';
 import type { DetailAnswer, PageAnswer } from '../model/history-state';
-import type { ObserveEnd } from './history-screen';
+import type { ObserveEnd } from './list/history-screen';
 import { UploadHistory } from './upload-history';
-import type { LoadDetail } from './use-entry-detail';
-import type { ListPage } from './use-history';
+import type { LoadDetail } from './detail/use-entry-detail';
+import type { ListPage } from './list/use-history';
 
 const idOf = (index: number) => `00000000-0000-4000-8000-${String(index).padStart(12, '0')}`;
 

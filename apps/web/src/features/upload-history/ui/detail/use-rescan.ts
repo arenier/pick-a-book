@@ -1,7 +1,7 @@
 import { useCallback, useRef, type Dispatch, type SetStateAction } from 'react';
 
-import { outcomeOfCount, type HistoryOutcome } from '../model/history-entry';
-import type { EntryDetailState, RescanAnswer } from '../model/history-state';
+import { outcomeOfCount, type HistoryOutcome } from '../../model/history-entry';
+import type { EntryDetailState, RescanAnswer } from '../../model/history-state';
 
 type Loaded = Extract<EntryDetailState, { status: 'loaded' }>;
 

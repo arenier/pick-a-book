@@ -1,7 +1,7 @@
 import { useMessages } from '@pick-a-book/shared-i18n';
 import { BookTitle } from '@pick-a-book/shared-ui';
 
-import type { DetectedBook } from '../model/detected-book';
+import type { DetectedBook } from '../../model/detected-book';
 
 export interface DetectedBooksListProps {
   readonly books: readonly DetectedBook[];

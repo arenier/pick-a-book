@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { HistoryOutcome } from '../model/history-entry';
-import type { DetailAnswer, EntryDetailState, RescanAnswer } from '../model/history-state';
+import type { HistoryOutcome } from '../../model/history-entry';
+import type { DetailAnswer, EntryDetailState, RescanAnswer } from '../../model/history-state';
 import { useRescan } from './use-rescan';
 
 export type LoadDetail = (id: string) => Promise<DetailAnswer>;

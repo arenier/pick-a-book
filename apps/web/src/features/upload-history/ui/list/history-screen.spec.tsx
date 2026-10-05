@@ -2,10 +2,10 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { StrictMode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { HistoryEntry } from '../model/history-entry';
-import type { PageAnswer } from '../model/history-state';
+import type { HistoryEntry } from '../../model/history-entry';
+import type { PageAnswer } from '../../model/history-state';
 import { HistoryScreen, type ObserveEnd } from './history-screen';
-import { createHistoryUpdates } from './history-updates';
+import { createHistoryUpdates } from '../history-updates';
 import type { ListPage } from './use-history';
 
 const anEntry = (index: number): HistoryEntry => ({

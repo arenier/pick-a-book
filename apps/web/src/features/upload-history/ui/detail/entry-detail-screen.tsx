@@ -2,9 +2,9 @@ import { useCallback } from 'react';
 import { useMessages } from '@pick-a-book/shared-i18n';
 import { Button, Spinner, buttonVariants, cn } from '@pick-a-book/shared-ui';
 
-import { getShelfScan, rescanShelfScan } from '../api/history-api';
-import type { HistoryOutcome } from '../model/history-entry';
-import { HistoryFailureMessage } from './history-failure-message';
+import { getShelfScan, rescanShelfScan } from '../../api/history-api';
+import type { HistoryOutcome } from '../../model/history-entry';
+import { HistoryFailureMessage } from '../history-failure-message';
 import { LoadedEntry } from './loaded-entry';
 import { useEntryDetail, type LoadDetail, type RescanShelfScan } from './use-entry-detail';
 
