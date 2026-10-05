@@ -2,7 +2,7 @@ import type { Result } from '@pick-a-book/shared-result';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import type { DetectedBook } from './detected-book.js';
-import type { ShelfPhoto } from './shelf-photo.js';
+import type { ShelfPhoto } from '../photo/shelf-photo.js';
 import {
   SHELF_SCANNER_PORT,
   ShelfScanFailed,

@@ -1,10 +1,10 @@
 import { err, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
-import type { DetectedBook } from './detected-book.js';
-import { InvalidValue } from './invalid-value.error.js';
-import type { OwnerId } from './owner-id.js';
-import type { ShelfPhotoMediaType } from './shelf-photo.js';
+import type { DetectedBook } from '../detection/detected-book.js';
+import { InvalidValue } from '../invalid-value.error.js';
+import type { OwnerId } from '../owner/owner-id.js';
+import type { ShelfPhotoMediaType } from '../photo/shelf-photo.js';
 import { ShelfScanAlreadyProcessed } from './shelf-scan-already-processed.error.js';
 import { ShelfScanId } from './shelf-scan-id.js';
 import { ShelfScanNotFound } from './shelf-scan-not-found.error.js';

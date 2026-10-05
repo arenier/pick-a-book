@@ -1,7 +1,7 @@
 import { unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
-import { ShelfScanId } from './shelf-scan-id.js';
+import { ShelfScanId } from '../scan/shelf-scan-id.js';
 import { ShelfScanInProgress } from './shelf-scan-in-progress.error.js';
 
 describe('ShelfScanInProgress', () => {

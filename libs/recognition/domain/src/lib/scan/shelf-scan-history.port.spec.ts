@@ -1,8 +1,8 @@
 import { describe, expectTypeOf, it } from 'vitest';
 
-import type { OwnerId } from './owner-id.js';
+import type { OwnerId } from '../owner/owner-id.js';
 import type { ShelfScanId } from './shelf-scan-id.js';
-import type { ThumbnailMediaType } from './shelf-photo-thumbnail.js';
+import type { ThumbnailMediaType } from '../photo/shelf-photo-thumbnail.js';
 import type {
   ShelfScanCursor,
   ShelfScanPage,

@@ -5,9 +5,9 @@ import { Author } from './author.js';
 import { BookTitle } from './book-title.js';
 import { Confidence } from './confidence.js';
 import { DetectedBook } from './detected-book.js';
-import { InvalidShelfPhoto } from './invalid-shelf-photo.error.js';
-import { InvalidValue } from './invalid-value.error.js';
-import { ShelfPhoto, isShelfPhotoMediaType } from './shelf-photo.js';
+import { InvalidShelfPhoto } from '../photo/invalid-shelf-photo.error.js';
+import { InvalidValue } from '../invalid-value.error.js';
+import { ShelfPhoto, isShelfPhotoMediaType } from '../photo/shelf-photo.js';
 
 // Specs build their fixtures with `unwrap`: a value that does not construct is a broken
 // fixture, and failing loudly is what a test wants. Production code never does this.

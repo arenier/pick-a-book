@@ -1,6 +1,6 @@
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
-import { InvalidValue } from './invalid-value.error.js';
+import { InvalidValue } from '../invalid-value.error.js';
 
 /**
  * Whose photos these are — the first segment of every bucket key

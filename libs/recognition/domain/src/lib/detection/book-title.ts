@@ -1,6 +1,6 @@
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
-import { InvalidValue } from './invalid-value.error.js';
+import { InvalidValue } from '../invalid-value.error.js';
 
 /**
  * A title as read off a book spine, before any reconciliation.

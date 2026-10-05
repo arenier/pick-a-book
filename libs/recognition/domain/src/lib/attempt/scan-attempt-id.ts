@@ -1,6 +1,6 @@
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
-import { InvalidValue } from './invalid-value.error.js';
+import { InvalidValue } from '../invalid-value.error.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u;
 

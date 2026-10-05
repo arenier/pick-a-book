@@ -1,7 +1,7 @@
 import type { DailyScanQuotaExceeded } from './daily-scan-quota-exceeded.error.js';
-import type { ShelfScanAlreadyProcessed } from './shelf-scan-already-processed.error.js';
+import type { ShelfScanAlreadyProcessed } from '../scan/shelf-scan-already-processed.error.js';
 import type { ShelfScanInProgress } from './shelf-scan-in-progress.error.js';
-import type { ShelfScanNotFound } from './shelf-scan-not-found.error.js';
+import type { ShelfScanNotFound } from '../scan/shelf-scan-not-found.error.js';
 
 /**
  * Why an analysis was not allowed to start, in the order the port checks them: the scan does

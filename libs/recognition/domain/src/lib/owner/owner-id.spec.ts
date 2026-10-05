@@ -1,7 +1,7 @@
 import { err, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
-import { InvalidValue } from './invalid-value.error.js';
+import { InvalidValue } from '../invalid-value.error.js';
 import { OwnerId } from './owner-id.js';
 
 const ownerId = (raw: string) => unwrap(OwnerId.of(raw));

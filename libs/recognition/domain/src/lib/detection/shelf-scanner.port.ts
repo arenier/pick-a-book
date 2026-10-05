@@ -1,7 +1,7 @@
 import type { Result } from '@pick-a-book/shared-result';
 
 import type { DetectedBook } from './detected-book.js';
-import type { ShelfPhoto } from './shelf-photo.js';
+import type { ShelfPhoto } from '../photo/shelf-photo.js';
 
 /**
  * Outbound port of the recognition context (ADR 0005).

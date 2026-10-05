@@ -1,4 +1,4 @@
-import type { ShelfScanId } from './shelf-scan-id.js';
+import type { ShelfScanId } from '../scan/shelf-scan-id.js';
 
 /**
  * An analysis of this scan is already running: a second one would pay for a VLM call whose

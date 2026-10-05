@@ -1,6 +1,6 @@
 import { err, ok, type Result } from '@pick-a-book/shared-result';
 
-import { InvalidValue } from './invalid-value.error.js';
+import { InvalidValue } from '../invalid-value.error.js';
 
 /**
  * The confidence attached to a detection, in [0, 1].

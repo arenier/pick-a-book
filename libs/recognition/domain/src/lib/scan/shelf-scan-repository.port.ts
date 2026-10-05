@@ -1,11 +1,11 @@
 import type { Result } from '@pick-a-book/shared-result';
 
-import type { DetectedBook } from './detected-book.js';
-import type { OwnerId } from './owner-id.js';
-import type { ScanAttemptId } from './scan-attempt-id.js';
-import type { ScanAttemptPolicy, ScanAttemptRefusal } from './scan-attempt.js';
-import type { ShelfPhotoMediaType } from './shelf-photo.js';
-import type { ThumbnailMediaType } from './shelf-photo-thumbnail.js';
+import type { DetectedBook } from '../detection/detected-book.js';
+import type { OwnerId } from '../owner/owner-id.js';
+import type { ScanAttemptId } from '../attempt/scan-attempt-id.js';
+import type { ScanAttemptPolicy, ScanAttemptRefusal } from '../attempt/scan-attempt.js';
+import type { ShelfPhotoMediaType } from '../photo/shelf-photo.js';
+import type { ThumbnailMediaType } from '../photo/shelf-photo-thumbnail.js';
 import type { ShelfScanAlreadyProcessed } from './shelf-scan-already-processed.error.js';
 import type { ShelfScanId } from './shelf-scan-id.js';
 import type { ShelfScanNotFound } from './shelf-scan-not-found.error.js';
