@@ -97,6 +97,22 @@ panne.
    ```
    **Attendu** : 2.
 
+## Scénario 5 bis : plafond d'envois (FR-017, SC-007)
+
+1. Fixer `DAILY_UPLOAD_LIMIT=2` dans `.env`, redémarrer l'API, envoyer trois photos depuis l'écran
+   d'envoi.
+   **Attendu** : les deux premières sont conservées. La troisième affiche « Limite d'envois du jour
+   atteinte… » : elle n'est pas conservée.
+2. Vérifier qu'elle n'a rien laissé :
+   ```bash
+   docker compose exec db psql -U pick_a_book -d pick_a_book -c "
+     select count(*) from uploads where type = 'shelf_photo'
+     and created_at >= date_trunc('day', now() at time zone 'Europe/Paris') at time zone 'Europe/Paris';"
+   ```
+   **Attendu** : 2, et deux objets seulement dans le bucket pour le jour.
+3. `curl -F photo=@photo.jpg http://localhost:3000/shelf-photos` → **429**
+   `"code":"DAILY_UPLOAD_QUOTA_EXCEEDED"`. Une relance d'un envoi déjà conservé n'est pas touchée.
+
 ## Scénario 6 : limite de requêtes (FR-014)
 
 ```bash

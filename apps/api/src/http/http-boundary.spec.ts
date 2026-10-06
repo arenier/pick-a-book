@@ -1,4 +1,5 @@
-import { Controller, Get, type INestApplication } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -17,12 +18,12 @@ const front = 'https://front.run.app';
 
 /** The API hardened as `main.ts` hardens it, on an ephemeral port. Called inside a `describe`. */
 function aHardenedApi() {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let baseUrl = '';
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ controllers: [PingController] }).compile();
-    app = moduleRef.createNestApplication();
+    app = moduleRef.createNestApplication<NestExpressApplication>();
     applyHttpBoundary(app, { webOrigin: front });
     await app.listen(0, '127.0.0.1');
     baseUrl = await app.getUrl();
@@ -51,6 +52,14 @@ describe('applyHttpBoundary, CORS', () => {
 
     expect(response.status).toBe(204);
     expect(response.headers.get('access-control-allow-origin')).toBe(front);
+  });
+
+  // `Retry-After` is not in the list a browser lets a cross-origin script read: the front, on
+  // another origin, only sees it if the API names it.
+  it('lets the front read Retry-After on a call it made', async () => {
+    const response = await request({ headers: { origin: front } });
+
+    expect(response.headers.get('access-control-expose-headers')).toBe('Retry-After');
   });
 
   it('answers the preflight of any other origin without naming it', async () => {

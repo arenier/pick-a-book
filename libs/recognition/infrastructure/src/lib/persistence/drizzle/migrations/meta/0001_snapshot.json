@@ -1,0 +1,286 @@
+{
+  "id": "97b8e511-b141-4c47-aa73-851c670564cc",
+  "prevId": "a56c49d5-c022-47ba-a5a4-687993a069bd",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.scan_attempts": {
+      "name": "scan_attempts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "upload_id": {
+          "name": "upload_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "finished_at": {
+          "name": "finished_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "scan_attempts_started_at_idx": {
+          "name": "scan_attempts_started_at_idx",
+          "columns": [
+            {
+              "expression": "started_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "scan_attempts_open_upload_idx": {
+          "name": "scan_attempts_open_upload_idx",
+          "columns": [
+            {
+              "expression": "upload_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"scan_attempts\".\"finished_at\" is null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "scan_attempts_upload_id_uploads_id_fk": {
+          "name": "scan_attempts_upload_id_uploads_id_fk",
+          "tableFrom": "scan_attempts",
+          "tableTo": "uploads",
+          "columnsFrom": ["upload_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.shelf_scans": {
+      "name": "shelf_scans",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "upload_id": {
+          "name": "upload_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "detected_books": {
+          "name": "detected_books",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shelf_scans_upload_id_uploads_id_fk": {
+          "name": "shelf_scans_upload_id_uploads_id_fk",
+          "tableFrom": "shelf_scans",
+          "tableTo": "uploads",
+          "columnsFrom": ["upload_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "shelf_scans_upload_id_unique": {
+          "name": "shelf_scans_upload_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["upload_id"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "shelf_scans_status_check": {
+          "name": "shelf_scans_status_check",
+          "value": "\"shelf_scans\".\"status\" in ('pending', 'completed', 'failed')"
+        },
+        "shelf_scans_detected_books_check": {
+          "name": "shelf_scans_detected_books_check",
+          "value": "(\"shelf_scans\".\"status\" = 'completed') = (\"shelf_scans\".\"detected_books\" is not null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.uploads": {
+      "name": "uploads",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bucket_key": {
+          "name": "bucket_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "media_type": {
+          "name": "media_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "size_bytes": {
+          "name": "size_bytes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "original_filename": {
+          "name": "original_filename",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_upload_id": {
+          "name": "source_upload_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "uploads_owner_type_created_idx": {
+          "name": "uploads_owner_type_created_idx",
+          "columns": [
+            {
+              "expression": "owner_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "uploads_source_upload_id_uploads_id_fk": {
+          "name": "uploads_source_upload_id_uploads_id_fk",
+          "tableFrom": "uploads",
+          "tableTo": "uploads",
+          "columnsFrom": ["source_upload_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "uploads_source_upload_id_unique": {
+          "name": "uploads_source_upload_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["source_upload_id"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "uploads_source_or_filename_check": {
+          "name": "uploads_source_or_filename_check",
+          "value": "(\"uploads\".\"source_upload_id\" is null) = (\"uploads\".\"original_filename\" is not null)"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

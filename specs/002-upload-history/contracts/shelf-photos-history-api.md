@@ -18,6 +18,7 @@ le statut ne suffit pas à choisir le message affiché (research.md §10). Le fr
 | Statut | `code` | Où | Sens pour le front |
 |---|---|---|---|
 | 429 | `TOO_MANY_REQUESTS` | toutes les routes sauf `/health` | Trop de requêtes depuis cette source : réessayer dans une minute (FR-014). En-tête `Retry-After` en secondes. |
+| 429 | `DAILY_UPLOAD_QUOTA_EXCEEDED` | `POST /shelf-photos` | Plafond d'envois du jour atteint : la photo n'est pas conservée, réessayer demain (FR-017). |
 | 429 | `DAILY_SCAN_QUOTA_EXCEEDED` | `POST …/scan` | Plafond du jour atteint : la photo est conservée, relancer demain (FR-015). |
 | 409 | `SCAN_ALREADY_COMPLETED` | `POST …/scan` | Déjà analysé avec succès, pas de relance (FR-011). |
 | 409 | `SCAN_IN_PROGRESS` | `POST …/scan` | Une analyse de cet envoi est déjà en cours. |
@@ -126,6 +127,10 @@ thumbnail: <vignette JPEG|PNG|WebP>  (nouveau, optionnel, 256 Ko au plus)
 - Invalide (type, poids, vide) : **ignorée**. La réponse reste 201, la photo est conservée, et
   l'API journalise un avertissement (research.md §5).
 - Réponses inchangées (201 `{ id }`, 400, 413), plus le 429 `TOO_MANY_REQUESTS` des erreurs communes.
+- **429 `DAILY_UPLOAD_QUOTA_EXCEEDED`** *(amendement du 04/10/2026, FR-017)* : le plafond d'envois du
+  jour est atteint. L'API le décide **avant** d'écrire quoi que ce soit : ni photo, ni vignette dans
+  le bucket, ni ligne en base. Le front de l'écran d'envoi affiche que la photo n'est pas conservée
+  et que l'envoi sera de nouveau possible demain.
 
 ### `POST /shelf-photos/{id}/scan` : relance et plafond
 

@@ -7,6 +7,6 @@ import { defineConfig } from 'drizzle-kit';
 export default defineConfig({
   dialect: 'postgresql',
   // Paths are relative to the repository root, where `yarn db:generate` runs.
-  schema: './libs/recognition/infrastructure/src/lib/drizzle/schema.ts',
-  out: './libs/recognition/infrastructure/src/lib/drizzle/migrations',
+  schema: './libs/recognition/infrastructure/src/lib/persistence/drizzle/schema.ts',
+  out: './libs/recognition/infrastructure/src/lib/persistence/drizzle/migrations',
 });

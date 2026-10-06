@@ -54,6 +54,7 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
 |---|---|---|
 | **ADR** | `docs/adr/` | *Pourquoi* une décision transverse, et à quelles conditions on en changerait. Figé une fois accepté. |
 | **Note de décision** | `docs/decisions/` | Un choix de niveau inférieur, sans impact architectural. |
+| **Dette technique** | `docs/tech-debt/` | Un défaut connu et accepté, laissé hors d'une PR : le constat, pourquoi on a reporté, quand la reprendre. Disparaît quand elle est payée. |
 | **Rule** | `.claude/rules/` | *Quoi faire* en écrivant le code. Vivante, courte, impérative ; renvoie à son ADR sans le recopier. |
 | **Spec** | `specs/NNN-*/` | Le comportement et le scope d'une feature (Spec Kit). |
 | **Constitution** | `.specify/memory/constitution.md` | Les principes, relus par `/speckit-plan` et `/speckit-implement`. |
@@ -118,6 +119,14 @@ les migrations au démarrage, et les specs des adapters de `recognition-infrastr
 `tools/db-backup` appellent aussi `pg_dump`, `pg_restore` et `psql` du `PATH`, en **version 18 ou
 plus** (la majeure de la prod) : sans eux, `yarn check` échoue sur ce projet.
 
+L'API **plafonne** ce qui coûte (spec 002) : au plus `DAILY_SCAN_LIMIT` analyses par jour (50 par
+défaut, jour de Paris, comptées par propriétaire), `DAILY_UPLOAD_LIMIT` envois par jour (100 par
+défaut, vérifiés **avant** d'écrire dans le bucket : un envoi refusé ne laisse rien), et par source
+300 requêtes par minute, 10 pour celles qui écrivent (`@nestjs/throttler`, en mémoire par
+instance). Les deux plafonds du jour se posent aussi dans `infra/envs/prod` (`daily_scan_limit`,
+`daily_upload_limit`), avec les mêmes valeurs par défaut et la même validation : ils se maintiennent
+à la main.
+
 Les **logs** de l'API sont structurés (`apps/api/src/logging/`, **pino** via `nestjs-pino`) : une ligne
 JSON par log, avec `severity` et `message` que Cloud Logging lit, la trace de `X-Cloud-Trace-Context`
 sous `logging.googleapis.com/trace`, et une ligne par requête (méthode, chemin, statut, durée — jamais
@@ -143,7 +152,7 @@ cibles que `yarn check` sur les seuls projets touchés — détail dans
 
 ```
 apps/api/                        # NestJS : composition root, orchestration inter-contextes
-apps/web/                        # React : feature-slice
+apps/web/                        # React : feature-slice ; le shell (`src/app/`) route par fragment d'URL (`#/historique`), faute de réécriture d'URL sur le bucket statique
 libs/recognition/domain/         # entités, value objects, ports — zéro dépendance technique
 libs/recognition/application/    # use cases, parlent aux ports
 libs/recognition/infrastructure/ # adapters (Gemini, Qwen, stub) derrière ShelfScannerPort
@@ -156,6 +165,7 @@ tools/db-backup/                 # pg_dump hebdomadaire vers le bucket (Cloud Ru
 docker/                          # Dockerfile des apps et du job de sauvegarde — contexte de build : la racine
 docs/adr/                        # décisions d'architecture : le pourquoi
 docs/decisions/                  # notes de décision de niveau inférieur (pas des ADR)
+docs/tech-debt/                  # dette connue et acceptée, une fiche par sujet
 infra/                           # infrastructure GCP en Terraform — voir infra/README.md
 .claude/rules/                   # règles d'écriture du code : le quoi (voir « Rules » plus haut)
 .specify/                        # Spec Kit : constitution, templates, scripts (voir plus bas)

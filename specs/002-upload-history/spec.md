@@ -165,6 +165,12 @@ désormais la liste des livres détectés, dans le détail comme dans l'historiq
   plafond couvre largement l'usage attendu (Assumptions) ; une fois atteint, une nouvelle analyse
   est refusée avec un message explicite jusqu'au lendemain, et la photo envoyée reste conservée
   (spec 001, FR-014) pour pouvoir être relancée plus tard.
+- **FR-017** *(amendement du 04/10/2026, revue de la PR #82)*: Le système DOIT plafonner le nombre
+  d'envois de photos acceptés par jour, qu'ils soient analysés ou non : l'analyse est plafonnée
+  (FR-015), mais l'envoi seul remplit le stockage et l'historique. Une fois le plafond atteint, un
+  nouvel envoi est refusé avec un message explicite jusqu'au lendemain, et **la photo n'est pas
+  conservée** (contrairement à FR-015 : un envoi refusé n'existe pas, il n'y a rien à relancer). Le
+  plafond d'envois ne limite ni les analyses, ni les relances d'envois déjà conservés.
 - **FR-016**: La liste de l'historique NE DOIT PAS transférer les photos dans leur taille d'origine
   (jusqu'à 20 Mo chacune) : les vignettes sont des versions allégées, la photo complète n'étant
   chargée qu'à l'ouverture du détail d'un envoi.
@@ -197,6 +203,10 @@ désormais la liste des livres détectés, dans le détail comme dans l'historiq
   (largeur 360px et plus), sans défilement horizontal.
 - **SC-005**: Un envoi en échec peut être ramené à un résultat en une seule
   action de l'utilisateur, sans ressaisie ni nouvel envoi de la photo.
+- **SC-007** *(amendement du 04/10/2026)*: Le nombre de photos conservées ne peut pas dépasser le
+  plafond d'envois (FR-017) par jour, quel que soit le volume de requêtes reçues : un script qui
+  enchaîne des envois sans jamais lancer d'analyse est refusé au-delà du plafond, sans rien écrire
+  dans le stockage.
 - **SC-006**: Le coût mensuel du service de reconnaissance ne peut pas dépasser le coût de 30 jours
   au plafond d'analyses (FR-015), quel que soit le volume de requêtes reçues ; une rafale de requêtes
   depuis une même source est refusée dès qu'elle dépasse la limite (FR-014), sans dégrader l'usage
@@ -221,6 +231,11 @@ désormais la liste des livres détectés, dans le détail comme dans l'historiq
   facturation, pas propre à l'historique. Le moyen de le faire respecter, comme la limite de
   requêtes par source (FR-014), relève du plan — et d'un ADR s'il s'avère transverse (infrastructure
   partagée par l'API et le front).
+- Le plafond d'envois (FR-017) vaut par défaut **100 envois par jour**, le double du plafond
+  d'analyses : chaque analyse suit un envoi, et les photos envoyées pendant que le plafond
+  d'analyses est atteint (FR-015) doivent encore passer. Il se compte comme celui des analyses : par
+  propriétaire, du jour de Paris. L'envoi précédant toute analyse, un plafond d'envois inférieur au
+  plafond d'analyses empêcherait d'atteindre ce dernier.
 - Consultation seule, hors US3 : pas de suppression, de renommage, d'étiquetage, de recherche ni de
   filtre dans cette feature. La suppression d'un envoi rejoint la question de rétention laissée
   ouverte par la spec 001 et l'ADR 0006.

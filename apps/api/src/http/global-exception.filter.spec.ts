@@ -1,6 +1,7 @@
 import {
   BadGatewayException,
   BadRequestException,
+  ConflictException,
   Controller,
   Get,
   type INestApplication,
@@ -36,6 +37,16 @@ class BoomController {
   @Get('list')
   list(): never {
     throw new BadRequestException(['first problem', 'second problem']);
+  }
+
+  @Get('coded')
+  coded(): never {
+    throw new ConflictException({ message: 'busy', error: 'Conflict', code: 'SCAN_IN_PROGRESS' });
+  }
+
+  @Get('numeric-code')
+  numericCode(): never {
+    throw new BadRequestException({ message: 'odd', code: 42 });
   }
 }
 
@@ -156,5 +167,27 @@ describe('GlobalExceptionFilter, for a route that does not exist', () => {
       statusCode: 404,
       path: '/nowhere',
     });
+  });
+});
+
+// A status is not always enough to pick the message the front shows: two 409s, two 429s
+// (specs/002-upload-history, research.md §10). The route says which with a stable `code`.
+describe('GlobalExceptionFilter, for an HttpException that carries a code', () => {
+  it('lets the code through, with the uniform body', async () => {
+    const response = await get('/boom/coded');
+
+    expect(response.status).toBe(409);
+    await expect(errorBodyOf(response)).resolves.toMatchObject({
+      statusCode: 409,
+      message: 'busy',
+      code: 'SCAN_IN_PROGRESS',
+      path: '/boom/coded',
+    });
+  });
+
+  it('ignores a code that is not a string, and leaves the body as it was', async () => {
+    const body = await errorBodyOf(await get('/boom/numeric-code'));
+
+    expect(Object.keys(body)).not.toContain('code');
   });
 });

@@ -72,6 +72,8 @@ de 20 s (SC-001).
 - **Coût borné** : au plus `DAILY_SCAN_LIMIT` analyses par jour, envois et relances confondus
   (FR-015, SC-006). La valeur de prod est passée explicitement par Terraform
   (`var.daily_scan_limit`, défaut 50), avec la même validation que l'API.
+- **Stockage borné** *(04/10/2026)* : au plus `DAILY_UPLOAD_LIMIT` envois par jour (défaut 100, FR-017,
+  SC-007), vérifiés avant d'écrire dans le bucket (research.md §13).
 - **Limite par source** : 300 req/min en lecture, 10 req/min en écriture (FR-014).
 - **Aucune fuite** du nom de fichier d'origine, de la clé du bucket ni du propriétaire (FR-009).
 - **Au plus un résultat abouti par photo** (FR-011).
@@ -156,7 +158,7 @@ libs/recognition/infrastructure/src/lib/
 apps/api/src/
 ├── main.ts                                # + trust proxy (research.md §9)
 ├── app/app.module.ts                      # + ThrottlerModule, garde globale, /health exempté
-├── config/environment.ts                  # + DAILY_SCAN_LIMIT (optionnel, défaut 50, entier ≥ 1) (+ spec)
+├── config/environment.ts                  # + DAILY_SCAN_LIMIT (optionnel, défaut 50, entier ≥ 1) et DAILY_UPLOAD_LIMIT (défaut 100, 04/10/2026) (+ spec)
 ├── http/too-many-requests.filter.ts       # 429 throttler → corps avec code TOO_MANY_REQUESTS (+ spec)
 └── recognition/
     ├── shelf-photos.controller.ts         # + GET liste, GET détail, GET photo, GET thumbnail ; champ multipart thumbnail ; palier "write"
@@ -190,7 +192,7 @@ apps/web/src/
             ├── detected-books-list.tsx    # copie locale (research.md §11)
             └── upload-history.module.css
 
-.env.example                               # + DAILY_SCAN_LIMIT
+.env.example                               # + DAILY_SCAN_LIMIT, DAILY_UPLOAD_LIMIT
 
 infra/envs/prod/
 ├── variables.tf                           # + daily_scan_limit (number, défaut 50, entier ≥ 1)
@@ -205,8 +207,8 @@ entre slices, puisqu'aucune slice n'importe l'autre.
 
 ## Prérequis hors scope, à signaler
 
-1. **ADR 0012 proposé.** L'ADR 0011 est accepté et intégré au plan (research.md §12). Si l'ADR 0012
-   est accepté avant l'implémentation, les nouveaux écrans passent par le design system.
+1. **ADR 0012 accepté** *(amendement du 03/10/2026)*. Les nouveaux écrans passent par le design
+   system (`libs/shared/ui`, Tailwind), sans CSS Module.
 2. **Relance après passage de minuit.** Une photo refusée pour quota reste `pending`. Rien ne la
    relance d'elle-même : la relance est manuelle, depuis l'historique (spec, FR-015).
 3. **La prod ne peut pas encore conserver de photos.** `infra/envs/prod/main.tf` ne crée pas de

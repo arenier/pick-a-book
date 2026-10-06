@@ -32,7 +32,7 @@ suivre : [`libs/recognition/infrastructure/README.md`](../../libs/recognition/in
 ## Tester un adapter
 
 - **Fournisseur payant ou distant** (VLM, API bibliographique) : réponses enregistrées dans
-  `src/lib/recorded/`, dont le `README.md` donne la **provenance** de chaque fixture (appel réel
+  `src/lib/scanner/recorded/`, dont le `README.md` donne la **provenance** de chaque fixture (appel réel
   daté, ou écrite à la main — et alors ce que cela ne prouve pas). Jamais d'appel réel en CI.
 - **Postgres et bucket** : contre la vraie techno, les services `db` et `bucket` de
   `docker compose`, jamais contre des doubles.
@@ -41,7 +41,7 @@ suivre : [`libs/recognition/infrastructure/README.md`](../../libs/recognition/in
 
 ## Persistance
 
-- Le schéma Drizzle vit dans `src/lib/drizzle/schema.ts` de l'`infrastructure` du contexte.
+- Le schéma Drizzle vit dans `src/lib/persistence/drizzle/schema.ts` de l'`infrastructure` du contexte.
 - **Les migrations sont générées par `yarn db:generate`, jamais écrites ni retouchées à la main.**
   Elles sont commitées avec le changement de schéma qui les produit.
 - L'API les applique au démarrage, sous verrou consultatif : une révision ne sert jamais une

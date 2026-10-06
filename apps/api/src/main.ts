@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app/app.module';
@@ -12,9 +13,12 @@ async function bootstrap() {
 
   // `bufferLogs` holds what the framework logs while the modules come up, so that it too goes
   // out through pino, as JSON, rather than as the text of Nest's default logger.
-  const app = await NestFactory.create(AppModule.withEnvironment(environment), {
-    bufferLogs: true,
-  });
+  const app = await NestFactory.create<NestExpressApplication>(
+    AppModule.withEnvironment(environment),
+    {
+      bufferLogs: true,
+    },
+  );
   const logger = app.get(Logger);
   app.useLogger(logger);
   // CORS and the global exception filter: what holds for every route.
