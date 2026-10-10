@@ -84,6 +84,7 @@ que le fichier ne soit chargé.
 | [`toolchain.md`](.claude/rules/toolchain.md) | configs, `docker/`, CI | Versions dans `mise.toml` seul, à l'exact ; Vite/Vitest, SWC pour l'API ; oxlint type-aware, ESLint pour les frontières |
 | [`adr.md`](.claude/rules/adr.md) | `docs/adr/`, rules, `CLAUDE.md` | Procédure de `docs/adr/README.md` ; un ADR accepté ne se réécrit pas ; ADR et rule vont ensemble |
 | [`commits-and-pull-requests.md`](.claude/rules/commits-and-pull-requests.md) | tout le dépôt | Commits et **titre de PR en anglais**, corps de PR en français |
+| [`delegation.md`](.claude/rules/delegation.md) | tout le dépôt | Recherche, vérifications et audit i18n **délégués aux sous-agents Haiku** (`.claude/agents/`) ; conception, code et décisions gardés par le modèle principal |
 | [`always-work-in-a-worktree.md`](.claude/rules/always-work-in-a-worktree.md) | tout le dépôt | Un worktree `wt` par tâche, jamais sur `main` |
 
 ## Commandes
