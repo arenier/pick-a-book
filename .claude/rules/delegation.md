@@ -14,6 +14,9 @@ qu'un résumé : c'est ce qui garde le contexte principal léger et les limites 
 | Localiser un symbole, un usage, un câblage ; savoir quels fichiers touchent un sujet | `explorer` |
 | Lancer lint, typecheck, test, build, format et n'avoir que les échecs | `check-runner` |
 | Vérifier les traductions fr/en et les textes en dur de `apps/web` | `translations-auditor` |
+| Vérifier que les valeurs maintenues à la main (plafonds du jour : API, `.env.example`, `infra/envs/prod`, `CLAUDE.md`) concordent | `config-sync-auditor` |
+| Vérifier les index (rules dans `CLAUDE.md`, ADR dans `docs/adr/README.md`) et les liens relatifs de la doc | `docs-index-auditor` |
+| Rejouer les garde-fous de `infra/` (fmt, validate, tflint, `terraform test`, checkov), jamais d'`apply` | `infra-checker` |
 
 Une recherche qui demande plus d'une ou deux requêtes `Grep`/`Glob`, ou une commande dont la sortie
 brute ne sert pas, se délègue **avant** de la faire soi-même.
