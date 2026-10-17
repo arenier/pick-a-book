@@ -4,16 +4,15 @@
 # the infra side.
 #
 # Why this is needed: the remote container ships Node 22 and Yarn Classic 1.22.22, while the
-# repo pins Node 26.5.1 and Yarn 4.18.0 (the `volta` field of package.json, CLAUDE.md).
-# Volta is not installed there, and Node 26 no longer ships Corepack — so `packageManager`
-# alone does not hand us the right Yarn. Nor is there any Terraform. This mirrors what
-# .github/workflows/ci.yml does, with the same exact pins.
+# repo pins Node 26.5.1 and Yarn 4.18.0 in mise.toml (ADR 0001, CLAUDE.md). mise is not
+# installed there, and Node 26 no longer ships Corepack — so `packageManager` alone does not
+# hand us the right Yarn. Nor is there any Terraform. This installs what CI installs from
+# mise.toml, at the same exact versions.
 #
-# Local machines are left alone: Volta and mise already do this job there.
+# Local machines are left alone: `mise install` does this job there.
 #
-# Every version below is READ FROM THE FILE THAT OWNS IT, never retyped. CLAUDE.md already
-# counts three hand-maintained copies of the Terraform pin, and ci.yml has a dedicated step
-# to catch them drifting; this script refuses to become the fourth.
+# Every version below is READ FROM mise.toml, never retyped: it is the one place the toolchain
+# is pinned, and this script refuses to become a copy of it.
 set -euo pipefail
 
 if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
@@ -37,11 +36,16 @@ pin() {
   echo "$value"
 }
 
-NODE_VERSION=$(pin "Node" "$(python3 -c 'import json;print(json.load(open("package.json"))["volta"]["node"])')")
-YARN_VERSION=$(pin "Yarn" "$(python3 -c 'import json;print(json.load(open("package.json"))["volta"]["yarn"])')")
-TERRAFORM_VERSION=$(pin "Terraform" "$(sed -n 's/^terraform *= *"\([^"]*\)".*/\1/p' infra/mise.toml)")
-TFLINT_VERSION=$(pin "tflint" "$(sed -n 's/^tflint *= *"\([^"]*\)".*/\1/p' infra/mise.toml)")
-CHECKOV_VERSION=$(pin "checkov" "$(sed -n 's/.*pip install --quiet checkov==\([0-9][0-9.]*\).*/\1/p' .github/workflows/ci.yml)")
+# One `[tools]` entry of mise.toml, by name.
+mise_pin() {
+  sed -n "s/^$1 *= *\"\\([^\"]*\\)\".*/\\1/p" mise.toml
+}
+
+NODE_VERSION=$(pin "Node" "$(mise_pin node)")
+YARN_VERSION=$(pin "Yarn" "$(mise_pin '"npm:@yarnpkg\/cli-dist"')")
+TERRAFORM_VERSION=$(pin "Terraform" "$(mise_pin terraform)")
+TFLINT_VERSION=$(pin "tflint" "$(mise_pin tflint)")
+CHECKOV_VERSION=$(pin "checkov" "$(mise_pin checkov)")
 
 # --- Node and Yarn ------------------------------------------------------------
 # Idempotent throughout: a cached container already carries the toolchain, so a re-run is a
@@ -106,6 +110,20 @@ yarn install
 if [ ! -f .env ]; then
   cp .env.example .env
   echo "Created .env from .env.example."
+fi
+
+# --- Claude plugins -----------------------------------------------------------
+# settings.json declares the marketplace and enables the plugins, but a web session never
+# fetches them on its own: without this their skills (create-pr, ...) are simply absent.
+# Installed through the plugin CLI rather than copied into .claude/skills, because the skills
+# call `${CLAUDE_SKILL_DIR}/../../scripts` and need the plugin layout intact. Both names are
+# read from settings.json. Non-fatal: a missing plugin must not block the session.
+if command -v claude >/dev/null 2>&1; then
+  marketplace=$(node -e 'const s=require("./.claude/settings.json");const [n,m]=Object.entries(s.extraKnownMarketplaces)[0];console.log(m.source.repo)')
+  claude plugin marketplace add "$marketplace" >/dev/null 2>&1 || echo "warning: could not add marketplace $marketplace" >&2
+  for plugin in $(node -e 'console.log(Object.keys(require("./.claude/settings.json").enabledPlugins).join(" "))'); do
+    claude plugin install "$plugin" >/dev/null 2>&1 || echo "warning: could not install plugin $plugin" >&2
+  done
 fi
 
 echo "Node $(node --version), Yarn $(yarn --version), Terraform $TERRAFORM_VERSION, tflint $TFLINT_VERSION, checkov $CHECKOV_VERSION — workspace ready."

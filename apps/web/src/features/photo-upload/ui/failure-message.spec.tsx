@@ -30,4 +30,25 @@ describe('FailureMessage', () => {
 
     expect(wordings).not.toContain('Aucun livre détecté sur cette photo.');
   });
+
+  // specs/002-upload-history, FR-014 and FR-015: a refusal of the cap keeps the photo, and says
+  // where to run it again; a refusal of the limit by source only asks for a minute.
+  it('tells the daily cap apart: the photo is kept, to be run again from the history', () => {
+    expect(wordingOf('dailyQuota')).toBe(
+      'Limite d’analyses du jour atteinte. Votre photo est conservée : vous pourrez relancer l’analyse demain depuis l’historique.',
+    );
+  });
+
+  // specs/002-upload-history, FR-017: a refused upload is not kept — the user sends it again.
+  it('tells the daily cap on uploads apart: the photo is not kept, send it again tomorrow', () => {
+    expect(wordingOf('dailyUploadQuota')).toBe(
+      'Limite d’envois du jour atteinte. Votre photo n’a pas été conservée : renvoyez-la demain.',
+    );
+  });
+
+  it('tells the limit by source apart: wait a minute', () => {
+    expect(wordingOf('rateLimited')).toBe(
+      'Trop de demandes en peu de temps. Patientez une minute puis réessayez.',
+    );
+  });
 });

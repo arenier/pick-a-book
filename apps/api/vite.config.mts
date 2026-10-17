@@ -12,7 +12,7 @@ import swc from 'unplugin-swc';
 function copyMigrations(): Plugin {
   const source = join(
     import.meta.dirname,
-    '../../libs/recognition/infrastructure/src/lib/drizzle/migrations',
+    '../../libs/recognition/infrastructure/src/lib/persistence/drizzle/migrations',
   );
 
   return {

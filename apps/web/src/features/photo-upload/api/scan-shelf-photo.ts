@@ -1,4 +1,5 @@
 import type { DetectedBook } from '../model/detected-book';
+import { makeThumbnail as makeBrowserThumbnail } from '../model/make-thumbnail';
 import type { UploadFailure } from '../model/upload-failure';
 import type { UploadState } from '../model/upload-state';
 
@@ -11,6 +12,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000
 export interface SubmitOptions {
   readonly baseUrl?: string;
   readonly fetch?: typeof fetch;
+  /** Makes the smaller image sent along with the photo; the browser's, unless a spec hands one in. */
+  readonly makeThumbnail?: (photo: File) => Promise<Blob | undefined>;
 }
 
 type Answer =
@@ -34,6 +37,12 @@ export async function submitShelfPhoto(
 
   const form = new FormData();
   form.append('photo', photo);
+  // No thumbnail is not a failure: the photo goes up without one (specs/002-upload-history,
+  // research.md §5), and the history shows a neutral indicator in its place.
+  const thumbnail = await (options.makeThumbnail ?? makeBrowserThumbnail)(photo);
+  if (thumbnail !== undefined) {
+    form.append('thumbnail', thumbnail, 'thumbnail.jpg');
+  }
 
   const stored = await ask(send, `${baseUrl}/shelf-photos`, { method: 'POST', body: form });
   if (!stored.reached) {
@@ -41,6 +50,9 @@ export async function submitShelfPhoto(
   }
   if (stored.status === 400 || stored.status === 413) {
     return failure('refused');
+  }
+  if (stored.status === 429) {
+    return failure(failureOfTooManyRequests(stored.body));
   }
   if (stored.status !== 201 || !isStoredPhoto(stored.body)) {
     return failure('unexpected');
@@ -53,6 +65,9 @@ export async function submitShelfPhoto(
   }
   if (scanned.status === 502) {
     return failure('upstream');
+  }
+  if (scanned.status === 429) {
+    return failure(failureOfTooManyRequests(scanned.body));
   }
   if (scanned.status !== 200 || !isScanResult(scanned.body)) {
     return failure('unexpected');
@@ -84,6 +99,26 @@ async function ask(send: typeof fetch, url: string, init: RequestInit): Promise<
   return { reached: true, status: response.status, body };
 }
 
+/**
+ * Three different 429 (specs/002-upload-history, research.md §10): the daily cap on analyses, which
+ * keeps the photo, the daily cap on uploads, which does not (FR-017), and the limit by source,
+ * which asks for a minute. Only the `code` tells them apart,
+ * never the `message`; a 429 without a code this front knows is unexpected.
+ */
+function failureOfTooManyRequests(body: unknown): UploadFailure {
+  if (!hasErrorCode(body)) {
+    return 'unexpected';
+  }
+  if (body.code === 'DAILY_SCAN_QUOTA_EXCEEDED') {
+    return 'dailyQuota';
+  }
+  if (body.code === 'DAILY_UPLOAD_QUOTA_EXCEEDED') {
+    return 'dailyUploadQuota';
+  }
+
+  return body.code === 'TOO_MANY_REQUESTS' ? 'rateLimited' : 'unexpected';
+}
+
 function failure(kind: UploadFailure): UploadState {
   return { status: 'error', failure: kind };
 }
@@ -98,6 +133,10 @@ interface WireBook {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
+}
+
+function hasErrorCode(value: unknown): value is { readonly code: string } {
+  return isRecord(value) && typeof value['code'] === 'string';
 }
 
 function isStoredPhoto(value: unknown): value is { readonly id: string } {

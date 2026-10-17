@@ -1199,3 +1199,11 @@ photos:
         title: Délires - Piégé dans le corps de ma sœur !
       - author: Todd Strasser
         title: Délires - Piégé dans le corps du président !
+
+  - file: shelf-fixture-11.jpg
+    description: >-
+      Témoin négatif : bibliothèque de trois étagères photographiée de loin (annonce leboncoin,
+      capture d'écran compressée). Aucune tranche n'est lisible. Tout livre détecté est une
+      hallucination. Qwen 2.5-VL y a lu 49 livres, dont 35 existent et sont confirmés par la BnF
+      (issue #20).
+    books: []

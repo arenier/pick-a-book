@@ -1,68 +1,10 @@
-import type { INestApplication } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
-import { Test } from '@nestjs/testing';
-import {
-  ScanStoredShelfPhotoUseCase,
-  StoreShelfPhotoUseCase,
-} from '@pick-a-book/recognition-application';
-import { ShelfScanFailed, type ShelfScannerPort } from '@pick-a-book/recognition-domain';
 import { Logger } from '@nestjs/common';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { ShelfScanFailed, type ShelfScannerPort } from '@pick-a-book/recognition-domain';
+import { err } from '@pick-a-book/shared-result';
+import { describe, expect, it, vi } from 'vitest';
 
-import { RecognitionExceptionFilter } from './recognition-exception.filter';
-import { ShelfPhotosController } from './shelf-photos.controller';
-import { aShelfPhotosController } from './testing/shelf-photos-controller.fixture';
-
-const aJpeg = () => new Blob([new Uint8Array([0xff, 0xd8, 0xff, 0xe0])], { type: 'image/jpeg' });
-
-/** The id out of a 201 body, proven rather than cast. */
-function idOf(body: unknown): string {
-  if (typeof body !== 'object' || body === null || !('id' in body) || typeof body.id !== 'string') {
-    throw new Error(`no id in ${JSON.stringify(body)}`);
-  }
-  return body.id;
-}
-
-/**
- * The two routes over real HTTP — status codes, multipart parsing by multer — on an
- * ephemeral port, the use cases running over in-memory ports. Called inside a `describe`.
- */
-function aRunningApi(scanner?: ShelfScannerPort) {
-  let app: INestApplication;
-  let baseUrl = '';
-
-  beforeAll(async () => {
-    const { storeShelfPhoto, scanStoredShelfPhoto } = aShelfPhotosController({ scanner });
-    const moduleRef = await Test.createTestingModule({
-      controllers: [ShelfPhotosController],
-      providers: [
-        { provide: StoreShelfPhotoUseCase, useValue: storeShelfPhoto },
-        { provide: ScanStoredShelfPhotoUseCase, useValue: scanStoredShelfPhoto },
-        // Registered as RecognitionModule registers it: the status codes below are its work.
-        { provide: APP_FILTER, useClass: RecognitionExceptionFilter },
-      ],
-    }).compile();
-    app = moduleRef.createNestApplication();
-    await app.listen(0, '127.0.0.1');
-    baseUrl = await app.getUrl();
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-
-  const url = (path: string) => `${baseUrl}${path}`;
-
-  return {
-    url,
-    scan: async (id: string) => fetch(url(`/shelf-photos/${id}/scan`), { method: 'POST' }),
-    upload: async (file: Blob, name = 'IMG_0001.jpg') => {
-      const form = new FormData();
-      form.append('photo', file, name);
-      return fetch(`${baseUrl}/shelf-photos`, { method: 'POST', body: form });
-    },
-  };
-}
+import { errorBodyOf } from '../http/testing/error-body';
+import { aJpeg, aRunningApi, idOf } from './testing/running-api';
 
 describe('POST /shelf-photos then POST /shelf-photos/:id/scan', () => {
   const { url, upload } = aRunningApi();
@@ -129,12 +71,33 @@ const providerAnswer = 'Gemini answered 400 (API key not valid. Please pass a va
 const scanFailure = new ShelfScanFailed(providerAnswer);
 
 const failingScanner: ShelfScannerPort = {
-  scan: async () => {
-    throw scanFailure;
-  },
+  scan: async () => err(scanFailure),
 };
 
 // Domain errors of the scan, as HTTP says them (contracts/scan-api.md §2).
+// FR-017: the cap is decided before anything is written, so a refused upload leaves nothing in
+// the bucket and no record (research.md §13).
+describe('POST /shelf-photos, over the daily cap on uploads', () => {
+  const { upload, snapshot } = aRunningApi(undefined, undefined, {
+    dailyLimit: 1,
+    timeZone: 'Europe/Paris',
+  });
+
+  it('answers 429 DAILY_UPLOAD_QUOTA_EXCEEDED, and stores nothing', async () => {
+    await upload(aJpeg());
+    const before = snapshot();
+
+    const response = await upload(aJpeg(), 'IMG_2.jpg', aJpeg());
+
+    expect(response.status).toBe(429);
+    await expect(response.json()).resolves.toMatchObject({
+      statusCode: 429,
+      code: 'DAILY_UPLOAD_QUOTA_EXCEEDED',
+    });
+    expect(snapshot()).toStrictEqual(before);
+  });
+});
+
 describe('POST /shelf-photos/:id/scan, for a photo it cannot scan', () => {
   const { upload, scan } = aRunningApi();
 
@@ -162,11 +125,16 @@ describe('POST /shelf-photos/:id/scan, when the recognition service fails', () =
     const response = await scan(id);
 
     expect(response.status).toBe(502);
-    await expect(response.json()).resolves.toStrictEqual({
+    const body = await errorBodyOf(response);
+    expect({ statusCode: body.statusCode, message: body.message }).toStrictEqual({
       statusCode: 502,
       message: 'The recognition service is unavailable',
-      error: 'Bad Gateway',
     });
+    // Nothing else leaves: no extra field, and the provider's answer nowhere in the body.
+    expect(new Set(Object.keys(body))).toStrictEqual(
+      new Set(['message', 'path', 'statusCode', 'timestamp']),
+    );
+    expect(JSON.stringify(body)).not.toContain(providerAnswer);
     expect(log).toHaveBeenCalledWith(scanFailure.message, scanFailure.stack);
     log.mockRestore();
   });

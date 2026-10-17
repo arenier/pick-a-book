@@ -11,7 +11,7 @@ export interface ProviderRun {
   readonly photosScanned: number;
   /** Photos with a ground truth to score against — quality is undefined when this is zero. */
   readonly photosScored: number;
-  /** Photos where the adapter threw `ShelfScanFailed`. */
+  /** Photos where the adapter answered `ShelfScanFailed`. */
   readonly failures: number;
   readonly score: AggregateScore;
   readonly medianLatencyMs: number;

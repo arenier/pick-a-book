@@ -10,6 +10,12 @@ describe('Result', () => {
     expect(unwrap(result)).toBe(42);
   });
 
+  // A step that has nothing to hand back but its success — `Result<void, E>`.
+  it('succeeds with no value at all', () => {
+    expect(ok()).toStrictEqual({ ok: true, value: undefined });
+    expect(isOk(ok())).toBe(true);
+  });
+
   it('carries the error on failure', () => {
     const result = err('breakdown');
 

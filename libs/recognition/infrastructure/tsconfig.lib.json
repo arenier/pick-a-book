@@ -11,8 +11,11 @@
   "include": ["src/**/*.ts"],
   "references": [
     {
+      "path": "../../shared/result/tsconfig.lib.json"
+    },
+    {
       "path": "../domain/tsconfig.lib.json"
     }
   ],
-  "exclude": ["vitest.config.mts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+  "exclude": ["vitest.config.mts", "src/**/*.spec.ts", "src/**/*.test.ts", "src/**/testing/**"]
 }

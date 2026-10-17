@@ -23,6 +23,9 @@
   ],
   "references": [
     {
+      "path": "../../libs/shared/result/tsconfig.lib.json"
+    },
+    {
       "path": "../../libs/recognition/infrastructure/tsconfig.lib.json"
     },
     {

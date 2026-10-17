@@ -1,4 +1,7 @@
 import { OwnerId } from '@pick-a-book/recognition-domain';
+import { unwrap } from '@pick-a-book/shared-result';
+
+import { readDailyLimits } from './daily-limits';
 
 /**
  * Configuration validation at startup.
@@ -36,8 +39,19 @@ export interface Environment {
    * there are user accounts — changing where it comes from will not move a single object.
    */
   readonly ownerId: OwnerId;
+  /**
+   * Analyses allowed per day, uploads and re-scans together: what bounds the bill while access
+   * is open (specs/002-upload-history, FR-015).
+   */
+  readonly dailyScanLimit: number;
+  readonly dailyUploadLimit: number;
   /** Origin of the frontend, the one CORS lets through (ADR 0004: two origins). */
   readonly webOrigin: string;
+  /**
+   * The GCP project the API runs in. Optional: it only lets a log line name its trace by the
+   * resource Cloud Logging links on (`projects/{project}/traces/{id}`).
+   */
+  readonly googleCloudProject: string | undefined;
 }
 
 /**
@@ -124,7 +138,8 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
   const shelfScanner = readShelfScanner(source, problems);
 
   const photoStorage = readPhotoStorage(source, problems);
-  const webOrigin = readWebOrigin(source, problems);
+  const dailyLimits = readDailyLimits((name) => optional(source, name), problems);
+  const webOrigin = readWebOrigin(source, nodeEnv, problems);
 
   if (problems.length > 0) {
     throw new InvalidEnvironment(problems);
@@ -136,7 +151,9 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
     databaseUrl,
     shelfScanner,
     ...photoStorage,
+    ...dailyLimits,
     webOrigin,
+    googleCloudProject: optional(source, 'GOOGLE_CLOUD_PROJECT'),
   };
 }
 
@@ -166,17 +183,33 @@ function readPhotoStorage(
 /** What makes a valid owner id is the recognition context's rule (`OwnerId`), not ours. */
 function readOwnerId(source: NodeJS.ProcessEnv, problems: string[]): OwnerId {
   const raw = optional(source, 'OWNER_ID') ?? DEFAULT_OWNER_ID;
-  try {
-    return OwnerId.of(raw);
-  } catch (error) {
-    problems.push(`OWNER_ID is "${raw}" — ${error instanceof Error ? error.message : 'invalid'}`);
-    // The fallback never escapes: a non-empty `problems` throws before the caller returns.
-    return OwnerId.of(DEFAULT_OWNER_ID);
+  const ownerId = OwnerId.of(raw);
+  if (ownerId.ok) {
+    return ownerId.value;
   }
+
+  problems.push(`OWNER_ID is "${raw}" — ${ownerId.error.message}`);
+  // The fallback never escapes: a non-empty `problems` throws before the caller returns.
+  return unwrap(OwnerId.of(DEFAULT_OWNER_ID));
 }
 
-function readWebOrigin(source: NodeJS.ProcessEnv, problems: string[]): string {
-  const webOrigin = optional(source, 'WEB_ORIGIN') ?? DEFAULT_WEB_ORIGIN;
+/**
+ * Defaults to the port of `yarn web` in development, so the stack starts with no
+ * configuration. In production there is no sensible default — the front is another Cloud Run
+ * service on its own origin (ADR 0004) — and a browser front without it is unusable, so its
+ * absence fails the boot, like any other required variable.
+ */
+function readWebOrigin(
+  source: NodeJS.ProcessEnv,
+  nodeEnv: NodeEnvironment,
+  problems: string[],
+): string {
+  const configured = optional(source, 'WEB_ORIGIN');
+  if (configured === undefined && nodeEnv === 'production') {
+    problems.push('WEB_ORIGIN is required in production and is not set');
+  }
+
+  const webOrigin = configured ?? DEFAULT_WEB_ORIGIN;
   if (!isHttpOrigin(webOrigin)) {
     problems.push(`WEB_ORIGIN is "${webOrigin}" — expected an http:// or https:// origin`);
   }

@@ -1,25 +1,35 @@
-import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app/app.module';
 import { InvalidEnvironment, loadEnvironment } from './config/environment';
+import { applyHttpBoundary } from './http/http-boundary';
 
 async function bootstrap() {
   // Configuration is validated before anything is constructed: a missing required variable
   // stops the boot right here, with the list of what is missing.
   const environment = loadEnvironment();
 
-  const app = await NestFactory.create(AppModule.withEnvironment(environment));
-  // The frontend is served from its own origin (a bucket, ADR 0004): without this, every
-  // call it makes fails in the browser as an opaque CORS error.
-  app.enableCors({ origin: environment.webOrigin });
+  // `bufferLogs` holds what the framework logs while the modules come up, so that it too goes
+  // out through pino, as JSON, rather than as the text of Nest's default logger.
+  const app = await NestFactory.create<NestExpressApplication>(
+    AppModule.withEnvironment(environment),
+    {
+      bufferLogs: true,
+    },
+  );
+  const logger = app.get(Logger);
+  app.useLogger(logger);
+  // CORS and the global exception filter: what holds for every route.
+  applyHttpBoundary(app, environment);
   // SIGTERM (how Cloud Run stops an instance) runs the shutdown hooks: the Postgres pool is
   // released instead of dropped.
   app.enableShutdownHooks();
   await app.listen(environment.port, '0.0.0.0');
 
-  Logger.log(`API listening on http://localhost:${environment.port} (${environment.nodeEnv})`);
-  Logger.log(`Health: http://localhost:${environment.port}/health`);
+  logger.log(`API listening on http://localhost:${environment.port} (${environment.nodeEnv})`);
+  logger.log(`Health: http://localhost:${environment.port}/health`);
 }
 
 bootstrap().catch((error: unknown) => {

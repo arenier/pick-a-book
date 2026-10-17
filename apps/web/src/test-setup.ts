@@ -1,5 +1,5 @@
 import { createI18n, setDefaultI18n } from '@pick-a-book/shared-i18n';
-import { cleanup } from '@testing-library/react';
+import { cleanup, configure } from '@testing-library/react';
 import { afterEach } from 'vitest';
 
 import { resources } from './i18n/resources';
@@ -8,6 +8,11 @@ import { resources } from './i18n/resources';
 // what they use instead (ADR 0008), so the teardown is registered here — without it, renders pile
 // up across tests and a query matching one element per render starts failing on the second test.
 afterEach(cleanup);
+
+// The default wait of `findBy*` and `waitFor` is 1 s. `yarn check` runs lint, typecheck and the
+// tests of every project at once: a screen that answers in a few milliseconds alone can take longer
+// than that on a loaded machine, and a spec must not fail for it.
+configure({ asyncUtilTimeout: 4000 });
 
 // The specs read French, pinned here: jsdom announces `en-US`, which the interface would follow
 // (ADR 0011). A spec about English hands its own instance down through `I18nProvider`.

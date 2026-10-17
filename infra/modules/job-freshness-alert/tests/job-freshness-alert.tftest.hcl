@@ -23,11 +23,8 @@ run "fires_when_no_run_succeeded_within_the_max_age" {
   # The silent death ADR 0006 warns about is the job that stops running at all — no failure
   # to report. Only the absence of a success over the window catches it.
   assert {
-    condition = anytrue([
-      for c in google_monitoring_alert_policy.this.conditions : c.condition_prometheus_query_language[0].query ==
-      "absent_over_time(run_googleapis_com:job_completed_execution_count{monitored_resource=\"cloud_run_job\",job_name=\"pick-a-book-db-backup\",result=\"succeeded\"}[8d])"
-    ])
-    error_message = "One condition must fire when this job has no successful execution within max_age"
+    condition     = google_monitoring_alert_policy.stale.conditions[0].condition_prometheus_query_language[0].query == "absent_over_time(run_googleapis_com:job_completed_execution_count{monitored_resource=\"cloud_run_job\",job_name=\"pick-a-book-db-backup\",result=\"succeeded\"}[8d])"
+    error_message = "The stale policy must fire when this job has no successful execution within max_age"
   }
 }
 
@@ -36,24 +33,44 @@ run "fires_as_soon_as_a_run_fails" {
 
   # No need to wait out the whole window to learn that last night's run failed.
   assert {
-    condition = anytrue([
-      for c in google_monitoring_alert_policy.this.conditions : strcontains(c.condition_prometheus_query_language[0].query, "job_name=\"pick-a-book-db-backup\",result=\"failed\"")
-    ])
-    error_message = "One condition must fire on a failed execution of this job"
-  }
-
-  assert {
-    condition     = google_monitoring_alert_policy.this.combiner == "OR"
-    error_message = "Either condition alone must alert"
+    condition     = strcontains(google_monitoring_alert_policy.failed.conditions[0].condition_prometheus_query_language[0].query, "job_name=\"pick-a-book-db-backup\",result=\"failed\"")
+    error_message = "The failed policy must fire on a failed execution of this job"
   }
 }
 
-run "notifies_through_the_email_channel" {
+run "the_stale_policy_is_evaluated_no_more_often_than_hourly" {
+  command = plan
+
+  # Cloud Monitoring ties the evaluation interval to the lookback window: at least 1h for an
+  # 8d window ("Evaluation interval must be at least 1h for a lookback window of 8d") — found
+  # at the second prod apply, invisible to the mock provider. Hourly is plenty for a weekly job.
+  assert {
+    condition     = google_monitoring_alert_policy.stale.conditions[0].condition_prometheus_query_language[0].evaluation_interval == "3600s"
+    error_message = "The stale policy looks back over days: the Monitoring API requires an evaluation interval of at least 1h"
+  }
+}
+
+run "each_policy_holds_a_single_condition" {
+  command = plan
+
+  # Cloud Monitoring refuses a policy with a PromQL condition and anything else next to it
+  # ("can only have a single condition") — found at the first prod apply, invisible to the
+  # mock provider. Hence one policy per condition.
+  assert {
+    condition     = length(google_monitoring_alert_policy.stale.conditions) == 1 && length(google_monitoring_alert_policy.failed.conditions) == 1
+    error_message = "A policy with a PromQL condition must hold exactly one condition — the Monitoring API rejects more"
+  }
+}
+
+run "both_policies_notify_through_the_email_channel" {
   command = apply
 
   assert {
-    condition     = length(google_monitoring_alert_policy.this.notification_channels) == 1 && google_monitoring_alert_policy.this.notification_channels[0] == google_monitoring_notification_channel.email.id
-    error_message = "The policy must notify through its email channel — an alert nobody receives is not an alert"
+    condition = alltrue([
+      for policy in [google_monitoring_alert_policy.stale, google_monitoring_alert_policy.failed] :
+      length(policy.notification_channels) == 1 && policy.notification_channels[0] == google_monitoring_notification_channel.email.id
+    ])
+    error_message = "Both policies must notify through the email channel — an alert nobody receives is not an alert"
   }
 }
 

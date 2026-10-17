@@ -1,0 +1,53 @@
+{
+  "entry": {
+    "sentAt": "{{date, datetime(dateStyle: medium; timeStyle: short)}}",
+    "thumbnail": "Photo thumbnail",
+    "thumbnailUnavailable": "Thumbnail unavailable"
+  },
+  "outcome": {
+    "books_one": "{{count}} book detected",
+    "books_other": "{{count}} books detected",
+    "none": "No book detected",
+    "failed": "Analysis failed",
+    "notStarted": "Analysis not started"
+  },
+  "history": {
+    "loading": "Loading the history…",
+    "empty": "You haven’t sent any photo yet.",
+    "upload": "Send a photo",
+    "loadMore": "Show more",
+    "loadingMore": "Loading…",
+    "retry": "Try again"
+  },
+  "failure": {
+    "offline": "Cannot reach the server. Check your connection and try again.",
+    "rateLimited": "Too many requests in a short time. Wait a minute, then try again.",
+    "unexpected": "Something unexpected went wrong. Try again in a few moments."
+  },
+  "books": {
+    "none": "No book detected on this photo.",
+    "byAuthor": " — {{author}}"
+  },
+  "detail": {
+    "loading": "Loading the upload…",
+    "back": "History",
+    "photo": "Shelf photo that was sent",
+    "photoUnavailable": "Photo unavailable",
+    "failed": "The analysis of this photo failed.",
+    "notStarted": "The analysis of this photo was not started.",
+    "notFound": "This upload cannot be found.",
+    "retry": "Try again"
+  },
+  "rescan": {
+    "button": "Run the analysis again",
+    "running": "Analysing the photo, this can take around thirty seconds…",
+    "failure": {
+      "upstream": "The recognition service is not responding right now. Try again later.",
+      "dailyQuota": "Daily analysis limit reached: try again tomorrow.",
+      "inProgress": "An analysis of this photo is already running.",
+      "rateLimited": "Too many requests in a short time. Wait a minute, then try again.",
+      "offline": "Cannot reach the server. Check your connection and try again.",
+      "unexpected": "Something unexpected went wrong. Try again in a few moments."
+    }
+  }
+}

@@ -1,8 +1,10 @@
 import { join } from 'node:path';
 
-import { Inject, Module, type OnApplicationShutdown } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
+import { Inject, Module, type OnApplicationShutdown, type Provider } from '@nestjs/common';
 import {
+  GetShelfPhotoImageUseCase,
+  GetShelfScanUseCase,
+  ListShelfScansUseCase,
   ScanStoredShelfPhotoUseCase,
   StoreShelfPhotoUseCase,
 } from '@pick-a-book/recognition-application';
@@ -16,12 +18,18 @@ import {
 } from '@pick-a-book/recognition-domain';
 
 import type { Environment } from '../config/environment';
-import { RecognitionExceptionFilter } from './recognition-exception.filter';
 import { createShelfScanArchive, type ShelfScanArchive } from './shelf-scan-archive.factory';
 import { createShelfScanner } from './shelf-scanner.factory';
 import { ShelfPhotosController } from './shelf-photos.controller';
 
 const SHELF_SCAN_ARCHIVE = 'ShelfScanArchive';
+
+/**
+ * How long an open attempt blocks another analysis of the same photo: far above the ~30 s a
+ * scan takes (docs/decisions/0001), short enough that a scan whose instance died is not stuck
+ * (specs/002-upload-history, research.md §8).
+ */
+const ATTEMPT_LEASE_MS = 5 * 60 * 1000;
 
 /**
  * Where the build copies the committed migrations: next to the bundle (`vite.config.mts`),
@@ -57,8 +65,6 @@ export class RecognitionModule implements OnApplicationShutdown {
       module: RecognitionModule,
       controllers: [ShelfPhotosController],
       providers: [
-        // The context's errors, said in HTTP once for all its routes.
-        { provide: APP_FILTER, useClass: RecognitionExceptionFilter },
         {
           provide: SHELF_SCANNER_PORT,
           useFactory: () => createShelfScanner(environment.shelfScanner),
@@ -81,22 +87,58 @@ export class RecognitionModule implements OnApplicationShutdown {
           useFactory: (archive: ShelfScanArchive) => archive.repository,
           inject: [SHELF_SCAN_ARCHIVE],
         },
-        {
-          provide: StoreShelfPhotoUseCase,
-          useFactory: (storage: ShelfPhotoStoragePort, repository: ShelfScanRepositoryPort) =>
-            new StoreShelfPhotoUseCase(environment.ownerId, storage, repository),
-          inject: [SHELF_PHOTO_STORAGE_PORT, SHELF_SCAN_REPOSITORY_PORT],
-        },
-        {
-          provide: ScanStoredShelfPhotoUseCase,
-          useFactory: (
-            storage: ShelfPhotoStoragePort,
-            repository: ShelfScanRepositoryPort,
-            scanner: ShelfScannerPort,
-          ) => new ScanStoredShelfPhotoUseCase(storage, repository, scanner),
-          inject: [SHELF_PHOTO_STORAGE_PORT, SHELF_SCAN_REPOSITORY_PORT, SHELF_SCANNER_PORT],
-        },
+        ...providersOfUseCases(environment),
       ],
     };
   }
+}
+
+/**
+ * The use cases, each over the ports it needs and the configured owner — the composition root
+ * is the only place that knows both (ADR 0002).
+ */
+function providersOfUseCases(environment: Environment): Provider[] {
+  return [
+    {
+      provide: StoreShelfPhotoUseCase,
+      useFactory: (storage: ShelfPhotoStoragePort, repository: ShelfScanRepositoryPort) =>
+        new StoreShelfPhotoUseCase(environment.ownerId, storage, repository, {
+          dailyLimit: environment.dailyUploadLimit,
+          timeZone: 'Europe/Paris',
+        }),
+      inject: [SHELF_PHOTO_STORAGE_PORT, SHELF_SCAN_REPOSITORY_PORT],
+    },
+    {
+      provide: ListShelfScansUseCase,
+      useFactory: (repository: ShelfScanRepositoryPort) =>
+        new ListShelfScansUseCase(environment.ownerId, repository),
+      inject: [SHELF_SCAN_REPOSITORY_PORT],
+    },
+    {
+      provide: GetShelfScanUseCase,
+      useFactory: (repository: ShelfScanRepositoryPort) =>
+        new GetShelfScanUseCase(environment.ownerId, repository),
+      inject: [SHELF_SCAN_REPOSITORY_PORT],
+    },
+    {
+      provide: GetShelfPhotoImageUseCase,
+      useFactory: (storage: ShelfPhotoStoragePort, repository: ShelfScanRepositoryPort) =>
+        new GetShelfPhotoImageUseCase(environment.ownerId, storage, repository),
+      inject: [SHELF_PHOTO_STORAGE_PORT, SHELF_SCAN_REPOSITORY_PORT],
+    },
+    {
+      provide: ScanStoredShelfPhotoUseCase,
+      useFactory: (
+        storage: ShelfPhotoStoragePort,
+        repository: ShelfScanRepositoryPort,
+        scanner: ShelfScannerPort,
+      ) =>
+        new ScanStoredShelfPhotoUseCase(environment.ownerId, storage, repository, scanner, {
+          dailyLimit: environment.dailyScanLimit,
+          timeZone: 'Europe/Paris',
+          lease: ATTEMPT_LEASE_MS,
+        }),
+      inject: [SHELF_PHOTO_STORAGE_PORT, SHELF_SCAN_REPOSITORY_PORT, SHELF_SCANNER_PORT],
+    },
+  ];
 }

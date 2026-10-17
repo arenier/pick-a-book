@@ -1,6 +1,6 @@
 # ADR 0010 — Découpage en bounded contexts
 
-Statut : proposé · Date : 2026-09-07 · Couplé à l'ADR d'enrichissement bibliographique (à écrire)
+Statut : proposé · Date : 2026-09-07 · Couplé à l'ADR [0014](0014-referentiel-bibliographique-bnf.md) (référentiel bibliographique)
 
 ## Contexte
 

@@ -55,8 +55,9 @@ en français.
 
 ## Contraintes techniques
 
-Stack Node/TypeScript, NestJS + React, monorepo Nx, Yarn (ligne 4.x). Node et Yarn épinglés à
-l'exact (champ `volta`), jamais en plage. Hébergement Cloud Run + bucket, persistance Postgres
+Stack Node/TypeScript, NestJS + React, monorepo Nx, Yarn (ligne 4.x). Les versions d'outils (Node,
+Yarn, Terraform, tflint, checkov) sont épinglées à l'exact dans le `mise.toml` de la racine, que la CI
+lit aussi, jamais en plage. Hébergement Cloud Run + bucket, persistance Postgres
 managé (Neon). Reconnaissance des livres par VLM seul pour le MVP, derrière `ShelfScannerPort` — le
 filet anti-hallucination est la réconciliation en aval, pas l'OCR. Ces choix sont actés par ADR
 ([docs/adr/](../../docs/adr/)) et ne se rouvrent pas au fil d'une spec ou d'un plan Spec Kit : une
@@ -82,4 +83,4 @@ jour pour refléter la décision. Toute modification de cette constitution est u
 MINOR : ajout de principe ; PATCH : clarification). `/speckit-plan` et `/speckit-implement` vérifient
 la conformité à ces principes avant de produire ou d'exécuter un plan.
 
-**Version**: 1.2.0 | **Ratified**: 2026-09-12 | **Last Amended**: 2026-09-28
+**Version**: 1.2.1 | **Ratified**: 2026-09-12 | **Last Amended**: 2026-09-28

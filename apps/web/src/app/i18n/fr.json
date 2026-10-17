@@ -1,4 +1,8 @@
 {
   "title": "pick-a-book",
-  "tagline": "Prenez une étagère en photo pour voir les livres qu’elle contient."
+  "tagline": "Prenez une étagère en photo pour voir les livres qu’elle contient.",
+  "nav": {
+    "history": "Historique",
+    "newPhoto": "Nouvelle photo"
+  }
 }

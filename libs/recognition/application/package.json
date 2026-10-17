@@ -12,6 +12,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "import": "./dist/testing/index.js",
+      "default": "./dist/testing/index.js"
     }
   },
   "nx": {
@@ -24,6 +29,7 @@
   },
   "dependencies": {
     "@pick-a-book/recognition-domain": "workspace:*",
+    "@pick-a-book/shared-result": "workspace:*",
     "tslib": "^2.3.0"
   }
 }

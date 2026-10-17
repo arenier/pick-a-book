@@ -1,66 +1,36 @@
 import {
+  GetShelfPhotoImageUseCase,
+  GetShelfScanUseCase,
+  ListShelfScansUseCase,
   ScanStoredShelfPhotoUseCase,
   StoreShelfPhotoUseCase,
 } from '@pick-a-book/recognition-application';
 import {
   OwnerId,
-  ShelfPhoto,
-  ShelfScanAlreadyProcessed,
-  ShelfScanNotFound,
+  type ScanAttemptPolicy,
   type ShelfPhotoStoragePort,
-  type ShelfScanId,
   type ShelfScannerPort,
-  type ShelfScanRecord,
-  type ShelfScanRepositoryPort,
+  type UploadQuotaPolicy,
 } from '@pick-a-book/recognition-domain';
+import { InMemoryShelfScanRepository } from '@pick-a-book/recognition-application/testing';
 import { StubShelfScannerAdapter } from '@pick-a-book/recognition-infrastructure';
+import { unwrap } from '@pick-a-book/shared-result';
 
 import { ShelfPhotosController } from '../shelf-photos.controller';
+import { anInMemoryPhotoStorage } from './in-memory-photo-storage';
 
-/** In-memory doubles of the two storage ports, holding the transition rules of Postgres. */
-function inMemoryPorts() {
-  const objects = new Map<string, ShelfPhoto>();
-  const records = new Map<string, ShelfScanRecord>();
+/** The policy of production, unless a spec wants another: 50 a day, a 5 minute lease. */
+export const defaultPolicy = {
+  dailyLimit: 50,
+  timeZone: 'Europe/Paris',
+  lease: 5 * 60 * 1000,
+} satisfies ScanAttemptPolicy;
 
-  const storage: ShelfPhotoStoragePort = {
-    store: async (photo, key) => {
-      objects.set(key, photo);
-    },
-    retrieve: async (key, mediaType) =>
-      ShelfPhoto.of(objects.get(key)?.bytes ?? new Uint8Array(), mediaType),
-  };
-
-  const pending = (id: ShelfScanId): ShelfScanRecord => {
-    const record = records.get(id.value);
-    if (record === undefined) {
-      throw new ShelfScanNotFound(id.value);
-    }
-    if (record.status !== 'pending') {
-      throw new ShelfScanAlreadyProcessed(id);
-    }
-    return record;
-  };
-
-  const repository: ShelfScanRepositoryPort = {
-    createPending: async (scan) => {
-      records.set(scan.id.value, {
-        ...scan,
-        status: 'pending',
-        detectedBooks: undefined,
-        createdAt: new Date(),
-      });
-    },
-    get: async (id) => records.get(id.value),
-    markCompleted: async (id, books) => {
-      records.set(id.value, { ...pending(id), status: 'completed', detectedBooks: books });
-    },
-    markFailed: async (id) => {
-      records.set(id.value, { ...pending(id), status: 'failed', detectedBooks: undefined });
-    },
-  };
-
-  return { objects, records, storage, repository };
-}
+/** The cap on uploads of production, unless a spec wants another: 100 a day. */
+export const defaultUploadPolicy = {
+  dailyLimit: 100,
+  timeZone: 'Europe/Paris',
+} satisfies UploadQuotaPolicy;
 
 /**
  * The controller wired to real use cases over in-memory ports: its specs are about the HTTP
@@ -68,20 +38,52 @@ function inMemoryPorts() {
  * the app build (`tsconfig.app.json`).
  */
 export function aShelfPhotosController(
-  overrides: { readonly scanner?: ShelfScannerPort; readonly storage?: ShelfPhotoStoragePort } = {},
+  overrides: {
+    readonly scanner?: ShelfScannerPort;
+    readonly storage?: ShelfPhotoStoragePort;
+    readonly policy?: ScanAttemptPolicy;
+    readonly uploadPolicy?: UploadQuotaPolicy;
+  } = {},
 ) {
-  const ports = inMemoryPorts();
-  const { objects, records, repository } = ports;
-  const storage = overrides.storage ?? ports.storage;
+  const memory = anInMemoryPhotoStorage();
+  const repository = new InMemoryShelfScanRepository();
+  const storage = overrides.storage ?? memory;
   const scanner = overrides.scanner ?? new StubShelfScannerAdapter();
-  const storeShelfPhoto = new StoreShelfPhotoUseCase(OwnerId.of('default'), storage, repository);
-  const scanStoredShelfPhoto = new ScanStoredShelfPhotoUseCase(storage, repository, scanner);
+  const owner = unwrap(OwnerId.of('default'));
+  const storeShelfPhoto = new StoreShelfPhotoUseCase(
+    owner,
+    storage,
+    repository,
+    overrides.uploadPolicy ?? defaultUploadPolicy,
+  );
+  const scanStoredShelfPhoto = new ScanStoredShelfPhotoUseCase(
+    owner,
+    storage,
+    repository,
+    scanner,
+    overrides.policy ?? defaultPolicy,
+  );
+
+  const listShelfScans = new ListShelfScansUseCase(owner, repository);
+  const getShelfPhotoImage = new GetShelfPhotoImageUseCase(owner, storage, repository);
+  const getShelfScan = new GetShelfScanUseCase(owner, repository);
 
   return {
-    controller: new ShelfPhotosController(storeShelfPhoto, scanStoredShelfPhoto),
+    controller: new ShelfPhotosController(
+      storeShelfPhoto,
+      scanStoredShelfPhoto,
+      listShelfScans,
+      getShelfPhotoImage,
+      getShelfScan,
+    ),
     storeShelfPhoto,
     scanStoredShelfPhoto,
-    objects,
-    records,
+    listShelfScans,
+    getShelfPhotoImage,
+    getShelfScan,
+    objects: memory.objects,
+    thumbnails: memory.thumbnails,
+    records: repository.records,
+    repository,
   };
 }

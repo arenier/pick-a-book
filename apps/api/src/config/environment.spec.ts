@@ -117,6 +117,33 @@ describe('loadEnvironment, CORS origin (ADR 0004: two origins)', () => {
   it('rejects a WEB_ORIGIN that is not an http(s) origin', () => {
     expect(() => load({ WEB_ORIGIN: 'localhost:4200' })).toThrow(/WEB_ORIGIN/u);
   });
+
+  // In production the front is a second Cloud Run service on its own origin (ADR 0004): with
+  // no origin configured, every browser call would fail as an opaque CORS error, seen only
+  // after the deploy. The boot fails instead, naming the variable, like any other required one.
+  it('requires WEB_ORIGIN in production, naming it', () => {
+    expect(() => load({ NODE_ENV: 'production' })).toThrow(InvalidEnvironment);
+    expect(() => load({ NODE_ENV: 'production' })).toThrow(/WEB_ORIGIN is required/u);
+  });
+
+  it('accepts WEB_ORIGIN in production when it is set', () => {
+    expect(load({ NODE_ENV: 'production', WEB_ORIGIN: 'https://front.run.app' }).webOrigin).toBe(
+      'https://front.run.app',
+    );
+  });
+});
+
+describe('loadEnvironment, GOOGLE_CLOUD_PROJECT (log correlation)', () => {
+  it('is optional: absent, the trace of a log line stays a bare id', () => {
+    expect(load().googleCloudProject).toBeUndefined();
+    expect(load({ GOOGLE_CLOUD_PROJECT: '   ' }).googleCloudProject).toBeUndefined();
+  });
+
+  it('carries a configured project', () => {
+    expect(load({ GOOGLE_CLOUD_PROJECT: 'pick-a-book-prod' }).googleCloudProject).toBe(
+      'pick-a-book-prod',
+    );
+  });
 });
 
 describe('loadEnvironment, shelf scanner selection (ADR 0005)', () => {
@@ -161,5 +188,53 @@ describe('loadEnvironment, shelf scanner selection (ADR 0005)', () => {
     expect(load({ SHELF_SCANNER_API_KEY: 'leftover' }).shelfScanner).toStrictEqual({
       provider: 'stub',
     });
+  });
+});
+
+describe('loadEnvironment, DAILY_SCAN_LIMIT (specs/002-upload-history, FR-015)', () => {
+  it('defaults to 50 analyses a day', () => {
+    expect(load().dailyScanLimit).toBe(50);
+    expect(load({ DAILY_SCAN_LIMIT: '   ' }).dailyScanLimit).toBe(50);
+  });
+
+  it('reads a positive integer', () => {
+    expect(load({ DAILY_SCAN_LIMIT: '12' }).dailyScanLimit).toBe(12);
+  });
+
+  it.each(['0', '-3', '1.5', 'abc'])('rejects %p, and says which variable', (value) => {
+    expect(() => load({ DAILY_SCAN_LIMIT: value })).toThrow(InvalidEnvironment);
+    expect(() => load({ DAILY_SCAN_LIMIT: value })).toThrow(
+      new RegExp(`DAILY_SCAN_LIMIT is "${value}"`, 'u'),
+    );
+  });
+
+  it('lists it with the other problems', () => {
+    expect(() => load({ DAILY_SCAN_LIMIT: '0', PORT: 'x' })).toThrow(
+      /PORT[\s\S]*DAILY_SCAN_LIMIT/u,
+    );
+  });
+});
+
+describe('loadEnvironment, DAILY_UPLOAD_LIMIT (specs/002-upload-history, FR-017)', () => {
+  it('defaults to 100 uploads a day', () => {
+    expect(load().dailyUploadLimit).toBe(100);
+    expect(load({ DAILY_UPLOAD_LIMIT: '   ' }).dailyUploadLimit).toBe(100);
+  });
+
+  it('reads a positive integer', () => {
+    expect(load({ DAILY_UPLOAD_LIMIT: '12' }).dailyUploadLimit).toBe(12);
+  });
+
+  it.each(['0', '-3', '1.5', 'abc'])('rejects %p, and says which variable', (value) => {
+    expect(() => load({ DAILY_UPLOAD_LIMIT: value })).toThrow(InvalidEnvironment);
+    expect(() => load({ DAILY_UPLOAD_LIMIT: value })).toThrow(
+      new RegExp(`DAILY_UPLOAD_LIMIT is "${value}"`, 'u'),
+    );
+  });
+
+  it('lists it with the other problems', () => {
+    expect(() => load({ DAILY_UPLOAD_LIMIT: '0', PORT: 'x' })).toThrow(
+      /PORT[\s\S]*DAILY_UPLOAD_LIMIT/u,
+    );
   });
 });
