@@ -2,7 +2,7 @@
 
 **Branch**: `002-bibliographic-reconciliation` | **Date**: 2026-09-28 | **Spec**: [spec.md](spec.md)
 
-**Input**: Feature specification from `/specs/002-bibliographic-reconciliation/spec.md`
+**Input**: Feature specification from `/specs/003-bibliographic-reconciliation/spec.md`
 
 **Note**: This template is filled in by the `/speckit-plan` command; its definition describes the execution workflow.
 
@@ -96,7 +96,7 @@ est `type:shared` / `context:none` / `scope:api` : importable par les deux `infr
 ### Documentation (this feature)
 
 ```text
-specs/002-bibliographic-reconciliation/
+specs/003-bibliographic-reconciliation/
 ├── plan.md                        # This file (/speckit-plan command output)
 ├── research.md                    # Phase 0 output (/speckit-plan command)
 ├── data-model.md                  # Phase 1 output (/speckit-plan command)

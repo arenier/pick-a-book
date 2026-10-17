@@ -1,6 +1,6 @@
 # Feature Specification: Réconciliation bibliographique des livres détectés
 
-**Feature Branch**: `[002-bibliographic-reconciliation]`
+**Feature Branch**: `[003-bibliographic-reconciliation]`
 
 **Created**: 2026-09-27
 

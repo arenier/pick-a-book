@@ -5,7 +5,7 @@ description: "Task list for bibliographic reconciliation"
 
 # Tasks: Réconciliation bibliographique des livres détectés
 
-**Input**: Design documents from `/specs/002-bibliographic-reconciliation/`
+**Input**: Design documents from `/specs/003-bibliographic-reconciliation/`
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/reconciliation-api.md, quickstart.md
 
 **Tests**: Inclus et obligatoires — la constitution impose le TDD (principe I). **Une tâche = un
