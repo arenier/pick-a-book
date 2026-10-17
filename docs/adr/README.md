@@ -24,6 +24,7 @@ documentation d'architecture — il ne décrit pas comment le système marche, i
 | [0012](0012-design-system-de-l-interface.md)       | Design system de l'interface : shadcn/ui et Tailwind, dans `libs/shared/ui` | Accepté  | 1     | 2026-09-27 |
 | [0013](0013-politique-d-erreur-result-aux-frontieres.md) | Politique d'erreur : `Result` aux frontières du domaine et de l'application | Proposé  | —     | 2026-09-28 |
 | [0014](0014-referentiel-bibliographique-bnf.md)      | Référentiel bibliographique : catalogue général de la BnF, appariement en cascade, Google Books en complément | Proposé  | —     | 2026-09-30 |
+| [0015](0015-deploiement-par-la-ci-wif-et-apply-approuve.md) | Déploiement par la CI : Workload Identity Federation, et `apply` Terraform sur un plan relu | Proposé  | —     | 2026-10-04 |
 
 Les ADR marqués **Socle** consignent des contraintes actées avant l'ouverture du repo ; ils ont
 été rédigés a posteriori et leurs sections « Alternatives » et « Conséquences » sont une
