@@ -22,39 +22,34 @@ paragraphe *Assumptions* que personne ne relira.
 - **Exploiter les données d'analyse des erreurs** — rapport ou tableau de bord qui répartit les
   livres par catégorie d'écart (lecture corrigée, auteur manquant, ambiguïté, inconnu du
   référentiel, candidat mal classé…) pour savoir quoi corriger en priorité.
-  *Origine* : spec 002, US5 / FR-018. *Report* : les données sont conservées dès la spec 002 ;
+  *Origine* : spec 003, US5 / FR-018. *Report* : les données sont conservées dès la spec 003 ;
   les exploiter n'a de sens qu'avec un volume d'analyses réelles suffisant.
 - **Retour explicite de l'utilisateur sur un livre** — signaler qu'un livre confirmé n'est pas sur
   l'étagère (hallucination confirmée à tort), ou qu'un livre non trouvé existe bien (trou du
   référentiel). Sans ce retour, l'analyse des erreurs ne sait pas distinguer ces cas.
-  *Origine* : spec 002, Assumptions. *Reprise* : quand l'analyse des erreurs ci-dessus démarre.
+  *Origine* : spec 003, Assumptions. *Reprise* : quand l'analyse des erreurs ci-dessus démarre.
 
 ### Réconciliation bibliographique
 
 - **Correction manuelle d'un livre non trouvé** — ressaisir le titre ou l'auteur lu sur l'étagère
-  pour relancer la recherche sur ce seul livre. *Origine* : spec 002, décision du 27/09/2026.
+  pour relancer la recherche sur ce seul livre. *Origine* : spec 003, décision du 27/09/2026.
   *Report* : garder la spec centrée sur le filet automatique ; renvoyer une photo suffit pour
   l'instant.
 - **Revenir sur une décision d'ambiguïté** — corriger un choix de candidat fait par erreur (ou un
-  « aucun ne correspond »). *Origine* : spec 002, plan (research §10) : une seule décision par livre
+  « aucun ne correspond »). *Origine* : spec 003, plan (research §10) : une seule décision par livre
   ambigu, la plus simple qui garde le résultat automatique à côté (FR-016). *Reprise* : si les mauvais
   choix s'avèrent fréquents à l'usage.
 - **Identifier l'édition exacte**, pas seulement l'œuvre (Folio vs Livre de Poche vs Pléiade).
-  *Origine* : spec 002, FR-007. *Report* : une tranche ne dit pas l'édition de façon fiable.
-- **Réconcilier rétroactivement les analyses antérieures** à la spec 002. *Origine* : spec 002,
-  Assumptions. *Reprise* : si l'historique conservé devient utile à l'enrichissement ou à la
-  curation.
+  *Origine* : spec 003, FR-007. *Report* : une tranche ne dit pas l'édition de façon fiable.
+- **Trier, filtrer ou alerter sur le score de réconciliation** — le score est calculé et conservé
+  (spec 003, FR-021), seule la confirmation sur le titre seul est montrée (FR-022). *Origine* :
+  spec 003, Assumptions ; ADR 0014. *Reprise* : quand le bench aura calibré le score.
 
 ### Parcours et écrans
 
-- **Historique des analyses** — rouvrir une analyse passée une fois l'écran de résultat quitté (et
-  depuis là relancer une vérification, lever une ambiguïté). *Origine* : specs 001 et 002.
-- **Reprise d'une photo soumise jamais analysée** (coupure entre la soumission et le déclenchement
-  de l'analyse) — aujourd'hui elle reste dans un état intermédiaire, sans reprise automatique.
-  *Origine* : spec 001, FR-014 et Assumptions.
-- **Relancer une analyse en échec** — nouvelle reconnaissance d'une photo conservée dont l'analyse a
-  échoué (aujourd'hui refusée une fois l'enregistrement terminé), et nouvelle tentative automatique
-  après une erreur réseau. *Origine* : spec 001, Assumptions ; `research.md` §7.
+- **Statuts de réconciliation dans la liste de l'historique** — le résumé d'un envoi compte ses
+  livres détectés (spec 002, FR-005), pas combien sont confirmés ou ambigus. *Origine* : spec 003,
+  Assumptions. *Reprise* : si l'utilisateur cherche dans l'historique les envois à reprendre.
 
 ### Sources d'annonces
 
@@ -69,7 +64,7 @@ paragraphe *Assumptions* que personne ne relira.
   (CORS, authentification) ; lecture du DOM de leboncoin, fragile et soumise aux conditions
   d'utilisation du site ; nouveau projet Nx pour l'extension. *Origine* : discussion du 29/09/2026,
   capture d'une page de résultats leboncoin (catégorie Livres). *Reprise* : quand l'enrichissement
-  bibliographique (#20) et `curation` existent, car l'extension n'a de valeur qu'avec eux.
+  bibliographique (spec 004) et `curation` existent, car l'extension n'a de valeur qu'avec eux.
 
 ### Comptes et données
 
@@ -82,6 +77,7 @@ paragraphe *Assumptions* que personne ne relira.
 
 Hors-scope déjà portés par une issue ou un ADR à écrire — ils ne figurent pas dans le parking :
 
-- **Enrichissement bibliographique** (référentiel, attributs enrichis) — issue #20, ADR à écrire.
+- **Enrichissement bibliographique** (Google Books, champs de la notice BnF, état par source) —
+  ADR 0014, spec 004 à écrire (spec 003, research §14).
 - **Correspondance avec la bibliothèque, la liste de souhaits et les préférences** — contexte
   `curation`, ADR 0010.

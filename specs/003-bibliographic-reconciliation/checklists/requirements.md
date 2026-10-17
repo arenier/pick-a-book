@@ -53,3 +53,17 @@
   « revenir plus tard » sur une analyse alors qu'aucun historique n'existe : elles sont bornées à
   l'écran de résultat affiché, l'historique étant mis au parking. Les hors-scope de la spec sans
   issue ni ADR sont reportés dans `docs/parking.md`.
+- **Révision du 17/10/2026**, après le merge de la spec 002 (PR #82) et de l'ADR 0014 (PR #84) :
+  - la dépendance bloquante est levée : l'ADR 0014 a choisi le catalogue général de la BnF et posé
+    les principes d'appariement. La spec reprend les comportements observables qui en découlent
+    (segments, tome, formes rejetées des autorités, rapprochement partiel, regroupement, notice
+    représentative, score distinct de la confiance, attribution : FR-003, FR-004, FR-007,
+    FR-019 à FR-023) ; les réglages chiffrés sont dans `research.md` ;
+  - l'historique existe : US1, US2 et US4 s'étendent au détail d'un envoi (FR-024), décision du
+    porteur du projet du 17/10/2026 ; les hypothèses « pas d'historique » et « pas de reprise des
+    analyses antérieures » sont remplacées ;
+  - l'enrichissement (Google Books, état par source) part dans une spec 004, décision du porteur
+    du projet du 17/10/2026 ;
+  - « ADR », « BnF », « ARK » et « catalogue » apparaissent désormais dans la spec : c'est le
+    vocabulaire du domaine fixé par l'ADR, pas un détail d'implémentation. Tous les points restent
+    cochés.
