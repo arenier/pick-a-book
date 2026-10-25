@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, type ReactNode } from 'react';
 import { useMessages } from '@pick-a-book/shared-i18n';
 import { Button, Spinner } from '@pick-a-book/shared-ui';
 
@@ -10,16 +10,28 @@ import { PhotoPreview } from './photo-preview';
 import { ScanResult } from './scan-result';
 import { usePhotoUpload } from './use-photo-upload';
 
+/** An upload whose analysis ended. */
+type SuccessfulUpload = Extract<UploadState, { status: 'success' }>;
+
 export interface PhotoUploadScreenProps {
   /** Sends the photo; injected by the specs, the real API client otherwise. */
   readonly submit?: (photo: File) => Promise<UploadState>;
+  /**
+   * Words the books of an analysis that found some, in place of the plain list: the shell composes
+   * the reconciled list here, for slices import none another (specs/003, research §11). Not called
+   * for an analysis without any book, which keeps the message of this slice.
+   */
+  readonly renderResult?: (result: Pick<SuccessfulUpload, 'scanId' | 'books'>) => ReactNode;
 }
 
 /**
  * The upload screen: choose a shelf photo, send it, read the books found on it
  * (specs/001-photo-upload, US1, US2, US4, US5).
  */
-export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScreenProps) {
+export function PhotoUploadScreen({
+  submit = submitShelfPhoto,
+  renderResult,
+}: PhotoUploadScreenProps) {
   const { t } = useMessages('photo-upload');
   const { photo, state, pickerKey, uploading, canSend, settled, pick, send, startOver } =
     usePhotoUpload(submit);
@@ -46,7 +58,12 @@ export function PhotoUploadScreen({ submit = submitShelfPhoto }: PhotoUploadScre
           {t('uploading')}
         </output>
       )}
-      {state.status === 'success' && <ScanResult books={state.books} />}
+      {state.status === 'success' &&
+        (renderResult === undefined || state.books.length === 0 ? (
+          <ScanResult books={state.books} />
+        ) : (
+          renderResult({ scanId: state.scanId, books: state.books })
+        ))}
       {state.status === 'error' && <FailureMessage failure={state.failure} />}
       {settled && (
         <Button variant="outline" className="w-full" onClick={startOver}>

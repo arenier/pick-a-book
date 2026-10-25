@@ -1,4 +1,5 @@
 export { Alert, AlertDescription, AlertTitle } from './components/alert.js';
+export { Badge } from './components/badge.js';
 export { BookTitle, type BookTitleProps } from './components/book-title.js';
 export { Button, buttonVariants, type ButtonProps } from './components/button.js';
 export { FallbackImage, type FallbackImageProps } from './components/fallback-image.js';

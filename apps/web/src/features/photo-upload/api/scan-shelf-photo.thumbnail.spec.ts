@@ -85,6 +85,6 @@ describe('submitShelfPhoto, without a thumbnail', () => {
     });
 
     expect(server.forms[0]?.has('thumbnail')).toBe(false);
-    expect(state).toStrictEqual({ status: 'success', books: [] });
+    expect(state).toStrictEqual({ status: 'success', scanId: anId, books: [] });
   });
 });

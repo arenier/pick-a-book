@@ -347,31 +347,31 @@ un titre inventé jamais confirmé, un catalogue en panne n'empêche pas l'affic
 
 ### Écrans (`apps/web/src/`)
 
-- [ ] T041 [US1] `features/photo-upload/api/` et `model/upload-state.ts` : l'état `success` porte
+- [X] T041 [US1] `features/photo-upload/api/` et `model/upload-state.ts` : l'état `success` porte
       `scanId` (l'`id` rendu par `POST /shelf-photos`) — **rouge** dans la spec de l'API, puis mettre
       à jour les specs qui construisent un `success`
-- [ ] T042 [US1] `features/photo-upload/ui/photo-upload-screen.tsx` : prop optionnelle
+- [X] T042 [US1] `features/photo-upload/ui/photo-upload-screen.tsx` : prop optionnelle
       `renderResult?: (result: { scanId: string; books: readonly DetectedBook[] }) => ReactNode`,
       `ScanResult` par défaut. **Rouge** dans `photo-upload-screen.spec.tsx` : la prop reçoit
       `scanId` et les livres, et remplace la liste par défaut ; elle **n'est pas appelée** pour une
       analyse sans livre, qui garde le message « aucun livre détecté » de `ScanResult` (spec 001,
       US1 scénario 3)
-- [ ] T043 [US1] `features/upload-history/ui/detail/loaded-entry.tsx` et `entry-detail-screen.tsx` :
+- [X] T043 [US1] `features/upload-history/ui/detail/loaded-entry.tsx` et `entry-detail-screen.tsx` :
       prop optionnelle `renderBooks?: (entry: { id: string; books: readonly DetectedBook[] }) => ReactNode`,
       `DetectedBooksList` par défaut. **Rouge** dans les specs du détail : la prop reçoit l'`id` et
       les livres d'un envoi abouti, y compris juste après une relance d'analyse qui aboutit ; elle
       n'est pas appelée pour un envoi sans livre, en échec ou non lancé, qui garde ses messages
       (spec 002, US2)
-- [ ] T044 [P] [US1] `features/reconciliation/model/` : `reconciled-book.ts` (copie locale du DTO,
+- [X] T044 [P] [US1] `features/reconciliation/model/` : `reconciled-book.ts` (copie locale du DTO,
       `pending` compris, plus le statut d'affichage `checking`), `reconciliation-state.ts`
       (`checking` | `ready { books }` | `failed { failure }`), `reconciliation-failure.ts` (`offline` |
       `rate_limited` | `unexpected`, un type jamais une phrase — ADR 0011)
-- [ ] T045 [P] [US1] `features/reconciliation/api/reconciliation-api.ts` (+ spec, `fetch` injecté) :
+- [X] T045 [P] [US1] `features/reconciliation/api/reconciliation-api.ts` (+ spec, `fetch` injecté) :
       `reconcile(id)` → `POST …/reconciliation`, `read(id)` → `GET …/reconciliation` ; ne rejettent
       jamais ; valident chaque élément selon son `status` (`reference`, `confirmedBy`, `titleOnly`
       pour `confirmed` ; 2 à 5 `candidates` pour `ambiguous`), tout ou rien ; absence de réponse →
       `offline`, 429 → `rate_limited`, tout autre statut ou corps invalide → `unexpected`
-- [ ] T046 [US1] `features/reconciliation/ui/use-reconciliation.ts` et `ui/reconciled-book-list.tsx`
+- [X] T046 [US1] `features/reconciliation/ui/use-reconciliation.ts` et `ui/reconciled-book-list.tsx`
       (+ specs, français) : deux modes — **après analyse** (`reconcile`) et **à l'ouverture d'un
       détail** (`read`, puis `reconcile` s'il reste des `pending`) ; **un seul appel par `scanId` et
       par mode**, même si le composant est monté deux fois (`StrictMode`) ; les livres détectés
@@ -385,7 +385,7 @@ un titre inventé jamais confirmé, un catalogue en panne n'empêche pas l'affic
       namespace `reconciliation` enregistré dans `apps/web/src/i18n/resources.ts` ; composants de
       `@pick-a-book/shared-ui` et classes Tailwind sur les tokens ; mise en page qui tient à 360 px
       (SC-006) ; `translations-auditor` vert
-- [ ] T047 [US1] `apps/web/src/app/app.tsx` : branche `ReconciledBookList` dans `renderResult` de
+- [X] T047 [US1] `apps/web/src/app/app.tsx` : branche `ReconciledBookList` dans `renderResult` de
       `PhotoUploadScreen` (mode après analyse) et dans `renderBooks` du détail d'un envoi (mode
       détail, et mode après analyse juste après une relance) ; `app.spec.tsx` et
       `app.history.spec.tsx` couvrent les deux parcours avec des `fetch` factices

@@ -2,6 +2,7 @@ import { useMessages } from '@pick-a-book/shared-i18n';
 import { buttonVariants, cn } from '@pick-a-book/shared-ui';
 
 import { PhotoUploadScreen } from '../features/photo-upload/ui/photo-upload-screen';
+import { ReconciledBookList } from '../features/reconciliation/ui/reconciled-book-list';
 import { UploadHistory } from '../features/upload-history/ui/upload-history';
 import { hrefFor, type Route } from './routes';
 import { useHashRoute } from './use-hash-route';
@@ -20,11 +21,40 @@ export function App() {
       <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
       <p className="text-muted-foreground">{t('tagline')}</p>
       <Navigation route={route} />
-      {route.name === 'upload' && <PhotoUploadScreen />}
+      {route.name === 'upload' && <PhotoUploadScreen renderResult={renderUploadResult} />}
       {/* One element for both routes: the history must outlive a move from the list to an upload
           and back, which two elements at two places in the tree would not (research.md §3). */}
-      {route.name !== 'upload' && <UploadHistory entryId={entryIdOf(route)} />}
+      {route.name !== 'upload' && (
+        <UploadHistory entryId={entryIdOf(route)} renderBooks={renderUploadBooks} />
+      )}
     </main>
+  );
+}
+
+/**
+ * The two screens that show detected books get the reconciled list from here, for slices import
+ * none another (specs/003, research §11). Keyed by the analysis: the list belongs to one.
+ */
+function renderUploadResult(result: {
+  readonly scanId: string;
+  readonly books: readonly { readonly title: string; readonly author: string | undefined }[];
+}) {
+  return (
+    <ReconciledBookList
+      key={result.scanId}
+      scanId={result.scanId}
+      books={result.books}
+      mode="afterAnalysis"
+    />
+  );
+}
+
+function renderUploadBooks(upload: {
+  readonly id: string;
+  readonly books: readonly { readonly title: string; readonly author: string | undefined }[];
+}) {
+  return (
+    <ReconciledBookList key={upload.id} scanId={upload.id} books={upload.books} mode="detail" />
   );
 }
 

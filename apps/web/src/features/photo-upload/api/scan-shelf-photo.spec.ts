@@ -83,6 +83,7 @@ describe('submitShelfPhoto, on success', () => {
 
     expect(state).toStrictEqual({
       status: 'success',
+      scanId: anId,
       books: [
         { author: 'Albert Camus', title: 'La Peste', confidence: 0.92 },
         { author: undefined, title: 'Les Choses', confidence: 0.71 },
@@ -99,6 +100,7 @@ describe('submitShelfPhoto, on success', () => {
 
     await expect(submitShelfPhoto(aPhoto(), options(server.fetch))).resolves.toStrictEqual({
       status: 'success',
+      scanId: anId,
       books: [],
     });
   });

@@ -1,8 +1,9 @@
-import { useCallback } from 'react';
+import { useCallback, type ReactNode } from 'react';
 import { useMessages } from '@pick-a-book/shared-i18n';
 import { Button, Spinner, buttonVariants, cn } from '@pick-a-book/shared-ui';
 
 import { getShelfScan, rescanShelfScan } from '../../api/history-api';
+import type { DetectedBook } from '../../model/detected-book';
 import type { HistoryOutcome } from '../../model/history-entry';
 import { HistoryFailureMessage } from '../history-failure-message';
 import { LoadedEntry } from './loaded-entry';
@@ -17,6 +18,15 @@ export interface EntryDetailScreenProps {
   readonly rescan?: RescanShelfScan;
   /** Told what the upload now is once its analysis ran again, to keep the list in step. */
   readonly onRescanned?: (id: string, outcome: HistoryOutcome) => void;
+  /**
+   * Words the books of an upload that has some, in place of the plain list: the shell composes the
+   * reconciled list here, for slices import none another (specs/003, research §11). Handed the id
+   * of the upload and its books, also right after an analysis run again completes.
+   */
+  readonly renderBooks?: (upload: {
+    readonly id: string;
+    readonly books: readonly DetectedBook[];
+  }) => ReactNode;
 }
 
 const loadFromApi: LoadDetail = async (id) => getShelfScan(id);
@@ -34,6 +44,7 @@ export function EntryDetailScreen({
   load = loadFromApi,
   rescan = rescanFromApi,
   onRescanned,
+  renderBooks,
 }: EntryDetailScreenProps) {
   const { t } = useMessages('upload-history');
   const { state, reload, runAgain } = useEntryDetail(id, load, rescan, onRescanned);
@@ -52,12 +63,7 @@ export function EntryDetailScreen({
       >
         {t('detail.back')}
       </a>
-      {state.status === 'loading' && (
-        <output className="flex items-start gap-2">
-          <Spinner className="mt-1 shrink-0" />
-          {t('detail.loading')}
-        </output>
-      )}
+      {state.status === 'loading' && <Loading />}
       {state.status === 'notFound' && <p>{t('detail.notFound')}</p>}
       {state.status === 'error' && (
         <>
@@ -73,8 +79,20 @@ export function EntryDetailScreen({
           books={state.books}
           rescan={state.rescan}
           onRescan={onRescan}
+          renderBooks={renderBooks}
         />
       )}
     </section>
+  );
+}
+
+function Loading() {
+  const { t } = useMessages('upload-history');
+
+  return (
+    <output className="flex items-start gap-2">
+      <Spinner className="mt-1 shrink-0" />
+      {t('detail.loading')}
+    </output>
   );
 }

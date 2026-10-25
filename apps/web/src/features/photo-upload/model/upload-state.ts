@@ -11,5 +11,10 @@ import type { UploadFailure } from './upload-failure';
 export type UploadState =
   | { readonly status: 'idle' }
   | { readonly status: 'uploading' }
-  | { readonly status: 'success'; readonly books: readonly DetectedBook[] }
+  | {
+      readonly status: 'success';
+      /** The `id` of the upload, which names the analysis for everything that follows it. */
+      readonly scanId: string;
+      readonly books: readonly DetectedBook[];
+    }
   | { readonly status: 'error'; readonly failure: UploadFailure };

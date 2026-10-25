@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { useMessages } from '@pick-a-book/shared-i18n';
 import { FallbackImage } from '@pick-a-book/shared-ui';
 
@@ -14,9 +14,14 @@ export interface LoadedEntryProps {
   readonly books: readonly DetectedBook[] | undefined;
   readonly rescan: RescanState;
   readonly onRescan: () => void;
+  /** Words the books of an upload that has some, in place of the plain list. */
+  readonly renderBooks?: (upload: {
+    readonly id: string;
+    readonly books: readonly DetectedBook[];
+  }) => ReactNode;
 }
 
-export function LoadedEntry({ entry, books, rescan, onRescan }: LoadedEntryProps) {
+export function LoadedEntry({ entry, books, rescan, onRescan, renderBooks }: LoadedEntryProps) {
   const { t } = useMessages('upload-history');
   // The photo first; then its thumbnail, which still shows the shelf, if there is one; then the
   // neutral indicator. A HEIC a browser cannot draw, or a photo the bucket lost, never leaves a
@@ -44,7 +49,7 @@ export function LoadedEntry({ entry, books, rescan, onRescan }: LoadedEntryProps
           <RescanControls state={rescan} onRescan={onRescan} />
         </>
       ) : (
-        <DetectedBooksList books={books} />
+        <Books entry={entry} books={books} renderBooks={renderBooks} />
       )}
     </>
   );
@@ -55,4 +60,20 @@ function NoBooks({ entry }: { readonly entry: HistoryEntry }) {
   const { t } = useMessages('upload-history');
 
   return <p>{entry.outcome.kind === 'failed' ? t('detail.failed') : t('detail.notStarted')}</p>;
+}
+
+/**
+ * The books of an upload: the renderer of the shell when it gave one and there are books — the
+ * message of « none detected » stays this slice's (specs/003, research §11).
+ */
+function Books({
+  entry,
+  books,
+  renderBooks,
+}: Pick<LoadedEntryProps, 'entry' | 'renderBooks'> & { readonly books: readonly DetectedBook[] }) {
+  if (renderBooks === undefined || books.length === 0) {
+    return <DetectedBooksList books={books} />;
+  }
+
+  return <>{renderBooks({ id: entry.id, books })}</>;
 }

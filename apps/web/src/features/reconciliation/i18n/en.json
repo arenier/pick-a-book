@@ -1,0 +1,24 @@
+{
+  "status": {
+    "checking": "Checking…",
+    "confirmed": "Confirmed",
+    "ambiguous": "Several works possible",
+    "notFound": "Unknown to the catalogue",
+    "notVerified": "Not verified"
+  },
+  "book": {
+    "byAuthor": " — {{author}}",
+    "byAuthors": " — {{authors, list}}"
+  },
+  "read": {
+    "titleOnly": "Read: {{title}}",
+    "withAuthor": "Read: {{title}} — {{author}}"
+  },
+  "titleOnly": "Confirmed on the title alone",
+  "source": "Source: general catalogue of the BnF",
+  "failure": {
+    "offline": "The server cannot be reached: the check could not take place. Check your connection.",
+    "rateLimited": "Too many requests in a short time. Wait a minute, then try again.",
+    "unexpected": "An unexpected error occurred during the check. Try again in a few moments."
+  }
+}

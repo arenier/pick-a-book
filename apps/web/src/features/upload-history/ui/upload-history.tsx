@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import { EntryDetailScreen } from './detail/entry-detail-screen';
+import { EntryDetailScreen, type EntryDetailScreenProps } from './detail/entry-detail-screen';
 import { HistoryScreen, type HistoryScreenProps } from './list/history-screen';
 import { createHistoryUpdates } from './history-updates';
 import type { LoadDetail, RescanShelfScan } from './detail/use-entry-detail';
@@ -12,6 +12,8 @@ export interface UploadHistoryProps extends Omit<HistoryScreenProps, 'updates'> 
   readonly load?: LoadDetail;
   /** Runs the analysis of an upload again; injected by the specs, the real API client otherwise. */
   readonly rescan?: RescanShelfScan;
+  /** Words the books of an upload, in place of the plain list: the shell composes it (specs/003). */
+  readonly renderBooks?: EntryDetailScreenProps['renderBooks'];
 }
 
 /**
@@ -23,7 +25,14 @@ export interface UploadHistoryProps extends Omit<HistoryScreenProps, 'updates'> 
  * (scenario 4). It is only mounted once the user has been to it: opening an upload from its address
  * asks for that upload, not for a list nobody sees.
  */
-export function UploadHistory({ entryId, load, rescan, list, observeEnd }: UploadHistoryProps) {
+export function UploadHistory({
+  entryId,
+  load,
+  rescan,
+  renderBooks,
+  list,
+  observeEnd,
+}: UploadHistoryProps) {
   // The channel from the detail to the list: one, for as long as the history is on screen.
   const [updates] = useState(createHistoryUpdates);
   const [listMounted, setListMounted] = useState(entryId === undefined);
@@ -48,6 +57,7 @@ export function UploadHistory({ entryId, load, rescan, list, observeEnd }: Uploa
           load={load}
           rescan={rescan}
           onRescanned={updates.publish}
+          renderBooks={renderBooks}
         />
       )}
     </>

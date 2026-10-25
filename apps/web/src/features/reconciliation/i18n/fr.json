@@ -1,0 +1,24 @@
+{
+  "status": {
+    "checking": "Vérification en cours…",
+    "confirmed": "Confirmé",
+    "ambiguous": "Plusieurs œuvres possibles",
+    "notFound": "Inconnu du catalogue",
+    "notVerified": "Non vérifié"
+  },
+  "book": {
+    "byAuthor": " — {{author}}",
+    "byAuthors": " — {{authors, list}}"
+  },
+  "read": {
+    "titleOnly": "Lu : {{title}}",
+    "withAuthor": "Lu : {{title}} — {{author}}"
+  },
+  "titleOnly": "Confirmé sur le titre seul",
+  "source": "Source : catalogue général de la BnF",
+  "failure": {
+    "offline": "Impossible de joindre le serveur : la vérification n’a pas pu avoir lieu. Vérifiez votre connexion.",
+    "rateLimited": "Trop de demandes en peu de temps. Patientez une minute puis réessayez.",
+    "unexpected": "Une erreur inattendue est survenue pendant la vérification. Réessayez dans quelques instants."
+  }
+}

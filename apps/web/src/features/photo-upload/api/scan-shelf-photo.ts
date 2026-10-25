@@ -35,15 +35,7 @@ export async function submitShelfPhoto(
   const baseUrl = options.baseUrl ?? API_BASE_URL;
   const send = options.fetch ?? fetch;
 
-  const form = new FormData();
-  form.append('photo', photo);
-  // No thumbnail is not a failure: the photo goes up without one (specs/002-upload-history,
-  // research.md §5), and the history shows a neutral indicator in its place.
-  const thumbnail = await (options.makeThumbnail ?? makeBrowserThumbnail)(photo);
-  if (thumbnail !== undefined) {
-    form.append('thumbnail', thumbnail, 'thumbnail.jpg');
-  }
-
+  const form = await formOf(photo, options.makeThumbnail ?? makeBrowserThumbnail);
   const stored = await ask(send, `${baseUrl}/shelf-photos`, { method: 'POST', body: form });
   if (!stored.reached) {
     return failure('offline');
@@ -73,7 +65,28 @@ export async function submitShelfPhoto(
     return failure('unexpected');
   }
 
-  return { status: 'success', books: scanned.body.books.map((book) => toDetectedBook(book)) };
+  return {
+    status: 'success',
+    scanId: stored.body.id,
+    books: scanned.body.books.map((book) => toDetectedBook(book)),
+  };
+}
+
+/** The photo, with its thumbnail when the browser could make one. */
+async function formOf(
+  photo: File,
+  makeThumbnail: (photo: File) => Promise<Blob | undefined>,
+): Promise<FormData> {
+  const form = new FormData();
+  form.append('photo', photo);
+  // No thumbnail is not a failure: the photo goes up without one (specs/002-upload-history,
+  // research.md §5), and the history shows a neutral indicator in its place.
+  const thumbnail = await makeThumbnail(photo);
+  if (thumbnail !== undefined) {
+    form.append('thumbnail', thumbnail, 'thumbnail.jpg');
+  }
+
+  return form;
 }
 
 /**

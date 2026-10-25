@@ -52,6 +52,7 @@ son parcours), et lie les composants d'ici à son catalogue par une prop.
 |---|---|
 | `PhotoPicker` | Choix d'une photo : appareil photo **ou** galerie sur un téléphone, faute d'attribut `capture` ; un sélecteur de fichier sur un ordinateur. Libellé et types acceptés en props. |
 | `PhotoPreview` | Aperçu d'une photo choisie, par une URL locale libérée dès que la photo change ; un texte de repli quand le navigateur ne sait pas l'afficher (HEIC hors Safari). Hauteur bornée à la moitié de l'écran. |
+| `Badge` | Une étiquette courte, pour un statut ou une mention : ni rôle ni focus, trois variantes (`default`, `outline`, `destructive`) sur les tokens du thème, texte à pleine opacité. Les mots sont ceux de la slice. |
 | `BookTitle` | Le titre d'un livre en Literata 600, seule police serif du design system (note 0002). En ligne, pour s'insérer dans une phrase. |
 | `FallbackImage` | Une image qui peut ne pas se charger : une liste ordonnée de sources (la photo, puis sa vignette), chacune essayée quand la précédente échoue, puis un indicateur neutre. Liste vide : l'indicateur tout de suite, sans requête. Texte alternatif et nom de l'indicateur en props. |
 

@@ -47,6 +47,7 @@ describe('PhotoUploadScreen, happy path', () => {
     await act(async () => {
       submission.settle({
         status: 'success',
+        scanId: 'an-id',
         books: [{ author: 'Albert Camus', title: 'La Peste', confidence: 0.9 }],
       });
     });
@@ -71,7 +72,7 @@ describe('PhotoUploadScreen, once a photo is settled', () => {
     choose(aJpeg());
     fireEvent.click(sendButton());
     await act(async () => {
-      submission.settle({ status: 'success', books: [] });
+      submission.settle({ status: 'success', scanId: 'an-id', books: [] });
     });
 
     expect(sendButton()).toHaveProperty('disabled', true);
@@ -158,7 +159,7 @@ const startOver = () => screen.getByRole('button', { name: 'Recommencer' });
 
 describe('PhotoUploadScreen, starting over', () => {
   it.each([
-    ['a result', { status: 'success', books: [] }],
+    ['a result', { status: 'success', scanId: 'an-id', books: [] }],
     ['an error', { status: 'error', failure: 'upstream' }],
   ] satisfies [string, UploadState][])(
     'comes back to the start after %s',
@@ -244,7 +245,7 @@ describe('PhotoUploadScreen, once the chosen photo is sent', () => {
     expect(preview()).not.toBeNull();
 
     await act(async () => {
-      submission.settle({ status: 'success', books: [] });
+      submission.settle({ status: 'success', scanId: 'an-id', books: [] });
     });
     expect(preview()).not.toBeNull();
   });
@@ -268,7 +269,7 @@ describe('PhotoUploadScreen, once the chosen photo is sent', () => {
     choose(aJpeg());
     fireEvent.click(sendButton());
     await act(async () => {
-      submission.settle({ status: 'success', books: [] });
+      submission.settle({ status: 'success', scanId: 'an-id', books: [] });
     });
 
     fireEvent.click(startOver());

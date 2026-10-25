@@ -2,6 +2,8 @@ import shellEn from '../app/i18n/en.json';
 import shellFr from '../app/i18n/fr.json';
 import photoUploadEn from '../features/photo-upload/i18n/en.json';
 import photoUploadFr from '../features/photo-upload/i18n/fr.json';
+import reconciliationEn from '../features/reconciliation/i18n/en.json';
+import reconciliationFr from '../features/reconciliation/i18n/fr.json';
 import uploadHistoryEn from '../features/upload-history/i18n/en.json';
 import uploadHistoryFr from '../features/upload-history/i18n/fr.json';
 
@@ -14,6 +16,16 @@ import uploadHistoryFr from '../features/upload-history/i18n/fr.json';
  * mechanics — detection, fallback, React — live behind the facade of `@pick-a-book/shared-i18n`.
  */
 export const resources = {
-  fr: { shell: shellFr, 'photo-upload': photoUploadFr, 'upload-history': uploadHistoryFr },
-  en: { shell: shellEn, 'photo-upload': photoUploadEn, 'upload-history': uploadHistoryEn },
+  fr: {
+    shell: shellFr,
+    'photo-upload': photoUploadFr,
+    'upload-history': uploadHistoryFr,
+    reconciliation: reconciliationFr,
+  },
+  en: {
+    shell: shellEn,
+    'photo-upload': photoUploadEn,
+    'upload-history': uploadHistoryEn,
+    reconciliation: reconciliationEn,
+  },
 };
