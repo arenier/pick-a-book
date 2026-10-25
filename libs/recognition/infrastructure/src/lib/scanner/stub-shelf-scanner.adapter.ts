@@ -23,11 +23,14 @@ import { ok, unwrap, type Result } from '@pick-a-book/shared-result';
  * is a bug in this file, not an outcome to report — and ADR 0013 lets `infrastructure` throw.
  */
 export class StubShelfScannerAdapter implements ShelfScannerPort {
-  private static readonly SAMPLE: ReadonlyArray<[string, string, number]> = [
+  private static readonly SAMPLE: ReadonlyArray<[string | undefined, string, number]> = [
     ['Marguerite Duras', "L'Amant", 0.94],
     ['Georges Perec', 'Les Choses', 0.88],
     ['Annie Ernaux', 'La Place', 0.71],
     ['Auteur peu lisible', 'Titre peu lisible', 0.31],
+    // A spine with a title and no author (ADR 0005, amendment of 2026-09-04): the stub catalogue
+    // of the reconciliation gives this title to two works, so the book comes out ambiguous.
+    [undefined, 'La Chute', 0.62],
   ];
 
   async scan(_photo: ShelfPhoto): Promise<Result<DetectedBook[], ShelfScanFailed>> {
@@ -39,7 +42,7 @@ export class StubShelfScannerAdapter implements ShelfScannerPort {
     return ok(
       StubShelfScannerAdapter.SAMPLE.map(([author, title, confidence]) =>
         DetectedBook.of(
-          unwrap(Author.of(author)),
+          author === undefined ? undefined : unwrap(Author.of(author)),
           unwrap(BookTitle.of(title)),
           unwrap(Confidence.of(confidence)),
         ),

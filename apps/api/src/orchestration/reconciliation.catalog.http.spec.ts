@@ -37,7 +37,7 @@ describe('the reconciliation with a catalogue that is down (FR-008, SC-004)', ()
 
     expect(response.status).toBe(200);
     expect(body.books.map((book) => book.status)).toStrictEqual(
-      Array.from({ length: 4 }, () => 'not_verified'),
+      Array.from({ length: 5 }, () => 'not_verified'),
     );
     expect(body.books[0].read).toStrictEqual({ title: "L'Amant", author: 'Marguerite Duras' });
   });

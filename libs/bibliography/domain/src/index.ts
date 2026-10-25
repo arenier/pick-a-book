@@ -21,6 +21,7 @@ export * from './lib/match-score.js';
 export * from './lib/matching-settings.js';
 export * from './lib/not-verified-cause.js';
 export * from './lib/read-book.js';
+export * from './lib/reconciliation-attempt.js';
 export * from './lib/reconciliation-score-of.js';
 export * from './lib/reconciliation-score.js';
 export * from './lib/scan-ref.js';

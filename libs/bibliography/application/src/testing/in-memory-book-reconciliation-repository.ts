@@ -1,8 +1,8 @@
 import {
   BookAlreadyReconciled,
+  BookNotAmbiguous,
   BookReconciliation,
   type AmbiguityDecision,
-  type BookNotAmbiguous,
   type BookReconciliationRepositoryPort,
   type ReconciliationAttempt,
   type ScanRef,
@@ -34,10 +34,17 @@ export class InMemoryBookReconciliationRepository implements BookReconciliationR
   }
 
   async saveDecision(
-    _bookRef: ShelfBookRef,
-    _decision: AmbiguityDecision,
+    bookRef: ShelfBookRef,
+    decision: AmbiguityDecision,
   ): Promise<Result<void, BookNotAmbiguous>> {
-    throw new Error('saveDecision is not implemented yet');
+    const book = this.books.get(keyOf(bookRef));
+    // Only an ambiguous book takes a decision, and only once: after it, it is no longer ambiguous.
+    if (book?.state.status !== 'ambiguous') {
+      return err(new BookNotAmbiguous(bookRef));
+    }
+    this.books.set(keyOf(bookRef), BookReconciliation.restore(bookRef, book.attempts, decision));
+
+    return ok();
   }
 
   async findByScan(scanRef: ScanRef): Promise<readonly BookReconciliation[]> {

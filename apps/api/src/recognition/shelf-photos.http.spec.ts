@@ -21,7 +21,7 @@ describe('POST /shelf-photos then POST /shelf-photos/:id/scan', () => {
 
     const result: unknown = await scanned.json();
     expect(scanned.status).toBe(200);
-    expect(result).toHaveProperty('books.length', 4);
+    expect(result).toHaveProperty('books.length', 5);
   });
 });
 

@@ -18,7 +18,7 @@ describe('two reconciliations of one analysis at once (research §3)', () => {
        where scan_ref = $1 and verdict <> 'not_verified' group by position`,
       [id],
     );
-    expect(rows.map((row) => row.finals)).toStrictEqual(['1', '1', '1', '1']);
+    expect(rows.map((row) => row.finals)).toStrictEqual(['1', '1', '1', '1', '1']);
   });
 });
 

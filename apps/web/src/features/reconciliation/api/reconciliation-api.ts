@@ -1,5 +1,9 @@
 import type { ReadByRecognition, ReconciledBook, Reference } from '../model/reconciled-book';
-import type { ReconciliationFailure } from '../model/reconciliation-failure';
+import type {
+  AmbiguityChoice,
+  DecisionFailure,
+  ReconciliationFailure,
+} from '../model/reconciliation-failure';
 import { ask, failureOf, isRecord, type ApiOptions } from './http';
 
 /**
@@ -32,6 +36,43 @@ export async function readReconciliation(
   options: ApiOptions = {},
 ): Promise<ReconciliationAnswer> {
   return request(id, options, {});
+}
+
+export type DecisionAnswer =
+  | { readonly status: 'book'; readonly book: ReconciledBook }
+  | { readonly status: 'error'; readonly failure: DecisionFailure };
+
+/**
+ * Records the user's choice for an ambiguous book
+ * (`POST /shelf-photos/{id}/books/{position}/decision`): resolves with the book as it is now, or
+ * with the kind of failure — `conflict` when the book is no longer ambiguous.
+ */
+export async function decide(
+  id: string,
+  position: number,
+  choice: AmbiguityChoice,
+  options: ApiOptions = {},
+): Promise<DecisionAnswer> {
+  const answer = await ask(
+    options,
+    `/shelf-photos/${encodeURIComponent(id)}/books/${position}/decision`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(choice),
+    },
+  );
+  if (answer.reached && answer.status === 200) {
+    const book = bookOf(answer.body);
+    if (book !== undefined) {
+      return { status: 'book', book };
+    }
+  }
+  if (answer.reached && answer.status === 409) {
+    return { status: 'error', failure: 'conflict' };
+  }
+
+  return { status: 'error', failure: failureOf(answer) };
 }
 
 async function request(

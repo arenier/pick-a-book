@@ -1,5 +1,6 @@
 import { HttpException } from '@nestjs/common';
 import type {
+  DecideAmbiguityUseCase,
   GetShelfReconciliationUseCase,
   ReconcileDetectedBooksUseCase,
   ShelfReconciliationDto,
@@ -8,6 +9,7 @@ import type { GetShelfScanUseCase, ShelfScanDetailDto } from '@pick-a-book/recog
 import { ok, type Result } from '@pick-a-book/shared-result';
 import { describe, expect, it, vi } from 'vitest';
 
+import { DecideShelfBookAmbiguityUseCase } from './decide-shelf-book-ambiguity.use-case';
 import { GetShelfPhotoReconciliationUseCase } from './get-shelf-photo-reconciliation.use-case';
 import { ReconcileShelfPhotoUseCase } from './reconcile-shelf-photo.use-case';
 import type { ShelfScanLookupFailure } from './reconcile-shelf-photo.use-case';
@@ -38,6 +40,9 @@ function aController(
     controller: new ShelfPhotoReconciliationController(
       new ReconcileShelfPhotoUseCase(getShelfScan, reconcile),
       new GetShelfPhotoReconciliationUseCase(getShelfScan, read),
+      new DecideShelfBookAmbiguityUseCase(getShelfScan, {
+        execute: vi.fn<DecideAmbiguityUseCase['execute']>(),
+      }),
     ),
   };
 }

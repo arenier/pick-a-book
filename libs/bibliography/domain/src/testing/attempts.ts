@@ -1,6 +1,6 @@
 import { unwrap } from '@pick-a-book/shared-result';
 
-import type { AttemptResult, ReconciliationAttempt } from '../lib/book-reconciliation.js';
+import type { AttemptResult, ReconciliationAttempt } from '../lib/reconciliation-attempt.js';
 import type { CascadeStep } from '../lib/cascade-step.js';
 import { CatalogName } from '../lib/catalog-name.js';
 import type { MatchOutcome } from '../lib/match-outcome.js';

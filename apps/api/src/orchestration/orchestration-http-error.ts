@@ -5,10 +5,12 @@ import {
   type HttpException,
 } from '@nestjs/common';
 
+import { toHttpException as toBibliographyHttpException } from '../bibliography/bibliography-http-error';
+import type { DecideShelfBookAmbiguityFailure } from './decide-shelf-book-ambiguity.use-case';
 import type { ReconcileShelfPhotoFailure } from './reconcile-shelf-photo.use-case';
 
 /** Every failure a route of the orchestrator can answer. */
-export type OrchestrationError = ReconcileShelfPhotoFailure;
+export type OrchestrationError = ReconcileShelfPhotoFailure | DecideShelfBookAmbiguityFailure;
 
 /**
  * Says the failures of the orchestrator in HTTP — those of `recognition` it passes on, its own,
@@ -16,6 +18,8 @@ export type OrchestrationError = ReconcileShelfPhotoFailure;
  *
  * - `ShelfScanNotFound` → 404: no such analysis, or one of another owner;
  * - `ShelfScanNotCompleted` → 409 `SCAN_NOT_COMPLETED`: it has no detected books to reconcile;
+ * - the failures of `bibliography` (a book never reconciled, not ambiguous, a record that is not a
+ *   candidate) are said by its own translator, `bibliography-http-error.ts`;
  * - `InvalidValue` → 500: the recognition proved the reference and the reading it handed over,
  *   so a refused one is a bug, which the caller gets no detail of.
  *
@@ -33,6 +37,11 @@ export function toHttpException(error: OrchestrationError): HttpException {
         error: 'Conflict',
         code: 'SCAN_NOT_COMPLETED',
       });
+    }
+    case 'book-reconciliation-not-found':
+    case 'book-not-ambiguous':
+    case 'unknown-candidate': {
+      return toBibliographyHttpException(error);
     }
     case 'invalid-value': {
       return new InternalServerErrorException('The reconciliation could not be started');

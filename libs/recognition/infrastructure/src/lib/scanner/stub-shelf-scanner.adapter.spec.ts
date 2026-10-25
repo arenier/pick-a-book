@@ -12,7 +12,7 @@ describe('StubShelfScannerAdapter', () => {
 
     expect(books.length).toBeGreaterThan(0);
     for (const book of books) {
-      expect(book.author?.value).not.toHaveLength(0);
+      expect(book.author?.value.length).not.toBe(0);
       expect(book.title.value).not.toHaveLength(0);
       expect(book.confidence.value).toBeGreaterThanOrEqual(0);
       expect(book.confidence.value).toBeLessThanOrEqual(1);
@@ -24,5 +24,14 @@ describe('StubShelfScannerAdapter', () => {
     const half = unwrap(Confidence.of(0.5));
 
     expect(books.some((book) => !book.isAtLeast(half))).toBe(true);
+  });
+
+  // The amendment of ADR 0005: a spine can carry a title and no author. The stub shows it, with a
+  // title that the stub catalogue of the reconciliation (specs/003, research §12) gives to two works.
+  it('includes a detection without any author, whose title two works of the stub catalogue carry', async () => {
+    const books = unwrap(await new StubShelfScannerAdapter().scan(photo));
+
+    const withoutAuthor = books.filter((book) => book.author === undefined);
+    expect(withoutAuthor.map((book) => book.title.value)).toStrictEqual(['La Chute']);
   });
 });

@@ -1,5 +1,6 @@
-import { Module, type DynamicModule } from '@nestjs/common';
+import { Module, type DynamicModule, type Provider } from '@nestjs/common';
 import {
+  DecideAmbiguityUseCase,
   GetShelfReconciliationUseCase,
   ReconcileDetectedBooksUseCase,
   DEFAULT_LIMITS,
@@ -41,50 +42,71 @@ export class BibliographyModule {
   static withEnvironment(environment: Environment): DynamicModule {
     return {
       module: BibliographyModule,
-      providers: [
-        {
-          provide: BIBLIOGRAPHIC_CATALOGS,
-          useFactory: () => createBibliographicCatalog(environment.bibliographicCatalog),
-        },
-        {
-          provide: BIBLIOGRAPHIC_CATALOG_PORT,
-          useFactory: (catalogs: BibliographicCatalogs) => catalogs.catalog,
-          inject: [BIBLIOGRAPHIC_CATALOGS],
-        },
-        {
-          provide: AUTHORITY_PORT,
-          useFactory: (catalogs: BibliographicCatalogs) => catalogs.authorities,
-          inject: [BIBLIOGRAPHIC_CATALOGS],
-        },
-        {
-          provide: BOOK_RECONCILIATION_REPOSITORY_PORT,
-          useFactory: (pool: Pool) => new DrizzleBookReconciliationRepositoryAdapter(pool),
-          inject: [DATABASE_POOL],
-        },
-        {
-          provide: ReconcileDetectedBooksUseCase,
-          useFactory: (
-            catalog: BibliographicCatalogPort,
-            authorities: AuthorityPort,
-            repository: BookReconciliationRepositoryPort,
-          ) =>
-            new ReconcileDetectedBooksUseCase(
-              catalog,
-              authorities,
-              repository,
-              MatchingSettings.defaults(),
-              DEFAULT_LIMITS,
-            ),
-          inject: [BIBLIOGRAPHIC_CATALOG_PORT, AUTHORITY_PORT, BOOK_RECONCILIATION_REPOSITORY_PORT],
-        },
-        {
-          provide: GetShelfReconciliationUseCase,
-          useFactory: (repository: BookReconciliationRepositoryPort) =>
-            new GetShelfReconciliationUseCase(repository),
-          inject: [BOOK_RECONCILIATION_REPOSITORY_PORT],
-        },
+      providers: [...portProviders(environment), ...providersOfUseCases()],
+      exports: [
+        ReconcileDetectedBooksUseCase,
+        GetShelfReconciliationUseCase,
+        DecideAmbiguityUseCase,
       ],
-      exports: [ReconcileDetectedBooksUseCase, GetShelfReconciliationUseCase],
     };
   }
+}
+
+/** Each port, bound to the adapter that its configuration names. */
+function portProviders(environment: Environment): Provider[] {
+  return [
+    {
+      provide: BIBLIOGRAPHIC_CATALOGS,
+      useFactory: () => createBibliographicCatalog(environment.bibliographicCatalog),
+    },
+    {
+      provide: BIBLIOGRAPHIC_CATALOG_PORT,
+      useFactory: (catalogs: BibliographicCatalogs) => catalogs.catalog,
+      inject: [BIBLIOGRAPHIC_CATALOGS],
+    },
+    {
+      provide: AUTHORITY_PORT,
+      useFactory: (catalogs: BibliographicCatalogs) => catalogs.authorities,
+      inject: [BIBLIOGRAPHIC_CATALOGS],
+    },
+    {
+      provide: BOOK_RECONCILIATION_REPOSITORY_PORT,
+      useFactory: (pool: Pool) => new DrizzleBookReconciliationRepositoryAdapter(pool),
+      inject: [DATABASE_POOL],
+    },
+  ];
+}
+
+/** The use cases, each over the ports it needs. */
+function providersOfUseCases(): Provider[] {
+  return [
+    {
+      provide: ReconcileDetectedBooksUseCase,
+      useFactory: (
+        catalog: BibliographicCatalogPort,
+        authorities: AuthorityPort,
+        repository: BookReconciliationRepositoryPort,
+      ) =>
+        new ReconcileDetectedBooksUseCase(
+          catalog,
+          authorities,
+          repository,
+          MatchingSettings.defaults(),
+          DEFAULT_LIMITS,
+        ),
+      inject: [BIBLIOGRAPHIC_CATALOG_PORT, AUTHORITY_PORT, BOOK_RECONCILIATION_REPOSITORY_PORT],
+    },
+    {
+      provide: GetShelfReconciliationUseCase,
+      useFactory: (repository: BookReconciliationRepositoryPort) =>
+        new GetShelfReconciliationUseCase(repository),
+      inject: [BOOK_RECONCILIATION_REPOSITORY_PORT],
+    },
+    {
+      provide: DecideAmbiguityUseCase,
+      useFactory: (repository: BookReconciliationRepositoryPort) =>
+        new DecideAmbiguityUseCase(repository),
+      inject: [BOOK_RECONCILIATION_REPOSITORY_PORT],
+    },
+  ];
 }

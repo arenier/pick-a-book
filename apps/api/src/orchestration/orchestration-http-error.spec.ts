@@ -39,4 +39,25 @@ describe('toHttpException, orchestration', () => {
     expect(http.getStatus()).toBe(500);
     expect(JSON.stringify(http.getResponse())).not.toContain('ScanRef');
   });
+
+  // The failures of bibliography are said by its own translator, through this one.
+  it.each([
+    ['book-reconciliation-not-found', 404],
+    ['book-not-ambiguous', 409],
+    ['unknown-candidate', 400],
+  ] as const)('passes %s on to the translator of bibliography', (kind, status) => {
+    const http = toHttpException(Object.assign(new Error(kind), { kind }));
+
+    expect(http.getStatus()).toBe(status);
+  });
+});
+
+describe('toHttpException, orchestration, part 2', () => {
+  it('keeps the stable codes of the translator of bibliography', () => {
+    const conflict = toHttpException(
+      Object.assign(new Error('x'), { kind: 'book-not-ambiguous' as const }),
+    );
+
+    expect(conflict.getResponse()).toMatchObject({ code: 'BOOK_NOT_AMBIGUOUS' });
+  });
 });

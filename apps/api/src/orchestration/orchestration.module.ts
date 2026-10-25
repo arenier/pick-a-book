@@ -1,10 +1,12 @@
 import { Module, type DynamicModule } from '@nestjs/common';
 import {
+  DecideAmbiguityUseCase,
   GetShelfReconciliationUseCase,
   ReconcileDetectedBooksUseCase,
 } from '@pick-a-book/bibliography-application';
 import { GetShelfScanUseCase } from '@pick-a-book/recognition-application';
 
+import { DecideShelfBookAmbiguityUseCase } from './decide-shelf-book-ambiguity.use-case';
 import { GetShelfPhotoReconciliationUseCase } from './get-shelf-photo-reconciliation.use-case';
 import { ReconcileShelfPhotoUseCase } from './reconcile-shelf-photo.use-case';
 import { ShelfPhotoReconciliationController } from './shelf-photo-reconciliation.controller';
@@ -41,6 +43,12 @@ export class OrchestrationModule {
             getReconciliation: GetShelfReconciliationUseCase,
           ) => new GetShelfPhotoReconciliationUseCase(getShelfScan, getReconciliation),
           inject: [GetShelfScanUseCase, GetShelfReconciliationUseCase],
+        },
+        {
+          provide: DecideShelfBookAmbiguityUseCase,
+          useFactory: (getShelfScan: GetShelfScanUseCase, decide: DecideAmbiguityUseCase) =>
+            new DecideShelfBookAmbiguityUseCase(getShelfScan, decide),
+          inject: [GetShelfScanUseCase, DecideAmbiguityUseCase],
         },
       ],
     };

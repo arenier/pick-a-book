@@ -5,6 +5,7 @@ import {
   ReadBook,
   type CatalogQueryInput,
 } from '@pick-a-book/bibliography-domain';
+import { candidatesOf } from '@pick-a-book/bibliography-domain/testing';
 import { unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
@@ -79,5 +80,13 @@ describe('StubBibliographicCatalogAdapter, with the matching rule', () => {
     await expect(
       search({ title: 'La Place', maxRecords: 20, format: 'full' }),
     ).resolves.toHaveLength(2);
+  });
+
+  it('is ambiguous on a title without author carried by two works of different authors', async () => {
+    const records = await search({ title: 'La Chute', maxRecords: 20, format: 'full' });
+
+    const outcome = matchBook(unwrap(ReadBook.of('La Chute')), records, settings);
+
+    expect(candidatesOf(outcome)).toHaveLength(2);
   });
 });

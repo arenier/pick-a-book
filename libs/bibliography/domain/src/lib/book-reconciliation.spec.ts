@@ -2,13 +2,10 @@ import { unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
 import { aBookRef, aConfirmed, aNotFound, anAmbiguous, aRecord } from '../testing/builders.js';
-import {
-  BookReconciliation,
-  type AttemptResult,
-  type ReconciliationAttempt,
-} from './book-reconciliation.js';
+import { BookReconciliation } from './book-reconciliation.js';
 import { CatalogName } from './catalog-name.js';
 import { ReadBook } from './read-book.js';
+import type { AttemptResult, ReconciliationAttempt } from './reconciliation-attempt.js';
 import { ReconciliationScore } from './reconciliation-score.js';
 
 const read = unwrap(ReadBook.of('La Peste', 'Albert Camus'));

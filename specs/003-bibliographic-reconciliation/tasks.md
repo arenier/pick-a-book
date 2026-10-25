@@ -401,25 +401,25 @@ depuis l'écran de résultat comme depuis le détail d'un envoi.
 
 **Independent Test** : quickstart scénario 2.
 
-- [ ] T048 [US2] `libs/bibliography/domain/src/lib/book-reconciliation.ts` : `decide(decision)`.
+- [X] T048 [US2] `libs/bibliography/domain/src/lib/book-reconciliation.ts` : `decide(decision)`.
       **Rouge** : `chosen` sur un ambigu → `confirmed`, origine `user`, notice choisie ; `rejected`
       → `not_found` ; `Err(BookNotAmbiguous)` « si le statut n'est pas `ambiguous` — donc aussi
       après une première décision » ; `Err(UnknownCandidate)` si `recordId` n'est pas un candidat ;
       la tentative ambiguë reste inchangée (FR-016)
-- [ ] T049 [US2] `drizzle-book-reconciliation-repository.adapter.ts` : `saveDecision(bookRef,
+- [X] T049 [US2] `drizzle-book-reconciliation-repository.adapter.ts` : `saveDecision(bookRef,
       decision)`, rattachée à l'unique tentative définitive du livre ; une seconde décision →
       `Err(BookNotAmbiguous)` (contrainte unique). **Rouge** (contre Postgres) : aller-retour des
       deux genres, seconde décision refusée, ligne de tentative identique avant et après
-- [ ] T050 [P] [US2] `libs/recognition/infrastructure/src/lib/scanner/stub-shelf-scanner.adapter.ts`
+- [X] T050 [P] [US2] `libs/recognition/infrastructure/src/lib/scanner/stub-shelf-scanner.adapter.ts`
       (+ spec) : ajouter une détection **sans auteur** dont le titre est porté, dans le catalogue
       stub, par deux œuvres d'auteurs différents ; ajouter ces deux œuvres à
       `stub-bibliographic-catalog.adapter.ts` (+ spec : `matchBook` rend `ambiguous`) — research §12
-- [ ] T051 [US2] `libs/bibliography/application/src/lib/decide-ambiguity.use-case.ts` (+ spec) :
+- [X] T051 [US2] `libs/bibliography/application/src/lib/decide-ambiguity.use-case.ts` (+ spec) :
       `execute({ scanRef, position, decision })` → `Result<BookReconciliationDto, …>`. **Rouge** :
       candidat choisi → `confirmed`/`user` ; `none` → `not_found` ; livre non ambigu →
       `Err(BookNotAmbiguous)` ; candidat inconnu → `Err(UnknownCandidate)` ; livre jamais réconcilié
       → `Err(BookReconciliationNotFound)`
-- [ ] T052 [US2] `apps/api/src/orchestration/decide-shelf-book-ambiguity.use-case.ts` (+ spec) :
+- [X] T052 [US2] `apps/api/src/orchestration/decide-shelf-book-ambiguity.use-case.ts` (+ spec) :
       vérifie l'envoi par `GetShelfScanUseCase` (propriétaire), puis appelle
       `DecideAmbiguityUseCase` ; route `POST /shelf-photos/:id/books/:position/decision` dans le
       contrôleur d'orchestration, `@HttpCode(200)`, corps validé par `zod` —
@@ -427,7 +427,7 @@ depuis l'écran de résultat comme depuis le détail d'un envoi.
       entier ≥ 0, sinon 400 ; erreurs par `bibliography-http-error.ts`. Étendre
       `reconciliation.http.spec.ts` : 200 pour chaque choix, 400 (dont `UNKNOWN_CANDIDATE`), 404
       (dont un envoi d'un autre propriétaire), 409 `BOOK_NOT_AMBIGUOUS` en rejouant la même décision
-- [ ] T053 [P] [US2] `apps/web/src/features/reconciliation/api/reconciliation-api.ts` : `decide(id,
+- [X] T053 [P] [US2] `apps/web/src/features/reconciliation/api/reconciliation-api.ts` : `decide(id,
       position, decision)` (+ spec) — rend le livre mis à jour ou un échec `conflict` (409) |
       `rate_limited` | `offline` | `unexpected`
 - [ ] T054 [US2] `features/reconciliation/ui/ambiguity-picker.tsx` (+ spec) et intégration dans

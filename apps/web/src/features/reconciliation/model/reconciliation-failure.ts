@@ -6,3 +6,11 @@
 export const RECONCILIATION_FAILURES = ['offline', 'rateLimited', 'unexpected'] as const;
 
 export type ReconciliationFailure = (typeof RECONCILIATION_FAILURES)[number];
+
+/** Why a choice among candidates was not recorded: the book was no longer ambiguous (`conflict`), or a failure as above. */
+export type DecisionFailure = ReconciliationFailure | 'conflict';
+
+/** What the user chose for an ambiguous book. */
+export type AmbiguityChoice =
+  | { readonly choice: 'candidate'; readonly recordId: string }
+  | { readonly choice: 'none' };

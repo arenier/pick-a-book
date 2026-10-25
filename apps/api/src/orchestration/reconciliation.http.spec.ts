@@ -7,7 +7,7 @@ import { aRunningReconciliationApi } from './testing/running-reconciliation-api'
  * The reconciliation over real HTTP (specs/003, contracts/reconciliation-api.md): the stub scanner
  * detects four books, the stub catalogue judges them, Postgres keeps the verdicts.
  */
-const STATUSES = ['confirmed', 'confirmed', 'confirmed', 'not_found'];
+const STATUSES = ['confirmed', 'confirmed', 'confirmed', 'not_found', 'ambiguous'];
 
 describe('POST and GET /shelf-photos/{id}/reconciliation, the states', () => {
   const api = aRunningReconciliationApi();
@@ -20,7 +20,7 @@ describe('POST and GET /shelf-photos/{id}/reconciliation, the states', () => {
 
     expect(response.status).toBe(200);
     expect(body.books.map((book) => book.status)).toStrictEqual(STATUSES);
-    expect(body.books.map((book) => book.position)).toStrictEqual([0, 1, 2, 3]);
+    expect(body.books.map((book) => book.position)).toStrictEqual([0, 1, 2, 3, 4]);
     expect(body.books[0]).toMatchObject({
       read: { title: "L'Amant", author: 'Marguerite Duras' },
       status: 'confirmed',
@@ -49,6 +49,7 @@ describe('POST and GET /shelf-photos/{id}/reconciliation, the states', () => {
     const body = await reconciliationOf(await api.read(id));
 
     expect(body.books.map((book) => book.status)).toStrictEqual([
+      'pending',
       'pending',
       'pending',
       'pending',

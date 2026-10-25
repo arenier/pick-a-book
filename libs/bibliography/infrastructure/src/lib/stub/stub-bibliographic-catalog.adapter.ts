@@ -13,7 +13,8 @@ import { normalizeText } from '@pick-a-book/shared-text-match';
 /**
  * The books of the stub scanner, as a catalogue would describe them (specs/003, research §12):
  * L'Amant in two editions, whose author is written « Donnadieu » (the authority knows her as
- * « Duras »), Les Choses, and two works called La Place, of which the scanner reads Ernaux's.
+ * « Duras »), Les Choses, two works called La Place, of which the scanner reads Ernaux's, and two
+ * works called La Chute, which a title without author cannot tell apart (ambiguous).
  */
 const RECORDS: readonly CatalogRecordInput[] = [
   stubRecord(
@@ -33,6 +34,8 @@ const RECORDS: readonly CatalogRecordInput[] = [
   stubRecord('les-choses', 'Les choses', 'Perec, Georges'),
   stubRecord('la-place-ernaux', 'La place', 'Ernaux, Annie'),
   stubRecord('la-place-autre', 'La place', 'Dupont, Camille'),
+  stubRecord('la-chute-camus', 'La chute', 'Camus, Albert'),
+  stubRecord('la-chute-moreau', 'La chute', 'Moreau, Julie'),
 ];
 
 function stubRecord(

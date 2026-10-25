@@ -1,7 +1,13 @@
-import { Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
-import type { ShelfReconciliationDto } from '@pick-a-book/bibliography-application';
+import { BadRequestException, Body, Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
+import type {
+  BookReconciliationDto,
+  ShelfReconciliationDto,
+} from '@pick-a-book/bibliography-application';
 import type { Result } from '@pick-a-book/shared-result';
 
+import { z } from 'zod';
+
+import { DecideShelfBookAmbiguityUseCase } from './decide-shelf-book-ambiguity.use-case';
 import { GetShelfPhotoReconciliationUseCase } from './get-shelf-photo-reconciliation.use-case';
 import { toHttpException, type OrchestrationError } from './orchestration-http-error';
 import { ReconcileShelfPhotoUseCase } from './reconcile-shelf-photo.use-case';
@@ -22,6 +28,7 @@ export class ShelfPhotoReconciliationController {
   constructor(
     private readonly reconcile: ReconcileShelfPhotoUseCase,
     private readonly read: GetShelfPhotoReconciliationUseCase,
+    private readonly decide: DecideShelfBookAmbiguityUseCase,
   ) {}
 
   @Post(':id/reconciliation')
@@ -30,11 +37,42 @@ export class ShelfPhotoReconciliationController {
     return unwrapOrThrow(await this.reconcile.execute({ id }));
   }
 
+  @Post(':id/books/:position/decision')
+  @HttpCode(200)
+  async decideAmbiguity(
+    @Param('id') id: string,
+    @Param('position') rawPosition: string,
+    @Body() body: unknown,
+  ): Promise<BookReconciliationDto> {
+    if (!/^\d+$/u.test(rawPosition)) {
+      throw new BadRequestException('The position of a book is a whole number from 0');
+    }
+    const decision = decisionBody.safeParse(body);
+    if (!decision.success) {
+      throw new BadRequestException(
+        'The decision is { "choice": "candidate", "recordId": "…" } or { "choice": "none" }',
+      );
+    }
+
+    return unwrapOrThrow(
+      await this.decide.execute({ id, position: Number(rawPosition), decision: decision.data }),
+    );
+  }
+
   @Get(':id/reconciliation')
   async readReconciliation(@Param('id') id: string): Promise<ShelfReconciliationDto> {
     return unwrapOrThrow(await this.read.execute({ id }));
   }
 }
+
+/**
+ * `POST /shelf-photos/{id}/books/{position}/decision`: the user's word on an ambiguous book
+ * (contracts §3). Validated whole by `zod` (`adapters.md`), like any body that comes from outside.
+ */
+const decisionBody = z.discriminatedUnion('choice', [
+  z.object({ choice: z.literal('candidate'), recordId: z.string().min(1) }),
+  z.object({ choice: z.literal('none') }),
+]);
 
 function unwrapOrThrow<T>(result: Result<T, OrchestrationError>): T {
   if (!result.ok) {

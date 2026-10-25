@@ -3,7 +3,8 @@ import type { Result } from '@pick-a-book/shared-result';
 import type { AmbiguityDecision } from './ambiguity-decision.js';
 import type { BookAlreadyReconciled } from './book-already-reconciled.error.js';
 import type { BookNotAmbiguous } from './book-not-ambiguous.error.js';
-import type { BookReconciliation, ReconciliationAttempt } from './book-reconciliation.js';
+import type { BookReconciliation } from './book-reconciliation.js';
+import type { ReconciliationAttempt } from './reconciliation-attempt.js';
 import type { ScanRef } from './scan-ref.js';
 import type { ShelfBookRef } from './shelf-book-ref.js';
 

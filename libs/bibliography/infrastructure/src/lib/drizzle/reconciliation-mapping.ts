@@ -1,11 +1,13 @@
 import {
   CatalogName,
+  CatalogRecordId,
   CatalogRecord,
   MatchScore,
   ReadBook,
   ReconciliationScore,
   isCascadeStep,
   isNotVerifiedCause,
+  type AmbiguityDecision,
   type AttemptResult,
   type MatchOutcome,
   type ReconciliationAttempt,
@@ -18,6 +20,7 @@ import { z } from 'zod';
 import type {
   reconciliationAttempts,
   reconciliationCandidates,
+  reconciliationDecisions,
   StoredRecordAuthor,
   StoredRecordContext,
 } from './schema.js';
@@ -26,6 +29,7 @@ export type AttemptRow = typeof reconciliationAttempts.$inferSelect;
 export type CandidateRow = typeof reconciliationCandidates.$inferSelect;
 export type NewAttemptRow = typeof reconciliationAttempts.$inferInsert;
 export type NewCandidateRow = typeof reconciliationCandidates.$inferInsert;
+export type DecisionRow = typeof reconciliationDecisions.$inferSelect;
 
 /**
  * What a read of the jsonb columns must prove (adapters.md): the shape is checked on the way
@@ -221,4 +225,22 @@ function formatOf(format: string): 'unimarc' | 'dublin-core' {
     return format;
   }
   throw new Error(`reconciliation_candidates: unknown format ${format}`);
+}
+
+/** The decision the user took on an ambiguous attempt, as it was kept. */
+export function toDecision(row: DecisionRow): AmbiguityDecision {
+  if (row.kind === 'chosen' && row.recordId !== null) {
+    return {
+      kind: 'chosen',
+      recordId: unwrap(CatalogRecordId.of(row.recordId)),
+      decidedAt: row.decidedAt,
+    };
+  }
+  if (row.kind === 'rejected') {
+    return { kind: 'rejected', decidedAt: row.decidedAt };
+  }
+
+  throw new Error(
+    `reconciliation_decisions ${row.attemptId}: a ${row.kind} decision without its record`,
+  );
 }

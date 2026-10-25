@@ -1,10 +1,10 @@
 import {
   BookAlreadyReconciled,
+  BookNotAmbiguous,
   BookReconciliation,
   ScanRef,
   ShelfBookRef,
   type AmbiguityDecision,
-  type BookNotAmbiguous,
   type BookReconciliationRepositoryPort,
   type ReconciliationAttempt,
 } from '@pick-a-book/bibliography-domain';
@@ -13,8 +13,17 @@ import { and, asc, eq, inArray } from 'drizzle-orm';
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { Pool } from 'pg';
 
-import { toAttempt, toRows, type AttemptRow } from './drizzle/reconciliation-mapping.js';
-import { reconciliationAttempts, reconciliationCandidates } from './drizzle/schema.js';
+import {
+  toAttempt,
+  toDecision,
+  toRows,
+  type AttemptRow,
+} from './drizzle/reconciliation-mapping.js';
+import {
+  reconciliationAttempts,
+  reconciliationCandidates,
+  reconciliationDecisions,
+} from './drizzle/schema.js';
 
 /**
  * Keeps the reconciliation of every book in Postgres (ADR 0006).
@@ -56,11 +65,41 @@ export class DrizzleBookReconciliationRepositoryAdapter implements BookReconcili
   }
 
   async saveDecision(
-    _bookRef: ShelfBookRef,
-    _decision: AmbiguityDecision,
+    bookRef: ShelfBookRef,
+    decision: AmbiguityDecision,
   ): Promise<Result<void, BookNotAmbiguous>> {
-    // Added with the decision of an ambiguity (specs/003, T049).
-    throw new Error('saveDecision is not implemented yet');
+    // The decision belongs to the one final attempt of the book, if that is the ambiguous one.
+    const attempt = (
+      await this.db
+        .select({ id: reconciliationAttempts.id })
+        .from(reconciliationAttempts)
+        .where(
+          and(
+            eq(reconciliationAttempts.scanRef, bookRef.scanRef.value),
+            eq(reconciliationAttempts.position, bookRef.position),
+            eq(reconciliationAttempts.verdict, 'ambiguous'),
+          ),
+        )
+    ).at(0);
+    if (attempt === undefined) {
+      return err(new BookNotAmbiguous(bookRef));
+    }
+
+    // `do nothing` on the primary key: a second decision on the same attempt returns no row.
+    const inserted = (
+      await this.db
+        .insert(reconciliationDecisions)
+        .values({
+          attemptId: attempt.id,
+          kind: decision.kind,
+          recordId: decision.kind === 'chosen' ? decision.recordId.value : null,
+          decidedAt: decision.decidedAt,
+        })
+        .onConflictDoNothing()
+        .returning({ id: reconciliationDecisions.attemptId })
+    ).at(0);
+
+    return inserted === undefined ? err(new BookNotAmbiguous(bookRef)) : ok();
   }
 
   async findByScan(scanRef: ScanRef): Promise<readonly BookReconciliation[]> {
@@ -93,15 +132,15 @@ export class DrizzleBookReconciliationRepositoryAdapter implements BookReconcili
     if (rows.length === 0) {
       return [];
     }
+    const ids = rows.map((row) => row.id);
     const candidates = await this.db
       .select()
       .from(reconciliationCandidates)
-      .where(
-        inArray(
-          reconciliationCandidates.attemptId,
-          rows.map((row) => row.id),
-        ),
-      );
+      .where(inArray(reconciliationCandidates.attemptId, ids));
+    const decisions = await this.db
+      .select()
+      .from(reconciliationDecisions)
+      .where(inArray(reconciliationDecisions.attemptId, ids));
 
     const byPosition = new Map<number, AttemptRow[]>();
     for (const row of rows) {
@@ -111,8 +150,10 @@ export class DrizzleBookReconciliationRepositoryAdapter implements BookReconcili
     return [...byPosition.entries()]
       .toSorted(([a], [b]) => a - b)
       .map(([position, attempts]) => {
-        const scanRef = attempts[0].scanRef;
-        const bookRef = unwrap(ShelfBookRef.of(unwrap(ScanRef.of(scanRef)), position));
+        const bookRef = unwrap(ShelfBookRef.of(unwrap(ScanRef.of(attempts[0].scanRef)), position));
+        const decision = decisions.find((row) =>
+          attempts.some((attempt) => attempt.id === row.attemptId),
+        );
 
         return BookReconciliation.restore(
           bookRef,
@@ -123,6 +164,7 @@ export class DrizzleBookReconciliationRepositoryAdapter implements BookReconcili
               candidates.filter((candidate) => candidate.attemptId === row.id),
             ),
           ),
+          decision === undefined ? undefined : toDecision(decision),
         );
       });
   }
