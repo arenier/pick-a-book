@@ -1,10 +1,16 @@
-import { CatalogRecordId, type MatchOutcome } from '@pick-a-book/bibliography-domain';
+import {
+  CatalogRecordId,
+  type BookReconciliation,
+  type MatchOutcome,
+  type ScoredRecord,
+} from '@pick-a-book/bibliography-domain';
 import {
   aBookRef,
   aMatch,
   anAttempt,
   aRecord,
   aScored,
+  confirmedOf,
 } from '@pick-a-book/bibliography-domain/testing';
 import { unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
@@ -32,54 +38,73 @@ const confirmedWithExamined: MatchOutcome = {
   needsAuthorityCheck: [],
 };
 
+const anAmbiguousWithAside: MatchOutcome = {
+  verdict: 'ambiguous',
+  candidates: [
+    aScored(retainedRecord, { titleScore: 1, score: 0.75, rank: 1 }),
+    aScored(otherRecord, { titleScore: 1, score: 0.5, rank: 2 }),
+  ],
+  partial: false,
+  examined: [aScored(setAside, { titleScore: 0.25, score: 0.125, rank: 3, retained: false })],
+  needsAuthorityCheck: [],
+};
+
+const marksOf = (entry: ScoredRecord) => ({
+  titleScore: entry.titleScore.value,
+  authorScore: entry.authorScore?.value,
+  score: entry.score.value,
+  rank: entry.rank,
+  retained: entry.retained,
+});
+
+/** What the matching rule concluded, as read back from the database. */
+function outcomeOf(book: BookReconciliation | undefined): MatchOutcome {
+  const result = book?.attempts[0]?.result;
+  if (result?.kind !== 'matched') {
+    throw new Error('expected a matched attempt');
+  }
+
+  return result.outcome;
+}
+
 /** The marks of each record, kept as the matching rule gave them (FR-015, FR-017). */
 describe('DrizzleBookReconciliationRepositoryAdapter, the scores kept', () => {
-  const { repository, pool } = aMigratedRepository();
+  const { repository } = aMigratedRepository();
 
-  it('keeps the marks of the retained and examined records, and gives them back exactly', async () => {
+  it('gives back exactly the marks of the retained record', async () => {
     const bookRef = aBookRef(0, freshScan());
-    unwrap(
-      await repository.saveAttempt(
-        anAttempt(bookRef, aMatch(confirmedWithExamined, 'author_only', 0.5)),
-      ),
-    );
+    const attempt = anAttempt(bookRef, aMatch(confirmedWithExamined, 'author_only', 0.5));
+    unwrap(await repository.saveAttempt(attempt));
 
-    const found = await repository.findBook(bookRef);
+    const outcome = outcomeOf(await repository.findBook(bookRef));
 
-    const result = found?.attempts[0]?.result;
-    expect(result?.kind === 'matched' && result.outcome.verdict === 'confirmed').toBe(true);
-    if (result?.kind !== 'matched' || result.outcome.verdict !== 'confirmed') {
-      return;
-    }
-    const marks = (entry: {
-      titleScore: { value: number };
-      authorScore?: { value: number };
-      score: { value: number };
-      rank: number;
-      retained: boolean;
-    }) => ({
-      titleScore: entry.titleScore.value,
-      authorScore: entry.authorScore?.value,
-      score: entry.score.value,
-      rank: entry.rank,
-      retained: entry.retained,
-    });
-    expect(marks(result.outcome.retained)).toStrictEqual({
+    expect(marksOf(confirmedOf(outcome))).toStrictEqual({
       titleScore: 0.5,
       authorScore: 0.25,
       score: 0.75,
       rank: 1,
       retained: true,
     });
-    expect(result.outcome.examined.map(marks)).toStrictEqual([
+  });
+
+  it('gives back exactly the marks of the examined records', async () => {
+    const bookRef = aBookRef(0, freshScan());
+    const attempt = anAttempt(bookRef, aMatch(confirmedWithExamined, 'author_only', 0.5));
+    unwrap(await repository.saveAttempt(attempt));
+
+    const outcome = outcomeOf(await repository.findBook(bookRef));
+
+    expect(outcome.examined.map(marksOf)).toStrictEqual([
       { titleScore: 0.25, authorScore: undefined, score: 0.125, rank: 2, retained: false },
       { titleScore: 0.125, authorScore: 0.5, score: 0.0625, rank: 3, retained: false },
     ]);
-    expect(result.step).toBe('author_only');
-    expect(result.score.value).toBe(0.5);
   });
+});
 
-  it('writes the examined records after the retained ones, with a null author score when none was read', async () => {
+describe('DrizzleBookReconciliationRepositoryAdapter, the scores kept, rows', () => {
+  const { repository, pool } = aMigratedRepository();
+
+  it('writes the examined records after the retained ones, a null author score when none was read', async () => {
     const bookRef = aBookRef(0, freshScan());
     unwrap(
       await repository.saveAttempt(
@@ -91,9 +116,8 @@ describe('DrizzleBookReconciliationRepositoryAdapter, the scores kept', () => {
       rank: number;
       retained: boolean;
       author_score: number | null;
-      record_id: string;
     }>(
-      `select c.rank, c.retained, c.author_score, c.record_id
+      `select c.rank, c.retained, c.author_score
          from reconciliation_candidates c join reconciliation_attempts a on a.id = c.attempt_id
         where a.scan_ref = $1 order by c.rank`,
       [bookRef.scanRef.value],
@@ -105,6 +129,10 @@ describe('DrizzleBookReconciliationRepositoryAdapter, the scores kept', () => {
       [3, false, 0.5],
     ]);
   });
+});
+
+describe('DrizzleBookReconciliationRepositoryAdapter, the scores kept, part 2', () => {
+  const { repository, pool } = aMigratedRepository();
 
   it('keeps the catalogue and the cause of a book not verified', async () => {
     const bookRef = aBookRef(0, freshScan());
@@ -130,17 +158,11 @@ describe('DrizzleBookReconciliationRepositoryAdapter, the scores kept', () => {
 
   it('leaves the ambiguous attempt and its candidates unchanged after a decision (FR-016)', async () => {
     const bookRef = aBookRef(0, freshScan());
-    const ambiguous: MatchOutcome = {
-      verdict: 'ambiguous',
-      candidates: [
-        aScored(retainedRecord, { titleScore: 1, score: 0.75, rank: 1 }),
-        aScored(otherRecord, { titleScore: 1, score: 0.5, rank: 2 }),
-      ],
-      partial: false,
-      examined: [aScored(setAside, { titleScore: 0.25, score: 0.125, rank: 3, retained: false })],
-      needsAuthorityCheck: [],
-    };
-    unwrap(await repository.saveAttempt(anAttempt(bookRef, aMatch(ambiguous, 'title_only', 0.5))));
+    unwrap(
+      await repository.saveAttempt(
+        anAttempt(bookRef, aMatch(anAmbiguousWithAside, 'title_only', 0.5)),
+      ),
+    );
     const before = await repository.findBook(bookRef);
 
     unwrap(

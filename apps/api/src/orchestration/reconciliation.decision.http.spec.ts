@@ -11,17 +11,19 @@ const CONFIRMED = 0;
 const decisionPath = (id: string, position: number | string) =>
   `/shelf-photos/${id}/books/${position}/decision`;
 
+/** An analysis reconciled, and the candidates of its ambiguous book. */
+async function reconciledAmbiguity(api: ReturnType<typeof aRunningReconciliationApi>) {
+  const id = await api.completedScan();
+  const { books } = await reconciliationOf(await api.reconcile(id));
+  const book = books[AMBIGUOUS];
+
+  return { id, candidates: book.status === 'ambiguous' ? book.candidates : [] };
+}
+
 describe('POST /shelf-photos/{id}/books/{position}/decision, lifting an ambiguity (FR-010)', () => {
   const api = aRunningReconciliationApi();
 
-  /** An analysis reconciled, and the candidates of its ambiguous book. */
-  async function reconciled() {
-    const id = await api.completedScan();
-    const { books } = await reconciliationOf(await api.reconcile(id));
-    const book = books[AMBIGUOUS];
-
-    return { id, candidates: book.status === 'ambiguous' ? book.candidates : [] };
-  }
+  const reconciled = async () => reconciledAmbiguity(api);
 
   it('confirms the book with the candidate chosen, by the user', async () => {
     const { id, candidates } = await reconciled();
@@ -38,19 +40,6 @@ describe('POST /shelf-photos/{id}/books/{position}/decision, lifting an ambiguit
       confirmedBy: 'user',
       reference: { recordId: candidates[1].recordId },
     });
-  });
-
-  it('carries no score, no catalogue, no step, no cause and no confidence either (FR-018)', async () => {
-    const { id, candidates } = await reconciled();
-
-    const response = await api.post(decisionPath(id, AMBIGUOUS), {
-      choice: 'candidate',
-      recordId: candidates[0].recordId,
-    });
-
-    expect(JSON.stringify(await response.json())).not.toMatch(
-      /"(score|titleScore|authorScore|reconciliationScore|catalog|step|cause|confidence)"/u,
-    );
   });
 
   it('is kept: the state read afterwards shows the decision', async () => {
@@ -152,5 +141,22 @@ describe('POST /shelf-photos/{id}/books/{position}/decision, books that cannot b
     const response = await api.post(decisionPath(id, AMBIGUOUS), { choice: 'none' });
 
     expect(response.status).toBe(409);
+  });
+});
+
+describe('POST /shelf-photos/{id}/books/{position}/decision, what it leaves out', () => {
+  const api = aRunningReconciliationApi();
+
+  it('carries no score, no catalogue, no step, no cause and no confidence either (FR-018)', async () => {
+    const { id, candidates } = await reconciledAmbiguity(api);
+
+    const response = await api.post(decisionPath(id, AMBIGUOUS), {
+      choice: 'candidate',
+      recordId: candidates[0].recordId,
+    });
+
+    expect(JSON.stringify(await response.json())).not.toMatch(
+      /"(score|titleScore|authorScore|reconciliationScore|catalog|step|cause|confidence)"/u,
+    );
   });
 });

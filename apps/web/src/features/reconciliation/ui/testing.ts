@@ -93,3 +93,22 @@ export const ambiguous = (position: number, title: string): ReconciledBook => ({
   status: 'ambiguous',
   candidates: [camus, { ...camus, recordId: 'ark:/12148/cb2', authors: ['Autre Auteur'] }],
 });
+
+/** The next `reconcile` of the API waits for the spec to answer it, to look at the screen meanwhile. */
+export function holdNextReconcile(api: { reconcile: ReturnType<typeof anApi>['reconcile'] }) {
+  const held: ((answer: ReconciliationAnswer) => void)[] = [];
+  api.reconcile.mockImplementationOnce(
+    async () =>
+      new Promise<ReconciliationAnswer>((resolve) => {
+        held.push(resolve);
+      }),
+  );
+
+  return {
+    answer: (answer: ReconciliationAnswer) => {
+      for (const resolve of held) {
+        resolve(answer);
+      }
+    },
+  };
+}

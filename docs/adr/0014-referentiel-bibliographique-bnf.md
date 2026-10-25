@@ -1,6 +1,6 @@
 # ADR 0014 — Référentiel bibliographique : catalogue général de la BnF, appariement en cascade, Google Books en complément
 
-Statut : proposé · Date : 2026-09-30 · Couplé aux ADR [0005](0005-reconnaissance-livres-photo-etagere.md) (réconciliation comme filet anti-hallucination), [0010](0010-decoupage-bounded-contexts.md) (contexte `bibliography`) et [0003](0003-orchestration-sans-event-bus.md) (traitement synchrone)
+Statut : accepté · Date : 2026-09-30 · Couplé aux ADR [0005](0005-reconnaissance-livres-photo-etagere.md) (réconciliation comme filet anti-hallucination), [0010](0010-decoupage-bounded-contexts.md) (contexte `bibliography`) et [0003](0003-orchestration-sans-event-bus.md) (traitement synchrone)
 
 ## Contexte
 

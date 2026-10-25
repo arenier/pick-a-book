@@ -1,4 +1,9 @@
-import { CatalogRecordId, type MatchOutcome } from '@pick-a-book/bibliography-domain';
+import {
+  CatalogRecordId,
+  type AttemptResult,
+  type MatchOutcome,
+  type ReconciliationAttempt,
+} from '@pick-a-book/bibliography-domain';
 import {
   aBookRef,
   aMatch,
@@ -47,6 +52,8 @@ const CATEGORIES_SQL = `
     left join reconciliation_candidates c on c.attempt_id = l.id and c.record_id = d.record_id
    order by l.position`;
 
+type AttemptOverrides = Partial<Pick<ReconciliationAttempt, 'read' | 'attemptedAt'>>;
+
 const record = (id: string) => aRecord({ id: `ark:/12148/${id}`, title: 'La chute' });
 const confirmed = (id: string, titleScore: number, authorScore?: number): MatchOutcome => ({
   verdict: 'confirmed',
@@ -74,46 +81,59 @@ const notFound: MatchOutcome = {
   needsAuthorityCheck: [],
 };
 
+interface CategoryRow {
+  readonly position: number;
+  readonly category: string;
+  readonly author_completed: boolean;
+  readonly step: string | null;
+  readonly chosen_rank: number | null;
+  readonly cause: string | null;
+  readonly best_aside: number | null;
+}
+
+type Repository = ReturnType<typeof aMigratedRepository>['repository'];
+
+const READ = { read: aReading('La Chute', 'Albert Camus') };
+const UNREAD = { read: aReading('La Chute') };
+const DECIDED_AT = new Date('2026-10-19T09:00:00Z');
+
+/** Nine books of one analysis, one for each category — and one that went through two attempts. */
+async function saveNineBooks(repository: Repository, scan: string): Promise<void> {
+  const save = async (position: number, result: AttemptResult, overrides: AttemptOverrides) => {
+    unwrap(await repository.saveAttempt(anAttempt(aBookRef(position, scan), result, overrides)));
+  };
+  await save(0, aMatch(confirmed('p0', 1, 1), 'title_and_author', 1), READ);
+  await save(1, aMatch(confirmed('p1', 0.5, 1), 'author_only', 0.5), READ);
+  await save(2, aMatch(confirmed('p2', 1), 'title_only', 0.5), UNREAD);
+  await save(3, aMatch(ambiguous, 'title_only', 0.5), UNREAD);
+  await save(4, aMatch(ambiguous, 'title_only', 0.5), UNREAD);
+  await save(5, aMatch(ambiguous, 'title_only', 0.5), UNREAD);
+  await save(6, aMatch(notFound, null, 0), READ);
+  await save(7, { kind: 'not_verified', cause: 'timeout' }, READ);
+  const earlier = { ...READ, attemptedAt: new Date('2026-10-18T09:00:00Z') };
+  await save(8, { kind: 'not_verified', cause: 'unavailable' }, earlier);
+  await save(8, aMatch(confirmed('p8', 1, 1), 'title_and_author', 1), READ);
+  const chosen = unwrap(CatalogRecordId.of('ark:/12148/b'));
+  unwrap(
+    await repository.saveDecision(aBookRef(4, scan), {
+      kind: 'chosen',
+      recordId: chosen,
+      decidedAt: DECIDED_AT,
+    }),
+  );
+  unwrap(
+    await repository.saveDecision(aBookRef(5, scan), { kind: 'rejected', decidedAt: DECIDED_AT }),
+  );
+}
+
 describe('the categories of gap, by SQL alone (SC-007)', () => {
   const { repository, pool } = aMigratedRepository();
 
   it('ranges every book in exactly its category, with its step, rank and cause', async () => {
     const scan = crypto.randomUUID();
-    const save = async (
-      position: number,
-      ...rest: Parameters<typeof anAttempt> extends [unknown, ...infer R] ? R : never
-    ) => unwrap(await repository.saveAttempt(anAttempt(aBookRef(position, scan), ...rest)));
-    const read = { read: aReading('La Chute', 'Albert Camus') };
-    const unread = { read: aReading('La Chute') };
-    await save(0, aMatch(confirmed('p0', 1, 1), 'title_and_author', 1), read);
-    await save(1, aMatch(confirmed('p1', 0.5, 1), 'author_only', 0.5), read);
-    await save(2, aMatch(confirmed('p2', 1), 'title_only', 0.5), unread);
-    await save(3, aMatch(ambiguous, 'title_only', 0.5), unread);
-    await save(4, aMatch(ambiguous, 'title_only', 0.5), unread);
-    await save(5, aMatch(ambiguous, 'title_only', 0.5), unread);
-    await save(6, aMatch(notFound, null, 0), read);
-    await save(7, { kind: 'not_verified', cause: 'timeout' }, read);
-    await save(
-      8,
-      { kind: 'not_verified', cause: 'unavailable' },
-      { ...read, attemptedAt: new Date('2026-10-18T09:00:00Z') },
-    );
-    await save(8, aMatch(confirmed('p8', 1, 1), 'title_and_author', 1), read);
-    unwrap(
-      await repository.saveDecision(aBookRef(4, scan), {
-        kind: 'chosen',
-        recordId: unwrap(CatalogRecordId.of('ark:/12148/b')),
-        decidedAt: new Date('2026-10-19T09:00:00Z'),
-      }),
-    );
-    unwrap(
-      await repository.saveDecision(aBookRef(5, scan), {
-        kind: 'rejected',
-        decidedAt: new Date('2026-10-19T09:00:00Z'),
-      }),
-    );
+    await saveNineBooks(repository, scan);
 
-    const { rows } = await pool.query(CATEGORIES_SQL, [scan]);
+    const { rows } = await pool.query<CategoryRow>(CATEGORIES_SQL, [scan]);
 
     expect(
       rows.map((row) => [
@@ -135,6 +155,14 @@ describe('the categories of gap, by SQL alone (SC-007)', () => {
       [7, 'not_verified', false, null, null, 'timeout'],
       [8, 'read_as_is', false, 'title_and_author', null, null],
     ]);
+  });
+
+  it('keeps the best record set aside, with its score, of a book unknown to the catalogue', async () => {
+    const scan = crypto.randomUUID();
+    await saveNineBooks(repository, scan);
+
+    const { rows } = await pool.query<CategoryRow>(CATEGORIES_SQL, [scan]);
+
     expect(rows[6]?.best_aside).toBe(0.125);
   });
 });

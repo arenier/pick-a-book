@@ -9,20 +9,20 @@ const books = [
   aDetectedBook(1, 'Livre sans réponse', 'Un Auteur'),
 ];
 
+const failingForTheSecond = () => {
+  const scenario = aReconciler();
+  const state = { down: true };
+  scenario.catalog.on(
+    (query) => state.down && query.title === 'Livre sans réponse',
+    new CatalogUnavailable('unavailable'),
+  );
+  scenario.catalog.always([peste]);
+
+  return { ...scenario, recover: () => (state.down = false) };
+};
+
 /** A second call after a catalogue that failed for one book (FR-014, US4). */
 describe('ReconcileDetectedBooksUseCase, trying again', () => {
-  const failingForTheSecond = () => {
-    const scenario = aReconciler();
-    const state = { down: true };
-    scenario.catalog.on(
-      (query) => state.down && query.title === 'Livre sans réponse',
-      new CatalogUnavailable('unavailable'),
-    );
-    scenario.catalog.always([peste]);
-
-    return { ...scenario, recover: () => (state.down = false) };
-  };
-
   it('asks the catalogue only about the books still not verified', async () => {
     const { useCase, catalog, recover } = failingForTheSecond();
     await useCase.execute({ scanRef: A_SCAN, books });
@@ -48,7 +48,9 @@ describe('ReconcileDetectedBooksUseCase, trying again', () => {
     expect(second.books[0]).toStrictEqual(first.books[0]);
     expect(second.books[1]?.status).not.toBe('not_verified');
   });
+});
 
+describe('ReconcileDetectedBooksUseCase, trying again, part 2', () => {
   it('adds an attempt without erasing the previous « not verified »', async () => {
     const { useCase, repository, recover } = failingForTheSecond();
     await useCase.execute({ scanRef: A_SCAN, books });
@@ -57,9 +59,9 @@ describe('ReconcileDetectedBooksUseCase, trying again', () => {
     await useCase.execute({ scanRef: A_SCAN, books });
 
     const [, second] = await repository.findByScan(unwrap(ScanRef.of(A_SCAN)));
-    const kinds = second?.attempts.map((attempt) => attempt.result.kind);
-    expect(kinds?.[0]).toBe('not_verified');
+    const kinds = second.attempts.map((attempt) => attempt.result.kind);
+    expect(kinds[0]).toBe('not_verified');
     expect(kinds).toHaveLength(2);
-    expect(kinds?.[1]).not.toBe('not_verified');
+    expect(kinds[1]).not.toBe('not_verified');
   });
 });

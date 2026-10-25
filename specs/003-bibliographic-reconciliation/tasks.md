@@ -541,25 +541,25 @@ retenues et écartées, cause d'un « non vérifié », et résultat automatique
 
 ## Phase 9: Polish & Cross-Cutting Concerns
 
-- [ ] T068 [P] `CLAUDE.md` : arborescence (`libs/bibliography/{domain,application,infrastructure}`,
+- [X] T068 [P] `CLAUDE.md` : arborescence (`libs/bibliography/{domain,application,infrastructure}`,
       `libs/shared/sql-migrations`, `apps/api/src/orchestration/`), `bibliography` désormais fondé en
       code (paragraphe « `recognition` est le seul bounded context fondé… »), ligne `yarn db:generate`
       ; `module-boundaries.md` : une lib partagée n'importe aucun contexte, mais peut être
       `scope:api` quand elle ne sert qu'au back (`sql-migrations`, research §8) ; `adapters.md` :
       « les migrations restent dans `infrastructure` » vise les fichiers SQL et le schéma, pas le
       lanceur générique ; `docs-index-auditor` vert
-- [ ] T069 [P] `README.md` des quatre nouvelles libs, au format de ceux de `libs/recognition/*`
+- [X] T069 [P] `README.md` des quatre nouvelles libs, au format de ceux de `libs/recognition/*`
       (rôle, API publique, frontières)
-- [ ] T070 [P] Vérifier que la CI (`.github/workflows/ci.yml`) fait tourner les specs de
+- [X] T070 [P] Vérifier que la CI (`.github/workflows/ci.yml`) fait tourner les specs de
       `bibliography-infrastructure` et `shared-sql-migrations` contre son Postgres (même
       `DATABASE_URL` que `recognition-infrastructure`) ; ajuster sinon
 - [ ] T071 Exécuter `quickstart.md` en entier dans Chromium à 360 px de large, contre l'API buildée
       (`yarn nx build api`) : scénarios 1 à 5 ; SC-003 est prouvé par la spec de T027, et se
       remesure sur la BnF par le scénario 5
-- [ ] T072 `yarn check` vert (`check-runner`) ; vérifier que les garde-fous opèrent (import interdit
+- [X] T072 `yarn check` vert (`check-runner`) ; vérifier que les garde-fous opèrent (import interdit
       `bibliography` → `recognition`, `throw` dans `bibliography-domain`, qui font échouer
       `yarn lint`, puis retirés)
-- [ ] T073 Passer l'ADR 0014 au statut « accepté » dans le fichier et dans l'index de
+- [X] T073 Passer l'ADR 0014 au statut « accepté » dans le fichier et dans l'index de
       `docs/adr/README.md`, avant ou avec la première PR de code (procédure de `docs/adr/README.md`)
 
 ---

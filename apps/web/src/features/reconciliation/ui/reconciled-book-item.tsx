@@ -1,18 +1,19 @@
-import type { ReactNode } from 'react';
+import { useCallback } from 'react';
 
 import { useMessages } from '@pick-a-book/shared-i18n';
 import { Badge, BookTitle } from '@pick-a-book/shared-ui';
 
 import type { ReadByRecognition, ReconciledBook, Reference } from '../model/reconciled-book';
-import type { AmbiguityChoice } from '../model/reconciliation-failure';
+import type { AmbiguityChoice, ReconciliationFailure } from '../model/reconciliation-failure';
 import { AmbiguityPicker } from './ambiguity-picker';
+import { FailureMessage } from './failure-message';
 
 export interface ReconciledBookItemProps {
   readonly book: ReconciledBook;
   /** Records the user's choice for an ambiguous book. */
   readonly onChoose: (position: number, choice: AmbiguityChoice) => void;
   /** Shown under the choice when it could not be recorded. */
-  readonly refusal?: ReactNode;
+  readonly refusal?: ReconciliationFailure | undefined;
 }
 
 /**
@@ -22,6 +23,13 @@ export interface ReconciledBookItemProps {
 export function ReconciledBookItem({ book, onChoose, refusal }: ReconciledBookItemProps) {
   const { t } = useMessages('reconciliation');
   const shown = book.status === 'confirmed' ? book.reference : undefined;
+  const { position } = book;
+  const choose = useCallback(
+    (choice: AmbiguityChoice) => {
+      onChoose(position, choice);
+    },
+    [onChoose, position],
+  );
 
   return (
     <li className="flex flex-col gap-1">
@@ -40,14 +48,9 @@ export function ReconciledBookItem({ book, onChoose, refusal }: ReconciledBookIt
         </span>
       )}
       {book.status === 'ambiguous' && (
-        <AmbiguityPicker
-          candidates={book.candidates}
-          onChoose={(choice) => {
-            onChoose(book.position, choice);
-          }}
-        />
+        <AmbiguityPicker candidates={book.candidates} onChoose={choose} />
       )}
-      {refusal}
+      {refusal !== undefined && <FailureMessage failure={refusal} />}
     </li>
   );
 }

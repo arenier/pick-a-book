@@ -157,12 +157,16 @@ cibles que `yarn check` sur les seuls projets touchés — détail dans
 ## Architecture
 
 ```
-apps/api/                        # NestJS : composition root, orchestration inter-contextes
+apps/api/                        # NestJS : composition root ; `src/orchestration/` : les use cases qui croisent les contextes
 apps/web/                        # React : feature-slice ; le shell (`src/app/`) route par fragment d'URL (`#/historique`), faute de réécriture d'URL sur le bucket statique
 libs/recognition/domain/         # entités, value objects, ports — zéro dépendance technique
 libs/recognition/application/    # use cases, parlent aux ports
 libs/recognition/infrastructure/ # adapters (Gemini, Qwen, stub) derrière ShelfScannerPort
+libs/bibliography/domain/        # règle d'appariement (`matchBook`), agrégat `BookReconciliation`, ports
+libs/bibliography/application/   # réconcilier, relire, décider une ambiguïté — cascade de requêtes
+libs/bibliography/infrastructure/ # adapters (BnF SRU, stub, offline) et dépôt Drizzle des tentatives
 libs/shared/result/              # contenu partagé, une lib par sujet nommé
+libs/shared/sql-migrations/      # lanceur de migrations SQL générique (verrou consultatif), un dossier par contexte
 libs/shared/text-match/          # normalisation + comparaison floue de chaînes (bench, réconciliation)
 libs/shared/i18n/                # façade i18next du front (useMessages, createI18n) — seule à importer i18next
 libs/shared/ui/                  # design system du front : composants shadcn/ui, Tailwind, tokens — seule autorisée à importer Radix
@@ -179,8 +183,8 @@ infra/                           # infrastructure GCP en Terraform — voir infr
 specs/                           # une spec par feature, gardée durablement (Spec Kit)
 ```
 
-`recognition` est le seul bounded context fondé en code ; `bibliography` et `curation` arrivent
-avec leur première implémentation. Les trois se croisent uniquement dans l'orchestrateur
+`recognition` et `bibliography` sont fondés en code ; `curation` arrive avec sa première
+implémentation. Les trois se croisent uniquement dans l'orchestrateur
 d'`apps/api`, via des DTO de frontière. Les règles de dépendance, appliquées par les tags Nx et
 `@nx/enforce-module-boundaries`, sont dans [`module-boundaries.md`](.claude/rules/module-boundaries.md).
 

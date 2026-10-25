@@ -44,6 +44,9 @@ suivre : [`libs/recognition/infrastructure/README.md`](../../libs/recognition/in
 - Le schéma Drizzle vit dans `src/lib/persistence/drizzle/schema.ts` de l'`infrastructure` du contexte.
 - **Les migrations sont générées par `yarn db:generate`, jamais écrites ni retouchées à la main.**
   Elles sont commitées avec le changement de schéma qui les produit.
+- Le lanceur générique (`shared/sql-migrations`) est la seule exception à « le SQL reste dans
+  `infrastructure` » : il ne contient ni SQL ni schéma, seulement l'application d'un dossier.
+  Chaque contexte a son dossier et sa table de suivi.
 - L'API les applique au démarrage, sous verrou consultatif : une révision ne sert jamais une
   requête contre un schéma qu'elle ne connaît pas.
 

@@ -35,7 +35,9 @@ describe('matchBook, the records examined and not retained', () => {
     expect(idsOf(outcome.examined)).toStrictEqual(['ark:/12148/peste']);
     expect(outcome.examined[0]?.rank).toBe(1);
   });
+});
 
+describe('matchBook, the records examined, part 2', () => {
   it('keeps three at most, the best scored first, ranked after the retained ones', () => {
     const records = [
       peste,

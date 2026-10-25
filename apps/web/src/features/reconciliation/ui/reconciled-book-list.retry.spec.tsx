@@ -2,40 +2,49 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { ReconciledBookList } from './reconciled-book-list';
-import { aPendingApi, anApi, books, confirmed, withoutVerdict } from './testing';
+import { aPendingApi, anApi, books, confirmed, holdNextReconcile, withoutVerdict } from './testing';
 
-const BOTH = [{ title: 'La Peste', author: 'Albert Camus' }, { title: 'Rien' }];
-const retryButton = () => screen.queryByRole('button', { name: 'Relancer la vérification' });
 const PESTE = { title: 'La Peste', author: 'Albert Camus' };
+const BOTH = [PESTE, { title: 'Rien' }];
+const retryButton = () => screen.queryByRole('button', { name: 'Relancer la vérification' });
+const pressRetry = async () => {
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Relancer la vérification' }));
+  });
+};
+const unverified = () => books(confirmed(0, PESTE), withoutVerdict(1, 'Rien', 'not_verified'));
+const shown = async (api: ReturnType<typeof anApi>, mode: 'afterAnalysis' | 'detail') => {
+  render(<ReconciledBookList scanId="an-id" books={BOTH} mode={mode} api={api} />);
+};
 
 // US4: trying again without sending the photo again.
-describe('ReconciledBookList, trying the check again (US4)', () => {
+describe('ReconciledBookList, when the check can be tried again (US4)', () => {
   it('offers it when a book is not verified', async () => {
-    const api = anApi({
-      reconcile: books(confirmed(0, PESTE), withoutVerdict(1, 'Rien', 'not_verified')),
-    });
-
-    render(<ReconciledBookList scanId="an-id" books={BOTH} mode="afterAnalysis" api={api} />);
+    await shown(anApi({ reconcile: unverified() }), 'afterAnalysis');
     await screen.findByText('Non vérifié');
 
     expect(retryButton()).not.toBeNull();
   });
 
   it('offers it when the whole call failed', async () => {
-    const api = anApi({ reconcile: { status: 'error', failure: 'offline' } });
-
-    render(<ReconciledBookList scanId="an-id" books={BOTH} mode="afterAnalysis" api={api} />);
+    await shown(anApi({ reconcile: { status: 'error', failure: 'offline' } }), 'afterAnalysis');
     await screen.findByText(/Impossible de joindre le serveur/u);
 
     expect(retryButton()).not.toBeNull();
   });
 
-  it('is absent when every status is final', async () => {
-    const api = anApi({
-      reconcile: books(confirmed(0, PESTE), withoutVerdict(1, 'Rien', 'not_found')),
-    });
+  it('offers it in the detail of an upload too', async () => {
+    await shown(anApi({ read: unverified() }), 'detail');
+    await screen.findByText('Non vérifié');
 
-    render(<ReconciledBookList scanId="an-id" books={BOTH} mode="afterAnalysis" api={api} />);
+    expect(retryButton()).not.toBeNull();
+  });
+});
+
+describe('ReconciledBookList, when it cannot', () => {
+  it('is absent when every status is final', async () => {
+    const reconcile = books(confirmed(0, PESTE), withoutVerdict(1, 'Rien', 'not_found'));
+    await shown(anApi({ reconcile }), 'afterAnalysis');
     await screen.findByText('Inconnu du catalogue');
 
     expect(retryButton()).toBeNull();
@@ -48,28 +57,19 @@ describe('ReconciledBookList, trying the check again (US4)', () => {
 
     expect(retryButton()).toBeNull();
   });
+});
 
-  it('asks again, is disabled meanwhile, then replaces the state', async () => {
-    const api = anApi({
-      reconcile: books(confirmed(0, PESTE), withoutVerdict(1, 'Rien', 'not_verified')),
-    });
-    render(<ReconciledBookList scanId="an-id" books={BOTH} mode="afterAnalysis" api={api} />);
+describe('ReconciledBookList, trying again', () => {
+  it('is disabled meanwhile, then replaces the state', async () => {
+    const api = anApi({ reconcile: unverified() });
+    await shown(api, 'afterAnalysis');
     await screen.findByText('Non vérifié');
-    let answer: (value: Awaited<ReturnType<typeof api.reconcile>>) => void = () => undefined;
-    api.reconcile.mockImplementationOnce(
-      async () =>
-        new Promise((resolve) => {
-          answer = resolve;
-        }),
-    );
+    const held = holdNextReconcile(api);
 
-    await act(async () => {
-      fireEvent.click(retryButton() as HTMLElement);
-    });
+    await pressRetry();
     expect(retryButton()).toHaveProperty('disabled', true);
-
     await act(async () => {
-      answer(books(confirmed(0, PESTE), withoutVerdict(1, 'Rien', 'not_found')));
+      held.answer(books(confirmed(0, PESTE), withoutVerdict(1, 'Rien', 'not_found')));
     });
 
     expect(api.reconcile).toHaveBeenCalledTimes(2);
@@ -77,31 +77,16 @@ describe('ReconciledBookList, trying the check again (US4)', () => {
     expect(retryButton()).toBeNull();
   });
 
-  it('keeps the books on screen when trying again fails, with the reason', async () => {
-    const api = anApi({
-      reconcile: books(confirmed(0, PESTE), withoutVerdict(1, 'Rien', 'not_verified')),
-    });
-    render(<ReconciledBookList scanId="an-id" books={BOTH} mode="afterAnalysis" api={api} />);
+  it('keeps the books on screen when it fails, with the reason', async () => {
+    const api = anApi({ reconcile: unverified() });
+    await shown(api, 'afterAnalysis');
     await screen.findByText('Non vérifié');
     api.reconcile.mockResolvedValueOnce({ status: 'error', failure: 'rateLimited' });
 
-    await act(async () => {
-      fireEvent.click(retryButton() as HTMLElement);
-    });
+    await pressRetry();
 
     expect(screen.queryByText('Confirmé')).not.toBeNull();
     expect(screen.queryByText(/Trop de demandes/u)).not.toBeNull();
     expect(retryButton()).toHaveProperty('disabled', false);
-  });
-
-  it('is offered in the detail of an upload too', async () => {
-    const api = anApi({
-      read: books(confirmed(0, PESTE), withoutVerdict(1, 'Rien', 'not_verified')),
-    });
-
-    render(<ReconciledBookList scanId="an-id" books={BOTH} mode="detail" api={api} />);
-    await screen.findByText('Non vérifié');
-
-    expect(retryButton()).not.toBeNull();
   });
 });

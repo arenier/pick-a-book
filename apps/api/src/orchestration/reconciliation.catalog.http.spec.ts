@@ -1,64 +1,10 @@
-import {
-  CatalogUnavailable,
-  type BibliographicCatalogPort,
-  type CatalogPage,
-  type CatalogQuery,
-} from '@pick-a-book/bibliography-domain';
-import { StubBibliographicCatalogAdapter } from '@pick-a-book/bibliography-infrastructure';
-import type {
-  DetectedBook,
-  ShelfPhoto,
-  ShelfScanFailed,
-  ShelfScannerPort,
-} from '@pick-a-book/recognition-domain';
-import { StubShelfScannerAdapter } from '@pick-a-book/recognition-infrastructure';
-import { err, type Result } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
+import { CountingCatalog } from './testing/counting-catalog';
+import { CountingScanner } from './testing/counting-scanner';
 import { reconciliationOf } from './testing/reconciliation-body';
+import { RestorableCatalog } from './testing/restorable-catalog';
 import { aRunningReconciliationApi } from './testing/running-reconciliation-api';
-
-/** The stub catalogue, with a count of the queries it was sent. */
-class CountingCatalog implements BibliographicCatalogPort {
-  private readonly inner = new StubBibliographicCatalogAdapter();
-  readonly name = this.inner.name;
-  queries = 0;
-
-  async search(
-    query: CatalogQuery,
-    signal: AbortSignal,
-  ): Promise<Result<CatalogPage, CatalogUnavailable>> {
-    this.queries += 1;
-    return this.inner.search(query, signal);
-  }
-}
-
-/** The stub scanner, counting the photos it is given. */
-class CountingScanner implements ShelfScannerPort {
-  private readonly inner = new StubShelfScannerAdapter();
-  scans = 0;
-
-  async scan(photo: ShelfPhoto): Promise<Result<DetectedBook[], ShelfScanFailed>> {
-    this.scans += 1;
-    return this.inner.scan(photo);
-  }
-}
-
-/** The stub catalogue, down until it is restored. */
-class RestorableCatalog implements BibliographicCatalogPort {
-  private readonly inner = new StubBibliographicCatalogAdapter();
-  readonly name = this.inner.name;
-  down = true;
-
-  async search(
-    query: CatalogQuery,
-    signal: AbortSignal,
-  ): Promise<Result<CatalogPage, CatalogUnavailable>> {
-    return this.down
-      ? err(new CatalogUnavailable('unavailable'))
-      : this.inner.search(query, signal);
-  }
-}
 
 describe('the reconciliation with a catalogue that is down (FR-008, SC-004)', () => {
   const api = aRunningReconciliationApi({ catalogProvider: 'offline' });

@@ -25,17 +25,17 @@ interdit fait échouer `yarn lint`.
   `apps/api`, seul module du dépôt à connaître plus d'un contexte. Il ne manipule que des **DTO de
   frontière** — jamais un objet de domaine — et ne porte aucune règle exprimable dans un contexte.
 - **`libs/shared/*` est importable par tous et n'importe aucun contexte.** Une lib par sujet nommé
-  (`shared/result`, `shared/ui`) — jamais de `common` ni d'`utils`.
+  (`shared/result`, `shared/ui`) — jamais de `common` ni d'`utils`. Une lib partagée peut n'être
+  que `scope:api` quand elle ne sert qu'au back (`shared/sql-migrations`).
 - Côté `web`, une slice n'importe pas l'intérieur d'une autre : passer par une lib partagée.
 - Le SQL, le schéma et les migrations restent dans `infrastructure`.
 
 ## Bounded contexts
 
-- `recognition` est le seul contexte fondé en code.
-- `bibliography` (réconciliation + enrichissement) et `curation` (correspondance avec la
-  bibliothèque, la liste de souhaits et les préférences de l'utilisateur) ont leur frontière actée
-  mais **pas encore de lib** : chacune arrive avec sa première implémentation. Ne pas en créer au
-  jugé avant.
+- `recognition` et `bibliography` (réconciliation + enrichissement) sont fondés en code.
+- `curation` (correspondance avec la bibliothèque, la liste de souhaits et les préférences de
+  l'utilisateur) a sa frontière actée mais **pas encore de lib** : elle arrive avec sa première
+  implémentation. Ne pas en créer au jugé avant.
 
 ## Nouveau projet Nx
 

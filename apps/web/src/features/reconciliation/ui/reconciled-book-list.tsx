@@ -1,9 +1,9 @@
 import { useMessages } from '@pick-a-book/shared-i18n';
-import { Alert, AlertDescription, Button } from '@pick-a-book/shared-ui';
+import { Button } from '@pick-a-book/shared-ui';
 
 import type { ReconciledBook } from '../model/reconciled-book';
-import type { ReconciliationFailure } from '../model/reconciliation-failure';
 import type { ReconciliationState } from '../model/reconciliation-state';
+import { FailureMessage } from './failure-message';
 import { ReconciledBookItem } from './reconciled-book-item';
 import {
   realApi,
@@ -46,6 +46,7 @@ export function ReconciledBookList({
   );
   const { t } = useMessages('reconciliation');
   const shown = booksShown(state, books);
+  const failure = retryFailure ?? (state.status === 'failed' ? state.failure : undefined);
 
   return (
     <div className="flex min-w-0 flex-col gap-3">
@@ -54,27 +55,14 @@ export function ReconciledBookList({
           <ReconciledBookItem
             key={book.position}
             book={book}
-            onChoose={(position, choice) => {
-              void choose(position, choice);
-            }}
-            refusal={
-              refusal?.position === book.position ? (
-                <FailureMessage failure={refusal.failure} />
-              ) : undefined
-            }
+            onChoose={choose}
+            refusal={refusal?.position === book.position ? refusal.failure : undefined}
           />
         ))}
       </ul>
-      {state.status === 'failed' && <FailureMessage failure={state.failure} />}
-      {retryFailure !== undefined && <FailureMessage failure={retryFailure} />}
+      {failure !== undefined && <FailureMessage failure={failure} />}
       {canRetry(state) && (
-        <Button
-          variant="outline"
-          disabled={retrying}
-          onClick={() => {
-            void retry();
-          }}
-        >
+        <Button variant="outline" disabled={retrying} onClick={retry}>
           {t('retry.label')}
         </Button>
       )}
@@ -114,20 +102,4 @@ function Source({ books }: { readonly books: readonly ReconciledBook[] }) {
   const cites = books.some((book) => book.status === 'confirmed' || book.status === 'ambiguous');
 
   return cites ? <p className="text-sm text-muted-foreground">{t('source')}</p> : undefined;
-}
-
-function FailureMessage({ failure }: { readonly failure: ReconciliationFailure }) {
-  const { t } = useMessages('reconciliation');
-  // An explicit table rather than a key built from the kind: each key stays typed (ADR 0011).
-  const words: Record<ReconciliationFailure, () => string> = {
-    offline: () => t('failure.offline'),
-    rateLimited: () => t('failure.rateLimited'),
-    unexpected: () => t('failure.unexpected'),
-  };
-
-  return (
-    <Alert variant="destructive">
-      <AlertDescription>{words[failure]()}</AlertDescription>
-    </Alert>
-  );
 }

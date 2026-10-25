@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 
 import {
   decide,
@@ -30,18 +37,21 @@ export const realApi: ReconciliationApi = {
   decide: async (scanId, position, choice) => decide(scanId, position, choice),
 };
 
-/** What the list works with: the state, and how to record the choice for an ambiguous book. */
+type SetState = Dispatch<SetStateAction<ReconciliationState>>;
+
+/** What the list works with: the state, and how to act on it. */
 export interface Reconciliation {
   readonly state: ReconciliationState;
   /** The last choice that could not be recorded, and why — the choice stays open. */
   readonly refusal:
     | { readonly position: number; readonly failure: ReconciliationFailure }
     | undefined;
-  readonly choose: (position: number, choice: AmbiguityChoice) => Promise<void>;
+  /** Records the user's choice for an ambiguous book. */
+  readonly choose: (position: number, choice: AmbiguityChoice) => void;
   /** Asks again for the books not verified; `retrying` while the answer is awaited. */
-  readonly retry: () => Promise<void>;
+  readonly retry: () => void;
   readonly retrying: boolean;
-  /** Why the last retry failed, the books of the previous state staying on screen. */
+  /** Why the last retry failed, the books of the state staying on screen. */
   readonly retryFailure: ReconciliationFailure | undefined;
 }
 
@@ -53,9 +63,23 @@ export interface Reconciliation {
  */
 export type ReconciliationMode = 'afterAnalysis' | 'detail';
 
+/** Whether the component is still on screen: an answer that comes late is dropped. */
+function useMounted() {
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  return mounted;
+}
+
 /**
  * Asks for the reconciliation of an analysis, **once** per analysis and mode: the component may
- * be mounted twice (`StrictMode`), and the second mount must not send the request again — a refs
+ * be mounted twice (`StrictMode`), and the second mount must not send the request again — a ref
  * survives that remount, a flag in an effect's closure does not.
  */
 export function useReconciliation(
@@ -64,17 +88,8 @@ export function useReconciliation(
   api: ReconciliationApi,
 ): Reconciliation {
   const [state, setState] = useState<ReconciliationState>({ status: 'checking' });
-  const [refusal, setRefusal] = useState<Reconciliation['refusal']>(undefined);
+  const mounted = useMounted();
   const asked = useRef<string | null>(null);
-  const mounted = useRef(false);
-
-  useEffect(() => {
-    mounted.current = true;
-
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
 
   useEffect(() => {
     const key = `${mode}:${scanId}`;
@@ -87,48 +102,91 @@ export function useReconciliation(
         setState(next);
       }
     });
-  }, [scanId, mode, api]);
+  }, [scanId, mode, api, mounted]);
 
+  const effects = { mounted, setState };
+
+  return { state, ...useChoice(scanId, api, effects), ...useRetry(scanId, api, effects) };
+}
+
+interface Effects {
+  readonly mounted: { current: boolean };
+  readonly setState: SetState;
+}
+
+function useChoice(scanId: string, api: ReconciliationApi, effects: Effects) {
+  const [refusal, setRefusal] = useState<Reconciliation['refusal']>();
+  const { mounted, setState } = effects;
+  const choose = useCallback(
+    (position: number, choice: AmbiguityChoice): void => {
+      setRefusal(undefined);
+      void applyChoice(scanId, api, { position, choice }, { mounted, setState, setRefusal });
+    },
+    [scanId, api, mounted, setState],
+  );
+
+  return { refusal, choose };
+}
+
+/** Read through a function: the flag changes while an answer is awaited, which a narrowing cannot see. */
+function isMounted(effects: Effects): boolean {
+  return effects.mounted.current;
+}
+
+async function applyChoice(
+  scanId: string,
+  api: ReconciliationApi,
+  chosen: { readonly position: number; readonly choice: AmbiguityChoice },
+  effects: Effects & { readonly setRefusal: Dispatch<SetStateAction<Reconciliation['refusal']>> },
+): Promise<void> {
+  const answer = await api.decide(scanId, chosen.position, chosen.choice);
+  if (!isMounted(effects)) {
+    return;
+  }
+  if (answer.status === 'book') {
+    effects.setState((current) => replaced(current, answer.book));
+  } else if (answer.failure === 'conflict') {
+    // The book was decided elsewhere: what the server keeps is the truth.
+    const kept = stateOf(await api.read(scanId));
+    if (isMounted(effects) && kept.status === 'ready') {
+      effects.setState(kept);
+    }
+  } else {
+    effects.setRefusal({ position: chosen.position, failure: answer.failure });
+  }
+}
+
+function useRetry(scanId: string, api: ReconciliationApi, effects: Effects) {
   const [retrying, setRetrying] = useState(false);
-  const [retryFailure, setRetryFailure] = useState<ReconciliationFailure | undefined>(undefined);
-
-  const retry = async (): Promise<void> => {
+  const [retryFailure, setRetryFailure] = useState<ReconciliationFailure>();
+  const { mounted, setState } = effects;
+  const retry = useCallback((): void => {
     setRetrying(true);
     setRetryFailure(undefined);
-    const answer = await api.reconcile(scanId);
-    if (!mounted.current) {
-      return;
-    }
-    setRetrying(false);
-    if (answer.status === 'books') {
-      setState({ status: 'ready', books: answer.books });
-    } else if (state.status === 'ready') {
-      setRetryFailure(answer.failure);
-    } else {
-      setState({ status: 'failed', failure: answer.failure });
-    }
-  };
+    void applyRetry(scanId, api, { mounted, setState, setRetrying, setRetryFailure });
+  }, [scanId, api, mounted, setState]);
 
-  const choose = async (position: number, choice: AmbiguityChoice): Promise<void> => {
-    setRefusal(undefined);
-    const answer = await api.decide(scanId, position, choice);
-    if (!mounted.current) {
-      return;
-    }
-    if (answer.status === 'book') {
-      setState((current) => replaced(current, answer.book));
-    } else if (answer.failure === 'conflict') {
-      // The book was decided elsewhere: what the server keeps is the truth.
-      const kept = stateOf(await api.read(scanId));
-      if (mounted.current && kept.status === 'ready') {
-        setState(kept);
-      }
-    } else {
-      setRefusal({ position, failure: answer.failure });
-    }
-  };
+  return { retry, retrying, retryFailure };
+}
 
-  return { state, refusal, choose, retry, retrying, retryFailure };
+async function applyRetry(
+  scanId: string,
+  api: ReconciliationApi,
+  effects: Effects & {
+    readonly setRetrying: Dispatch<SetStateAction<boolean>>;
+    readonly setRetryFailure: Dispatch<SetStateAction<ReconciliationFailure | undefined>>;
+  },
+): Promise<void> {
+  const answer = await api.reconcile(scanId);
+  if (!effects.mounted.current) {
+    return;
+  }
+  effects.setRetrying(false);
+  if (answer.status === 'books') {
+    effects.setState({ status: 'ready', books: answer.books });
+  } else {
+    effects.setRetryFailure(answer.failure);
+  }
 }
 
 function replaced(state: ReconciliationState, book: ReconciledBook): ReconciliationState {
