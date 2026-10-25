@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 
-import type { ReconciliationAnswer } from '../api/reconciliation-api';
+import type { DecisionAnswer, ReconciliationAnswer } from '../api/reconciliation-api';
 import type { ReconciledBook } from '../model/reconciled-book';
 import type { ReconciliationApi } from './use-reconciliation';
 
@@ -10,7 +10,11 @@ import type { ReconciliationApi } from './use-reconciliation';
 
 /** The API as a spec scripts it: what each call answers, and the calls it received. */
 export function anApi(
-  answers: { reconcile?: ReconciliationAnswer; read?: ReconciliationAnswer } = {},
+  answers: {
+    reconcile?: ReconciliationAnswer;
+    read?: ReconciliationAnswer;
+    decide?: DecisionAnswer;
+  } = {},
 ) {
   const reconcile = vi.fn<ReconciliationApi['reconcile']>(
     async () => answers.reconcile ?? { status: 'books', books: [] },
@@ -19,7 +23,11 @@ export function anApi(
     async () => answers.read ?? { status: 'books', books: [] },
   );
 
-  return { reconcile, read } satisfies ReconciliationApi;
+  const decide = vi.fn<ReconciliationApi['decide']>(
+    async () => answers.decide ?? { status: 'error', failure: 'unexpected' },
+  );
+
+  return { reconcile, read, decide } satisfies ReconciliationApi;
 }
 
 /** A call that answers when the spec lets it, to look at the screen in between. */
@@ -32,9 +40,13 @@ export function aPendingApi() {
       }),
   );
   const read = vi.fn<ReconciliationApi['read']>(async () => ({ status: 'books', books: [] }));
+  const decide = vi.fn<ReconciliationApi['decide']>(async () => ({
+    status: 'error',
+    failure: 'unexpected',
+  }));
 
   return {
-    api: { reconcile, read } satisfies ReconciliationApi,
+    api: { reconcile, read, decide } satisfies ReconciliationApi,
     reconcile,
     answer: (answer: ReconciliationAnswer) => {
       for (const resolve of resolvers) {
@@ -54,12 +66,16 @@ export const camus = { recordId: 'ark:/12148/cb1', title: 'La peste', authors: [
 export const confirmed = (
   position: number,
   read: { title: string; author?: string },
-  overrides: { titleOnly?: boolean; reference?: typeof camus } = {},
+  overrides: {
+    titleOnly?: boolean;
+    reference?: typeof camus;
+    confirmedBy?: 'automatic' | 'user';
+  } = {},
 ): ReconciledBook => ({
   position,
   read: { title: read.title, author: read.author },
   status: 'confirmed',
-  confirmedBy: 'automatic',
+  confirmedBy: overrides.confirmedBy ?? 'automatic',
   titleOnly: overrides.titleOnly ?? false,
   reference: overrides.reference ?? camus,
 });

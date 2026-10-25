@@ -20,5 +20,9 @@
     "offline": "The server cannot be reached: the check could not take place. Check your connection.",
     "rateLimited": "Too many requests in a short time. Wait a minute, then try again.",
     "unexpected": "An unexpected error occurred during the check. Try again in a few moments."
+  },
+  "pick": {
+    "label": "Choose the work",
+    "none": "None of them"
   }
 }

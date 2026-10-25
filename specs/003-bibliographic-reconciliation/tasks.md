@@ -430,7 +430,7 @@ depuis l'écran de résultat comme depuis le détail d'un envoi.
 - [X] T053 [P] [US2] `apps/web/src/features/reconciliation/api/reconciliation-api.ts` : `decide(id,
       position, decision)` (+ spec) — rend le livre mis à jour ou un échec `conflict` (409) |
       `rate_limited` | `offline` | `unexpected`
-- [ ] T054 [US2] `features/reconciliation/ui/ambiguity-picker.tsx` (+ spec) et intégration dans
+- [X] T054 [US2] `features/reconciliation/ui/ambiguity-picker.tsx` (+ spec) et intégration dans
       `reconciled-book-list.tsx` / `use-reconciliation.ts` : sur un livre ambigu, candidats dépliables
       (titre — auteurs, dans l'ordre reçu), un bouton par candidat et « aucun ne correspond » ; le
       livre est remplacé par la réponse ; sur `conflict`, l'état est relu par `read` ; sur

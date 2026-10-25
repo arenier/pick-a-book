@@ -1,17 +1,25 @@
+import type { ReactNode } from 'react';
+
 import { useMessages } from '@pick-a-book/shared-i18n';
 import { Badge, BookTitle } from '@pick-a-book/shared-ui';
 
 import type { ReadByRecognition, ReconciledBook, Reference } from '../model/reconciled-book';
+import type { AmbiguityChoice } from '../model/reconciliation-failure';
+import { AmbiguityPicker } from './ambiguity-picker';
 
 export interface ReconciledBookItemProps {
   readonly book: ReconciledBook;
+  /** Records the user's choice for an ambiguous book. */
+  readonly onChoose: (position: number, choice: AmbiguityChoice) => void;
+  /** Shown under the choice when it could not be recorded. */
+  readonly refusal?: ReactNode;
 }
 
 /**
  * One book of the list: the reference form when the catalogue confirmed it — and what was read
  * after it, if that differs —, what was read otherwise, and its status (specs/003, US1).
  */
-export function ReconciledBookItem({ book }: ReconciledBookItemProps) {
+export function ReconciledBookItem({ book, onChoose, refusal }: ReconciledBookItemProps) {
   const { t } = useMessages('reconciliation');
   const shown = book.status === 'confirmed' ? book.reference : undefined;
 
@@ -31,6 +39,15 @@ export function ReconciledBookItem({ book }: ReconciledBookItemProps) {
           <ReadMention read={book.read} />
         </span>
       )}
+      {book.status === 'ambiguous' && (
+        <AmbiguityPicker
+          candidates={book.candidates}
+          onChoose={(choice) => {
+            onChoose(book.position, choice);
+          }}
+        />
+      )}
+      {refusal}
     </li>
   );
 }

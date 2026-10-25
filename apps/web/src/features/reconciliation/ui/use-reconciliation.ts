@@ -1,25 +1,44 @@
 import { useEffect, useRef, useState } from 'react';
 
 import {
+  decide,
   readReconciliation,
   reconcile,
+  type DecisionAnswer,
   type ReconciliationAnswer,
 } from '../api/reconciliation-api';
 import type { ReconciledBook } from '../model/reconciled-book';
+import type { AmbiguityChoice, ReconciliationFailure } from '../model/reconciliation-failure';
 import type { ReconciliationState } from '../model/reconciliation-state';
 
 /**
- * The two calls the list makes; injected by the specs, the real API client otherwise.
+ * The calls the list makes; injected by the specs, the real API client otherwise.
  */
 export interface ReconciliationApi {
   readonly reconcile: (scanId: string) => Promise<ReconciliationAnswer>;
   readonly read: (scanId: string) => Promise<ReconciliationAnswer>;
+  readonly decide: (
+    scanId: string,
+    position: number,
+    choice: AmbiguityChoice,
+  ) => Promise<DecisionAnswer>;
 }
 
 export const realApi: ReconciliationApi = {
   reconcile: async (scanId) => reconcile(scanId),
   read: async (scanId) => readReconciliation(scanId),
+  decide: async (scanId, position, choice) => decide(scanId, position, choice),
 };
+
+/** What the list works with: the state, and how to record the choice for an ambiguous book. */
+export interface Reconciliation {
+  readonly state: ReconciliationState;
+  /** The last choice that could not be recorded, and why — the choice stays open. */
+  readonly refusal:
+    | { readonly position: number; readonly failure: ReconciliationFailure }
+    | undefined;
+  readonly choose: (position: number, choice: AmbiguityChoice) => Promise<void>;
+}
 
 /**
  * `afterAnalysis`: the analysis has just ended, so the books are reconciled straight away.
@@ -38,8 +57,9 @@ export function useReconciliation(
   scanId: string,
   mode: ReconciliationMode,
   api: ReconciliationApi,
-): ReconciliationState {
+): Reconciliation {
   const [state, setState] = useState<ReconciliationState>({ status: 'checking' });
+  const [refusal, setRefusal] = useState<Reconciliation['refusal']>(undefined);
   const asked = useRef<string | null>(null);
   const mounted = useRef(false);
 
@@ -64,7 +84,35 @@ export function useReconciliation(
     });
   }, [scanId, mode, api]);
 
-  return state;
+  const choose = async (position: number, choice: AmbiguityChoice): Promise<void> => {
+    setRefusal(undefined);
+    const answer = await api.decide(scanId, position, choice);
+    if (!mounted.current) {
+      return;
+    }
+    if (answer.status === 'book') {
+      setState((current) => replaced(current, answer.book));
+    } else if (answer.failure === 'conflict') {
+      // The book was decided elsewhere: what the server keeps is the truth.
+      const kept = stateOf(await api.read(scanId));
+      if (mounted.current && kept.status === 'ready') {
+        setState(kept);
+      }
+    } else {
+      setRefusal({ position, failure: answer.failure });
+    }
+  };
+
+  return { state, refusal, choose };
+}
+
+function replaced(state: ReconciliationState, book: ReconciledBook): ReconciliationState {
+  return state.status === 'ready'
+    ? {
+        status: 'ready',
+        books: state.books.map((one) => (one.position === book.position ? book : one)),
+      }
+    : state;
 }
 
 async function run(

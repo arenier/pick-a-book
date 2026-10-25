@@ -39,14 +39,25 @@ export function ReconciledBookList({
   mode,
   api = realApi,
 }: ReconciledBookListProps) {
-  const state = useReconciliation(scanId, mode, api);
+  const { state, refusal, choose } = useReconciliation(scanId, mode, api);
   const shown = booksShown(state, books);
 
   return (
     <div className="flex min-w-0 flex-col gap-3">
       <ul className="flex flex-col gap-3">
         {shown.map((book) => (
-          <ReconciledBookItem key={book.position} book={book} />
+          <ReconciledBookItem
+            key={book.position}
+            book={book}
+            onChoose={(position, choice) => {
+              void choose(position, choice);
+            }}
+            refusal={
+              refusal?.position === book.position ? (
+                <FailureMessage failure={refusal.failure} />
+              ) : undefined
+            }
+          />
         ))}
       </ul>
       {state.status === 'failed' && <FailureMessage failure={state.failure} />}
