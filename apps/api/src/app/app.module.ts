@@ -4,6 +4,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 
 import { ENVIRONMENT, type Environment } from '../config/environment';
+import { DatabaseModule } from '../database/database.module';
 import { HealthController } from '../health/health.controller';
 import { RateLimitGuard } from '../http/rate-limit.guard';
 import { buildLoggerOptions } from '../logging/logger-options';
@@ -60,6 +61,8 @@ export class AppModule {
           // handler too, which would give each route a budget of its own.
           generateKey: (_context, tracker, throttlerName) => `${throttlerName}-${tracker}`,
         }),
+        // The one Postgres pool, opened and migrated before any context serves a request.
+        DatabaseModule.withEnvironment(environment),
         RecognitionModule.withEnvironment(environment),
       ],
       controllers: [HealthController],

@@ -108,7 +108,7 @@ yarn format                        # oxfmt          (yarn format:check pour vér
 yarn api                           # démarre l'API   (http://localhost:3000/health)
 yarn web                           # démarre le front (http://localhost:4200)
 yarn bench                         # départage les adapters VLM (appels live, hors CI) — voir tools/bench/README.md
-yarn db:generate                   # génère une migration Drizzle depuis le schéma de recognition-infrastructure
+yarn db:generate                   # génère les migrations Drizzle des deux contextes (schémas de recognition-infrastructure et bibliography-infrastructure)
 docker compose up --build          # API + front + Postgres + émulateur de bucket
 
 yarn nx run-many -t lint -p api    # cibler un projet

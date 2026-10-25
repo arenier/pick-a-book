@@ -1,0 +1,353 @@
+{
+  "id": "cc01b1ee-e6b1-42c6-8311-2ae31352e715",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.reconciliation_attempts": {
+      "name": "reconciliation_attempts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "scan_ref": {
+          "name": "scan_ref",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "query_title": {
+          "name": "query_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "query_author": {
+          "name": "query_author",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "catalog": {
+          "name": "catalog",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "verdict": {
+          "name": "verdict",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cascade_step": {
+          "name": "cascade_step",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reconciliation_score": {
+          "name": "reconciliation_score",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "not_verified_cause": {
+          "name": "not_verified_cause",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attempted_at": {
+          "name": "attempted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "reconciliation_attempts_book_idx": {
+          "name": "reconciliation_attempts_book_idx",
+          "columns": [
+            {
+              "expression": "scan_ref",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "position",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "reconciliation_attempts_one_final_per_book_idx": {
+          "name": "reconciliation_attempts_one_final_per_book_idx",
+          "columns": [
+            {
+              "expression": "scan_ref",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "position",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"reconciliation_attempts\".\"verdict\" <> 'not_verified'",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "reconciliation_attempts_position_check": {
+          "name": "reconciliation_attempts_position_check",
+          "value": "\"reconciliation_attempts\".\"position\" >= 0"
+        },
+        "reconciliation_attempts_verdict_check": {
+          "name": "reconciliation_attempts_verdict_check",
+          "value": "\"reconciliation_attempts\".\"verdict\" in ('confirmed', 'ambiguous', 'not_found', 'not_verified')"
+        },
+        "reconciliation_attempts_cascade_step_check": {
+          "name": "reconciliation_attempts_cascade_step_check",
+          "value": "\"reconciliation_attempts\".\"cascade_step\" is null or \"reconciliation_attempts\".\"cascade_step\" in ('title_and_author', 'author_only', 'title_only', 'segment')"
+        },
+        "reconciliation_attempts_step_required_check": {
+          "name": "reconciliation_attempts_step_required_check",
+          "value": "\"reconciliation_attempts\".\"verdict\" not in ('confirmed', 'ambiguous') or \"reconciliation_attempts\".\"cascade_step\" is not null"
+        },
+        "reconciliation_attempts_score_range_check": {
+          "name": "reconciliation_attempts_score_range_check",
+          "value": "\"reconciliation_attempts\".\"reconciliation_score\" is null or \"reconciliation_attempts\".\"reconciliation_score\" between 0 and 1"
+        },
+        "reconciliation_attempts_score_iff_answered_check": {
+          "name": "reconciliation_attempts_score_iff_answered_check",
+          "value": "(\"reconciliation_attempts\".\"reconciliation_score\" is null) = (\"reconciliation_attempts\".\"verdict\" = 'not_verified')"
+        },
+        "reconciliation_attempts_cause_check": {
+          "name": "reconciliation_attempts_cause_check",
+          "value": "\"reconciliation_attempts\".\"not_verified_cause\" is null or \"reconciliation_attempts\".\"not_verified_cause\" in ('unavailable', 'timeout', 'invalid_response')"
+        },
+        "reconciliation_attempts_cause_iff_not_verified_check": {
+          "name": "reconciliation_attempts_cause_iff_not_verified_check",
+          "value": "(\"reconciliation_attempts\".\"not_verified_cause\" is not null) = (\"reconciliation_attempts\".\"verdict\" = 'not_verified')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.reconciliation_candidates": {
+      "name": "reconciliation_candidates",
+      "schema": "",
+      "columns": {
+        "attempt_id": {
+          "name": "attempt_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rank": {
+          "name": "rank",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "record_id": {
+          "name": "record_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title_complement": {
+          "name": "title_complement",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "authors": {
+          "name": "authors",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "context": {
+          "name": "context",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "raw": {
+          "name": "raw",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "format": {
+          "name": "format",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title_score": {
+          "name": "title_score",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "author_score": {
+          "name": "author_score",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "score": {
+          "name": "score",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retained": {
+          "name": "retained",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "reconciliation_candidates_attempt_fk": {
+          "name": "reconciliation_candidates_attempt_fk",
+          "tableFrom": "reconciliation_candidates",
+          "tableTo": "reconciliation_attempts",
+          "columnsFrom": ["attempt_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "reconciliation_candidates_attempt_id_rank_pk": {
+          "name": "reconciliation_candidates_attempt_id_rank_pk",
+          "columns": ["attempt_id", "rank"]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "reconciliation_candidates_rank_check": {
+          "name": "reconciliation_candidates_rank_check",
+          "value": "\"reconciliation_candidates\".\"rank\" >= 1"
+        },
+        "reconciliation_candidates_format_check": {
+          "name": "reconciliation_candidates_format_check",
+          "value": "\"reconciliation_candidates\".\"format\" in ('unimarc', 'dublin-core')"
+        },
+        "reconciliation_candidates_scores_check": {
+          "name": "reconciliation_candidates_scores_check",
+          "value": "\"reconciliation_candidates\".\"title_score\" between 0 and 1 and \"reconciliation_candidates\".\"score\" between 0 and 1 and (\"reconciliation_candidates\".\"author_score\" is null or \"reconciliation_candidates\".\"author_score\" between 0 and 1)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.reconciliation_decisions": {
+      "name": "reconciliation_decisions",
+      "schema": "",
+      "columns": {
+        "attempt_id": {
+          "name": "attempt_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "record_id": {
+          "name": "record_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "decided_at": {
+          "name": "decided_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "reconciliation_decisions_attempt_fk": {
+          "name": "reconciliation_decisions_attempt_fk",
+          "tableFrom": "reconciliation_decisions",
+          "tableTo": "reconciliation_attempts",
+          "columnsFrom": ["attempt_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "reconciliation_decisions_kind_check": {
+          "name": "reconciliation_decisions_kind_check",
+          "value": "\"reconciliation_decisions\".\"kind\" in ('chosen', 'rejected')"
+        },
+        "reconciliation_decisions_record_iff_chosen_check": {
+          "name": "reconciliation_decisions_record_iff_chosen_check",
+          "value": "(\"reconciliation_decisions\".\"record_id\" is not null) = (\"reconciliation_decisions\".\"kind\" = 'chosen')"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

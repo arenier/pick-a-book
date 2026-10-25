@@ -30,6 +30,7 @@
     "@pick-a-book/recognition-domain": "workspace:*",
     "@pick-a-book/recognition-infrastructure": "workspace:*",
     "@pick-a-book/shared-result": "workspace:*",
+    "@pick-a-book/shared-sql-migrations": "workspace:*",
     "@swc/helpers": "0.5.18",
     "nestjs-pino": "5.2.1",
     "pg": "^8.23.0",

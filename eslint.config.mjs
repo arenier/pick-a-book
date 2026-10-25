@@ -27,7 +27,7 @@ export default [
       // ADR 0002 — the hexagonal boundaries are enforced here, not merely documented.
       // Three independent tag dimensions:
       //   type:*    the layer          (domain, application, infrastructure, shared, app)
-      //   context:* the bounded context (recognition, none for shared libs)
+      //   context:* the bounded context (recognition, bibliography, none for shared libs)
       //   scope:*   the deployed side  (api, web, shared)
       '@nx/enforce-module-boundaries': [
         'error',
@@ -88,6 +88,11 @@ export default [
               // orchestrator of apps/api (ADR 0003), on boundary DTOs.
               sourceTag: 'context:recognition',
               onlyDependOnLibsWithTags: ['context:recognition', 'context:none'],
+            },
+            {
+              // Same for bibliography (ADR 0010): it never reaches into recognition.
+              sourceTag: 'context:bibliography',
+              onlyDependOnLibsWithTags: ['context:bibliography', 'context:none'],
             },
             {
               // context:none = libs/shared/*: importable by all, importing no context.

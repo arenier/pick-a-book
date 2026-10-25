@@ -14,8 +14,12 @@ import { Pool } from 'pg';
 import { afterAll, beforeAll } from 'vitest';
 
 import { DrizzleShelfScanRepositoryAdapter } from '../persistence/drizzle-shelf-scan-repository.adapter.js';
-import { migrateDatabase } from '../persistence/migrate-database.js';
-import { MIGRATIONS_FOLDER, testDatabaseUrl } from '../persistence/drizzle/test-database.js';
+import { migrateDatabase } from '@pick-a-book/shared-sql-migrations';
+import {
+  MIGRATIONS_FOLDER,
+  MIGRATIONS_TABLE,
+  testDatabaseUrl,
+} from '../persistence/drizzle/test-database.js';
 
 /**
  * Runs against the Postgres of docker-compose, migrated with the committed migrations — the
@@ -27,7 +31,10 @@ export function aMigratedRepository() {
   const pool = new Pool({ connectionString: testDatabaseUrl });
 
   beforeAll(async () => {
-    await migrateDatabase(pool, MIGRATIONS_FOLDER);
+    await migrateDatabase(pool, {
+      migrationsFolder: MIGRATIONS_FOLDER,
+      migrationsTable: MIGRATIONS_TABLE,
+    });
   });
 
   afterAll(async () => {

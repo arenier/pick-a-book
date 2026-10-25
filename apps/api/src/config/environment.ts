@@ -1,7 +1,12 @@
 import { OwnerId } from '@pick-a-book/recognition-domain';
 import { unwrap } from '@pick-a-book/shared-result';
 
+import {
+  readBibliographicCatalog,
+  type BibliographicCatalogConfiguration,
+} from './bibliographic-catalog-provider';
 import { readDailyLimits } from './daily-limits';
+import { readWebOrigin } from './web-origin';
 
 /**
  * Configuration validation at startup.
@@ -27,6 +32,8 @@ export interface Environment {
   readonly databaseUrl: string;
   /** Which VLM answers a scan, and the key it needs (ADR 0005). */
   readonly shelfScanner: ShelfScannerConfiguration;
+  /** Which catalogue judges the detected books (ADR 0014, specs/003). */
+  readonly bibliographicCatalog: BibliographicCatalogConfiguration;
   /** Bucket that keeps the shelf photos (ADR 0004). */
   readonly bucketName: string;
   /**
@@ -91,9 +98,6 @@ const NODE_ENVIRONMENTS: readonly NodeEnvironment[] = ['development', 'test', 'p
 
 const DEFAULT_OWNER_ID = 'default';
 
-/** The port of `yarn web`: the frontend a fresh checkout talks to. */
-const DEFAULT_WEB_ORIGIN = 'http://localhost:4200';
-
 export class InvalidEnvironment extends Error {
   constructor(problems: readonly string[]) {
     super(
@@ -135,11 +139,10 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
     problems.push(`PORT is "${rawPort}" — expected an integer between 1 and 65535`);
   }
 
-  const shelfScanner = readShelfScanner(source, problems);
-
+  const providers = readProviders(source, problems);
   const photoStorage = readPhotoStorage(source, problems);
   const dailyLimits = readDailyLimits((name) => optional(source, name), problems);
-  const webOrigin = readWebOrigin(source, nodeEnv, problems);
+  const webOrigin = readWebOrigin(optional(source, 'WEB_ORIGIN'), nodeEnv, problems);
 
   if (problems.length > 0) {
     throw new InvalidEnvironment(problems);
@@ -149,11 +152,25 @@ export function loadEnvironment(source: NodeJS.ProcessEnv = process.env): Enviro
     nodeEnv,
     port,
     databaseUrl,
-    shelfScanner,
+    ...providers,
     ...photoStorage,
     ...dailyLimits,
     webOrigin,
     googleCloudProject: optional(source, 'GOOGLE_CLOUD_PROJECT'),
+  };
+}
+
+/** Which adapter answers each external need: the scanner, and the bibliographic catalogue. */
+function readProviders(
+  source: NodeJS.ProcessEnv,
+  problems: string[],
+): Pick<Environment, 'shelfScanner' | 'bibliographicCatalog'> {
+  return {
+    shelfScanner: readShelfScanner(source, problems),
+    bibliographicCatalog: readBibliographicCatalog(
+      optional(source, 'BIBLIOGRAPHIC_CATALOG_PROVIDER'),
+      problems,
+    ),
   };
 }
 
@@ -191,30 +208,6 @@ function readOwnerId(source: NodeJS.ProcessEnv, problems: string[]): OwnerId {
   problems.push(`OWNER_ID is "${raw}" — ${ownerId.error.message}`);
   // The fallback never escapes: a non-empty `problems` throws before the caller returns.
   return unwrap(OwnerId.of(DEFAULT_OWNER_ID));
-}
-
-/**
- * Defaults to the port of `yarn web` in development, so the stack starts with no
- * configuration. In production there is no sensible default — the front is another Cloud Run
- * service on its own origin (ADR 0004) — and a browser front without it is unusable, so its
- * absence fails the boot, like any other required variable.
- */
-function readWebOrigin(
-  source: NodeJS.ProcessEnv,
-  nodeEnv: NodeEnvironment,
-  problems: string[],
-): string {
-  const configured = optional(source, 'WEB_ORIGIN');
-  if (configured === undefined && nodeEnv === 'production') {
-    problems.push('WEB_ORIGIN is required in production and is not set');
-  }
-
-  const webOrigin = configured ?? DEFAULT_WEB_ORIGIN;
-  if (!isHttpOrigin(webOrigin)) {
-    problems.push(`WEB_ORIGIN is "${webOrigin}" — expected an http:// or https:// origin`);
-  }
-
-  return webOrigin;
 }
 
 function readShelfScanner(
@@ -278,16 +271,6 @@ function isPostgresUrl(value: string): boolean {
   const parsed = URL.parse(value);
 
   return parsed !== null && (parsed.protocol === 'postgres:' || parsed.protocol === 'postgresql:');
-}
-
-/**
- * CORS compares the `Origin` header byte for byte: `localhost:4200` without a scheme would
- * never match, and the frontend would get opaque CORS errors instead of a failed boot.
- */
-function isHttpOrigin(value: string): boolean {
-  const parsed = URL.parse(value);
-
-  return parsed !== null && (parsed.protocol === 'http:' || parsed.protocol === 'https:');
 }
 
 function isNodeEnvironment(value: string): value is NodeEnvironment {

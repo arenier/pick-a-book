@@ -5,23 +5,31 @@ import { defineConfig, type Plugin } from 'vitest/config';
 import swc from 'unplugin-swc';
 
 /**
- * Copies the committed Drizzle migrations next to the bundle, where the API applies them at
- * boot (`recognition.module.ts`). They are SQL files, not code: the bundler would never pick
+ * Copies the committed Drizzle migrations of each context next to the bundle, where the API
+ * applies them at boot (`database.module.ts`): `dist/migrations/recognition` and
+ * `dist/migrations/bibliography`. They are SQL files, not code: the bundler would never pick
  * them up, and an image without them would boot against a schema it cannot create.
  */
 function copyMigrations(): Plugin {
-  const source = join(
-    import.meta.dirname,
-    '../../libs/recognition/infrastructure/src/lib/persistence/drizzle/migrations',
-  );
+  const sources = {
+    recognition: join(
+      import.meta.dirname,
+      '../../libs/recognition/infrastructure/src/lib/persistence/drizzle/migrations',
+    ),
+    bibliography: join(
+      import.meta.dirname,
+      '../../libs/bibliography/infrastructure/src/lib/drizzle/migrations',
+    ),
+  };
 
   return {
     name: 'copy-migrations',
     apply: 'build',
     writeBundle(options) {
-      cpSync(source, join(options.dir ?? join(import.meta.dirname, 'dist'), 'migrations'), {
-        recursive: true,
-      });
+      const migrations = join(options.dir ?? join(import.meta.dirname, 'dist'), 'migrations');
+      for (const [context, source] of Object.entries(sources)) {
+        cpSync(source, join(migrations, context), { recursive: true });
+      }
     },
   };
 }

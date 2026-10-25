@@ -1,0 +1,35 @@
+{
+  "name": "@pick-a-book/bibliography-domain",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "import": "./dist/testing/index.js",
+      "default": "./dist/testing/index.js"
+    }
+  },
+  "nx": {
+    "name": "bibliography-domain",
+    "tags": [
+      "type:domain",
+      "context:bibliography",
+      "scope:api"
+    ]
+  },
+  "dependencies": {
+    "@pick-a-book/shared-result": "workspace:*",
+    "@pick-a-book/shared-text-match": "workspace:*",
+    "tslib": "^2.3.0"
+  }
+}

@@ -1,6 +1,4 @@
-import { join } from 'node:path';
-
-import { Inject, Module, type OnApplicationShutdown, type Provider } from '@nestjs/common';
+import { Module, type Provider } from '@nestjs/common';
 import {
   GetShelfPhotoImageUseCase,
   GetShelfScanUseCase,
@@ -16,8 +14,10 @@ import {
   type ShelfScannerPort,
   type ShelfScanRepositoryPort,
 } from '@pick-a-book/recognition-domain';
+import type { Pool } from 'pg';
 
 import type { Environment } from '../config/environment';
+import { DATABASE_POOL } from '../database/database.module';
 import { createShelfScanArchive, type ShelfScanArchive } from './shelf-scan-archive.factory';
 import { createShelfScanner } from './shelf-scanner.factory';
 import { ShelfPhotosController } from './shelf-photos.controller';
@@ -32,12 +32,6 @@ const SHELF_SCAN_ARCHIVE = 'ShelfScanArchive';
 const ATTEMPT_LEASE_MS = 5 * 60 * 1000;
 
 /**
- * Where the build copies the committed migrations: next to the bundle (`vite.config.mts`),
- * so the image that runs the code also carries the schema that code expects.
- */
-const MIGRATIONS_FOLDER = join(__dirname, 'migrations');
-
-/**
  * Composition root of the recognition context.
  *
  * This is the only place in the repo allowed to know `recognition-infrastructure`
@@ -46,20 +40,10 @@ const MIGRATIONS_FOLDER = join(__dirname, 'migrations');
  * (`SHELF_SCANNER_PROVIDER`), so swapping providers takes no code change at all — that is
  * what lets the V1 bench two of them (ADR 0005).
  *
- * The archive (bucket + Postgres) migrates the database before anything is served: a
- * revision never answers a request against a schema it does not know.
+ * The database is the API's one pool, opened, migrated and closed by `DatabaseModule`.
  */
 @Module({})
-export class RecognitionModule implements OnApplicationShutdown {
-  constructor(
-    @Inject(SHELF_SCAN_ARCHIVE) private readonly archive: Pick<ShelfScanArchive, 'close'>,
-  ) {}
-
-  /** Releases the Postgres pool when Cloud Run stops the instance (`enableShutdownHooks`). */
-  async onApplicationShutdown(): Promise<void> {
-    await this.archive.close();
-  }
-
+export class RecognitionModule {
   static withEnvironment(environment: Environment) {
     return {
       module: RecognitionModule,
@@ -71,11 +55,8 @@ export class RecognitionModule implements OnApplicationShutdown {
         },
         {
           provide: SHELF_SCAN_ARCHIVE,
-          useFactory: async () => {
-            const archive = createShelfScanArchive(environment);
-            await archive.migrate(MIGRATIONS_FOLDER);
-            return archive;
-          },
+          useFactory: (pool: Pool) => createShelfScanArchive(environment, pool),
+          inject: [DATABASE_POOL],
         },
         {
           provide: SHELF_PHOTO_STORAGE_PORT,

@@ -8,3 +8,6 @@ export const testDatabaseUrl =
   process.env['DATABASE_URL'] ?? 'postgresql://pick_a_book:pick_a_book@localhost:5433/pick_a_book';
 
 export const MIGRATIONS_FOLDER = new URL('migrations', import.meta.url).pathname;
+
+/** The tracking table `recognition` has always used: renaming it would replay its migrations. */
+export const MIGRATIONS_TABLE = '__drizzle_migrations';

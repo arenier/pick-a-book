@@ -26,7 +26,11 @@ COPY apps/web/package.json apps/web/
 COPY libs/recognition/domain/package.json libs/recognition/domain/
 COPY libs/recognition/application/package.json libs/recognition/application/
 COPY libs/recognition/infrastructure/package.json libs/recognition/infrastructure/
+COPY libs/bibliography/domain/package.json libs/bibliography/domain/
+COPY libs/bibliography/application/package.json libs/bibliography/application/
+COPY libs/bibliography/infrastructure/package.json libs/bibliography/infrastructure/
 COPY libs/shared/result/package.json libs/shared/result/
+COPY libs/shared/sql-migrations/package.json libs/shared/sql-migrations/
 COPY libs/shared/text-match/package.json libs/shared/text-match/
 COPY libs/shared/i18n/package.json libs/shared/i18n/
 COPY libs/shared/ui/package.json libs/shared/ui/

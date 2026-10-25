@@ -1,8 +1,8 @@
 import { Pool } from 'pg';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { MIGRATIONS_FOLDER, testDatabaseUrl } from './drizzle/test-database.js';
-import { migrateDatabase } from './migrate-database.js';
+import { MIGRATIONS_FOLDER, MIGRATIONS_TABLE, testDatabaseUrl } from './drizzle/test-database.js';
+import { migrateDatabase } from '@pick-a-book/shared-sql-migrations';
 
 /**
  * The rules of the upload history schema (specs/002-upload-history, T003), held by the database
@@ -13,7 +13,10 @@ function aMigratedPool() {
   const pool = new Pool({ connectionString: testDatabaseUrl });
 
   beforeAll(async () => {
-    await migrateDatabase(pool, MIGRATIONS_FOLDER);
+    await migrateDatabase(pool, {
+      migrationsFolder: MIGRATIONS_FOLDER,
+      migrationsTable: MIGRATIONS_TABLE,
+    });
   });
 
   afterAll(async () => {

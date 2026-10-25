@@ -1,14 +1,13 @@
 import { Controller, Get } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
-import { InMemoryShelfScanRepository } from '@pick-a-book/recognition-application/testing';
 import { LoggerModule } from 'nestjs-pino';
 import { afterAll, beforeAll } from 'vitest';
 
 import { AppModule } from '../../app/app.module';
 import { loadEnvironment } from '../../config/environment';
-import { anInMemoryPhotoStorage } from '../../recognition/testing/in-memory-photo-storage';
 import { applyHttpBoundary } from '../http-boundary';
+import { withoutPersistence } from './without-persistence';
 
 /**
  * The real `AppModule`, with the archive replaced by the in-memory doubles: neither Postgres nor
@@ -44,17 +43,10 @@ export function aRunningApplication() {
       // Requests are not what these specs are about: 300 log lines would drown the report.
       .overrideModule(LoggerModule)
       .useModule(LoggerModule.forRoot({ pinoHttp: { level: 'silent' } }))
-      .overrideProvider('ShelfScanArchive')
-      .useValue({
-        storage: anInMemoryPhotoStorage(),
-        repository: new InMemoryShelfScanRepository(),
-        migrate: async (): Promise<void> => {
-          // Nothing to migrate: there is no database.
-        },
-        close: async (): Promise<void> => {
-          // Nothing to release.
-        },
-      })
+      .overrideProvider(withoutPersistence.pool.provide)
+      .useValue(withoutPersistence.pool.value)
+      .overrideProvider(withoutPersistence.archive.provide)
+      .useValue(withoutPersistence.archive.value)
       .compile();
     app = moduleRef.createNestApplication<NestExpressApplication>();
     applyHttpBoundary(app, environment);

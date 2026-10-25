@@ -1,0 +1,33 @@
+{
+  "name": "@pick-a-book/bibliography-infrastructure",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "nx": {
+    "name": "bibliography-infrastructure",
+    "tags": [
+      "type:infrastructure",
+      "context:bibliography",
+      "scope:api"
+    ]
+  },
+  "dependencies": {
+    "@pick-a-book/bibliography-domain": "workspace:*",
+    "@pick-a-book/shared-result": "workspace:*",
+    "drizzle-orm": "^0.45.3",
+    "pg": "^8.23.0",
+    "tslib": "^2.3.0",
+    "zod": "^4.5.4"
+  }
+}

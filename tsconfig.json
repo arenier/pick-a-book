@@ -35,6 +35,18 @@
     },
     {
       "path": "./tools/db-backup"
+    },
+    {
+      "path": "./libs/bibliography/domain"
+    },
+    {
+      "path": "./libs/bibliography/application"
+    },
+    {
+      "path": "./libs/bibliography/infrastructure"
+    },
+    {
+      "path": "./libs/shared/sql-migrations"
     }
   ],
   "compilerOptions": {}

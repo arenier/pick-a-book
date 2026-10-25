@@ -58,17 +58,17 @@ déclarées ; lanceur de migrations partagé justifié ; SC-003 prouvé par une 
 
 ## Phase 1: Setup
 
-- [ ] T001 Créer la lib `libs/bibliography/domain/` sur le modèle de `libs/recognition/domain/`
+- [X] T001 Créer la lib `libs/bibliography/domain/` sur le modèle de `libs/recognition/domain/`
       (`package.json`, `tsconfig.json`, `tsconfig.lib.json`, `tsconfig.spec.json`,
       `vitest.config.mts`, `eslint.config.mjs`, `src/index.ts` vide, `README.md` d'une ligne) :
       nom `@pick-a-book/bibliography-domain`, `nx.name` `bibliography-domain`, tags
       `type:domain`, `context:bibliography`, `scope:api` ; dépendances `tslib`,
       `@pick-a-book/shared-text-match` et `@pick-a-book/shared-result` (`workspace:*`)
-- [ ] T002 [P] Créer `libs/bibliography/application/` sur le modèle de `libs/recognition/application/` :
+- [X] T002 [P] Créer `libs/bibliography/application/` sur le modèle de `libs/recognition/application/` :
       `@pick-a-book/bibliography-application`, tags `type:application`, `context:bibliography`,
       `scope:api`, dépendances `@pick-a-book/bibliography-domain` et `@pick-a-book/shared-result` ;
       `tsconfig.lib.json` exclut `src/**/testing/**` comme la lib modèle
-- [ ] T003 [P] Créer `libs/bibliography/infrastructure/` sur le modèle de
+- [X] T003 [P] Créer `libs/bibliography/infrastructure/` sur le modèle de
       `libs/recognition/infrastructure/` : `@pick-a-book/bibliography-infrastructure`, tags
       `type:infrastructure`, `context:bibliography`, `scope:api`, dépendances
       `@pick-a-book/bibliography-domain`, `drizzle-orm`, `pg`, `zod` (mêmes versions que
@@ -76,20 +76,20 @@ déclarées ; lanceur de migrations partagé justifié ; SC-003 prouvé par une 
       `schema: './libs/bibliography/infrastructure/src/lib/drizzle/schema.ts'`,
       `out: './libs/bibliography/infrastructure/src/lib/drizzle/migrations'` et
       `migrations: { table: '__drizzle_migrations_bibliography' }` (research §8)
-- [ ] T004 [P] Créer `libs/shared/sql-migrations/` : `@pick-a-book/shared-sql-migrations`, tags
+- [X] T004 [P] Créer `libs/shared/sql-migrations/` : `@pick-a-book/shared-sql-migrations`, tags
       `type:shared`, `context:none`, `scope:api`, dépendances `drizzle-orm`, `pg`, `tslib`
-- [ ] T005 Ajouter à `eslint.config.mjs` la contrainte
+- [X] T005 Ajouter à `eslint.config.mjs` la contrainte
       `{ sourceTag: 'context:bibliography', onlyDependOnLibsWithTags: ['context:bibliography', 'context:none'] }`
       (commentaire : ADR 0010), et étendre aux libs `bibliography` la règle qui bannit `throw` et
       `unwrap` dans `domain`/`application` ; puis `yarn install && yarn nx sync` pour lier les
       quatre projets ; vérifier que les garde-fous opèrent : un import temporaire de
       `@pick-a-book/recognition-domain`, puis un `throw`, dans `libs/bibliography/domain/src/index.ts`
       font échouer `yarn lint` — puis les retirer
-- [ ] T006 [P] Dans `package.json` racine, faire générer par `db:generate` les migrations des deux
+- [X] T006 [P] Dans `package.json` racine, faire générer par `db:generate` les migrations des deux
       contextes (`drizzle-kit generate --config libs/recognition/infrastructure/drizzle.config.ts
       && drizzle-kit generate --config libs/bibliography/infrastructure/drizzle.config.ts`) ;
       mettre à jour la ligne `yarn db:generate` de `CLAUDE.md` (« des deux contextes »)
-- [ ] T007 [P] Documenter dans `.env.example` `BIBLIOGRAPHIC_CATALOG_PROVIDER=stub` : optionnel,
+- [X] T007 [P] Documenter dans `.env.example` `BIBLIOGRAPHIC_CATALOG_PROVIDER=stub` : optionnel,
       défaut `stub`, valeurs `bnf` (catalogue général de la BnF, sans clé), `stub` (catalogue en
       mémoire) et `offline` (catalogue toujours indisponible, pour voir « non vérifié » et la
       relance) — research §12
@@ -103,7 +103,7 @@ DTO et configuration. Rien de visible pour l'utilisateur à la fin de cette phas
 
 ### Migrations et pool
 
-- [ ] T008 Déplacer `migrateDatabase` de
+- [X] T008 Déplacer `migrateDatabase` de
       `libs/recognition/infrastructure/src/lib/persistence/migrate-database.ts` (et sa spec) vers
       `libs/shared/sql-migrations/src/lib/migrate-database.ts`, avec la signature
       `migrateDatabase(pool, { migrationsFolder, migrationsTable })`. **Rouge** : la spec déplacée
@@ -114,7 +114,7 @@ DTO et configuration. Rien de visible pour l'utilisateur à la fin de cette phas
       (la table actuelle, pour ne pas rejouer les migrations déjà appliquées de `recognition`) ;
       ajouter `@pick-a-book/shared-sql-migrations` (`workspace:*`) aux dépendances de
       `libs/recognition/infrastructure/package.json` (sinon `@nx/dependency-checks` échoue)
-- [ ] T009 Créer `apps/api/src/database/database.module.ts` (+ `.spec.ts`) : fournit un `Pool`
+- [X] T009 Créer `apps/api/src/database/database.module.ts` (+ `.spec.ts`) : fournit un `Pool`
       unique (`DATABASE_POOL`) depuis `environment.databaseUrl`, applique au démarrage les
       migrations de `recognition` (`dist/migrations/recognition`, table `__drizzle_migrations`)
       puis de `bibliography` (`dist/migrations/bibliography`, table
@@ -123,38 +123,38 @@ DTO et configuration. Rien de visible pour l'utilisateur à la fin de cette phas
       Adapter `apps/api/src/recognition/shelf-scan-archive.factory.ts` (+ spec) pour **recevoir**
       le pool au lieu de l'ouvrir (aujourd'hui `new Pool(...)`), et `recognition.module.ts` pour ne
       plus migrer ni fermer ; ajouter `@pick-a-book/shared-sql-migrations` à `apps/api/package.json`
-- [ ] T010 Dans `apps/api/vite.config.mts`, copier les deux dossiers de migrations vers
+- [X] T010 Dans `apps/api/vite.config.mts`, copier les deux dossiers de migrations vers
       `dist/migrations/recognition` et `dist/migrations/bibliography` ; vérifier par
       `yarn nx build api && ls apps/api/dist/migrations/*` ; relire `docker/` pour s'assurer que
       l'image embarque `dist/migrations/` en entier
 
 ### Domaine `bibliography` (`libs/bibliography/domain/src/lib/`)
 
-- [ ] T011 [P] `shelf-book-ref.ts`, `catalog-name.ts`, `catalog-record-id.ts`, `authority-id.ts`,
+- [X] T011 [P] `shelf-book-ref.ts`, `catalog-name.ts`, `catalog-record-id.ts`, `authority-id.ts`,
       `match-score.ts`, `reconciliation-score.ts`, `cascade-step.ts`, `not-verified-cause.ts`
       (+ specs) : fabriques `of()` → `Result<VO, InvalidValue>`, validations de `data-model.md`
       §Value objects ; type guards pour relire `CascadeStep` et `NotVerifiedCause` depuis le stockage
-- [ ] T012 [P] `read-book.ts` (+ spec) : `ReadBook.of(title, author?)` et sa décomposition
+- [X] T012 [P] `read-book.ts` (+ spec) : `ReadBook.of(title, author?)` et sa décomposition
       (research §5.1). **Rouge**, table de cas : parenthèses retirées (« La Peste (Folio) ») ;
       segments sur ` - `, ` : `, ` / ` (« Percy Jackson - La Mer des Monstres ») ; mention de tome
       extraite et gardée (« Éternels (tome 3) » → volume 3 ; « T2 », « 2e ») ; noms sur `-`, `/`,
       ` et `, `&`, `,` (« D. Pennac - J. Ferrandez » → deux noms) ; titre vide ou > 500 caractères
       refusé ; auteur vide ou blanc refusé, jamais converti en absent
-- [ ] T013 [P] `catalog-query.ts`, `catalog-record.ts` (+ specs) : `CatalogQuery` — au moins un de
+- [X] T013 [P] `catalog-query.ts`, `catalog-record.ts` (+ specs) : `CatalogQuery` — au moins un de
       titre et auteur, `maxRecords` dans [1, 100], `format` ; `CatalogRecord` — `id`, `title`,
       `titleComplement?`, `authors` (`name`, `role`, `authorityId?`), `context`, `raw`, `format`
-- [ ] T014 `*.error.ts` : `CatalogUnavailable` (avec `cause` : `unavailable` | `invalid_response`),
+- [X] T014 `*.error.ts` : `CatalogUnavailable` (avec `cause` : `unavailable` | `invalid_response`),
       `BookAlreadyReconciled`, `BookNotAmbiguous`, `UnknownCandidate`,
       `BookReconciliationNotFound` — une classe par fichier, `readonly kind` littéral
       (`data-model.md` §Erreurs) ; `match-outcome.ts` : types `ScoredRecord` et `MatchOutcome`
       (`confirmed` | `ambiguous` avec `partial` | `not_found`, chacun avec `examined` et
       `needsAuthorityCheck`)
-- [ ] T015 `book-reconciliation.ts` (+ `.spec.ts`) : `ReconciliationAttempt`, `AmbiguityDecision`,
+- [X] T015 `book-reconciliation.ts` (+ `.spec.ts`) : `ReconciliationAttempt`, `AmbiguityDecision`,
       agrégat `BookReconciliation`. **Rouge** : table de cas du statut déduit (`data-model.md`
       §Statut courant, lignes sans décision), `needsAttempt()` vrai seulement pour `pending` et
       `not_verified`, `recordAttempt()` qui rend `Err(BookAlreadyReconciled)` sur un statut
       définitif. La décision (`decide`) arrive en US2 (T048)
-- [ ] T016 `bibliographic-catalog.port.ts`, `authority.port.ts`,
+- [X] T016 `bibliographic-catalog.port.ts`, `authority.port.ts`,
       `book-reconciliation-repository.port.ts` : signatures de `data-model.md` §Ports, en `Result` ;
       jetons chaîne `BIBLIOGRAPHIC_CATALOG_PORT`, `AUTHORITY_PORT`,
       `BOOK_RECONCILIATION_REPOSITORY_PORT` (`domain-modeling.md`) ; tout exporter depuis
@@ -162,7 +162,7 @@ DTO et configuration. Rien de visible pour l'utilisateur à la fin de cette phas
 
 ### Persistance (`libs/bibliography/infrastructure/src/lib/`)
 
-- [ ] T017 `drizzle/schema.ts` : les trois tables de `data-model.md` §Stockage, contraintes
+- [X] T017 `drizzle/schema.ts` : les trois tables de `data-model.md` §Stockage, contraintes
       recopiées telles quelles — `reconciliation_attempts` (verdict, `cascade_step` non nul pour un
       confirmé ou un ambigu, `reconciliation_score` nul si et seulement si `not_verified`,
       `not_verified_cause` « non nul si et seulement si `verdict = 'not_verified'` », `position >= 0`,
@@ -174,7 +174,7 @@ DTO et configuration. Rien de visible pour l'utilisateur à la fin de cette phas
       Aucune clé étrangère vers les tables de `recognition` (research §4). Puis `yarn db:generate`
       → `drizzle/migrations/0000_*.sql`, commité, jamais écrit à la main ; `drizzle/test-database.ts`
       sur le modèle de celui de `recognition`
-- [ ] T018 `drizzle-book-reconciliation-repository.adapter.ts` (+ `.spec.ts` contre Postgres) :
+- [X] T018 `drizzle-book-reconciliation-repository.adapter.ts` (+ `.spec.ts` contre Postgres) :
       `saveAttempt` écrit la tentative et ses notices (retenues et écartées, `raw` compris) **dans
       une transaction** et rend `Err(BookAlreadyReconciled)` sur violation de l'index unique
       partiel ; `findByScan` et `find` reconstruisent les agrégats, tentatives ordonnées par
@@ -184,17 +184,17 @@ DTO et configuration. Rien de visible pour l'utilisateur à la fin de cette phas
 
 ### Application et composition
 
-- [ ] T019 [P] `libs/bibliography/application/src/lib/testing/` : dépôt en mémoire qui respecte la
+- [X] T019 [P] `libs/bibliography/application/src/lib/testing/` : dépôt en mémoire qui respecte la
       même règle d'unicité que l'index partiel ; catalogue factice scriptable (notices par requête —
       titre, auteur, format —, `Err` avec une cause, délai, compteur d'appels par requête) ;
       autorités factices (formes rejetées, `Err`, compteur)
-- [ ] T020 [P] `libs/bibliography/application/src/lib/reconciliation.dto.ts` (+ `to-dto.spec.ts`) :
+- [X] T020 [P] `libs/bibliography/application/src/lib/reconciliation.dto.ts` (+ `to-dto.spec.ts`) :
       `DetectedBookInput`, `ShelfReconciliationDto`, `BookReconciliationDto`, `ReferenceDto` tels que
       `data-model.md` §DTO de frontière, et `toBookReconciliationDto(aggregate)`. **Rouge** : une
       ligne par statut (dont `pending`), `confirmedBy`, `titleOnly`, `author` absent — jamais `""` —,
       auteurs principaux avant les secondaires, et **aucun** score, catalogue, étape ni cause dans
       le DTO (FR-018)
-- [ ] T021 [P] `apps/api/src/config/environment.ts` (+ spec) : `bibliographicCatalog: { provider:
+- [X] T021 [P] `apps/api/src/config/environment.ts` (+ spec) : `bibliographicCatalog: { provider:
       'bnf' | 'stub' | 'offline' }`, lu de `BIBLIOGRAPHIC_CATALOG_PROVIDER`, défaut `stub` ; toute
       autre valeur ajoute un problème listé au démarrage, comme `SHELF_SCANNER_PROVIDER`
 

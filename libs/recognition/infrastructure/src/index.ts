@@ -1,5 +1,4 @@
 export * from './lib/persistence/drizzle-shelf-scan-repository.adapter.js';
-export * from './lib/persistence/migrate-database.js';
 export * from './lib/scanner/gemini-shelf-scanner.adapter.js';
 export * from './lib/scanner/qwen-shelf-scanner.adapter.js';
 export * from './lib/scanner/stub-shelf-scanner.adapter.js';

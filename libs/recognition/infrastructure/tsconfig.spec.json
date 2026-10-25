@@ -20,6 +20,9 @@
   "references": [
     {
       "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "../../shared/sql-migrations/tsconfig.lib.json"
     }
   ]
 }
