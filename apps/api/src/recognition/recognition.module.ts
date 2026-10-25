@@ -48,6 +48,8 @@ export class RecognitionModule {
     return {
       module: RecognitionModule,
       controllers: [ShelfPhotosController],
+      // The way out of the context for the orchestrator (ADR 0003): the detail of an analysis.
+      exports: [GetShelfScanUseCase],
       providers: [
         {
           provide: SHELF_SCANNER_PORT,

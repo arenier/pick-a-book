@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/" xmlns="http://catalogue.bnf.fr/namespaces/InterXMarc" xmlns:ixm="http://catalogue.bnf.fr/namespaces/InterXMarc" xmlns:mn="http://catalogue.bnf.fr/namespaces/motsnotices" xmlns:sd="http://www.loc.gov/zing/srw/diagnostic/">
+<srw:version>1.2</srw:version>
+<srw:echoedSearchRetrieveRequest>
+<srw:version>1.2</srw:version>
+<srw:query>aut.recordid any "11894985"</srw:query>
+</srw:echoedSearchRetrieveRequest>
+<srw:numberOfRecords>1</srw:numberOfRecords>
+<srw:records>
+<srw:record>
+<srw:recordSchema>marcxchange</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<mxc:record xmlns:mxc="info:lc/xmlns/marcxchange-v2" format="UNIMARC" id="ark:/12148/cb118949856" type="Authority">
+<mxc:leader>          22        45  </mxc:leader>
+<mxc:controlfield tag="001">FRBNF118949852</mxc:controlfield>
+<mxc:controlfield tag="003">http://catalogue.bnf.fr/ark:/12148/cb118949856</mxc:controlfield>
+<mxc:controlfield tag="005">20230721</mxc:controlfield>
+<mxc:datafield tag="010" ind1=" " ind2=" ">
+<mxc:subfield code="a">0000000122832690</mxc:subfield>
+<mxc:subfield code="2">ISNI chargé à partir de VIAF</mxc:subfield>
+<mxc:subfield code="d">20130724</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="039" ind1=" " ind2=" ">
+<mxc:subfield code="o">OPL</mxc:subfield>
+<mxc:subfield code="a">001577421</mxc:subfield>
+<mxc:subfield code="z">AMA</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="039" ind1=" " ind2=" ">
+<mxc:subfield code="o">OPL</mxc:subfield>
+<mxc:subfield code="a">000560547</mxc:subfield>
+<mxc:subfield code="z">APP</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="039" ind1=" " ind2=" ">
+<mxc:subfield code="o">OPP</mxc:subfield>
+<mxc:subfield code="a">15453627</mxc:subfield>
+<mxc:subfield code="d">20120210</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="039" ind1=" " ind2=" ">
+<mxc:subfield code="o">OPP</mxc:subfield>
+<mxc:subfield code="a">16840819</mxc:subfield>
+<mxc:subfield code="d">20221019</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="100" ind1=" " ind2=" ">
+<mxc:subfield code="a">19850622afrey50      ba0</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="100" ind1=" " ind2=" ">
+<mxc:subfield code="a">        |frey50      ba0</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="101" ind1=" " ind2=" ">
+<mxc:subfield code="a">fre</mxc:subfield>
+<mxc:subfield code="a">fre</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="102" ind1=" " ind2=" ">
+<mxc:subfield code="a">FR</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="103" ind1=" " ind2=" ">
+<mxc:subfield code="a"> 19131107  19600104 </mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="106" ind1=" " ind2=" ">
+<mxc:subfield code="a">010</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="120" ind1=" " ind2=" ">
+<mxc:subfield code="a">b</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="152" ind1=" " ind2=" ">
+<mxc:subfield code="c">2</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="200" ind1=" " ind2="|">
+<mxc:subfield code="7">ba0yba0y</mxc:subfield>
+<mxc:subfield code="8">freaCa</mxc:subfield>
+<mxc:subfield code="9"> 0 </mxc:subfield>
+<mxc:subfield code="a">Camus</mxc:subfield>
+<mxc:subfield code="b">Albert</mxc:subfield>
+<mxc:subfield code="f">1913-1960</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="300" ind1="|" ind2=" ">
+<mxc:subfield code="a">Romancier, dramaturge et essayiste</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="301" ind1=" " ind2=" ">
+<mxc:subfield code="a">Mondovi, aujourd'hui Dréan (Algérie)</mxc:subfield>
+<mxc:subfield code="b">Villeblevin (Yonne)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="801" ind1=" " ind2=" ">
+<mxc:subfield code="a">FR</mxc:subfield>
+<mxc:subfield code="b">FR-751131015</mxc:subfield>
+<mxc:subfield code="c">20230721</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="801" ind1=" " ind2=" ">
+<mxc:subfield code="a">FR</mxc:subfield>
+<mxc:subfield code="b">FR-751131015</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="810" ind1=" " ind2=" ">
+<mxc:subfield code="a">Caligula [suivi de] Le Malentendu / Albert Camus, 1989</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="810" ind1=" " ind2=" ">
+<mxc:subfield code="a">GDEL</mxc:subfield>
+<mxc:subfield code="a">Dictionnaire des intellectuels français : les personnes, les lieux, les moments / sous la dir. de Jacques Julliard et Michel Winock, 2002</mxc:subfield>
+<mxc:subfield code="a">Des chemins et des hommes : la France en Algérie (1830-1962) / Anne-Marie Briat, Jeanine de la Hogue, André Appel, [et al.], 1995</mxc:subfield>
+<mxc:subfield code="a">The Oxford companion to French literature / compiled and edited by Sir Paul Harvey and J.E. Heseltine, 1959</mxc:subfield>
+<mxc:subfield code="a">Histoire de la littérature de langue française : des années 1930 aux années 1980 / Pierre de Boisdeffre, 1985</mxc:subfield>
+<mxc:subfield code="a">Écrivains d'aujourd'hui, 1940-1960 : dictionnaire anthologique et critique / établi sous la dir. de Bernard Pingaud, 1960</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="810" ind1=" " ind2=" ">
+<mxc:subfield code="a">BN Cat. gén. suppl.</mxc:subfield>
+<mxc:subfield code="a">BN Cat. gén. 1960-1969</mxc:subfield>
+<mxc:subfield code="a">BnF Service Littératures du monde (serbe et macédonien), 2022-10-19</mxc:subfield>
+</mxc:datafield>
+</mxc:record>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb118949856</srw:recordIdentifier>
+<srw:recordPosition>1</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19850622</ixm:attr>
+<ixm:attr name="LastModificationDate">20230721</ixm:attr>
+<mn:score>7.18074</mn:score>
+</srw:extraRecordData>
+</srw:record>
+</srw:records>
+</srw:searchRetrieveResponse>

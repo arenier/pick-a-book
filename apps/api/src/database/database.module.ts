@@ -15,6 +15,17 @@ export const DATABASE_POOL = 'DatabasePool';
  */
 const MIGRATIONS_ROOT = join(__dirname, 'migrations');
 
+/** Where the SQL files of each context are: next to the bundle once built. */
+export interface MigrationFolders {
+  readonly recognition: string;
+  readonly bibliography: string;
+}
+
+const BUILT_FOLDERS: MigrationFolders = {
+  recognition: join(MIGRATIONS_ROOT, 'recognition'),
+  bibliography: join(MIGRATIONS_ROOT, 'bibliography'),
+};
+
 /** The signature of `migrateDatabase`, so that a spec can stand in for it. */
 type Migrate = typeof migrateDatabase;
 
@@ -23,13 +34,19 @@ type Migrate = typeof migrateDatabase;
  * own tracking table (specs/003-bibliographic-reconciliation, research §8). The tables of
  * `recognition` keep `__drizzle_migrations`: renaming it would replay what is already applied.
  */
-export async function migrateContexts(pool: Pool, migrate: Migrate = migrateDatabase) {
-  await migrate(pool, optionsOf('recognition', '__drizzle_migrations'));
-  await migrate(pool, optionsOf('bibliography', '__drizzle_migrations_bibliography'));
-}
-
-function optionsOf(folder: string, table: string) {
-  return { migrationsFolder: join(MIGRATIONS_ROOT, folder), migrationsTable: table };
+export async function migrateContexts(
+  pool: Pool,
+  migrate: Migrate = migrateDatabase,
+  folders: MigrationFolders = BUILT_FOLDERS,
+) {
+  await migrate(pool, {
+    migrationsFolder: folders.recognition,
+    migrationsTable: '__drizzle_migrations',
+  });
+  await migrate(pool, {
+    migrationsFolder: folders.bibliography,
+    migrationsTable: '__drizzle_migrations_bibliography',
+  });
 }
 
 /**

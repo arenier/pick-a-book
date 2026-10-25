@@ -51,6 +51,24 @@ describe('matchBook, the representative of a work (FR-020)', () => {
     expect(idsOf([confirmedOf(outcome)])).toStrictEqual(['ark:/12148/pavots-roman']);
   });
 
+  it('groups a novel and its adaptation that share an author, even as a secondary one', () => {
+    const novel = aWork('enola-roman', 'Le Mystère des pavots blancs', ['Springer, Nancy']);
+    const bd = aWork('enola-bd', 'Le Mystère des pavots blancs', ['Blasco, Serena'], {
+      authors: [
+        { name: 'Blasco, Serena', role: 'main' },
+        { name: 'Springer, Nancy', role: 'secondary' },
+      ],
+    });
+
+    const outcome = matchBook(
+      aReading('Le Mystère des pavots blancs', 'Nancy Springer'),
+      [bd, novel],
+      settings,
+    );
+
+    expect(idsOf([confirmedOf(outcome)])).toStrictEqual(['ark:/12148/enola-roman']);
+  });
+
   it('picks the smallest identifier when nothing else tells two editions apart', () => {
     const b = aWork('b-ed', 'La peste', ['Camus, Albert']);
     const a = aWork('a-ed', 'La peste', ['Camus, Albert']);

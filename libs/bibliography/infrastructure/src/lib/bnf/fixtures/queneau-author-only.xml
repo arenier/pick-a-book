@@ -1,0 +1,1411 @@
+<?xml version="1.0" encoding="UTF-8"?><srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/" xmlns="http://catalogue.bnf.fr/namespaces/InterXMarc" xmlns:ixm="http://catalogue.bnf.fr/namespaces/InterXMarc" xmlns:mn="http://catalogue.bnf.fr/namespaces/motsnotices" xmlns:sd="http://www.loc.gov/zing/srw/diagnostic/">
+<srw:version>1.2</srw:version>
+<srw:echoedSearchRetrieveRequest>
+<srw:version>1.2</srw:version>
+<srw:query>bib.doctype any "a" and bib.author all "Raymond Queneau"</srw:query>
+</srw:echoedSearchRetrieveRequest>
+<srw:numberOfRecords>753</srw:numberOfRecords>
+<srw:records>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34547977c</dc:identifier>   <dc:title>La Lettre du Lycée Raymond Queneau d'Yvetot aux familles des élèves</dc:title>   <dc:creator>Lycée Raymond Queneau (Yvetot, Seine-Maritime). Auteur du texte</dc:creator>   <dc:publisher>Lycée polyvalent Raymond Queneau (Yvetot)</dc:publisher>   <dc:date>1996-1999</dc:date>   <dc:identifier>ISSN 12813419</dc:identifier>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">publication en série imprimée</dc:type>   <dc:type xml:lang="eng">printed serial</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34547977c</srw:recordIdentifier>
+<srw:recordPosition>1</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970702</ixm:attr>
+<ixm:attr name="LastModificationDate">20250116</ixm:attr>
+<mn:score>12.507211</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46990381c</dc:identifier>   <dc:title>Petit guide illustré du lycée R. Queneau : rentrée scolaire septembre 1987 / Lycée Raymond Queneau</dc:title>   <dc:creator>Villeneuve-d'Ascq (Nord). Lycée Raymond Queneau. Auteur du texte</dc:creator>   <dc:publisher>Lycée Raymond Queneau (Villeneuve-d'Ascq)</dc:publisher>   <dc:date>1987</dc:date>   <dc:format>1 vol. (105 p.) : ill. en noir, couv. ill. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46990381c</srw:recordIdentifier>
+<srw:recordPosition>2</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20220318</ixm:attr>
+<ixm:attr name="LastModificationDate">20230320</ixm:attr>
+<mn:score>11.943511</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34268461r</dc:identifier>   <dc:title>Collection Erutarettil (Montpellier)</dc:title>   <dc:title>Collection Erutarettil / CIDRE Raymond-Queneau [Centre international de documentation, de recherche et d'édition Raymond-Queneau] ; dir. par Mary-Lise Billot et Marc Bruimaud</dc:title>   <dc:creator>Centre international de documentation, de recherche et d'édition Raymond Queneau. Auteur du texte</dc:creator>   <dc:publisher>Éd. du Limon (Montpellier)</dc:publisher>   <dc:date>1990</dc:date>   <dc:identifier>ISSN 11521368</dc:identifier>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">publication en série imprimée</dc:type>   <dc:type xml:lang="eng">printed serial</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34268461r</srw:recordIdentifier>
+<srw:recordPosition>3</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19910125</ixm:attr>
+<ixm:attr name="LastModificationDate">20130610</ixm:attr>
+<mn:score>11.926977</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34286476q</dc:identifier>   <dc:title>Lectures de Raymond Queneau / CIDRE</dc:title>   <dc:description>Variante(s) de titre : Trames. Lectures de Raymond Queneau</dc:description>   <dc:creator>Centre international de documentation, de recherche et d'édition Raymond Queneau. Auteur du texte</dc:creator>   <dc:publisher>PULIM (Limoges)</dc:publisher>   <dc:date>1987</dc:date>   <dc:identifier>ISSN 09877428</dc:identifier>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">publication en série imprimée</dc:type>   <dc:type xml:lang="eng">printed serial</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34286476q</srw:recordIdentifier>
+<srw:recordPosition>4</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19950531</ixm:attr>
+<ixm:attr name="LastModificationDate">20231123</ixm:attr>
+<mn:score>11.77144</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34250531z</dc:identifier>   <dc:title>Petite bibliothèque quenienne / Sixtus ; Centre international de documentation, de recherche et d'édition Raymond-Queneau ; coll. dir. par Marc Bruimaud, Mary-Lise Billot</dc:title>   <dc:creator>Sixtus-éditions. Auteur du texte</dc:creator>   <dc:creator>Centre international de documentation, de recherche et d'édition Raymond Queneau. Auteur du texte</dc:creator>   <dc:publisher>Sixtus éd. (Limoges)</dc:publisher>   <dc:publisher>Centre international de documentaton, de recherche et d'édition Raymond-Queneau (Limoges)</dc:publisher>   <dc:date>1989</dc:date>   <dc:identifier>ISSN 09952551</dc:identifier>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">publication en série imprimée</dc:type>   <dc:type xml:lang="eng">printed serial</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34250531z</srw:recordIdentifier>
+<srw:recordPosition>5</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19890217</ixm:attr>
+<ixm:attr name="LastModificationDate">20211008</ixm:attr>
+<mn:score>11.634825</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb35279548d</dc:identifier>   <dc:title>Queneau encyclopédiste ? / actes du 2e Colloque Raymond Queneau, Université de Limoges, décembre 1987 ; [publié par le] CIDRE Raymond-Queneau, Université de Limoges ; sous la direction de Mary-Lise Billot et Marc Bruimaud</dc:title>   <dc:contributor>Billot, Mary-Lise. Directeur de publication</dc:contributor>   <dc:contributor>Bruimaud, Marc (1958-....). Directeur de publication</dc:contributor>   <dc:creator>Colloque Raymond Queneau (02 ; 1987 ; Limoges). Auteur du texte</dc:creator>   <dc:contributor>Centre international de documentation, de recherche et d'édition Raymond Queneau. Éditeur scientifique</dc:contributor>   <dc:publisher>Éd. du Limon (Montpellier)</dc:publisher>   <dc:date>1990</dc:date>   <dc:description>Collection : Collection Erutarettil</dc:description>   <dc:subject xml:lang="fre">Queneau, Raymond (1903-1976)</dc:subject>   <dc:subject xml:lang="fre">Encyclopédistes -- Influence</dc:subject>   <dc:identifier>ISBN 2907224131</dc:identifier>   <dc:format>1 vol. (215 p.) : ill., couv. ill. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb35279548d</srw:recordIdentifier>
+<srw:recordPosition>6</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19910107</ixm:attr>
+<ixm:attr name="LastModificationDate">20230313</ixm:attr>
+<mn:score>11.624553</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb45695022k</dc:identifier>   <dc:title>Cent mille millards de poèmes</dc:title>   <dc:creator>Queneau, Raymond</dc:creator>   <dc:publisher>NRF (Paris)</dc:publisher>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb45695022k</srw:recordIdentifier>
+<srw:recordPosition>7</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20190325</ixm:attr>
+<ixm:attr name="LastModificationDate">20190325</ixm:attr>
+<mn:score>11.304829</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb468268880</dc:identifier>   <dc:title>Ça a bien changé ; Terre meuble / Raymond Queneau</dc:title>   <dc:publisher>Julliard (Paris)</dc:publisher>   <dc:date>1964</dc:date>   <dc:format>1 vol. (p. 3-5) ; 20 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb468268880</srw:recordIdentifier>
+<srw:recordPosition>8</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210630</ixm:attr>
+<ixm:attr name="LastModificationDate">20210630</ixm:attr>
+<mn:score>11.303867</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb468264626</dc:identifier>   <dc:title>Le faux-mourir / Raymond Queneau</dc:title>   <dc:publisher>Confluences (Paris)</dc:publisher>   <dc:date>1946</dc:date>   <dc:format>1 vol. (p. 137-143) ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb468264626</srw:recordIdentifier>
+<srw:recordPosition>9</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210630</ixm:attr>
+<ixm:attr name="LastModificationDate">20210630</ixm:attr>
+<mn:score>11.3034315</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb41644211n</dc:identifier>   <dc:title>Raymond Queneau : [exposition]</dc:title>   <dc:publisher>[s.n.]</dc:publisher>   <dc:subject xml:lang="fre">Queneau, Raymond (1903-1976)</dc:subject>   <dc:description>[Exposition. Queneau, Raymond]</dc:description>   <dc:format>Non paginé : multigraphié ; 30 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb41644211n</srw:recordIdentifier>
+<srw:recordPosition>10</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20100914</ixm:attr>
+<ixm:attr name="LastModificationDate">20100914</ixm:attr>
+<mn:score>11.303224</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb467489462</dc:identifier>   <dc:title>En passant : un plus un actes pour précéder un drame / Raymond Queneau</dc:title>   <dc:publisher>Marc Barbezat (Lyon)</dc:publisher>   <dc:date>1944</dc:date>   <dc:format>1 vol. (172 p.) ; 29 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb467489462</srw:recordIdentifier>
+<srw:recordPosition>11</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210407</ixm:attr>
+<ixm:attr name="LastModificationDate">20210407</ixm:attr>
+<mn:score>11.3015995</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb41654574k</dc:identifier>   <dc:title>Littératures françaises connexes et marginales / sous la direction de Raymond Queneau ; [préface de Raymond Queneau] ; [collaborateurs : MM. Antoine Adam, Maxime Alxandre, André Bay...et. al.]</dc:title>   <dc:contributor>Quenneau, Raymond. Directeur de publication / Directrice de publication</dc:contributor>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1958</dc:date>   <dc:description>Collection : Encyclopédie de la Pléiade ; 7</dc:description>   <dc:subject xml:lang="fre">Littérature française</dc:subject>   <dc:format>1 vol. (XIII-2058 p.) ; 18 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb41654574k</srw:recordIdentifier>
+<srw:recordPosition>12</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20100914</ixm:attr>
+<ixm:attr name="LastModificationDate">20240813</ixm:attr>
+<mn:score>11.204881</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34834156s</dc:identifier>   <dc:title>Raymond Queneau poète : actes du / 2e colloque international Raymond Queneau, Verviers, 30, 31 août-1 septembre 1984</dc:title>   <dc:creator>Colloque international Raymond Queneau (02 ; 1984 ; Verviers, Belgique). Auteur du texte</dc:creator>   <dc:publisher>Temps mêlés (Belgique)</dc:publisher>   <dc:date>1985</dc:date>   <dc:subject xml:lang="fre">Queneau, Raymond (1903-1976) -- Poésie</dc:subject>   <dc:format>313 p. : ill., couv. ill. en coul. ; 21 cm + errata.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34834156s</srw:recordIdentifier>
+<srw:recordPosition>13</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19860720</ixm:attr>
+<ixm:attr name="LastModificationDate">20190726</ixm:attr>
+<mn:score>11.170298</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb469903774</dc:identifier>   <dc:title>Ah ! Queneau ô mage / Lycée Raymond Queneau, Centre de documentation et d'information, Foyer socio-éducatif Villeneuve d'Ascq</dc:title>   <dc:creator>Villeneuve-d'Ascq (Nord). Lycée Raymond Queneau. Auteur du texte</dc:creator>   <dc:publisher>Lycée Raymond Queneau (Villeneuve-d'Ascq)</dc:publisher>   <dc:date>1987</dc:date>   <dc:subject xml:lang="fre">Queneau, Raymond (1903-1976) -- Appréciation</dc:subject>   <dc:format>1 vol. (105 p.) : ill. en noir, couv. ill. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb469903774</srw:recordIdentifier>
+<srw:recordPosition>14</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20220318</ixm:attr>
+<ixm:attr name="LastModificationDate">20220318</ixm:attr>
+<mn:score>11.051574</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb35061157s</dc:identifier>   <dc:title>Oeuvres complètes. 1 / Raymond Queneau ; éd. établie par Claude Debon</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte / Autrice du texte</dc:creator>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte / Autrice du texte</dc:creator>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte / Autrice du texte</dc:creator>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte / Autrice du texte</dc:creator>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte / Autrice du texte</dc:creator>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte / Autrice du texte</dc:creator>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte / Autrice du texte</dc:creator>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte / Autrice du texte</dc:creator>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte / Autrice du texte</dc:creator>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte / Autrice du texte</dc:creator>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte / Autrice du texte</dc:creator>   <dc:contributor>Debon, Claude (1937-....). Éditeur intellectuel / Éditrice intellectuelle</dc:contributor>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte / Autrice du texte</dc:creator>   <dc:contributor>Debon, Claude (1937-....). Éditeur intellectuel / Éditrice intellectuelle</dc:contributor>   <dc:contributor>Debon, Claude (1937-....). Éditeur intellectuel / Éditrice intellectuelle</dc:contributor>   <dc:contributor>Debon, Claude (1937-....). Éditeur intellectuel / Éditrice intellectuelle</dc:contributor>   <dc:contributor>Debon, Claude (1937-....). Éditeur intellectuel / Éditrice intellectuelle</dc:contributor>   <dc:contributor>Debon, Claude (1937-....). Éditeur intellectuel / Éditrice intellectuelle</dc:contributor>   <dc:contributor>Debon, Claude (1937-....). Éditeur intellectuel / Éditrice intellectuelle</dc:contributor>   <dc:contributor>Debon, Claude (1937-....). Éditeur intellectuel / Éditrice intellectuelle</dc:contributor>   <dc:contributor>Debon, Claude (1937-....). Éditeur intellectuel / Éditrice intellectuelle</dc:contributor>   <dc:contributor>Debon, Claude (1937-....). Éditeur intellectuel / Éditrice intellectuelle</dc:contributor>   <dc:contributor>Debon, Claude (1937-....). Éditeur intellectuel / Éditrice intellectuelle</dc:contributor>   <dc:contributor>Debon, Claude (1937-....). Éditeur intellectuel / Éditrice intellectuelle</dc:contributor>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1989</dc:date>   <dc:description>Collection : Bibliothèque de la Pléiade ; 358</dc:description>   <dc:identifier>ISBN 2070111687</dc:identifier>   <dc:format>1 vol. (LXXX-1699 p.) : ill. ; 18 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb35061157s</srw:recordIdentifier>
+<srw:recordPosition>15</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19900307</ixm:attr>
+<ixm:attr name="LastModificationDate">20201005</ixm:attr>
+<mn:score>10.762352</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb350714732</dc:identifier>   <dc:title>Gustave Le Bon / Raymond Queneau ; ... présenté par Claude Debon ; [éd. par le Centre international de documentation, de recherche et d'édition Raymond Queneau]</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:contributor>Debon, Claude (1937-....). Éditeur scientifique</dc:contributor>   <dc:contributor>Centre international de documentation, de recherche et d'édition Raymond Queneau. Éditeur scientifique</dc:contributor>   <dc:publisher>Sixtus (Limoges)</dc:publisher>   <dc:date>1990</dc:date>   <dc:description>Collection : Petite bibliothèque quenienne ; 4</dc:description>   <dc:subject xml:lang="fre">Le Bon, Gustave (1841-1931)</dc:subject>   <dc:identifier>ISBN 2907876112</dc:identifier>   <dc:format>32 p. ; 17 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb350714732</srw:recordIdentifier>
+<srw:recordPosition>16</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19900427</ixm:attr>
+<ixm:attr name="LastModificationDate">20211008</ixm:attr>
+<mn:score>10.7458935</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb37587046v</dc:identifier>   <dc:title>Queneau mon ami : bulletin d'information / FCPE, Conseil local de parents d'élèves [du] Collège Raymond-Queneau</dc:title>   <dc:creator>Fédération des conseils de parents d'élèves des écoles publiques (France). Conseil local du Collège Raymond Queneau (Paris). Auteur du texte</dc:creator>   <dc:publisher>FCPE, Conseil local Collège Raymond-Queneau (Paris)</dc:publisher>   <dc:date>199?-200?</dc:date>   <dc:identifier>ISSN 16316843</dc:identifier>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">publication en série imprimée</dc:type>   <dc:type xml:lang="eng">printed serial</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb37587046v</srw:recordIdentifier>
+<srw:recordPosition>17</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20010817</ixm:attr>
+<ixm:attr name="LastModificationDate">20180919</ixm:attr>
+<mn:score>10.5932455</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb374563350</dc:identifier>   <dc:title>Cahiers des saisons. N° 36 / Raymond Queneau, François George, Christopher Isherwood... [et al.]</dc:title>   <dc:publisher>Julliard (Paris)</dc:publisher>   <dc:date>1964</dc:date>   <dc:subject xml:lang="fre">Robin, Armand (1912-1961)</dc:subject>   <dc:format>127 p. ; 20 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb374563350</srw:recordIdentifier>
+<srw:recordPosition>18</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19941130</ixm:attr>
+<ixm:attr name="LastModificationDate">20120216</ixm:attr>
+<mn:score>10.504029</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb43897871j</dc:identifier>   <dc:title>Jeu de mains, jeu d'écrivains : une anthologie ludique / [Georges Perec, Raymond Queneau, Guillaume Apollinaire, ...[et al.]</dc:title>   <dc:publisher>Ed. Inculte (Paris)</dc:publisher>   <dc:date>2013</dc:date>   <dc:subject xml:lang="fre">Jeux littéraires</dc:subject>   <dc:subject xml:lang="fre">Jeux linguistiques</dc:subject>   <dc:identifier>ISBN 9791091887144</dc:identifier>   <dc:format>1 vol. (119 p.) ; 18 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb43897871j</srw:recordIdentifier>
+<srw:recordPosition>19</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20140919</ixm:attr>
+<ixm:attr name="LastModificationDate">20190924</ixm:attr>
+<mn:score>10.503643</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34952472z</dc:identifier>   <dc:title>La Liberté ou la mort : [théâtre] / écrit par la classe de 4ème A du Collège Raymond Queneau...Paris</dc:title>   <dc:publisher>GES (Paris)</dc:publisher>   <dc:date>1988</dc:date>   <dc:description>Collection : Chemins de papier</dc:description>   <dc:identifier>ISBN 2907006088</dc:identifier>   <dc:format>81 p. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34952472z</srw:recordIdentifier>
+<srw:recordPosition>20</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19881005</ixm:attr>
+<ixm:attr name="LastModificationDate">20060831</ixm:attr>
+<mn:score>10.000922</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb468710309</dc:identifier>   <dc:title>Philosophes et voyous (II) / Raymond Queneau ; texte établi par Emmanuël Souchier</dc:title>   <dc:contributor>Souchier, Emmanuël (1954-....). Éditeur scientifique</dc:contributor>   <dc:publisher>Larousse (Paris)</dc:publisher>   <dc:date>1992</dc:date>   <dc:format>1 vol. (3-14 p.) ; 23 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb468710309</srw:recordIdentifier>
+<srw:recordPosition>21</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210916</ixm:attr>
+<ixm:attr name="LastModificationDate">20210916</ixm:attr>
+<mn:score>9.303104</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb370444216</dc:identifier>   <dc:title>L'iguane / Jean Blanzat ; préf. de Raymond Queneau</dc:title>   <dc:creator>Blanzat, Jean (1906-1977). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1999</dc:date>   <dc:description>Collection : Collection L'imaginaire ; 402</dc:description>   <dc:identifier>ISBN 2070755827</dc:identifier>   <dc:format>187 p. ; 19 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb370444216</srw:recordIdentifier>
+<srw:recordPosition>22</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19990806</ixm:attr>
+<ixm:attr name="LastModificationDate">19990903</ixm:attr>
+<mn:score>9.30289</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb38837495s</dc:identifier>   <dc:title>L'honneur de Pédonzigue : épopée / Roger Rabiniaux ; préf. de Raymond Queneau</dc:title>   <dc:creator>Rabiniaux, Roger (1914-1986). Auteur du texte</dc:creator>   <dc:publisher>Éd. Cent pages (Grenoble)</dc:publisher>   <dc:date>2001</dc:date>   <dc:identifier>ISBN 290672470X</dc:identifier>   <dc:format>137 p. : couv. ill. ; 20 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb38837495s</srw:recordIdentifier>
+<srw:recordPosition>23</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20020613</ixm:attr>
+<ixm:attr name="LastModificationDate">20021004</ixm:attr>
+<mn:score>9.30289</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb349540683</dc:identifier>   <dc:title>Raymond Queneau et-en son temps : actes / du 3e Colloque international Raymond Queneau, Verviers 25-26 et 27 août 1986 ; présidence André Blavier, Claude Debon</dc:title>   <dc:contributor>Blavier, André (1922-2001). Directeur de publication</dc:contributor>   <dc:contributor>Debon, Claude (1937-....). Directeur de publication</dc:contributor>   <dc:creator>Colloque international Raymond Queneau (03 ; 1986 ; Verviers, Belgique). Auteur du texte</dc:creator>   <dc:publisher>"Temps mêlés", A. Blavier (Verviers, Belgique)</dc:publisher>   <dc:date>1987</dc:date>   <dc:subject xml:lang="fre">Queneau, Raymond (1903-1976)</dc:subject>   <dc:format>383 p. : ill., couv. ill. en coul. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb349540683</srw:recordIdentifier>
+<srw:recordPosition>24</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19881017</ixm:attr>
+<ixm:attr name="LastModificationDate">20190726</ixm:attr>
+<mn:score>9.274261</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb344714263</dc:identifier>   <dc:title>Temps mêlés. Documents Queneau</dc:title>   <dc:creator>Centre de documentation Raymond Queneau (Verviers, Belgique). Auteur du texte</dc:creator>   <dc:publisher>Temps mêlés (Verviers)</dc:publisher>   <dc:publisher>Centre de documentation Raymond Queneau (Verviers)</dc:publisher>   <dc:date>1978</dc:date>   <dc:identifier>ISSN 07759444</dc:identifier>   <dc:subject xml:lang="fre">Queneau, Raymond (1903-1976)</dc:subject>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">publication en série imprimée</dc:type>   <dc:type xml:lang="eng">printed serial</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb344714263</srw:recordIdentifier>
+<srw:recordPosition>25</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19930724</ixm:attr>
+<ixm:attr name="LastModificationDate">20211007</ixm:attr>
+<mn:score>9.263679</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb390656659</dc:identifier>   <dc:title>Cher monsieur-Jean-Marie-mon-fils : lettres, 1938-1971 / Raymond Queneau ; éd. établie, présentée et annotée par Anne Isabelle Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:contributor>Queneau, Anne Isabelle. Éditeur scientifique</dc:contributor>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>2003</dc:date>   <dc:description>Collection : Les cahiers de la NRF</dc:description>   <dc:identifier>ISBN 2070732932</dc:identifier>   <dc:format>299 p.-[1] f. de pl. en coul. : ill. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb390656659</srw:recordIdentifier>
+<srw:recordPosition>26</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20031003</ixm:attr>
+<ixm:attr name="LastModificationDate">20191003</ixm:attr>
+<mn:score>9.189822</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb35851474c</dc:identifier>   <dc:title>Journaux : 1914-1965 / Raymond Queneau ; éd. établie, présentée et annot. par Anne Isabelle Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:contributor>Queneau, Anne Isabelle. Éditeur scientifique</dc:contributor>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1996</dc:date>   <dc:subject xml:lang="fre">Queneau, Raymond (1903-1976)</dc:subject>   <dc:identifier>ISBN 2070731294</dc:identifier>   <dc:format>1240 p. : fac-sim. ; 24 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb35851474c</srw:recordIdentifier>
+<srw:recordPosition>27</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19961127</ixm:attr>
+<ixm:attr name="LastModificationDate">20191004</ixm:attr>
+<mn:score>9.176606</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb32550235r</dc:identifier>   <dc:title>Histoire des littératures. II, Littératures occidentales / volume publié sous la direction de Raymond Queneau</dc:title>   <dc:contributor>Queneau, Raymond (1903-1976). Éditeur intellectuel / Éditrice intellectuelle</dc:contributor>   <dc:contributor>Queneau, Raymond (1903-1976). Éditeur intellectuel / Éditrice intellectuelle</dc:contributor>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1956</dc:date>   <dc:description>Collection : Encyclopédie de la Pléiade ; 3</dc:description>   <dc:subject xml:lang="fre">Littérature occidentale</dc:subject>   <dc:format>1 vol. (XVIII-1972 p.) : cartes ; 18 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb32550235r</srw:recordIdentifier>
+<srw:recordPosition>28</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20240724</ixm:attr>
+<mn:score>9.109538</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb42567283m</dc:identifier>   <dc:title>9 septembre 1969 / [lettre inédite de] Raymond Queneau ; [illustrée par] Jean-Marie [Queneau]</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:contributor>Queneau, Jean-Marie (1934-2022). Illustrateur. Graveur</dc:contributor>   <dc:publisher>Ed. de la Goulotte (Vézelay)</dc:publisher>   <dc:date>2011</dc:date>   <dc:format>1 vol. (non paginé [17] p.) : ill., couv. ill. ; 35 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb42567283m</srw:recordIdentifier>
+<srw:recordPosition>29</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20111215</ixm:attr>
+<ixm:attr name="LastModificationDate">20120203</ixm:attr>
+<mn:score>8.992418</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb37676705x</dc:identifier>   <dc:title>Un petit tour en ville / ill. de Cécile Geiger ; [textes de Raymond Queneau, Jean-Luc Moreau, Pierre Gamarra, et al.]</dc:title>   <dc:contributor>Geiger, Cécile (1967-....). Illustrateur</dc:contributor>   <dc:publisher>Gautier-Languereau (Paris)</dc:publisher>   <dc:date>2000</dc:date>   <dc:description>Collection : Grands livres pour grands poètes</dc:description>   <dc:identifier>ISBN 2013924356</dc:identifier>   <dc:description>Code à barres commercial : EAN 9782013924351</dc:description>   <dc:format>Non paginé [10] p. : ill. en coul., couv. ill. en coul. ; 46 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb37676705x</srw:recordIdentifier>
+<srw:recordPosition>30</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20001102</ixm:attr>
+<ixm:attr name="LastModificationDate">20140619</ixm:attr>
+<mn:score>8.749647</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46996762n</dc:identifier>   <dc:title xml:lang="grm">To apókryfo īmerológio tīs Sálly Mára / Raymond Queneau ; metáfrasī ́Achilléas Kyriakídis</dc:title>   <dc:title xml:lang="grm">To απόκρυφο ημερολόγιο της Σάλλυ Μάρα / Raymond Queneau ; μετάφραση Αχιλλέας Κυριακίδης</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:contributor>Kyriakídis, Achilléas (1946-....). Traducteur</dc:contributor>   <dc:publisher>Opera (Athī́na)</dc:publisher>   <dc:publisher>Opera (Αθήνα)</dc:publisher>   <dc:date>1993</dc:date>   <dc:identifier>ISBN 9607073118</dc:identifier>   <dc:format>1 vol. (237 p.) : couv. ill. en coul. ; 21 cm</dc:format>   <dc:language>gre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46996762n</srw:recordIdentifier>
+<srw:recordPosition>31</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20220328</ixm:attr>
+<ixm:attr name="LastModificationDate">20230310</ixm:attr>
+<mn:score>8.694205</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb347748493</dc:identifier>   <dc:title>Queneau aujourd'hui / Actes du Colloque Raymond Queneau, Université de Limoges, mars 1984 ; [publié par l'Université de Limoges, U.E.R. des lettres et sciences humaines]</dc:title>   <dc:creator>Colloque Raymond Queneau (1984 ; Limoges). Auteur du texte</dc:creator>   <dc:contributor>Université de Limoges. UFR des lettres et sciences humaines. Éditeur scientifique</dc:contributor>   <dc:publisher>Clancier-Guénaud (Paris)</dc:publisher>   <dc:date>1985</dc:date>   <dc:description>Collection : Collection dirigée par Sylvestre Clancier</dc:description>   <dc:subject xml:lang="fre">Queneau, Raymond (1903-1976) -- Thèmes, motifs</dc:subject>   <dc:subject xml:lang="fre">Queneau, Raymond (1903-1976) -- Critique et interprétation</dc:subject>   <dc:identifier>ISBN 2862150711</dc:identifier>   <dc:format>245 p. : couv. ill. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb347748493</srw:recordIdentifier>
+<srw:recordPosition>32</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19860720</ixm:attr>
+<ixm:attr name="LastModificationDate">20190726</ixm:attr>
+<mn:score>8.689925</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb412739478</dc:identifier>   <dc:title>Baj : dame e generali : [mostra, Fondazione Marconi, Milano, 31 gennaio - 15 marzo 2008] / coordinamento e redazione Domenico Pertocoli ; testi di Octavio Paz, Raymond Queneau, Tristan Sauvage... [et al.]</dc:title>   <dc:contributor>Pertocoli, Domenico. Éditeur scientifique</dc:contributor>   <dc:publisher>Skira (Milano)</dc:publisher>   <dc:publisher>Fondazione Marconi (Milano)</dc:publisher>   <dc:date>2008</dc:date>   <dc:subject xml:lang="fre">Baj, Enrico (1924-2003) -- Thèmes, motifs</dc:subject>   <dc:subject xml:lang="fre">Femmes -- Dans l'art</dc:subject>   <dc:subject xml:lang="fre">Généraux -- Dans l'art</dc:subject>   <dc:description>[Exposition. Milan, Fondazione Marconi. 2008]</dc:description>   <dc:identifier>ISBN 9788861306219</dc:identifier>   <dc:format>1 vol. (95, 79 p.) : nombreuses ill. en noir et en coul. ; 29 cm</dc:format>   <dc:language>ita</dc:language>   <dc:language>fre</dc:language>   <dc:language>eng</dc:language>   <dc:language>spa</dc:language>   <dc:language>swe</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb412739478</srw:recordIdentifier>
+<srw:recordPosition>33</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20080606</ixm:attr>
+<ixm:attr name="LastModificationDate">20190913</ixm:attr>
+<mn:score>8.671314</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb39251164r</dc:identifier>   <dc:title>Lettres à Jean-Marie / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:contributor>Queneau, Jean-Marie (1934-2022). Destinataire de lettres</dc:contributor>   <dc:publisher>Les amis de Valentin Brû (Levallois-Perret)</dc:publisher>   <dc:date>1985</dc:date>   <dc:format>26 p. : ill. ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb39251164r</srw:recordIdentifier>
+<srw:recordPosition>34</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20041007</ixm:attr>
+<ixm:attr name="LastModificationDate">20250612</ixm:attr>
+<mn:score>8.623578</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46938148p</dc:identifier>   <dc:title>Atlas anthology two / H. C. Artmann, Konrad Bayer, Aloysius Bertrand, Peter Bleguad, André Breton, René Daumal, David Gascoyne, Alfred Jarry, Philip Jenkins, Harry Matthews, Montagu O'Reilly, Oskar Panizza, Georges Perec, Benjamon Péret, Raymond Queneau, Raymond Roussel, Erik Satie, Boris Vian, etc...</dc:title>   <dc:publisher>Atlas (London)</dc:publisher>   <dc:date>1984</dc:date>   <dc:description>Collection : Atlas anthology ; 2</dc:description>   <dc:identifier>ISBN 0947757007</dc:identifier>   <dc:format>1 vol. (114 p.) : ill., jaquette ill. en coul. ; 21 cm + 1 dépliant</dc:format>   <dc:language>eng</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46938148p</srw:recordIdentifier>
+<srw:recordPosition>35</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20211229</ixm:attr>
+<ixm:attr name="LastModificationDate">20211229</ixm:attr>
+<mn:score>8.617696</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb39040870t</dc:identifier>   <dc:title>Paroles de parano / [Pierre Desproges, Raymond Queneau, Marguerite Duras, et al.] ; préf. du Dr Gérard Tixier,... ; images de Stéphane Goddard</dc:title>   <dc:contributor>Goddard, Stéphane. Illustrateur</dc:contributor>   <dc:publisher>Canal + éd. (Paris)</dc:publisher>   <dc:publisher>A. Michel (Paris)</dc:publisher>   <dc:date>2001</dc:date>   <dc:subject xml:lang="fre">Paranoïa</dc:subject>   <dc:identifier>ISBN 2226122184</dc:identifier>   <dc:description>Code à barres commercial : EAN 9782226122186</dc:description>   <dc:format>Non paginé [64] p. : ill. en coul., couv. ill. en coul. ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb39040870t</srw:recordIdentifier>
+<srw:recordPosition>36</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20030804</ixm:attr>
+<ixm:attr name="LastModificationDate">20190924</ixm:attr>
+<mn:score>8.581627</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb44201715k</dc:identifier>   <dc:title>La lettre et l'image : la figuration dans l'alphabet latin du VIIIe siècle à nos jours ([Nouvelle édition modifiée]) Massin ; préf. de Raymond Queneau ; commentaire de Roland Barthes</dc:title>   <dc:creator>Massin (1925-2020). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>2013</dc:date>   <dc:subject xml:lang="fre">Alphabets (décoration)</dc:subject>   <dc:subject xml:lang="fre">Arts graphiques</dc:subject>   <dc:subject xml:lang="fre">Ornements typographiques</dc:subject>   <dc:identifier>ISBN 9782070117758</dc:identifier>   <dc:format>1 vol. (300 p.) : ill. en noir et en coul. ; 31 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb44201715k</srw:recordIdentifier>
+<srw:recordPosition>37</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20141011</ixm:attr>
+<ixm:attr name="LastModificationDate">20250704</ixm:attr>
+<mn:score>8.574285</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb36663524k</dc:identifier>   <dc:title>La lettre et l'image : la figuration dans l'alphabet latin du VIIIe siècle à nos jours ([Nouv. éd.]) Massin ; préf. de Raymond Queneau ; comment. de Roland Barthes</dc:title>   <dc:creator>Massin (1925-2020). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1993</dc:date>   <dc:subject xml:lang="fre">Alphabets (décoration)</dc:subject>   <dc:subject xml:lang="fre">Arts graphiques</dc:subject>   <dc:subject xml:lang="fre">Ornements typographiques</dc:subject>   <dc:identifier>ISBN 2070112578</dc:identifier>   <dc:description>Code à barres commercial : EAN 9782070112579</dc:description>   <dc:format>300 p. : ill. en noir et en coul. ; 31 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb36663524k</srw:recordIdentifier>
+<srw:recordPosition>38</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19930503</ixm:attr>
+<ixm:attr name="LastModificationDate">20150515</ixm:attr>
+<mn:score>8.527721</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46955236n</dc:identifier>   <dc:title>Mijn moeder zong / Raymond Queneau ; samengesteld, vertaald en geannoteerd door Jan Pieter Van Der Sterre</dc:title>   <dc:contributor>Van Der Sterre, Jan Pieter (1951-....). Traducteur. Éditeur scientifique</dc:contributor>   <dc:publisher>Uitgeverij de Arbeiderspers (Amsterdam)</dc:publisher>   <dc:date>1999</dc:date>   <dc:description>Collection : privé-domein ; 232</dc:description>   <dc:subject xml:lang="fre">Queneau, Raymond (1903-1976)</dc:subject>   <dc:identifier>ISBN 9029535318</dc:identifier>   <dc:format>1 vol. (349 p.) ; 20 cm</dc:format>   <dc:language>dut</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46955236n</srw:recordIdentifier>
+<srw:recordPosition>39</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20220126</ixm:attr>
+<ixm:attr name="LastModificationDate">20220126</ixm:attr>
+<mn:score>8.508452</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb469981060</dc:identifier>   <dc:title xml:lang="grm">Ta galázia ánthi : mithistórīma / Raymond Queneau ; metáfrasī apo ta galliká Cécile Igglesi ́Margéllou</dc:title>   <dc:title xml:lang="grm">Τα γαλάζια άνθη : μυθιστόρημα / Raymond Queneau ; μετάφραση από τα γαλλικά Σεσίλ Ιγγλέση Μαργέλλου</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:contributor>Igglesi Margellou, Cécile (1953-). Traducteur</dc:contributor>   <dc:publisher>Kastaniṓtīs (Athī́na)</dc:publisher>   <dc:publisher>Καστανιώτης (Αθήνα)</dc:publisher>   <dc:date>2003</dc:date>   <dc:description>Collection : Eikostós aiṓnas (Kastaniṓtīs)</dc:description>   <dc:identifier>ISBN 9600335729</dc:identifier>   <dc:format>1 vol. (261 p.) : couv. ill. en coul. ; 21 cm</dc:format>   <dc:language>gre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb469981060</srw:recordIdentifier>
+<srw:recordPosition>40</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20220330</ixm:attr>
+<ixm:attr name="LastModificationDate">20220331</ixm:attr>
+<mn:score>8.475503</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb42085550j</dc:identifier>   <dc:title>Raymond Queneau et le corps : actes du colloque international, Nancy, Théâtre de la Manufacture, 5, 6 et 7 octobre 2006 / direction scientifique, Daniel Delbreil</dc:title>   <dc:contributor>Delbreil, Daniel (1945-....). Directeur de publication</dc:contributor>   <dc:creator>Colloque international Raymond Queneau et le corps (2006 ; Nancy). Auteur du texte</dc:creator>   <dc:publisher>Calliopées (Clamart)</dc:publisher>   <dc:date>2009</dc:date>   <dc:subject xml:lang="fre">Queneau, Raymond (1903-1976) -- Thèmes, motifs</dc:subject>   <dc:subject xml:lang="fre">Corps humain -- Dans la littérature</dc:subject>   <dc:identifier>ISBN 9782916608051</dc:identifier>   <dc:description>Code à barres commercial : EAN 9782916608051</dc:description>   <dc:format>1 vol. (317 p.) : couv. ill. en coul. ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb42085550j</srw:recordIdentifier>
+<srw:recordPosition>41</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20091027</ixm:attr>
+<ixm:attr name="LastModificationDate">20190727</ixm:attr>
+<mn:score>8.407333</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb33557122z</dc:identifier>   <dc:title>Provence noire . [Par Georges Spyridaki, René Lacote, Georges Huguet, Gabriel Audisio, Raymond Queneau... Paul Eluard, etc. Textes réunis par Jacques Kober et Jacques Gardies.] Couverture et 50 lithographies originales d'André Marchand</dc:title>   <dc:publisher>A. Maeght, Pierre à feu (Cannes, Paris)</dc:publisher>   <dc:date>1945</dc:date>   <dc:format>In-8° (24 cm), 86 p., ill., couv. ill. en coul. [D. L. 21. 12. 1945]</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb33557122z</srw:recordIdentifier>
+<srw:recordPosition>42</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">19970701</ixm:attr>
+<mn:score>8.351286</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb40050966x</dc:identifier>   <dc:title>Sonnet en XX / trad. par P. Ed. [Paul Edwards] d'après R. Q. [Raymond Queneau] d'après S. M. [Stéphane Mallarmé]</dc:title>   <dc:creator>Edwards, Paul (1966-....). Auteur du texte</dc:creator>   <dc:publisher>Editions de la Phalange flippante (Paris)</dc:publisher>   <dc:date>1996</dc:date>   <dc:format>1 vol. (non paginé [28] f.) ; 2 x 15 cm</dc:format>   <dc:language>eng</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb40050966x</srw:recordIdentifier>
+<srw:recordPosition>43</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20051013</ixm:attr>
+<ixm:attr name="LastModificationDate">20051013</ixm:attr>
+<mn:score>8.351286</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb331462432</dc:identifier>   <dc:title>The Winning of nickel , its geology, mining and extractive metallurgy, by Joseph R. Boldt, Jr. Technical editor Paul Queneau...</dc:title>   <dc:creator>Queneau, Paul. Auteur du texte</dc:creator>   <dc:creator>Boldt, Joseph Raymond. Auteur du texte</dc:creator>   <dc:contributor>International Nickel Company Of Canada. Éditeur scientifique</dc:contributor>   <dc:publisher>Longmans Canada (Toronto)</dc:publisher>   <dc:date>1967</dc:date>   <dc:format>In-4° (25 cm), XVI-487 p., ill., pl. en coul. [Don 2704-68]</dc:format>   <dc:language>eng</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb331462432</srw:recordIdentifier>
+<srw:recordPosition>44</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20060727</ixm:attr>
+<mn:score>8.33666</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb42772769s</dc:identifier>   <dc:title>La pataphysique : histoire d'une société très secrète / [articles de Jean-Paul Morel, Sébatien Cloché, Fernando Arrabal, Gérard de Cortanze, Michel Décaudin, François Caradec, Claude Rameil, Marc Lapprand, Raymond Queneau, Pierre Bazantay, Paul Braffort, Massin, David Rabouin, Gilles Deleuze]</dc:title>   <dc:publisher>Magazine littéraire (Paris)</dc:publisher>   <dc:date>2000</dc:date>   <dc:subject xml:lang="fre">Pataphysique</dc:subject>   <dc:subject xml:lang="fre">Collège de 'pataphysique</dc:subject>   <dc:format>1 vol. (104 p.) : ill. ; 27 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb42772769s</srw:recordIdentifier>
+<srw:recordPosition>45</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20121018</ixm:attr>
+<ixm:attr name="LastModificationDate">20121123</ixm:attr>
+<mn:score>8.265703</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb402227777</dc:identifier>   <dc:title>Raymond Queneau et l'étranger : actes du colloque international, Grand-Duché de Luxembourg, 9, 10 et 11 octobre 2003 / [sous la direction scientifique de] Daniel Delbreil</dc:title>   <dc:contributor>Delbreil, Daniel (1945-....). Directeur de publication</dc:contributor>   <dc:creator>Colloque international Raymond Queneau et l'étranger (2003 ; Luxembourg). Auteur du texte</dc:creator>   <dc:publisher>Calliopées (Vanves)</dc:publisher>   <dc:date>2006</dc:date>   <dc:subject xml:lang="fre">Queneau, Raymond (1903-1976) -- Critique et interprétation</dc:subject>   <dc:identifier>ISBN 291660801X</dc:identifier>   <dc:description>Code à barres commercial : EAN 9782916608013</dc:description>   <dc:format>1 vol. (292 p.) : ill., couv. ill. en coul. ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb402227777</srw:recordIdentifier>
+<srw:recordPosition>46</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20060908</ixm:attr>
+<ixm:attr name="LastModificationDate">20190925</ixm:attr>
+<mn:score>8.183317</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb41270356v</dc:identifier>   <dc:title>Les mémoires du baron Mollet / préface de Raymond Queneau. Précédé de Les faits et gestes du baron Mollet, pataphysicien / par Patrick Mauriès</dc:title>   <dc:creator>Mollet, Jean (1877-1964). Auteur du texte</dc:creator>   <dc:creator>Mauriès, Patrick (1952-....). Auteur du texte</dc:creator>   <dc:publisher>le Promeneur (Paris)</dc:publisher>   <dc:date>2008</dc:date>   <dc:subject xml:lang="fre">Mollet, Jean (1877-1964)</dc:subject>   <dc:subject xml:lang="fre">Vie intellectuelle -- Paris (France) -- XXe siècle</dc:subject>   <dc:subject xml:lang="fre">Collège de 'pataphysique</dc:subject>   <dc:description>Comprend : Les faits et gestes du baron Mollet, pataphysicien</dc:description>   <dc:identifier>ISBN 9782070121519</dc:identifier>   <dc:description>Code à barres commercial : EAN 9782070121519</dc:description>   <dc:format>1 vol. (162 p.) : ill., couv. ill. en coul. ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb41270356v</srw:recordIdentifier>
+<srw:recordPosition>47</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20080603</ixm:attr>
+<ixm:attr name="LastModificationDate">20191213</ixm:attr>
+<mn:score>8.182556</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46772223n</dc:identifier>   <dc:title>Bourbaki et les mathématiques de demain / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Ed. de Minuit (Paris)</dc:publisher>   <dc:date>1962</dc:date>   <dc:subject xml:lang="fre">Bourbaki, Nicolas</dc:subject>   <dc:format>1 vol. (p. [3]-18) ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46772223n</srw:recordIdentifier>
+<srw:recordPosition>48</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210430</ixm:attr>
+<ixm:attr name="LastModificationDate">20210430</ixm:attr>
+<mn:score>8.142708</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb45142364q</dc:identifier>   <dc:title>Dictionnaire des personnages de Raymond Queneau (Nouvelle éd. revue et augmentée) Pierre David ; illustrations originales de Raymond Queneau et de Jean Marie Queneau</dc:title>   <dc:creator>David, Pierre (1927-....). Auteur du texte</dc:creator>   <dc:contributor>Queneau, Raymond (1903-1976). Illustrateur</dc:contributor>   <dc:contributor>Queneau, Jean-Marie (1934-2022). Illustrateur</dc:contributor>   <dc:publisher>Éditions universitaires de Dijon (Dijon)</dc:publisher>   <dc:date>2016</dc:date>   <dc:subject xml:lang="fre">Queneau, Raymond (1903-1976) -- Personnages</dc:subject>   <dc:identifier>ISBN 9782364411883</dc:identifier>   <dc:description>Code à barres commercial : EAN 9782364411883</dc:description>   <dc:format>1 vol. (394 p.-[22] p. de pl.) : ill. en coul. ; 23 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb45142364q</srw:recordIdentifier>
+<srw:recordPosition>49</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20161018</ixm:attr>
+<ixm:attr name="LastModificationDate">20190921</ixm:attr>
+<mn:score>8.141068</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb41675981m</dc:identifier>   <dc:title>L'Instant fatal, poèmes... (3e édition) Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1948</dc:date>   <dc:format>139 p. ; in-16</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb41675981m</srw:recordIdentifier>
+<srw:recordPosition>50</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20100914</ixm:attr>
+<ixm:attr name="LastModificationDate">20180607</ixm:attr>
+<mn:score>8.104588</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb43642716j</dc:identifier>   <dc:title>Odile / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1969</dc:date>   <dc:format>184 p. ; 19 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb43642716j</srw:recordIdentifier>
+<srw:recordPosition>51</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20130729</ixm:attr>
+<ixm:attr name="LastModificationDate">20130729</ixm:attr>
+<mn:score>8.104588</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb436426199</dc:identifier>   <dc:title>Un rude hiver / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1968</dc:date>   <dc:format>174 p. ; 19 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb436426199</srw:recordIdentifier>
+<srw:recordPosition>52</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20130729</ixm:attr>
+<ixm:attr name="LastModificationDate">20260102</ixm:attr>
+<mn:score>8.104588</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb39251083r</dc:identifier>   <dc:title>Lettres à Jean Paulhan / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Les cahiers Raymond Queneau (Levallois-Perret)</dc:publisher>   <dc:date>1986</dc:date>   <dc:format>48 p. : ill. ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb39251083r</srw:recordIdentifier>
+<srw:recordPosition>53</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20041007</ixm:attr>
+<ixm:attr name="LastModificationDate">20191003</ixm:attr>
+<mn:score>8.104222</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34735243s</dc:identifier>   <dc:title>Odile : roman / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1982</dc:date>   <dc:identifier>ISBN 2070253031</dc:identifier>   <dc:format>184 p. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34735243s</srw:recordIdentifier>
+<srw:recordPosition>54</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19860717</ixm:attr>
+<ixm:attr name="LastModificationDate">19950724</ixm:attr>
+<mn:score>8.104222</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb41675975p</dc:identifier>   <dc:title>Bâtons, chiffres et lettres... (Quatrième édition) Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1950</dc:date>   <dc:format>271 p. : fig. ; in-16</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb41675975p</srw:recordIdentifier>
+<srw:recordPosition>55</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20100914</ixm:attr>
+<ixm:attr name="LastModificationDate">20180607</ixm:attr>
+<mn:score>8.104222</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb416759761</dc:identifier>   <dc:title>Bâtons, chiffres et lettres... (Quatrième édition) Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1950</dc:date>   <dc:format>271 p. : fig. ; in-16</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb416759761</srw:recordIdentifier>
+<srw:recordPosition>56</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20100914</ixm:attr>
+<ixm:attr name="LastModificationDate">20180607</ixm:attr>
+<mn:score>8.104222</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb41675978q</dc:identifier>   <dc:title>En passant : un plus un acte pour précéder un drame / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>M. Barbezat (Lyon)</dc:publisher>   <dc:date>1944</dc:date>   <dc:format>Gr. in-8</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb41675978q</srw:recordIdentifier>
+<srw:recordPosition>57</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20100914</ixm:attr>
+<ixm:attr name="LastModificationDate">20190730</ixm:attr>
+<mn:score>8.104222</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb325502034</dc:identifier>   <dc:title>L'Instant fatal, poèmes / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:date>1948</dc:date>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb325502034</srw:recordIdentifier>
+<srw:recordPosition>58</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20240523</ixm:attr>
+<mn:score>8.103878</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb35690673t</dc:identifier>   <dc:title>Bâtons, chiffres et lettres / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1994</dc:date>   <dc:description>Collection : Collection Folio. Essais ; 247</dc:description>   <dc:identifier>ISBN 2070328457</dc:identifier>   <dc:format>337 p. : ill., couv. ill. en coul. ; 18 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb35690673t</srw:recordIdentifier>
+<srw:recordPosition>59</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19940517</ixm:attr>
+<ixm:attr name="LastModificationDate">19950724</ixm:attr>
+<mn:score>8.103878</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46749533v</dc:identifier>   <dc:title>Poèmes (1940) / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Fontaines (Alger)</dc:publisher>   <dc:date>1944</dc:date>   <dc:format>1 vol. (p. 20-22) ; 24 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46749533v</srw:recordIdentifier>
+<srw:recordPosition>60</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210407</ixm:attr>
+<ixm:attr name="LastModificationDate">20210407</ixm:attr>
+<mn:score>8.103878</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34991695r</dc:identifier>   <dc:title>Fendre les flots / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1969</dc:date>   <dc:format>179 - [4] p. ; 19,7 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34991695r</srw:recordIdentifier>
+<srw:recordPosition>61</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19890116</ixm:attr>
+<ixm:attr name="LastModificationDate">19950724</ixm:attr>
+<mn:score>8.103878</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb416759850</dc:identifier>   <dc:title>Les Temps mêlés, Gueule de pierre II, roman (5e édition) Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1941</dc:date>   <dc:format>181 p. ; in-16</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb416759850</srw:recordIdentifier>
+<srw:recordPosition>62</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20100914</ixm:attr>
+<ixm:attr name="LastModificationDate">20240522</ixm:attr>
+<mn:score>8.103878</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb35900835g</dc:identifier>   <dc:title>Une Histoire modèle / Raymond Queneau,..</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1966</dc:date>   <dc:format>119 p. ; 19 cm</dc:format>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb35900835g</srw:recordIdentifier>
+<srw:recordPosition>63</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19910110</ixm:attr>
+<ixm:attr name="LastModificationDate">19950724</ixm:attr>
+<mn:score>8.103878</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb468265854</dc:identifier>   <dc:title>Philosophes et voyous / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Les Temps modernes (Paris)</dc:publisher>   <dc:date>1951</dc:date>   <dc:format>1 vol. (pp. 1193-1205) ; 23 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb468265854</srw:recordIdentifier>
+<srw:recordPosition>64</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210630</ixm:attr>
+<ixm:attr name="LastModificationDate">20210630</ixm:attr>
+<mn:score>8.103878</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb377487963</dc:identifier>   <dc:title>Gueule de pierre (2e éd.) Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1934</dc:date>   <dc:format>222 p. ; 19 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb377487963</srw:recordIdentifier>
+<srw:recordPosition>65</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19940612</ixm:attr>
+<ixm:attr name="LastModificationDate">19990603</ixm:attr>
+<mn:score>8.103878</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb402204668</dc:identifier>   <dc:title>Le chiendent : roman / Raymond Queneau,..</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1968</dc:date>   <dc:format>1 vol. (296 p.) ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb402204668</srw:recordIdentifier>
+<srw:recordPosition>66</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20060901</ixm:attr>
+<ixm:attr name="LastModificationDate">20160129</ixm:attr>
+<mn:score>8.103878</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb36189329r</dc:identifier>   <dc:title>Les derniers jours / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1997</dc:date>   <dc:description>Collection : Collection Folio ; 3019</dc:description>   <dc:identifier>ISBN 2070403238</dc:identifier>   <dc:format>295 p. : couv. ill. en coul. ; 18 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb36189329r</srw:recordIdentifier>
+<srw:recordPosition>67</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19971129</ixm:attr>
+<ixm:attr name="LastModificationDate">19980123</ixm:attr>
+<mn:score>8.103878</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46821680g</dc:identifier>   <dc:title>Le cheval Troyen / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Rougerie (Limoges)</dc:publisher>   <dc:date>1956</dc:date>   <dc:format>1 vol. (p. [165]-177) ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46821680g</srw:recordIdentifier>
+<srw:recordPosition>68</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210623</ixm:attr>
+<ixm:attr name="LastModificationDate">20210623</ixm:attr>
+<mn:score>8.103552</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb467722000</dc:identifier>   <dc:title>Un nouveau genre littéraire : les science-fictions / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Critique (Paris)</dc:publisher>   <dc:date>1951</dc:date>   <dc:subject xml:lang="fre">Roman de science-fiction</dc:subject>   <dc:format>p. [195]-198 ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb467722000</srw:recordIdentifier>
+<srw:recordPosition>69</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210430</ixm:attr>
+<ixm:attr name="LastModificationDate">20210430</ixm:attr>
+<mn:score>8.103552</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46824510r</dc:identifier>   <dc:title>Cyril Tourneur, dramaturge noir / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Cahiers du Sud (Marseille)</dc:publisher>   <dc:date>1933</dc:date>   <dc:subject xml:lang="fre">Tourneur, Cyril (1575?-1626)</dc:subject>   <dc:format>1 vol. (p. [207]-209) ; 23 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46824510r</srw:recordIdentifier>
+<srw:recordPosition>70</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210628</ixm:attr>
+<ixm:attr name="LastModificationDate">20210628</ixm:attr>
+<mn:score>8.103552</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb468882402</dc:identifier>   <dc:title>Une traduction en joycien / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>ProLitteris Gazzetta (Zürich)</dc:publisher>   <dc:date>2001</dc:date>   <dc:format>1 vol. (p. 36) : ill. ; 32 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb468882402</srw:recordIdentifier>
+<srw:recordPosition>71</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20211009</ixm:attr>
+<ixm:attr name="LastModificationDate">20211011</ixm:attr>
+<mn:score>8.103552</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46827062b</dc:identifier>   <dc:title>Ainsi c'était / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>La Nouvelle revue française (Paris)</dc:publisher>   <dc:date>1971</dc:date>   <dc:subject xml:lang="fre">Follain, Jean (1903-1971)</dc:subject>   <dc:format>1 vol. (p. 1-3) : ill. ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46827062b</srw:recordIdentifier>
+<srw:recordPosition>72</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210630</ixm:attr>
+<ixm:attr name="LastModificationDate">20210630</ixm:attr>
+<mn:score>8.103552</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb467600927</dc:identifier>   <dc:title>Raymond Queneau / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Le Palimurge</dc:publisher>   <dc:date>1946</dc:date>   <dc:format>1 vol. (Non paginé, 2 f. pliés [14] p.) ; 17 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb467600927</srw:recordIdentifier>
+<srw:recordPosition>73</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210419</ixm:attr>
+<ixm:attr name="LastModificationDate">20210419</ixm:attr>
+<mn:score>8.103552</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46749583d</dc:identifier>   <dc:title>Les petites pattes / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>A l'enseigne du plomb qui fond (Dison (Belgique))</dc:publisher>   <dc:date>1949</dc:date>   <dc:format>1 vol. (p. 102) ; 25 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46749583d</srw:recordIdentifier>
+<srw:recordPosition>74</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210407</ixm:attr>
+<ixm:attr name="LastModificationDate">20210407</ixm:attr>
+<mn:score>8.103552</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb468265645</dc:identifier>   <dc:title>Le cheval troyen / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>La bouteille à la mer (Paris)</dc:publisher>   <dc:date>1948</dc:date>   <dc:format>1 vol. (p. 23-30) ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb468265645</srw:recordIdentifier>
+<srw:recordPosition>75</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210630</ixm:attr>
+<ixm:attr name="LastModificationDate">20210630</ixm:attr>
+<mn:score>8.103552</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46825794d</dc:identifier>   <dc:title>Modeste contribution à l'Illustration de la langue française / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Collège de 'pataphysique (Paris)</dc:publisher>   <dc:date>1965</dc:date>   <dc:format>1 vol. (p. 61-62) ; 24 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46825794d</srw:recordIdentifier>
+<srw:recordPosition>76</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210629</ixm:attr>
+<ixm:attr name="LastModificationDate">20210629</ixm:attr>
+<mn:score>8.103552</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb468882166</dc:identifier>   <dc:title>Eiche und Und / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Lettre international (Berlin)</dc:publisher>   <dc:date>2003</dc:date>   <dc:format>1 vol. (p. 88-89) ; 37 cm</dc:format>   <dc:language>ger</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb468882166</srw:recordIdentifier>
+<srw:recordPosition>77</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20211009</ixm:attr>
+<ixm:attr name="LastModificationDate">20211009</ixm:attr>
+<mn:score>8.103552</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46827017h</dc:identifier>   <dc:title>Un raconto a modo vostro / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gherardo Casini (Roma)</dc:publisher>   <dc:date>1969</dc:date>   <dc:format>1 vol. (p. 3-6) ; 21 cm</dc:format>   <dc:language>ita</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46827017h</srw:recordIdentifier>
+<srw:recordPosition>78</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210630</ixm:attr>
+<ixm:attr name="LastModificationDate">20210630</ixm:attr>
+<mn:score>8.103552</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46772080x</dc:identifier>   <dc:title>Poèmes / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Mercure de France (Paris)</dc:publisher>   <dc:date>1964</dc:date>   <dc:format>1 vol. (363-367p.) ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46772080x</srw:recordIdentifier>
+<srw:recordPosition>79</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210430</ixm:attr>
+<ixm:attr name="LastModificationDate">20210430</ixm:attr>
+<mn:score>8.103242</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb423218918</dc:identifier>   <dc:title>Une histoire modèle / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>2010</dc:date>   <dc:description>Collection : Collection L'imaginaire ; 602</dc:description>   <dc:identifier>ISBN 9782070130962</dc:identifier>   <dc:description>Code à barres commercial : EAN 9782070130962</dc:description>   <dc:format>1 vol. (119 p.) ; 19 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb423218918</srw:recordIdentifier>
+<srw:recordPosition>80</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20101119</ixm:attr>
+<ixm:attr name="LastModificationDate">20101206</ixm:attr>
+<mn:score>8.103242</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb35900832f</dc:identifier>   <dc:title>Le Chiendent : roman (14e éd) Raymond Queneau,..</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1956</dc:date>   <dc:format>296 p. ; 21 cm</dc:format>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb35900832f</srw:recordIdentifier>
+<srw:recordPosition>81</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19910110</ixm:attr>
+<ixm:attr name="LastModificationDate">20160128</ixm:attr>
+<mn:score>8.103242</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb36958934h</dc:identifier>   <dc:title>En passant ; suivi de De quelques langages animaux imaginaires et notamment du langage chien dans "Sylvie et Bruno" / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>l'Herne (Paris)</dc:publisher>   <dc:date>1995</dc:date>   <dc:description>Collection : Collection Confidences</dc:description>   <dc:identifier>ISBN 2851973274</dc:identifier>   <dc:format>110 p. : couv. ill. ; 19 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb36958934h</srw:recordIdentifier>
+<srw:recordPosition>82</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19960307</ixm:attr>
+<ixm:attr name="LastModificationDate">19980710</ixm:attr>
+<mn:score>8.103242</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb41675984n</dc:identifier>   <dc:title>Pierrot, mon ami, roman (7e édition) Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1942</dc:date>   <dc:format>223 p. ; in-16</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb41675984n</srw:recordIdentifier>
+<srw:recordPosition>83</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20100914</ixm:attr>
+<ixm:attr name="LastModificationDate">20180607</ixm:attr>
+<mn:score>8.103242</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb325501971</dc:identifier>   <dc:title>Les enfants du limon : roman (2e édition) Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1938</dc:date>   <dc:format>319 p. ; In-16</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb325501971</srw:recordIdentifier>
+<srw:recordPosition>84</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20160127</ixm:attr>
+<mn:score>8.103242</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46825849v</dc:identifier>   <dc:title>La relation x prend y pour z : co-commission de l'Ouvroir de littérature potentielle, travaux de l'OULIPO / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Collège de 'pataphysique (Paris)</dc:publisher>   <dc:date>1972</dc:date>   <dc:format>1 vol. (p. 11-15) ; 24 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46825849v</srw:recordIdentifier>
+<srw:recordPosition>85</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210629</ixm:attr>
+<ixm:attr name="LastModificationDate">20210629</ixm:attr>
+<mn:score>8.103242</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb43642510x</dc:identifier>   <dc:title>Loin de Rueil / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1966</dc:date>   <dc:format>229 p. ; 19 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb43642510x</srw:recordIdentifier>
+<srw:recordPosition>86</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20130729</ixm:attr>
+<ixm:attr name="LastModificationDate">20160201</ixm:attr>
+<mn:score>8.102948</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46772071z</dc:identifier>   <dc:title>La place des mathématiques dans la classification des sciences / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Cahiers du Sud (Marseille)</dc:publisher>   <dc:date>1948</dc:date>   <dc:subject xml:lang="fre">Mathématiques -- Histoire</dc:subject>   <dc:subject xml:lang="fre">Mathématiques -- Philosophie</dc:subject>   <dc:format>1 vol. (393-397 p.) ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46772071z</srw:recordIdentifier>
+<srw:recordPosition>87</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210430</ixm:attr>
+<ixm:attr name="LastModificationDate">20210430</ixm:attr>
+<mn:score>8.102948</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb420844621</dc:identifier>   <dc:title>Alphabet / [Raymond Queneau]</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Findakly (Suilly-la-Tour)</dc:publisher>   <dc:date>2009</dc:date>   <dc:identifier>ISBN 9782868051431</dc:identifier>   <dc:description>Code à barres commercial : EAN 9782868051431</dc:description>   <dc:format>1 vol. (non paginé [14] p. dépl.) ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb420844621</srw:recordIdentifier>
+<srw:recordPosition>88</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20091026</ixm:attr>
+<ixm:attr name="LastModificationDate">20151020</ixm:attr>
+<mn:score>8.102948</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb358342833</dc:identifier>   <dc:title>Pictogrammes / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Messages</dc:publisher>   <dc:date>1946</dc:date>   <dc:format>[1] f.-VIII f. de pl.-[2] f. : tout en ill. ; 24 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb358342833</srw:recordIdentifier>
+<srw:recordPosition>89</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19960912</ixm:attr>
+<ixm:attr name="LastModificationDate">20200513</ixm:attr>
+<mn:score>8.102948</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb468267594</dc:identifier>   <dc:title>Sonetos. Dans cette solitude où s'égare l'esprit.... Mon comportement pendant l'exode / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Número (Montevideo)</dc:publisher>   <dc:date>1955</dc:date>   <dc:format>1 vol. (p. 122-123) ; 22 cm</dc:format>   <dc:language>spa</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb468267594</srw:recordIdentifier>
+<srw:recordPosition>90</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210630</ixm:attr>
+<ixm:attr name="LastModificationDate">20210630</ixm:attr>
+<mn:score>8.102948</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46749569v</dc:identifier>   <dc:title>Pictogrammes / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>les Éditions de Minuit (Paris)</dc:publisher>   <dc:date>1946</dc:date>   <dc:subject xml:lang="fre">Pictogrammes</dc:subject>   <dc:format>1 vol. (non paginé) ; 23 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46749569v</srw:recordIdentifier>
+<srw:recordPosition>91</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210407</ixm:attr>
+<ixm:attr name="LastModificationDate">20210407</ixm:attr>
+<mn:score>8.102948</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb35224471d</dc:identifier>   <dc:title>Pierrot mon ami / Raymond Queneau,...</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1972</dc:date>   <dc:description>Collection : Collection Folio ; 226</dc:description>   <dc:identifier>ISBN 2070362264</dc:identifier>   <dc:format>222 p. : couv. ill. en coul. ; 18 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb35224471d</srw:recordIdentifier>
+<srw:recordPosition>92</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19901214</ixm:attr>
+<ixm:attr name="LastModificationDate">20160128</ixm:attr>
+<mn:score>8.10267</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46772105f</dc:identifier>   <dc:title>L'analyse matricielle du langage / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>[Études de linguistique appliquée] (Paris)</dc:publisher>   <dc:date>1964</dc:date>   <dc:subject xml:lang="fre">Français (langue)</dc:subject>   <dc:format>1 vol. (37-50 p.) ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46772105f</srw:recordIdentifier>
+<srw:recordPosition>93</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210430</ixm:attr>
+<ixm:attr name="LastModificationDate">20210430</ixm:attr>
+<mn:score>8.10267</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb38813096n</dc:identifier>   <dc:title>Le dimanche de la vie / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>le Grand livre du mois (Paris)</dc:publisher>   <dc:date>2001</dc:date>   <dc:identifier>ISBN 270286855X</dc:identifier>   <dc:format>243 p. : couv. ill. ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb38813096n</srw:recordIdentifier>
+<srw:recordPosition>94</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20020409</ixm:attr>
+<ixm:attr name="LastModificationDate">20160129</ixm:attr>
+<mn:score>8.10267</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb36163356s</dc:identifier>   <dc:title>Un rude hiver : roman ([Reprod. en fac-sim.]) Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1946</dc:date>   <dc:format>221 p. : couv. ill. ; 18 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb36163356s</srw:recordIdentifier>
+<srw:recordPosition>95</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970326</ixm:attr>
+<ixm:attr name="LastModificationDate">20160128</ixm:attr>
+<mn:score>8.10267</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb38813101d</dc:identifier>   <dc:title>Les fleurs bleues / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>le Grand livre du mois (Paris)</dc:publisher>   <dc:date>2001</dc:date>   <dc:identifier>ISBN 2702868568</dc:identifier>   <dc:format>275 p. : couv. ill. ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb38813101d</srw:recordIdentifier>
+<srw:recordPosition>96</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20020409</ixm:attr>
+<ixm:attr name="LastModificationDate">20160129</ixm:attr>
+<mn:score>8.102404</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46749223q</dc:identifier>   <dc:title>La théologie génétique de Jean-Pierre Brisset / Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Bizarre (Paris)</dc:publisher>   <dc:date>1956</dc:date>   <dc:subject xml:lang="fre">Brisset, Jean-Pierre (1837-1919)</dc:subject>   <dc:subject xml:lang="fre">Littérature et maladies mentales</dc:subject>   <dc:subject xml:lang="fre">Livres rares</dc:subject>   <dc:format>1 vol. (p. 80-86) : ill., couv. ill. ; 27 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46749223q</srw:recordIdentifier>
+<srw:recordPosition>97</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210407</ixm:attr>
+<ixm:attr name="LastModificationDate">20210407</ixm:attr>
+<mn:score>8.102404</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb416759808</dc:identifier>   <dc:title>Exercices de style... (27e édition) Raymond Queneau,...</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1956</dc:date>   <dc:format>201 p. ; in-16</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb416759808</srw:recordIdentifier>
+<srw:recordPosition>98</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20100914</ixm:attr>
+<ixm:attr name="LastModificationDate">20180607</ixm:attr>
+<mn:score>8.101909</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb36179404g</dc:identifier>   <dc:title>Exercices de style (Nouv. éd.) Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>le Grand livre du mois (Paris)</dc:publisher>   <dc:date>1997</dc:date>   <dc:format>160 p. ; 19 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb36179404g</srw:recordIdentifier>
+<srw:recordPosition>99</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970912</ixm:attr>
+<ixm:attr name="LastModificationDate">20160128</ixm:attr>
+<mn:score>8.101909</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb37517429x</dc:identifier>   <dc:title>Exercices de style (Nouv. éd.) Raymond Queneau</dc:title>   <dc:creator>Queneau, Raymond (1903-1976). Auteur du texte</dc:creator>   <dc:publisher>Gallimard (Paris)</dc:publisher>   <dc:date>1981</dc:date>   <dc:format>160 p. ; 19 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb37517429x</srw:recordIdentifier>
+<srw:recordPosition>100</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970724</ixm:attr>
+<ixm:attr name="LastModificationDate">20160128</ixm:attr>
+<mn:score>8.101044</mn:score>
+</srw:extraRecordData>
+</srw:record>
+</srw:records>
+<srw:nextRecordPosition>101</srw:nextRecordPosition>
+</srw:searchRetrieveResponse>

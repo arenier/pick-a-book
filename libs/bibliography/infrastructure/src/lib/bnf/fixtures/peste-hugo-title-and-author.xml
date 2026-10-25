@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?><srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/" xmlns="http://catalogue.bnf.fr/namespaces/InterXMarc" xmlns:ixm="http://catalogue.bnf.fr/namespaces/InterXMarc" xmlns:mn="http://catalogue.bnf.fr/namespaces/motsnotices" xmlns:sd="http://www.loc.gov/zing/srw/diagnostic/">
+<srw:version>1.2</srw:version>
+<srw:echoedSearchRetrieveRequest>
+<srw:version>1.2</srw:version>
+<srw:query>bib.doctype any "a" and bib.title all "La Peste" and bib.author all "Victor Hugo"</srw:query>
+</srw:echoedSearchRetrieveRequest>
+<srw:numberOfRecords>2</srw:numberOfRecords>
+<srw:records>
+<srw:record>
+<srw:recordSchema>marcxchange</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<mxc:record xmlns:mxc="info:lc/xmlns/marcxchange-v2" format="UNIMARC" id="ark:/12148/cb46018794j" type="Bibliographic">
+<mxc:leader>     nam  22     3n 450 </mxc:leader>
+<mxc:controlfield tag="001">FRBNF46018794000000X</mxc:controlfield>
+<mxc:controlfield tag="003">http://catalogue.bnf.fr/ark:/12148/cb46018794j</mxc:controlfield>
+<mxc:datafield tag="039" ind1=" " ind2=" ">
+<mxc:subfield code="o">MUS</mxc:subfield>
+<mxc:subfield code="a">LL08128430006P  </mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="100" ind1=" " ind2=" ">
+<mxc:subfield code="a">20220316u        m  y0frey50      ba</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="101" ind1="0" ind2=" ">
+<mxc:subfield code="a">fre</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="102" ind1=" " ind2=" ">
+<mxc:subfield code="a">XX</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="105" ind1=" " ind2=" ">
+<mxc:subfield code="a">||||z   00|a|</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="106" ind1=" " ind2=" ">
+<mxc:subfield code="a">r</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="181" ind1=" " ind2="0">
+<mxc:subfield code="6">01</mxc:subfield>
+<mxc:subfield code="a">i </mxc:subfield>
+<mxc:subfield code="b">xxxe  </mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="181" ind1=" " ind2=" ">
+<mxc:subfield code="6">02</mxc:subfield>
+<mxc:subfield code="c">txt</mxc:subfield>
+<mxc:subfield code="2">rdacontent</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="182" ind1=" " ind2="0">
+<mxc:subfield code="6">01</mxc:subfield>
+<mxc:subfield code="a">n</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="182" ind1=" " ind2=" ">
+<mxc:subfield code="6">02</mxc:subfield>
+<mxc:subfield code="c">n</mxc:subfield>
+<mxc:subfield code="2">rdamedia</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="200" ind1="1" ind2=" ">
+<mxc:subfield code="a">La Esmeralda (Par. De Victor Hugo, mus. De Louise Bertin)</mxc:subfield>
+<mxc:subfield code="b">Texte imprimé</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="214" ind1=" " ind2="0">
+<mxc:subfield code="a">[S.l.]</mxc:subfield>
+<mxc:subfield code="c">[s.n.]</mxc:subfield>
+<mxc:subfield code="d">[s.d.]</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="215" ind1=" " ind2=" ">
+<mxc:subfield code="a">Recueil factice de 19 opéras</mxc:subfield>
+<mxc:subfield code="c">imprimés, à pagination diverse, avec table ms comme le titre général, sous reliure</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="300" ind1=" " ind2=" ">
+<mxc:subfield code="a">Les opéras contenus dans ce recueil sont les suivant</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="300" ind1=" " ind2=" ">
+<mxc:subfield code="a">Pièces de Théâtre. Opéra : Tome 1er</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="316" ind1=" " ind2=" ">
+<mxc:subfield code="5">FR-751021003:46018794001001</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Guillaume Tell. (Paroles de Jouy et Hippolyte Bis, musique de Rossini)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Robert-le-Diable. (Paroles de Scribe et G. Delavigne, mus de J. Meyerbeer)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Gustave III ou le Bal masqué. (Par. de Scribe, mus d'Auber</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">La juive. [Par. de Scribe, mus. de Halévy)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Les huguenots. (Par. de Scribe, mus. de Meyerbeer)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Guido et Ginerra ou le peste de Florence. (Par. de Scribe, mus. de Halévy)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Le lac des fées (Par. de Scribe et Mélesville, mus d'Auber)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Les martyrs. (Paroles trad. par E. Scribe, mus. de Donizetti)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Le freyschutz. (Par. d'Emilien Pacini, trad. de l'allemand, mus. de Carl Maria de Weber)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Le vaisseau fantôme. (Par. de Paul Foucher, mus. De Dietsch)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Charles VI. (Par. De Casimir et Germain Delavigne, mus. De F. Halévy)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Dom Sébastien, roi de Portugal. (Par. De Scribe, mus. de Donizetti)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Othello. (Par. trad. de l'italien par Alphonse Royer et Gustave Vaez, mus. de Rissini)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Richard en Palestine. (Par. de Paul Foucher, mus. d'Adolphe Adam]</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Le prophète. (Par. de Scribe, mus. de Meyerbeer)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Le fanal. (Par- de De Saint-Georges, mus. d'Ad. Adam)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">L'enfant prodigue. (Par. de Scribe, mus. d'Auber)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="464" ind1=" " ind2="1">
+<mxc:subfield code="t">Zerline ou la corbeille d'organes (Par. De Scribe, mus. D'Auber)</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="608" ind1=" " ind2=" ">
+<mxc:subfield code="3">11976226</mxc:subfield>
+<mxc:subfield code="a">Livrets</mxc:subfield>
+<mxc:subfield code="2">rameau</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="700" ind1=" " ind2="|">
+<mxc:subfield code="3">11907966</mxc:subfield>
+<mxc:subfield code="o">ISNI0000000121200982</mxc:subfield>
+<mxc:subfield code="a">Hugo</mxc:subfield>
+<mxc:subfield code="b">Victor</mxc:subfield>
+<mxc:subfield code="4">070</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="702" ind1=" " ind2="|">
+<mxc:subfield code="3">13967569</mxc:subfield>
+<mxc:subfield code="o">ISNI0000000121382579</mxc:subfield>
+<mxc:subfield code="a">Bertin</mxc:subfield>
+<mxc:subfield code="b">Louise</mxc:subfield>
+<mxc:subfield code="4">230</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="801" ind1=" " ind2="0">
+<mxc:subfield code="a">FR</mxc:subfield>
+<mxc:subfield code="b">FR-751131015</mxc:subfield>
+<mxc:subfield code="c">20220316</mxc:subfield>
+<mxc:subfield code="g">AFNOR</mxc:subfield>
+<mxc:subfield code="h">FRBNF46018794000000X</mxc:subfield>
+<mxc:subfield code="2">intermrc</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="930" ind1=" " ind2=" ">
+<mxc:subfield code="5">FR-751021003:46018794001001</mxc:subfield>
+<mxc:subfield code="a">TH B-2179 (6)</mxc:subfield>
+<mxc:subfield code="b">759999999</mxc:subfield>
+<mxc:subfield code="c">Richelieu - Musique - Magasin</mxc:subfield>
+<mxc:subfield code="d">N</mxc:subfield>
+</mxc:datafield>
+</mxc:record>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46018794j</srw:recordIdentifier>
+<srw:recordPosition>1</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20240613</ixm:attr>
+<ixm:attr name="LastModificationDate">20240613</ixm:attr>
+<mn:score>9.775719</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>marcxchange</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<mxc:record xmlns:mxc="info:lc/xmlns/marcxchange-v2" format="UNIMARC" id="ark:/12148/cb38164546j" type="Bibliographic">
+<mxc:leader>     cmm  22        450 </mxc:leader>
+<mxc:controlfield tag="001">FRBNF381645460000007</mxc:controlfield>
+<mxc:controlfield tag="003">http://catalogue.bnf.fr/ark:/12148/cb38164546j</mxc:controlfield>
+<mxc:datafield tag="010" ind1=" " ind2=" ">
+<mxc:subfield code="a">2-01-012545-2</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="039" ind1=" " ind2=" ">
+<mxc:subfield code="o">OPC</mxc:subfield>
+<mxc:subfield code="a">000750270</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="071" ind1="0" ind2="1">
+<mxc:subfield code="b">Marque indéterminée</mxc:subfield>
+<mxc:subfield code="a">1928795</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="100" ind1=" " ind2=" ">
+<mxc:subfield code="a">19890714d1987    u  y0frey50      ba</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="101" ind1="0" ind2=" ">
+<mxc:subfield code="a">fre</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="102" ind1=" " ind2=" ">
+<mxc:subfield code="a">FR</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="105" ind1=" " ind2=" ">
+<mxc:subfield code="a">||||z   000||</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="106" ind1=" " ind2=" ">
+<mxc:subfield code="a">r</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="126" ind1=" " ind2=" ">
+<mxc:subfield code="a">ckuxjfb||||||zu</mxc:subfield>
+<mxc:subfield code="b">blx</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="181" ind1=" " ind2="0">
+<mxc:subfield code="6">01</mxc:subfield>
+<mxc:subfield code="a">i </mxc:subfield>
+<mxc:subfield code="b">xxxe  </mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="181" ind1=" " ind2=" ">
+<mxc:subfield code="6">02</mxc:subfield>
+<mxc:subfield code="c">txt</mxc:subfield>
+<mxc:subfield code="2">rdacontent</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="181" ind1=" " ind2="0">
+<mxc:subfield code="6">03</mxc:subfield>
+<mxc:subfield code="a">h </mxc:subfield>
+<mxc:subfield code="b">xxxa  </mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="181" ind1=" " ind2=" ">
+<mxc:subfield code="6">04</mxc:subfield>
+<mxc:subfield code="c">spw</mxc:subfield>
+<mxc:subfield code="2">rdacontent</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="182" ind1=" " ind2="0">
+<mxc:subfield code="6">01</mxc:subfield>
+<mxc:subfield code="a">n</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="182" ind1=" " ind2=" ">
+<mxc:subfield code="6">02</mxc:subfield>
+<mxc:subfield code="c">n</mxc:subfield>
+<mxc:subfield code="2">rdamedia</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="182" ind1=" " ind2="0">
+<mxc:subfield code="6">03</mxc:subfield>
+<mxc:subfield code="a">a</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="182" ind1=" " ind2=" ">
+<mxc:subfield code="6">04</mxc:subfield>
+<mxc:subfield code="c">s</mxc:subfield>
+<mxc:subfield code="2">rdamedia</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="200" ind1="1" ind2=" ">
+<mxc:subfield code="a">À vous de lire</mxc:subfield>
+<mxc:subfield code="b">Multimédia multisupport</mxc:subfield>
+<mxc:subfield code="h">3</mxc:subfield>
+<mxc:subfield code="f">textes proposés et annotés par Philippe Greffet et Louis Porcher</mxc:subfield>
+<mxc:subfield code="g">avec la collab. de Catherine Barnaud</mxc:subfield>
+<mxc:subfield code="g">textes lus par Philippe Greffet et Louis Porcher et Simonne Lieutaud</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="210" ind1=" " ind2=" ">
+<mxc:subfield code="a">[Paris]</mxc:subfield>
+<mxc:subfield code="c">[Alliance française]</mxc:subfield>
+<mxc:subfield code="d">[1987 (DL)]</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="215" ind1=" " ind2=" ">
+<mxc:subfield code="a">1 livre (93 p.)</mxc:subfield>
+<mxc:subfield code="d">23 cm</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="215" ind1=" " ind2=" ">
+<mxc:subfield code="a">1 cass. audio</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="225" ind1="|" ind2=" ">
+<mxc:subfield code="a">À vous de lire</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="306" ind1=" " ind2=" ">
+<mxc:subfield code="a">P 1987</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="410" ind1=" " ind2="0">
+<mxc:subfield code="0">38205633</mxc:subfield>
+<mxc:subfield code="t">À vous de lire</mxc:subfield>
+<mxc:subfield code="v">3</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="608" ind1=" " ind2=" ">
+<mxc:subfield code="a">fiction</mxc:subfield>
+<mxc:subfield code="2">frTAV</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="608" ind1=" " ind2=" ">
+<mxc:subfield code="a">Oeuvre d'origine : conte, nouvelle, récit</mxc:subfield>
+<mxc:subfield code="2">frTAV</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="702" ind1=" " ind2="|">
+<mxc:subfield code="3">12720474</mxc:subfield>
+<mxc:subfield code="o">ISNI0000000116285088</mxc:subfield>
+<mxc:subfield code="a">Greffet</mxc:subfield>
+<mxc:subfield code="b">Philippe</mxc:subfield>
+<mxc:subfield code="f">1924-2009</mxc:subfield>
+<mxc:subfield code="4">070</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="702" ind1=" " ind2="|">
+<mxc:subfield code="3">11920324</mxc:subfield>
+<mxc:subfield code="o">ISNI0000000121017483</mxc:subfield>
+<mxc:subfield code="a">Porcher</mxc:subfield>
+<mxc:subfield code="b">Louis</mxc:subfield>
+<mxc:subfield code="f">1940-2014</mxc:subfield>
+<mxc:subfield code="4">070</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="702" ind1=" " ind2="|">
+<mxc:subfield code="3">12087370</mxc:subfield>
+<mxc:subfield code="o">ISNI0000000117355084</mxc:subfield>
+<mxc:subfield code="a">Barnoud</mxc:subfield>
+<mxc:subfield code="b">Catherine</mxc:subfield>
+<mxc:subfield code="4">205</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="702" ind1=" " ind2="|">
+<mxc:subfield code="3">12720474</mxc:subfield>
+<mxc:subfield code="o">ISNI0000000116285088</mxc:subfield>
+<mxc:subfield code="a">Greffet</mxc:subfield>
+<mxc:subfield code="b">Philippe</mxc:subfield>
+<mxc:subfield code="f">1924-2009</mxc:subfield>
+<mxc:subfield code="4">550</mxc:subfield>
+<mxc:subfield code="4">vre</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="702" ind1=" " ind2="|">
+<mxc:subfield code="3">11920324</mxc:subfield>
+<mxc:subfield code="o">ISNI0000000121017483</mxc:subfield>
+<mxc:subfield code="a">Porcher</mxc:subfield>
+<mxc:subfield code="b">Louis</mxc:subfield>
+<mxc:subfield code="f">1940-2014</mxc:subfield>
+<mxc:subfield code="4">550</mxc:subfield>
+<mxc:subfield code="4">vre</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="702" ind1=" " ind2="|">
+<mxc:subfield code="3">11913008</mxc:subfield>
+<mxc:subfield code="o">ISNI0000000116901602</mxc:subfield>
+<mxc:subfield code="a">Lieutaud</mxc:subfield>
+<mxc:subfield code="b">Simone</mxc:subfield>
+<mxc:subfield code="4">550</mxc:subfield>
+<mxc:subfield code="4">vre</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="712" ind1="0" ind2="2">
+<mxc:subfield code="3">11876462</mxc:subfield>
+<mxc:subfield code="o">ISNI0000000123429449</mxc:subfield>
+<mxc:subfield code="a">Hachette</mxc:subfield>
+<mxc:subfield code="4">650</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="712" ind1="0" ind2="2">
+<mxc:subfield code="3">11870657</mxc:subfield>
+<mxc:subfield code="o">ISNI0000000121117193</mxc:subfield>
+<mxc:subfield code="a">Fondation des alliances françaises</mxc:subfield>
+<mxc:subfield code="4">650</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="801" ind1=" " ind2="0">
+<mxc:subfield code="a">FR</mxc:subfield>
+<mxc:subfield code="b">FR-751131015</mxc:subfield>
+<mxc:subfield code="c">19890714</mxc:subfield>
+<mxc:subfield code="g">AFNOR</mxc:subfield>
+<mxc:subfield code="h">FRBNF381645460000007</mxc:subfield>
+<mxc:subfield code="2">intermrc</mxc:subfield>
+</mxc:datafield>
+<mxc:datafield tag="930" ind1=" " ind2=" ">
+<mxc:subfield code="5">FR-759999999:38164546001001</mxc:subfield>
+<mxc:subfield code="a">8 MU-7046</mxc:subfield>
+<mxc:subfield code="b">759999999</mxc:subfield>
+<mxc:subfield code="c">Tolbiac - Rez de Jardin - Audiovisuel - Magasin</mxc:subfield>
+<mxc:subfield code="d">O</mxc:subfield>
+</mxc:datafield>
+</mxc:record>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb38164546j</srw:recordIdentifier>
+<srw:recordPosition>2</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19890714</ixm:attr>
+<ixm:attr name="LastModificationDate">20260414</ixm:attr>
+<mn:score>5.9758706</mn:score>
+</srw:extraRecordData>
+</srw:record>
+</srw:records>
+</srw:searchRetrieveResponse>

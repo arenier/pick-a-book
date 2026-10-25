@@ -15,6 +15,9 @@
       "path": "../../shared/sql-migrations/tsconfig.lib.json"
     },
     {
+      "path": "../../shared/text-match/tsconfig.lib.json"
+    },
+    {
       "path": "../../shared/result/tsconfig.lib.json"
     },
     {

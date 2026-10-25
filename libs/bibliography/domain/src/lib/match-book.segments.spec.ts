@@ -70,3 +70,37 @@ describe('matchBook, series and volumes (FR-019)', () => {
     expect(outcome.verdict).toBe('confirmed');
   });
 });
+
+describe('matchBook, a volume read through its series (FR-019)', () => {
+  const volumes = [
+    aWork('evermore', 'Evermore', ['Noël, Alyson'], { context: { series: 'Éternels', volume: 1 } }),
+    aWork('lune-bleue', 'Lune bleue', ['Noël, Alyson'], {
+      context: { series: 'Éternels', volume: 2 },
+    }),
+    aWork('pour-toujours', 'Pour toujours', ['Noël, Alyson'], {
+      context: { series: 'Éternels', volume: 6 },
+    }),
+  ];
+
+  it('finds the volume whose number was read, under the title of the series', () => {
+    const outcome = matchBook(aReading('Éternels (tome 2)', 'Alyson Noël'), volumes, settings);
+
+    expect(idsOf([confirmedOf(outcome)])).toStrictEqual(['ark:/12148/lune-bleue']);
+  });
+
+  it('is ambiguous among the volumes when no number was read', () => {
+    const outcome = matchBook(aReading('Éternels', 'Alyson Noël'), volumes, settings);
+
+    expect(idsOf(candidatesOf(outcome)).toSorted()).toStrictEqual([
+      'ark:/12148/evermore',
+      'ark:/12148/lune-bleue',
+      'ark:/12148/pour-toujours',
+    ]);
+  });
+
+  it('finds nothing when the volume read does not exist', () => {
+    const outcome = matchBook(aReading('Éternels (tome 4)', 'Alyson Noël'), volumes, settings);
+
+    expect(outcome.verdict).toBe('not_found');
+  });
+});

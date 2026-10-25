@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { aRecord } from '../testing/builders.js';
-import { recordTitleForms, titleScore } from './title-forms.js';
+import { recordMatchForms, recordTitleForms, titleScore } from './title-forms.js';
 
 describe('recordTitleForms', () => {
   it('offers the title, the title with its complement and the forms cut before " : " or " / "', () => {
@@ -18,6 +18,27 @@ describe('recordTitleForms', () => {
       'La peste / Albert Camus',
       'La peste',
     ]);
+  });
+});
+
+describe('titleScore, through the series', () => {
+  const evermore = aRecord({
+    title: 'Evermore',
+    context: { series: 'Éternels', volume: 1 },
+  });
+
+  // « Éternels (tome 3) » names the series, not the title of the volume (BnF: « Evermore »).
+  it('matches the name of the series the record belongs to', () => {
+    expect(titleScore('Éternels', evermore).value).toBe(1);
+  });
+
+  it('still matches its own title', () => {
+    expect(titleScore('Evermore', evermore).value).toBe(1);
+  });
+
+  it('does not offer the series as a form of the title itself', () => {
+    expect(recordTitleForms(evermore)).toStrictEqual(['Evermore']);
+    expect(recordMatchForms(evermore)).toStrictEqual(['Evermore', 'Éternels']);
   });
 });
 

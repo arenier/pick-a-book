@@ -36,6 +36,15 @@
     },
     {
       "path": "../../libs/recognition/application/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/bibliography/infrastructure/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/bibliography/domain/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/bibliography/application/tsconfig.lib.json"
     }
   ]
 }

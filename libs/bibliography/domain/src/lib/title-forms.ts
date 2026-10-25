@@ -24,12 +24,24 @@ export function recordTitleForms(record: CatalogRecord): readonly string[] {
 }
 
 /**
+ * The forms a text read from a book can be matched to: the forms of the title, and the name of the
+ * series the record belongs to — a spine reads « Éternels » where the BnF titles the volume
+ * « Evermore ». Kept apart from `recordTitleForms`, which tells whether two records are the same
+ * work: two volumes of one series are not.
+ */
+export function recordMatchForms(record: CatalogRecord): readonly string[] {
+  const series = record.context.series;
+
+  return unique([...recordTitleForms(record), ...(series === undefined ? [] : [series])]);
+}
+
+/**
  * How well a text read from a book matches the title of a record, in [0, 1]: the best of the
  * forms of the record (research §5.2).
  */
 export function titleScore(text: string, record: CatalogRecord): MatchScore {
   return MatchScore.fromComputed(
-    Math.max(0, ...recordTitleForms(record).map((form) => pairScore(text, form))),
+    Math.max(0, ...recordMatchForms(record).map((form) => pairScore(text, form))),
   );
 }
 

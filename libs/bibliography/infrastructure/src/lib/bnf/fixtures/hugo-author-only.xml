@@ -1,0 +1,1411 @@
+<?xml version="1.0" encoding="UTF-8"?><srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/" xmlns="http://catalogue.bnf.fr/namespaces/InterXMarc" xmlns:ixm="http://catalogue.bnf.fr/namespaces/InterXMarc" xmlns:mn="http://catalogue.bnf.fr/namespaces/motsnotices" xmlns:sd="http://www.loc.gov/zing/srw/diagnostic/">
+<srw:version>1.2</srw:version>
+<srw:echoedSearchRetrieveRequest>
+<srw:version>1.2</srw:version>
+<srw:query>bib.doctype any "a" and bib.author all "Victor Hugo"</srw:query>
+</srw:echoedSearchRetrieveRequest>
+<srw:numberOfRecords>5144</srw:numberOfRecords>
+<srw:records>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb36667185n</dc:identifier>   <dc:title>Coba : lenguaje secreto del hampa boliviana / Víctor Hugo Viscarra Rodríguez</dc:title>   <dc:creator>Viscarra Rodríguez, Víctor Hugo (1933-....). Auteur du texte</dc:creator>   <dc:publisher>Honorable Alcaldía municipal de Cochabamba</dc:publisher>   <dc:date>1991</dc:date>   <dc:subject xml:lang="fre">Marginaux -- Langage -- Bolivie -- Dictionnaires espagnols</dc:subject>   <dc:subject xml:lang="fre">Criminels -- Langage -- Bolivie -- Dictionnaires espagnols</dc:subject>   <dc:subject xml:lang="fre">Coba (argot)</dc:subject>   <dc:format>159 p. : ill. ; 22 cm</dc:format>   <dc:language>spa</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb36667185n</srw:recordIdentifier>
+<srw:recordPosition>1</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19931004</ixm:attr>
+<ixm:attr name="LastModificationDate">20191121</ixm:attr>
+<mn:score>10.278367</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb320815587</dc:identifier>   <dc:title>La sandalia del peregrino (2a edición) Victor H. Escala</dc:title>   <dc:creator>Escala, Víctor Hugo (1887-1964). Auteur du texte</dc:creator>   <dc:publisher>tip. Vargas (Cáracas)</dc:publisher>   <dc:date>1928</dc:date>   <dc:format>In-16, 258 p., portraits</dc:format>   <dc:language>spa</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb320815587</srw:recordIdentifier>
+<srw:recordPosition>2</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20110505</ixm:attr>
+<mn:score>10.073582</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb44387430x</dc:identifier>   <dc:title>Les femmes de Victor Hugo : exposition, Besançon, Maison Victor Hugo, [18 juillet au 27 septembre 2015]</dc:title>   <dc:creator>Maison natale de Victor Hugo (Besançon). Auteur du texte</dc:creator>   <dc:publisher>Ville de Besançon (Besançon)</dc:publisher>   <dc:date>2015</dc:date>   <dc:description>[Exposition. Besançon, Maison natale de Victor Hugo. 2015]</dc:description>   <dc:identifier>ISBN 9782906610392</dc:identifier>   <dc:description>Code à barres commercial : EAN 9782906610392</dc:description>   <dc:format>1 vol. (20 p.) : ill. en coul. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb44387430x</srw:recordIdentifier>
+<srw:recordPosition>3</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20150729</ixm:attr>
+<ixm:attr name="LastModificationDate">20150813</ixm:attr>
+<mn:score>10.068215</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb412893327</dc:identifier>   <dc:title>[Palmarès] : Année scolaire... / Lycée Victor Hugo</dc:title>   <dc:creator>Lycée Victor-Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>[impr. du Lycée] (Paris)</dc:publisher>   <dc:date>1899-1942</dc:date>   <dc:format>7 fasc. ; 23 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb412893327</srw:recordIdentifier>
+<srw:recordPosition>4</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20080630</ixm:attr>
+<ixm:attr name="LastModificationDate">20080715</ixm:attr>
+<mn:score>10.005795</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb344499859</dc:identifier>   <dc:title>La Gazette des écoliers (Rodez)</dc:title>   <dc:title>La Gazette des écoliers / Ecole publique Victor Hugo</dc:title>   <dc:creator>Ecole publique mixte Victor Hugo (Rodez). Auteur du texte</dc:creator>   <dc:publisher>Ecole publique Victor Hugo (Rodez)</dc:publisher>   <dc:date>19??-199?</dc:date>   <dc:identifier>ISSN 11638001</dc:identifier>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">publication en série imprimée</dc:type>   <dc:type xml:lang="eng">printed serial</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb344499859</srw:recordIdentifier>
+<srw:recordPosition>5</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19920204</ixm:attr>
+<ixm:attr name="LastModificationDate">20200108</ixm:attr>
+<mn:score>9.915732</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34488620g</dc:identifier>   <dc:title>Ecole Victor Hugo. Journal des lapereaux</dc:title>   <dc:creator>Collège Victor Hugo (Nevers). Auteur du texte</dc:creator>   <dc:publisher>Ecole publique de garçons (Nevers)</dc:publisher>   <dc:date>1968-1969</dc:date>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">publication en série imprimée</dc:type>   <dc:type xml:lang="eng">printed serial</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34488620g</srw:recordIdentifier>
+<srw:recordPosition>6</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19931222</ixm:attr>
+<ixm:attr name="LastModificationDate">20230602</ixm:attr>
+<mn:score>9.915028</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34488100g</dc:identifier>   <dc:title>Ecureuils du boulevard : journal de la coopérative scolaire du cours moyen 1re année</dc:title>   <dc:creator>Collège Victor Hugo (Nevers). Auteur du texte</dc:creator>   <dc:publisher>Ecole Victor Hugo (Nevers)</dc:publisher>   <dc:date>19??-1970</dc:date>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">publication en série imprimée</dc:type>   <dc:type xml:lang="eng">printed serial</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34488100g</srw:recordIdentifier>
+<srw:recordPosition>7</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19931220</ixm:attr>
+<ixm:attr name="LastModificationDate">20230602</ixm:attr>
+<mn:score>9.914825</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb40122922b</dc:identifier>   <dc:title>Fisiones y fusiones, divorcios y reconciliaciones : la dirigencia del Partido de la revolución democrática (PRD), 1989-2004 / Víctor Hugo Martínez González</dc:title>   <dc:creator>Martínez González, Víctor Hugo. Auteur du texte</dc:creator>   <dc:publisher>Plaza y Valdés (México)</dc:publisher>   <dc:date>2005</dc:date>   <dc:subject xml:lang="fre">Politique et gouvernement -- Mexique -- 1988-2000</dc:subject>   <dc:subject xml:lang="fre">Politique et gouvernement -- Mexique -- 2000-2012</dc:subject>   <dc:subject xml:lang="fre">Partido de la revolución democrática (Mexique) -- Histoire</dc:subject>   <dc:identifier>ISBN 9707223782</dc:identifier>   <dc:format>1 vol. (272 p.) : ill. ; 23 cm</dc:format>   <dc:language>spa</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb40122922b</srw:recordIdentifier>
+<srw:recordPosition>8</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20060307</ixm:attr>
+<ixm:attr name="LastModificationDate">20190525</ixm:attr>
+<mn:score>9.887709</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb413577850</dc:identifier>   <dc:title>Filosofia moral : el debate sobre el probabilismo en el Peru (siglos XVII-XVIII) / Victor Hugo Martel Paredes</dc:title>   <dc:creator>Martel Paredes, Victor Hugo. Auteur du texte</dc:creator>   <dc:publisher>Instituto Francés de estudios andinos (Lima)</dc:publisher>   <dc:publisher>Fondo editorial de la Universidad nacional mayor de San Marcos (Lluvia Ed.)</dc:publisher>   <dc:date>2007</dc:date>   <dc:description>Collection : Colección Alasitas</dc:description>   <dc:description>Collection : Colección Biblioteca andina de Bolsillo ; 28</dc:description>   <dc:subject xml:lang="fre">Probabilisme -- XVIIe siècle</dc:subject>   <dc:subject xml:lang="fre">Probabilisme -- XVIIIe siècle</dc:subject>   <dc:subject xml:lang="fre">Philosophie -- Pérou -- XVIIe siècle</dc:subject>   <dc:subject xml:lang="fre">Philosophie -- Pérou -- XVIIIe siècle</dc:subject>   <dc:identifier>ISBN 9789972627859</dc:identifier>   <dc:format>1 vol. (262 p.) ; 16 cm</dc:format>   <dc:language>spa</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb413577850</srw:recordIdentifier>
+<srw:recordPosition>9</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20081016</ixm:attr>
+<ixm:attr name="LastModificationDate">20150720</ixm:attr>
+<mn:score>9.8860655</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb47670054v</dc:identifier>   <dc:title>Antonino de Barruel, para la historia : un relato de la guerra contra Walker / Víctor Hugo Acuña Ortega editor</dc:title>   <dc:contributor>Acuña Ortega, Víctor Hugo (1949-....). Éditeur scientifique</dc:contributor>   <dc:publisher>UCR (San José)</dc:publisher>   <dc:date>2024</dc:date>   <dc:description>Collection : Colección anexión 200 años</dc:description>   <dc:subject xml:lang="fre">Walker, William (1824-1860)</dc:subject>   <dc:subject xml:lang="fre">Amérique centrale -- 1821-1951</dc:subject>   <dc:subject xml:lang="fre">Nicaragua -- 1855-1860 (Guerre des flibustiers)</dc:subject>   <dc:identifier>ISBN 9789968021777</dc:identifier>   <dc:format>1 vol. (196 p.) ; 24 cm</dc:format>   <dc:language>spa</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb47670054v</srw:recordIdentifier>
+<srw:recordPosition>10</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20250226</ixm:attr>
+<ixm:attr name="LastModificationDate">20250829</ixm:attr>
+<mn:score>9.8310795</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb44316476j</dc:identifier>   <dc:title>Una vida en la izquierda : memorias políticas / Víctor Hugo D'Paola</dc:title>   <dc:creator>D'Paola, Víctor Hugo (1930-2017). Auteur du texte</dc:creator>   <dc:publisher>[s. n.] (Caracas)</dc:publisher>   <dc:date>2014</dc:date>   <dc:subject xml:lang="fre">D'Paola, Víctor Hugo (1930-2017)</dc:subject>   <dc:subject xml:lang="fre">Partis de gauche -- Venezuela -- XXe siècle</dc:subject>   <dc:subject xml:lang="fre">Politique et gouvernement -- Venezuela -- 1935-....</dc:subject>   <dc:subject xml:lang="fre">Movimiento al socialismo (Venezuela)</dc:subject>   <dc:identifier>ISBN 9789801275145</dc:identifier>   <dc:format>158 pages ; 22 cm</dc:format>   <dc:language>spa</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb44316476j</srw:recordIdentifier>
+<srw:recordPosition>11</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20150418</ixm:attr>
+<ixm:attr name="LastModificationDate">20190523</ixm:attr>
+<mn:score>9.829805</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34874168m</dc:identifier>   <dc:title>Victor Hugo et la Normandie : [exposition], Musée Victor Hugo de Villequier, juin-octobre 1985</dc:title>   <dc:contributor>Musée Victor Hugo (Rives-en-Seine, Seine-Maritime). Collaborateur</dc:contributor>   <dc:publisher>Musée Victor Hugo (Villequier)</dc:publisher>   <dc:date>1985</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Résidences et lieux familiers -- Normandie (France)</dc:subject>   <dc:description>[Exposition. Villequier. 1985]</dc:description>   <dc:description>[Exposition. Hugo, Victor. 1985]</dc:description>   <dc:format>272 p.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34874168m</srw:recordIdentifier>
+<srw:recordPosition>12</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19871004</ixm:attr>
+<ixm:attr name="LastModificationDate">20230110</ixm:attr>
+<mn:score>9.817492</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb36564755g</dc:identifier>   <dc:title>Mon grand-père / Georges Victor-Hugo</dc:title>   <dc:creator>Hugo, Georges-Victor (1868-1925). Auteur du texte</dc:creator>   <dc:publisher>Calmann-Lévy (Paris)</dc:publisher>   <dc:date>1902</dc:date>   <dc:format>In-16, 59 p.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb36564755g</srw:recordIdentifier>
+<srw:recordPosition>13</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19990201</ixm:attr>
+<ixm:attr name="LastModificationDate">20180607</ixm:attr>
+<mn:score>9.8038435</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb392369204</dc:identifier>   <dc:title>Los ejecutivos / Víctor Hugo Rascón Banda</dc:title>   <dc:creator>Rascón Banda, Víctor Hugo (1948-....). Auteur du texte</dc:creator>   <dc:publisher>Ed. el Milagro (México)</dc:publisher>   <dc:date>2002</dc:date>   <dc:description>Collection : La Centena. Teatro</dc:description>   <dc:identifier>ISBN 9686773711</dc:identifier>   <dc:format>1 vol. (111 p.) ; 17 cm</dc:format>   <dc:language>spa</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb392369204</srw:recordIdentifier>
+<srw:recordPosition>14</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20040914</ixm:attr>
+<ixm:attr name="LastModificationDate">20060807</ixm:attr>
+<mn:score>9.775612</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb387844879</dc:identifier>   <dc:title>"Grace Dieu" or "The pilgrimage of the soul" : an English illuminated manuscript of the fifteenth century / Victor Hugo Paltsits ; by Victor Hugo Psaltsits</dc:title>   <dc:creator>Paltsits, Victor Hugo. Auteur du texte</dc:creator>   <dc:publisher>The New-York Public Library (New-York)</dc:publisher>   <dc:date>1928</dc:date>   <dc:format>10 p. - [4] p. de pl. : ill. ; 26 cm</dc:format>   <dc:language>eng</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb387844879</srw:recordIdentifier>
+<srw:recordPosition>15</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20050209</ixm:attr>
+<ixm:attr name="LastModificationDate">20050209</ixm:attr>
+<mn:score>9.753687</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb38784488n</dc:identifier>   <dc:title>A Renaissance illuminated manuscript of Valerius Maximus : from the library of the Aragonese Kings of Naples / Victor Hugo Paltsits ; by Victor Hugo Psaltsits</dc:title>   <dc:creator>Paltsits, Victor Hugo. Auteur du texte</dc:creator>   <dc:publisher>the New-York Public Library (New-York)</dc:publisher>   <dc:date>1926</dc:date>   <dc:format>9 p. - [4] p. de pl. : ill. ; 25 cm</dc:format>   <dc:language>eng</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb38784488n</srw:recordIdentifier>
+<srw:recordPosition>16</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20050209</ixm:attr>
+<ixm:attr name="LastModificationDate">20050209</ixm:attr>
+<mn:score>9.753687</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb30625011p</dc:identifier>   <dc:title>Mon grand-père / Georges-Victor Hugo</dc:title>   <dc:creator>Hugo, Georges-Victor (1868-1925). Auteur du texte</dc:creator>   <dc:publisher>C. Lévy (Paris)</dc:publisher>   <dc:date>1902</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor</dc:subject>   <dc:format>In-16, 59 p.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb30625011p</srw:recordIdentifier>
+<srw:recordPosition>17</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19950603</ixm:attr>
+<ixm:attr name="LastModificationDate">20180112</ixm:attr>
+<mn:score>9.746327</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb32726196v</dc:identifier>   <dc:title>Bulletin des Hugophiles. Organe de la Société littéraire et artistique dénommée Les Hugophiles ["puis" Organe de la Société Victor Hugo]</dc:title>   <dc:creator>Société Victor Hugo. Auteur du texte</dc:creator>   <dc:publisher>[s.n.?] (Paris)</dc:publisher>   <dc:date>1906-1909</dc:date>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">publication en série imprimée</dc:type>   <dc:type xml:lang="eng">printed serial</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb32726196v</srw:recordIdentifier>
+<srw:recordPosition>18</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20191216</ixm:attr>
+<mn:score>9.737462</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb30625008s</dc:identifier>   <dc:title>La Normandie inconnue / par François-Victor Hugo</dc:title>   <dc:creator>Hugo, François-Victor (1828-1873). Auteur du texte</dc:creator>   <dc:publisher>Pagnerre (Paris)</dc:publisher>   <dc:date>1857</dc:date>   <dc:subject xml:lang="fre">Normandie (France)</dc:subject>   <dc:format>354 p. ; in-8°</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb30625008s</srw:recordIdentifier>
+<srw:recordPosition>19</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20100923</ixm:attr>
+<mn:score>9.734666</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb40046358w</dc:identifier>   <dc:title>A musa carrancuda / teatro e poder no Estado Novo ; Victor Hugo Adler Pereira</dc:title>   <dc:creator>Pereira, Victor Hugo Adler. Auteur du texte</dc:creator>   <dc:publisher>Fundação Getulio Vargas (Rio de Janeiro)</dc:publisher>   <dc:date>1998</dc:date>   <dc:subject xml:lang="fre">Rodrigues, Nelson (1912-1980) -- Critique et interprétation</dc:subject>   <dc:subject xml:lang="fre">Théâtre (genre littéraire) -- XXe siècle</dc:subject>   <dc:identifier>ISBN 8522502412</dc:identifier>   <dc:format>219 p.-[10] f. de pl. ; 23 cm</dc:format>   <dc:language>por</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb40046358w</srw:recordIdentifier>
+<srw:recordPosition>20</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20051005</ixm:attr>
+<ixm:attr name="LastModificationDate">20191031</ixm:attr>
+<mn:score>9.718483</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb32724935c</dc:identifier>   <dc:title>Bulletin de la Société Victor Hugo : association littéraire</dc:title>   <dc:creator>Société Victor Hugo. Auteur du texte</dc:creator>   <dc:publisher>[s.n.] (Paris)</dc:publisher>   <dc:date>1909-1916</dc:date>   <dc:identifier>ISSN 25554824</dc:identifier>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">publication en série imprimée</dc:type>   <dc:type xml:lang="eng">printed serial</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb32724935c</srw:recordIdentifier>
+<srw:recordPosition>21</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20171121</ixm:attr>
+<mn:score>9.713949</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb362736320</dc:identifier>   <dc:title>Le Musée Victor Hugo de Villequier / [rédigé par] Élisabeth Chirol</dc:title>   <dc:creator>Musée Victor Hugo (Rives-en-Seine, Seine-Maritime). Auteur du texte</dc:creator>   <dc:publisher>Musée Victor Hugo (Villequier (76490 Caudebec-en-Caux))</dc:publisher>   <dc:date>1982</dc:date>   <dc:subject xml:lang="fre">Hugo</dc:subject>   <dc:format>160 p. : ill., couv. ill. en coul. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb362736320</srw:recordIdentifier>
+<srw:recordPosition>22</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19990201</ixm:attr>
+<ixm:attr name="LastModificationDate">19990201</ixm:attr>
+<mn:score>9.710743</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb43808780m</dc:identifier>   <dc:title>Nelson Rodrigues, o freudismo e o carnaval nos teatros modernos / Víctor H.A. Pereira</dc:title>   <dc:creator>Pereira, Victor Hugo Adler. Auteur du texte</dc:creator>   <dc:publisher>7 Letras (Rio de Janeiro, RJ)</dc:publisher>   <dc:date>2012</dc:date>   <dc:subject xml:lang="fre">Rodrigues, Nelson (1912-1980) -- Critique et interprétation</dc:subject>   <dc:subject xml:lang="fre">Psychanalyse et littérature</dc:subject>   <dc:subject xml:lang="fre">Carnavals -- Dans la littérature</dc:subject>   <dc:identifier>ISBN 9788542100136</dc:identifier>   <dc:format>123 pages ; 21 cm</dc:format>   <dc:language>por</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb43808780m</srw:recordIdentifier>
+<srw:recordPosition>23</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20140423</ixm:attr>
+<ixm:attr name="LastModificationDate">20151209</ixm:attr>
+<mn:score>9.708462</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb38907358v</dc:identifier>   <dc:title>Hugo, la main du rêve : dessins du Musée Victor Hugo de Villequier</dc:title>   <dc:creator>Musée Victor Hugo (Rives-en-Seine, Seine-Maritime). Auteur du texte</dc:creator>   <dc:publisher>Centre régional de documentation pédagogique de Haute-Normandie (Mont-Saint-Aignan)</dc:publisher>   <dc:date>2001</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Dessin</dc:subject>   <dc:subject xml:lang="fre">Musée Victor Hugo (Rives-en-Seine, Seine-Maritime)</dc:subject>   <dc:identifier>ISBN 2866351738</dc:identifier>   <dc:format>234 p. : ill en noir et en coul., couv. ill. en coul. ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb38907358v</srw:recordIdentifier>
+<srw:recordPosition>24</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20021106</ixm:attr>
+<ixm:attr name="LastModificationDate">20190916</ixm:attr>
+<mn:score>9.707564</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb40381003x</dc:identifier>   <dc:title>Dessins de Victor Hugo / Maison de Victor Hugo</dc:title>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>Maison de Victor Hugo (Paris)</dc:publisher>   <dc:date>1985</dc:date>   <dc:subject xml:lang="fre">Paris, Maison de Victor Hugo, collections, 1985</dc:subject>   <dc:subject xml:lang="fre">Hugo (Victor), dessins, reproductions</dc:subject>   <dc:identifier>ISBN 2901780016</dc:identifier>   <dc:format>Non paginé : ill. en noir et en coul. ; 27 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb40381003x</srw:recordIdentifier>
+<srw:recordPosition>25</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20000211</ixm:attr>
+<ixm:attr name="LastModificationDate">20000401</ixm:attr>
+<mn:score>9.691495</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb399019079</dc:identifier>   <dc:title>Musée Victor Hugo, Villequier : dessins et correspondances : acquisitions récentes</dc:title>   <dc:creator>Musée Victor Hugo (Rives-en-Seine, Seine-Maritime). Auteur du texte</dc:creator>   <dc:publisher>Conseil général de la Seine-Maritime (Rouen)</dc:publisher>   <dc:date>2001</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Dessin</dc:subject>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Correspondance</dc:subject>   <dc:subject xml:lang="fre">Musée Victor Hugo (Rives-en-Seine, Seine-Maritime)</dc:subject>   <dc:identifier>ISBN 290209339X</dc:identifier>   <dc:format>47 p. : ill., couv. ill. ; 23 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb399019079</srw:recordIdentifier>
+<srw:recordPosition>26</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20050110</ixm:attr>
+<ixm:attr name="LastModificationDate">20190916</ixm:attr>
+<mn:score>9.681126</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34165276b</dc:identifier>   <dc:title>Mon grand-père / Texte et aquarelles de Georges Victor-Hugo</dc:title>   <dc:creator>Hugo, Georges-Victor (1868-1925). Auteur du texte</dc:creator>   <dc:publisher>Libr. de France (Paris)</dc:publisher>   <dc:date>1931</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor</dc:subject>   <dc:format>71 p. ; In-4°</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34165276b</srw:recordIdentifier>
+<srw:recordPosition>27</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20190104</ixm:attr>
+<mn:score>9.6701765</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb36021715t</dc:identifier>   <dc:title>Souvenirs d'un matelot / Georges Hugo</dc:title>   <dc:creator>Hugo, Georges-Victor (1868-1925). Auteur du texte</dc:creator>   <dc:publisher>G. Charpentier et E. Fasquelle (Paris)</dc:publisher>   <dc:date>1896</dc:date>   <dc:format>279 p. ; 19 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb36021715t</srw:recordIdentifier>
+<srw:recordPosition>28</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19950501</ixm:attr>
+<ixm:attr name="LastModificationDate">19970420</ixm:attr>
+<mn:score>9.670022</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb365647575</dc:identifier>   <dc:title>Souvenirs d'un matelot / Georges Hugo</dc:title>   <dc:creator>Hugo, Georges-Victor (1868-1925). Auteur du texte</dc:creator>   <dc:publisher>G. Charpentier et E. Fasquelle (Paris)</dc:publisher>   <dc:date>1896</dc:date>   <dc:format>In-16, 279 p.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb365647575</srw:recordIdentifier>
+<srw:recordPosition>29</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19990201</ixm:attr>
+<ixm:attr name="LastModificationDate">20180607</ixm:attr>
+<mn:score>9.669657</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb37597057q</dc:identifier>   <dc:title>Mise en évidence expérimentale de facteurs génétiques lors d'une intoxication aiguë par le monoxyde de carbone</dc:title>   <dc:creator>Demaria Pesce, Victor-Hugo (1951-....). Auteur du texte</dc:creator>   <dc:publisher>ANRT (Grenoble 2)</dc:publisher>   <dc:date>1986</dc:date>   <dc:format>2 microfiches ; 105 x 148 mm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb37597057q</srw:recordIdentifier>
+<srw:recordPosition>30</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19911213</ixm:attr>
+<ixm:attr name="LastModificationDate">19970523</ixm:attr>
+<mn:score>9.667947</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34774792z</dc:identifier>   <dc:title>Le Rhin : le voyage de Victor Hugo en 1840 : [exposition], Maison de Victor Hugo, 25 mars-29 juin 1985, Ville de Paris</dc:title>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>Maison de Victor Hugo (Paris)</dc:publisher>   <dc:date>1985</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Dessin</dc:subject>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Voyages -- Rhin, Vallée du (Allemagne)</dc:subject>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Thèmes, motifs</dc:subject>   <dc:subject xml:lang="fre">Rhin, Vallée du (Allemagne) -- Dans l'art</dc:subject>   <dc:description>[Exposition. Paris, Maison de Victor Hugo. 1985]</dc:description>   <dc:description>[Exposition. Hugo, Victor. 1985]</dc:description>   <dc:identifier>ISBN 2901780008</dc:identifier>   <dc:format>168 p. : ill. en noir et en coul., couv. ill. en coul. ; 24 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34774792z</srw:recordIdentifier>
+<srw:recordPosition>31</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19860720</ixm:attr>
+<ixm:attr name="LastModificationDate">20190913</ixm:attr>
+<mn:score>9.666031</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb47499755c</dc:identifier>   <dc:title>Victor Hugo, "Les travailleurs de la mer" : [exposition, Maison Vacquerie-Musée Victor Hugo, Rives-en-Seine (Villequier), 18 mai-29 septembre 2024]</dc:title>   <dc:creator>Musée Victor Hugo (Rives-en-Seine, Seine-Maritime). Auteur du texte</dc:creator>   <dc:publisher>Éditions Octopus (Oissel-sur-Seine)</dc:publisher>   <dc:publisher>Département de la Seine-Maritime (Rouen)</dc:publisher>   <dc:date>2024</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885). Les travailleurs de la mer</dc:subject>   <dc:description>[Exposition. Villequier, Maison Vacquerie-Maison Victor Hugo. 2024]</dc:description>   <dc:identifier>ISBN 9782900314456</dc:identifier>   <dc:description>Code à barres commercial : EAN 9782900314456</dc:description>   <dc:format>1 vol. (176 p.) : ill. en coul. ; 26 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb47499755c</srw:recordIdentifier>
+<srw:recordPosition>32</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20240621</ixm:attr>
+<ixm:attr name="LastModificationDate">20240913</ixm:attr>
+<mn:score>9.66534</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb347723822</dc:identifier>   <dc:title>Hauteville House, maison d'exil de Victor Hugo / [Maison de Victor Hugo]</dc:title>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>la Ville (Paris)</dc:publisher>   <dc:date>1984</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Résidences et lieux familiers</dc:subject>   <dc:format>[20] p.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb347723822</srw:recordIdentifier>
+<srw:recordPosition>33</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19860720</ixm:attr>
+<ixm:attr name="LastModificationDate">20061108</ixm:attr>
+<mn:score>9.654054</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb36572416g</dc:identifier>   <dc:title>Fêtes de Victor Hugo à Guernesey , juillet 1914</dc:title>   <dc:creator>Société Victor Hugo. Auteur du texte</dc:creator>   <dc:publisher>Ollendorff (Paris)</dc:publisher>   <dc:date>1916</dc:date>   <dc:format>Gr. in-8 °, VI-121 p., pl.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb36572416g</srw:recordIdentifier>
+<srw:recordPosition>34</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19990201</ixm:attr>
+<ixm:attr name="LastModificationDate">20100923</ixm:attr>
+<mn:score>9.653741</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb33110416n</dc:identifier>   <dc:title>Léopoldine Hugo , une jeune fille romantique, par Pierre Georgel... Paris, Maison de Victor Hugo, novembre 1967-janvier 1968</dc:title>   <dc:creator>Georgel, Pierre (1943-....). Auteur du texte</dc:creator>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:creator>Musée Victor Hugo (Rives-en-Seine, Seine-Maritime). Auteur du texte</dc:creator>   <dc:publisher>Maison de Victor Hugo (Paris)</dc:publisher>   <dc:date>1967</dc:date>   <dc:subject xml:lang="fre">Hugo, Léopoldine</dc:subject>   <dc:description>[Exposition. 1967/1968]</dc:description>   <dc:format>In-16 (19 cm), 269 p., pl., couv. ill. 10 F. [D. L. 5921-68]</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb33110416n</srw:recordIdentifier>
+<srw:recordPosition>35</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20250122</ixm:attr>
+<mn:score>9.636705</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb30625013c</dc:identifier>   <dc:title>Souvenirs d'un matelot / Georges Hugo</dc:title>   <dc:creator>Hugo, Georges-Victor (1868-1925). Auteur du texte</dc:creator>   <dc:publisher>G. Charpentier et E. Fasquelle (Paris)</dc:publisher>   <dc:date>1896</dc:date>   <dc:subject xml:lang="fre">Hugo, Georges-Victor (1868-1925)</dc:subject>   <dc:format>In-18, 279 p.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb30625013c</srw:recordIdentifier>
+<srw:recordPosition>36</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20190922</ixm:attr>
+<mn:score>9.630263</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb454868632</dc:identifier>   <dc:title xml:lang="fre">Civilisation et barbarie ? : Victor Hugo et la culture chinoise : [exposition], Maison Vacquerie-Musée Victor Hugo, Rives-en-Seine (Villequier), du 24 mars au 27 mai 2018 / [catalogue par Isabelle Maraval]</dc:title>   <dc:title xml:lang="chi">Wen ming yu ye man : wei ke duo · yu guo yu zhong guo wen hua</dc:title>   <dc:title xml:lang="chi">文明与野蛮 : 维克多·雨果与中国文化</dc:title>   <dc:creator>Maraval, Isabelle (1958-....). Auteur du texte</dc:creator>   <dc:creator>Musée Victor Hugo (Rives-en-Seine, Seine-Maritime). Auteur du texte</dc:creator>   <dc:publisher>Département de la Seine-Maritime (Rouen)</dc:publisher>   <dc:date>2018</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Et la Chine</dc:subject>   <dc:subject xml:lang="fre">Sac et incendie du Jardin de la clarté parfaite (Pékin, Chine ; 1860)</dc:subject>   <dc:description>[Exposition. Villequier. 2018]</dc:description>   <dc:format>1 vol. (54 p.) : ill. en coul. ; 20 x 23 cm</dc:format>   <dc:language>fre</dc:language>   <dc:language>chi</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb454868632</srw:recordIdentifier>
+<srw:recordPosition>37</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20180416</ixm:attr>
+<ixm:attr name="LastModificationDate">20190911</ixm:attr>
+<mn:score>9.596385</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb35544132m</dc:identifier>   <dc:title>Enfance et jeunesse de Victor Hugo / Ville de Paris, maison de Victor Hugo</dc:title>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>[s.n.]</dc:publisher>   <dc:date>1952</dc:date>   <dc:format>XX-183 p. ; 19 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb35544132m</srw:recordIdentifier>
+<srw:recordPosition>38</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19930106</ixm:attr>
+<ixm:attr name="LastModificationDate">19970324</ixm:attr>
+<mn:score>9.595229</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb355441360</dc:identifier>   <dc:title>Maturité de Victor Hugo : 1828-1848 / Ville de Paris, maison de Victor Hugo</dc:title>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>[s.n.]</dc:publisher>   <dc:date>1953</dc:date>   <dc:format>XI-427 p. ; 19 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb355441360</srw:recordIdentifier>
+<srw:recordPosition>39</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19930106</ixm:attr>
+<ixm:attr name="LastModificationDate">19970324</ixm:attr>
+<mn:score>9.595229</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb36564756t</dc:identifier>   <dc:title>Mon grand-père . [Notes et souvenirs.] Texte et aquarelles de Georges Victor Hugo</dc:title>   <dc:creator>Hugo, Georges-Victor (1868-1925). Auteur du texte</dc:creator>   <dc:publisher>Librairie de France (Paris)</dc:publisher>   <dc:date>1931</dc:date>   <dc:format>In-4 °, 73 p., pl. en coul. et suite des pl.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb36564756t</srw:recordIdentifier>
+<srw:recordPosition>40</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19990201</ixm:attr>
+<ixm:attr name="LastModificationDate">20100923</ixm:attr>
+<mn:score>9.594193</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb35439374x</dc:identifier>   <dc:title>«L'Album» de Léopoldine Hugo</dc:title>   <dc:creator>Georgel, Pierre (1943-....). Auteur du texte</dc:creator>   <dc:contributor>Musée Victor Hugo (Rives-en-Seine, Seine-Maritime). Éditeur scientifique</dc:contributor>   <dc:publisher>Musée Victor-Hugo (76-Villequier)</dc:publisher>   <dc:date>1967</dc:date>   <dc:format>24 cm, 95 p., fac.-sim. 7 F</dc:format>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb35439374x</srw:recordIdentifier>
+<srw:recordPosition>41</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19910622</ixm:attr>
+<ixm:attr name="LastModificationDate">20100923</ixm:attr>
+<mn:score>9.586027</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb35396967n</dc:identifier>   <dc:title>Dessins de Victor Hugo : [exposition], Musée Victor Hugo, Villequier, juin-octobre 1971, Maison de Victor Hugo, Paris, novembre 1971-janvier 1972 / [catalogue] par Pierre Georgel</dc:title>   <dc:contributor>Masson, André (1896-1987). Préfacier</dc:contributor>   <dc:creator>Georgel, Pierre (1943-....). Auteur du texte</dc:creator>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:creator>Musée Victor Hugo (Rives-en-Seine, Seine-Maritime). Auteur du texte</dc:creator>   <dc:publisher>Maison de Victor Hugo (Paris)</dc:publisher>   <dc:date>1971</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Dessin</dc:subject>   <dc:description>[Exposition. Villequier. 1971]</dc:description>   <dc:description>[Exposition. Hugo, Victor. 1971/1972]</dc:description>   <dc:description>[Exposition. Paris, Maison de Victor Hugo. 1971/1972]</dc:description>   <dc:format>263 p. : ill., couv. ill. en coul. ; 22 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb35396967n</srw:recordIdentifier>
+<srw:recordPosition>42</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19910406</ixm:attr>
+<ixm:attr name="LastModificationDate">20190914</ixm:attr>
+<mn:score>9.568047</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb331113127</dc:identifier>   <dc:title>Leopoldine Hugo , une jeune fille romantique, par Pierre Georgel, Musée Victor Hugo,... Villequier, juin-octobre 1967</dc:title>   <dc:creator>Georgel, Pierre (1943-....). Auteur du texte</dc:creator>   <dc:creator>Musée Victor Hugo (Rives-en-Seine, Seine-Maritime). Auteur du texte</dc:creator>   <dc:publisher>Musée Victor Hugo (Villequier)</dc:publisher>   <dc:date>1967</dc:date>   <dc:subject xml:lang="fre">Hugo, Léopoldine</dc:subject>   <dc:description>[Exposition. 1967]</dc:description>   <dc:format>In-16 (19 cm), 269 p., pl., couv. ill. 10 F. [D. L. 19630-67]</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb331113127</srw:recordIdentifier>
+<srw:recordPosition>43</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20250122</ixm:attr>
+<mn:score>9.543161</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb409665870</dc:identifier>   <dc:title>Juliette Drouet, Victor Hugo : "mon âme à ton coeur s'est donnée" : [exposition, Paris, Maison de Victor Hugo, 1er décembre 2006-4 mars 2007] / [organisée par la Maison de Victor Hugo]</dc:title>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte / Autrice du texte</dc:creator>   <dc:publisher>Maison de Victor Hugo (Paris)</dc:publisher>   <dc:date>2006</dc:date>   <dc:subject xml:lang="fre">Drouet, Juliette (1806-1883)</dc:subject>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885)</dc:subject>   <dc:description>[Exposition. Paris, Maison de Victor Hugo. 2006/2007]</dc:description>   <dc:identifier>ISBN 2879009863</dc:identifier>   <dc:description>Code à barres commercial : EAN 9782879009865</dc:description>   <dc:format>1 volume 159 p ; 27 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb409665870</srw:recordIdentifier>
+<srw:recordPosition>44</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20070111</ixm:attr>
+<ixm:attr name="LastModificationDate">20260917</ixm:attr>
+<mn:score>9.510479</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb344743852</dc:identifier>   <dc:title>Annuaire / Association des anciens élèves du lycée Victor-Hugo</dc:title>   <dc:description>Variante(s) de titre : Annuaire - Association des anciens élèves du lycée Victor-Hugo</dc:description>   <dc:creator>Association amicale des anciens élèves du lycée Victor Hugo (Besançon). Auteur du texte</dc:creator>   <dc:publisher>[s.n.] (Besançon)</dc:publisher>   <dc:date>19??-19??</dc:date>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">publication en série imprimée</dc:type>   <dc:type xml:lang="eng">printed serial</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb344743852</srw:recordIdentifier>
+<srw:recordPosition>45</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19930819</ixm:attr>
+<ixm:attr name="LastModificationDate">20200108</ixm:attr>
+<mn:score>9.488812</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb339279378</dc:identifier>   <dc:title>Ville de Paris - Maison de Victor Hugo. Victor Hugo et les artistes romantiques , 23-juin. 2 septembre 1951. [Catalogue par Madeleine Dubois. Préface par Jean Sergent.]</dc:title>   <dc:contributor>Sergent, Jean. Préfacier</dc:contributor>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:contributor>Maison de Victor Hugo (Paris). Éditeur scientifique</dc:contributor>   <dc:publisher>impr. de Frazier-Soye (Paris)</dc:publisher>   <dc:date>195?</dc:date>   <dc:description>[Exposition. Paris. Maison de Victor Hugo. 1951]</dc:description>   <dc:description>[Exposition. Paris, Maison de Victor Hugo. 1951]</dc:description>   <dc:format>In-16, 136 p., pl., portr.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb339279378</srw:recordIdentifier>
+<srw:recordPosition>46</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20250122</ixm:attr>
+<mn:score>9.487832</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb31354077m</dc:identifier>   <dc:title>Catalogue. [Préface de Paul Souchon.] / Ville de Paris. Maison de Victor Hugo</dc:title>   <dc:creator>Sergent, Jean. Auteur du texte</dc:creator>   <dc:contributor>Maison de Victor Hugo (Paris). Éditeur scientifique</dc:contributor>   <dc:publisher>impr. de Hénon (Paris)</dc:publisher>   <dc:date>1934</dc:date>   <dc:format>In-16, 147 p., pl.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb31354077m</srw:recordIdentifier>
+<srw:recordPosition>47</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20200513</ixm:attr>
+<mn:score>9.475448</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb33927939z</dc:identifier>   <dc:title>[Invitations.]</dc:title>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:date>1959-????</dc:date>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb33927939z</srw:recordIdentifier>
+<srw:recordPosition>48</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">19970701</ixm:attr>
+<mn:score>9.466799</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb33111286h</dc:identifier>   <dc:title>Une Visite à la maison de Victor Hugo à Vianden , catalogue des principaux objets exposés</dc:title>   <dc:creator>Maison de Victor-Hugo (Vianden, Luxembourg). Auteur du texte</dc:creator>   <dc:publisher>impr. P. Linden (Luxembourg)</dc:publisher>   <dc:date>1962</dc:date>   <dc:format>In-8° (21 cm), 15 p., portrait à la couv. [Don 3491-62]</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb33111286h</srw:recordIdentifier>
+<srw:recordPosition>49</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">19970701</ixm:attr>
+<mn:score>9.466349</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb469172489</dc:identifier>   <dc:title>Voir des étoiles : le théâtre de Victor Hugo mis en scène : guide de l'exposition : [exposition], Paris, maison de Victor Hugo, 12 avril-28 juillet 2002</dc:title>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>Paris musées (Paris)</dc:publisher>   <dc:date>2002</dc:date>   <dc:format>1 vol. (31 p.) : ill. ; 34 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb469172489</srw:recordIdentifier>
+<srw:recordPosition>50</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20211123</ixm:attr>
+<ixm:attr name="LastModificationDate">20211123</ixm:attr>
+<mn:score>9.465724</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb347396802</dc:identifier>   <dc:title>Le Musée Victor Hugo de Villequier / [rédigé par] Élisabeth Chirol</dc:title>   <dc:contributor>Chirol, Élisabeth (1915-2001). Rédacteur</dc:contributor>   <dc:creator>Musée Victor Hugo (Rives-en-Seine, Seine-Maritime). Auteur du texte</dc:creator>   <dc:publisher>Musée Victor Hugo (Villequier)</dc:publisher>   <dc:date>1982</dc:date>   <dc:subject xml:lang="fre">Musée Victor Hugo (Rives-en-Seine, Seine-Maritime)</dc:subject>   <dc:format>160 p. : ill., couv. ill. en coul. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb347396802</srw:recordIdentifier>
+<srw:recordPosition>51</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19860717</ixm:attr>
+<ixm:attr name="LastModificationDate">20100922</ixm:attr>
+<mn:score>9.455958</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb41373701k</dc:identifier>   <dc:title>"Les misérables", un roman inconnu ? : [petit journal de l'exposition, Maison de Victor Hugo, 10 octobre 2008-1er février 2009]</dc:title>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>Paris musées (Paris)</dc:publisher>   <dc:date>2008</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885). Les misérables</dc:subject>   <dc:description>[Exposition. Paris, Maison de Victor Hugo. 2008/2009]</dc:description>   <dc:identifier>ISBN 9782759600670</dc:identifier>   <dc:description>Code à barres commercial : EAN 9782759600618</dc:description>   <dc:format>1 vol. (32 p.) : ill. en noir et en coul., couv. ill. en coul. ; 24 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb41373701k</srw:recordIdentifier>
+<srw:recordPosition>52</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20081106</ixm:attr>
+<ixm:attr name="LastModificationDate">20190912</ixm:attr>
+<mn:score>9.42982</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb44491735d</dc:identifier>   <dc:title>Éros Hugo : entre pudeur et excès : [exposition, Paris, Maison de Victor Hugo, 19 novembre 2015-21 février 2016]</dc:title>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>Maison de Victor Hugo (Paris)</dc:publisher>   <dc:publisher>Paris musées (Paris)</dc:publisher>   <dc:date>2015</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Sexualité</dc:subject>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Femmes</dc:subject>   <dc:description>[Exposition. Paris, Maison de Victor Hugo. 2015]</dc:description>   <dc:identifier>ISBN 9782759603077</dc:identifier>   <dc:description>Code à barres commercial : EAN 9782759603077</dc:description>   <dc:format>1 vol. (205 p.) : ill. en coul. ; 24 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb44491735d</srw:recordIdentifier>
+<srw:recordPosition>53</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20160121</ixm:attr>
+<ixm:attr name="LastModificationDate">20190913</ixm:attr>
+<mn:score>9.429369</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb38696292v</dc:identifier>   <dc:title>Les Jaloux, étude sur Shakespeare, traduction de M. François-Victor Hugo...</dc:title>   <dc:creator>Feuillet, Alfred (1834-1863). Auteur du texte</dc:creator>   <dc:contributor>Hugo, François-Victor (1828-1873). Traducteur</dc:contributor>   <dc:publisher>E. Dentu (Paris)</dc:publisher>   <dc:date>1863</dc:date>   <dc:format>45 p. ; In-16</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb38696292v</srw:recordIdentifier>
+<srw:recordPosition>54</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20041209</ixm:attr>
+<ixm:attr name="LastModificationDate">20041209</ixm:attr>
+<mn:score>9.42616</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb37481664t</dc:identifier>   <dc:title>Les misérables : 1862-1962 : [exposition] novembre 1962-février 1963, Ville de Paris, Maison de Victor Hugo</dc:title>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>Maison de Victor Hugo (Paris)</dc:publisher>   <dc:date>1962</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885)</dc:subject>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885). Les misérables</dc:subject>   <dc:description>[Exposition. Paris, Maison de Victor Hugo. 1962-1963]</dc:description>   <dc:format>Ill. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb37481664t</srw:recordIdentifier>
+<srw:recordPosition>55</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19950928</ixm:attr>
+<ixm:attr name="LastModificationDate">20190912</ixm:attr>
+<mn:score>9.4222555</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb454305287</dc:identifier>   <dc:title>Hugonis de Sancto Victore De Oratione dominica ; de septem donis Spiritus Sancti / cura et studio Francesco Siri</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:contributor>Siri, Francesco. Éditeur scientifique</dc:contributor>   <dc:publisher>Brepols (Turnhout)</dc:publisher>   <dc:date>2017</dc:date>   <dc:description>Collection : Corpus Christianorum. Continuatio Mediaevalis ; 276</dc:description>   <dc:description>Collection : Hugonis de Sancto Victore. Opera ; tomus V</dc:description>   <dc:identifier>ISBN 9782503564517</dc:identifier>   <dc:format>1 vol. (228 pages) : tableaux ; 25 cm</dc:format>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb454305287</srw:recordIdentifier>
+<srw:recordPosition>56</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20180119</ixm:attr>
+<ixm:attr name="LastModificationDate">20260320</ixm:attr>
+<mn:score>9.413923</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb44250808c</dc:identifier>   <dc:title>Shakespeare / [traduction française par François-Victor Hugo] ; Maya Boisgallays, cinq eaux-fortes</dc:title>   <dc:contributor>Boisgallays, Maya (1949-....). Illustrateur. Graveur</dc:contributor>   <dc:contributor>Hugo, François-Victor (1828-1873). Traducteur</dc:contributor>   <dc:publisher>Éditions Bellaria (Paris)</dc:publisher>   <dc:date>2004</dc:date>   <dc:format>1 vol. ( [14] f.-[4] f. de pl.) : ill. ; 28 cm</dc:format>   <dc:language>eng</dc:language>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb44250808c</srw:recordIdentifier>
+<srw:recordPosition>57</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20150102</ixm:attr>
+<ixm:attr name="LastModificationDate">20150115</ixm:attr>
+<mn:score>9.410452</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb33249194k</dc:identifier>   <dc:title>Status, Oeuvres d'art et objets appartenant à l'Association. Assemblée générale. Situation financière, banquet annuel. Commission administrative. Lauréats depuis la fondation. Membres fondateurs et titulaires. Membres décédés. Plaques commémoratives (1870-1871). Livre d'or (1914-1918)</dc:title>   <dc:contributor>Association amicale des anciens élèves du lycée Victor Hugo (Besançon). Éditeur scientifique</dc:contributor>   <dc:publisher>Impr. Millot frères, 20, rue Gambetta (Besançon)</dc:publisher>   <dc:date>1925</dc:date>   <dc:format>In-8°, 83 p. [7422]</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb33249194k</srw:recordIdentifier>
+<srw:recordPosition>58</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">19970701</ixm:attr>
+<mn:score>9.410009</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34478501q</dc:identifier>   <dc:title>Bulletin de l'Association des anciens élèves du Lycée Victor Hugo</dc:title>   <dc:creator>Association amicale des anciens élèves du lycée Victor Hugo (Besançon). Auteur du texte</dc:creator>   <dc:publisher>Association amicale des anciens élèves du Lycée Victor-Hugo (Besançon)</dc:publisher>   <dc:date>19??</dc:date>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">publication en série imprimée</dc:type>   <dc:type xml:lang="eng">printed serial</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34478501q</srw:recordIdentifier>
+<srw:recordPosition>59</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19930929</ixm:attr>
+<ixm:attr name="LastModificationDate">20230601</ixm:attr>
+<mn:score>9.409373</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb327053884</dc:identifier>   <dc:title>Association fraternelle des anciens élèves du Lycée ["puis" Victor Hugo] de Besançon. Circulaire ["puis" Rapport du secrétaire à l'assemblée générale... ; ... Assemblée générale... banquet annuel...]</dc:title>   <dc:description>Variante(s) de titre : Avec un fascicule publié en 1936 sous le titre de : "Livre d'or contenant les listes glorieuses des anciens élèves morts pour la patrie de 1870 à 1918" et un fascicule publié en 1966 à l'occasion du centenaire de l'Association, intitulé : "Bulletin de l'Association des anciens élèves du Lycée Victor-Hugo de Besançon 1866/1966"</dc:description>   <dc:creator>Association amicale des anciens élèves du lycée Victor Hugo (Besançon). Auteur du texte</dc:creator>   <dc:publisher>[s.n.?] (Besançon)</dc:publisher>   <dc:date>1866-1935</dc:date>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">publication en série imprimée</dc:type>   <dc:type xml:lang="eng">printed serial</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb327053884</srw:recordIdentifier>
+<srw:recordPosition>60</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20230615</ixm:attr>
+<mn:score>9.408535</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb474811547</dc:identifier>   <dc:title>De sacramentis Hugues de Saint-Victor</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:date>1485</dc:date>   <dc:subject xml:lang="fre">Sacrements</dc:subject>   <dc:format>155 f. ; in-folio</dc:format>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb474811547</srw:recordIdentifier>
+<srw:recordPosition>61</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20240527</ixm:attr>
+<ixm:attr name="LastModificationDate">20260119</ixm:attr>
+<mn:score>9.391254</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb30626359r</dc:identifier>   <dc:title>Hugonis de Sancto Victore Didascalion et alia opuscula</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:contributor>Hugues de Saint-Victor (1096?-1141). Auteur prétendu du texte</dc:contributor>   <dc:creator>Richard de Saint-Victor (1110?-1173). Auteur du texte</dc:creator>   <dc:contributor>Hugues de Saint-Victor (1096?-1141). Auteur prétendu du texte</dc:contributor>   <dc:publisher>[imprimeur du Henricus Ariminensis, H 1649 (= Georg Reyser ou Heinrich Eggestein ?)] (Strasbourg)</dc:publisher>   <dc:date>1474</dc:date>   <dc:description>Comprend : De laude caritatis ; De modo orandi ; De contemptu mundi ; De Lya et Rachel uxoribus Jacob ; Summa sententiarum</dc:description>   <dc:format>In-folio</dc:format>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb30626359r</srw:recordIdentifier>
+<srw:recordPosition>62</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20240723</ixm:attr>
+<mn:score>9.391164</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb35726723q</dc:identifier>   <dc:title>Jean Hugo : Maison de Victor Hugo, 22 novembre 1994-26 février 1995... [Paris]</dc:title>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>Paris-musées (Paris)</dc:publisher>   <dc:date>1994</dc:date>   <dc:subject xml:lang="fre">Hugo, Jean (1894-1984)</dc:subject>   <dc:description>[Exposition. Paris, Maison de Victor Hugo. 1994/1995]</dc:description>   <dc:identifier>ISBN 287900179X</dc:identifier>   <dc:format>111 p. : ill. en noir et en coul., couv. ill. en coul. ; 27 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb35726723q</srw:recordIdentifier>
+<srw:recordPosition>63</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19941215</ixm:attr>
+<ixm:attr name="LastModificationDate">20190912</ixm:attr>
+<mn:score>9.390122</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb32263661t</dc:identifier>   <dc:title>Incipit expositio Hugonis de Sancto Victore super regulam beati Augustini episcopi</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb32263661t</srw:recordIdentifier>
+<srw:recordPosition>64</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">19970701</ixm:attr>
+<mn:score>9.366704</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb306263510</dc:identifier>   <dc:title>Incipit Expositio Hugonis de S. Victore,... super regulam beati Augustini episcopi</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:publisher>apud H. Frovam (Comi)</dc:publisher>   <dc:date>1602</dc:date>   <dc:format>In-8° , 73 p. et la table</dc:format>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb306263510</srw:recordIdentifier>
+<srw:recordPosition>65</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">19970701</ixm:attr>
+<mn:score>9.366704</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb322636625</dc:identifier>   <dc:title>Practica geometriae. [Publié par l'abbé Roger Baron.]</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:date>1956</dc:date>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb322636625</srw:recordIdentifier>
+<srw:recordPosition>66</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">19970701</ixm:attr>
+<mn:score>9.366704</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb30626346d</dc:identifier>   <dc:title>Hugonis de Sancto Victore,... Opera, tribus tomis digesta, nunc a donno ["sic"] Thoma Garzonio de Bagnacaballo postillis... ac vita auctoris expolita...</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:publisher>apud J. B. Somaschum (Venetiis)</dc:publisher>   <dc:date>1588</dc:date>   <dc:format>3 vol. in-fol.</dc:format>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb30626346d</srw:recordIdentifier>
+<srw:recordPosition>67</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">19970701</ixm:attr>
+<mn:score>9.366704</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb30626360z</dc:identifier>   <dc:title>M. Hugonis a Sto Victore,... de Laude caritatis libellus... Edidit Frid. Guil. Pistoth. Schöpff,...</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:publisher>apud Adler et Dietze (Dresdae)</dc:publisher>   <dc:date>1857</dc:date>   <dc:format>In-8° , 15 p.</dc:format>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb30626360z</srw:recordIdentifier>
+<srw:recordPosition>68</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20191219</ixm:attr>
+<mn:score>9.366394</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb32263663h</dc:identifier>   <dc:title>Hugues de Saint-Victor lexicographe, trois textes inédits. [Diffinitiones magistri Hugonis, de Ponderibus et mensuris, Mappamundi.]</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:date>1956</dc:date>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb32263663h</srw:recordIdentifier>
+<srw:recordPosition>69</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">19970701</ixm:attr>
+<mn:score>9.366394</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb30626347r</dc:identifier>   <dc:title>Hugonis de Sancto Victore,... Opera, tribus tomis digesta, nunc a donno ["sic"] Thoma Garzonio de Bagnacaballo postillis... ac vita auctoris expolita...</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:publisher>sumpt. A. Hierat, excudebat J. Volmari (Moguntiae)</dc:publisher>   <dc:date>1617</dc:date>   <dc:format>3 tomes en 1 vol. in-fol.</dc:format>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb30626347r</srw:recordIdentifier>
+<srw:recordPosition>70</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20191220</ixm:attr>
+<mn:score>9.366394</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb32263658x</dc:identifier>   <dc:title>Hugonis de Sancto Victore. De contemplatione et ejus speciebus. Introduction, texte, traduction et notes... par Roger Baron</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:date>1954</dc:date>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb32263658x</srw:recordIdentifier>
+<srw:recordPosition>71</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">19970701</ixm:attr>
+<mn:score>9.366394</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb30626365p</dc:identifier>   <dc:title>Le livre de l'arre de l'espouse</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:publisher>Simon Vostre (Paris)</dc:publisher>   <dc:date>1501-1521</dc:date>   <dc:format>[36] f. ; in-8</dc:format>   <dc:language>frm</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb30626365p</srw:recordIdentifier>
+<srw:recordPosition>72</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20221124</ixm:attr>
+<mn:score>9.36461</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34826128t</dc:identifier>   <dc:title>Manifestations du centenaire 1985 / [Ministère de la culture,] Comité national Victor Hugo ; [réd. par Jean-Paul Sêtre]</dc:title>   <dc:creator>Comité national Victor Hugo (France). Auteur du texte</dc:creator>   <dc:publisher>Comité national Victor Hugo (Paris (60 rue des Francs-Bourgeois, 75141 Cedex 03))</dc:publisher>   <dc:date>1985</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Anniversaires</dc:subject>   <dc:format>84 p. : ill., couv. ill. ; 21 cm.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34826128t</srw:recordIdentifier>
+<srw:recordPosition>73</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19860720</ixm:attr>
+<ixm:attr name="LastModificationDate">20031223</ixm:attr>
+<mn:score>9.360585</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb369463403</dc:identifier>   <dc:title>L'oeuvre de Hugues de Saint-Victor</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:publisher>Brepols (Tournai)</dc:publisher>   <dc:date>1997</dc:date>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb369463403</srw:recordIdentifier>
+<srw:recordPosition>74</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19990531</ixm:attr>
+<ixm:attr name="LastModificationDate">20010714</ixm:attr>
+<mn:score>9.359591</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb38853664h</dc:identifier>   <dc:title>Voir des étoiles : le théatre de Victor Hugo mis en scène : [exposition, Paris], Maison de Victor Hugo, 12 avril-28 juillet 2002</dc:title>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>Paris musées (Paris)</dc:publisher>   <dc:date>2002</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Mise en scène</dc:subject>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Théâtre (genre littéraire)</dc:subject>   <dc:description>[Exposition. Paris, Maison de Victor Hugo. 2002]</dc:description>   <dc:identifier>ISBN 2879006007</dc:identifier>   <dc:format>400 p. : ill. en noir et en coul., couv. ill. ; 29 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb38853664h</srw:recordIdentifier>
+<srw:recordPosition>75</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20020716</ixm:attr>
+<ixm:attr name="LastModificationDate">20190914</ixm:attr>
+<mn:score>9.355928</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb320625311</dc:identifier>   <dc:title>La Paix par l'organisation internationale / Victor-Hugo Duras</dc:title>   <dc:creator>Duras, Victor-Hugo. Auteur du texte</dc:creator>   <dc:date>1910</dc:date>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb320625311</srw:recordIdentifier>
+<srw:recordPosition>76</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20180606</ixm:attr>
+<mn:score>9.354938</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb35216474q</dc:identifier>   <dc:title>Chuño Palma : novela de cholos / Victor Hugo Villegas</dc:title>   <dc:creator>Villegas, Victor Hugo. Auteur du texte</dc:creator>   <dc:publisher>[s.n.] (La Paz)</dc:publisher>   <dc:date>1948</dc:date>   <dc:format>170 p. ; 20 cm</dc:format>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb35216474q</srw:recordIdentifier>
+<srw:recordPosition>77</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19901212</ixm:attr>
+<ixm:attr name="LastModificationDate">19901212</ixm:attr>
+<mn:score>9.354938</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb393065092</dc:identifier>   <dc:title>De laude caritatis... De substantia dilectionis... Quot vicibus capta fuerit Hierusalem...</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:publisher>[Antoine Caillaut] (Paris)</dc:publisher>   <dc:date>1483</dc:date>   <dc:format>in-4</dc:format>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb393065092</srw:recordIdentifier>
+<srw:recordPosition>78</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20011219</ixm:attr>
+<ixm:attr name="LastModificationDate">20180717</ixm:attr>
+<mn:score>9.345474</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb46795851p</dc:identifier>   <dc:title>Regula canonicorum regularium per Hugonem de Sancto Victore commentario declarata</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:publisher>Jehan Petit (Paris)</dc:publisher>   <dc:date>1513</dc:date>   <dc:format>In-8</dc:format>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb46795851p</srw:recordIdentifier>
+<srw:recordPosition>79</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20210525</ixm:attr>
+<ixm:attr name="LastModificationDate">20210525</ixm:attr>
+<mn:score>9.344609</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb306263692</dc:identifier>   <dc:title>Le Paradis de l'âme chrétienne, ou Élévations, prières, doux entretiens... par Hugues de Saint-Victor,... Traduit par le F. L.</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:publisher>Barbou frères (Limoges)</dc:publisher>   <dc:date>1847</dc:date>   <dc:format>In-16, 255 p.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb306263692</srw:recordIdentifier>
+<srw:recordPosition>80</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">19970701</ixm:attr>
+<mn:score>9.334897</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb306263708</dc:identifier>   <dc:title>Le Sanctuaire de la vie intérieure, ou Moyen d'édifier en soi la maison de la conscience, par Hugues de Saint-Victor,... Traduit par le F. L.</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:publisher>Barbou frères (Limoges)</dc:publisher>   <dc:date>1847</dc:date>   <dc:format>In-16, 254 p.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb306263708</srw:recordIdentifier>
+<srw:recordPosition>81</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">19970701</ixm:attr>
+<mn:score>9.334446</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb30626368q</dc:identifier>   <dc:title>L'Échelle de Jacob, ou l'Homme élevé au ciel par la connaissance de lui-même, par Hugues de Saint-Victor,... Traduit par le F. L.</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:publisher>Barbou frères (Limoges)</dc:publisher>   <dc:date>1847</dc:date>   <dc:format>In-18, 252 p.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb30626368q</srw:recordIdentifier>
+<srw:recordPosition>82</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">19970701</ixm:attr>
+<mn:score>9.334446</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb306263630</dc:identifier>   <dc:title>De sacramentis</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:publisher>[imprimeur du Jordanus de Quedlinburg, H 9438 (= Georg Husner ?)] (Strasbourg)</dc:publisher>   <dc:date>1485</dc:date>   <dc:format>In-folio</dc:format>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb306263630</srw:recordIdentifier>
+<srw:recordPosition>83</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20240723</ixm:attr>
+<mn:score>9.332677</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb35690664v</dc:identifier>   <dc:title>Hauteville house / [Maison de Victor Hugo ; réd. par Sophie Grossiord]</dc:title>   <dc:contributor>Grossiord, Sophie. Rédacteur</dc:contributor>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>Paris-musées (Paris)</dc:publisher>   <dc:date>1994</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Résidences et lieux familiers -- Guernesey (GB)</dc:subject>   <dc:subject xml:lang="fre">Hauteville House (Saint-Pierre-Port, GB)</dc:subject>   <dc:identifier>ISBN 2879001706</dc:identifier>   <dc:format>79 p. : ill. en noir et en coul., couv. ill. en coul. ; 24 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb35690664v</srw:recordIdentifier>
+<srw:recordPosition>84</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19940517</ixm:attr>
+<ixm:attr name="LastModificationDate">20230110</ixm:attr>
+<mn:score>9.316828</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb306263452</dc:identifier>   <dc:title>Primo hoc tomo Operum M. Hugonis a S. Victore contenta : Epistola nuncupatoria et epigrammata, fo. II ; opera tribus tomis hactenus impressa, fo. III ; loca Bibliorum sacrorum ab Hugone exposita, fo. IIII ; deinde primi tomi tabula et post erratula. [Secundus (et tertius) operum Hugonis a S. Victore tomus.] Quae omnia vaenundantur... Jodoco Badio Ascensio et Joanni Parvo. - "A la fin du T. III" : Quae omnia... impressa sunt typis et industria Jodoci Badii Ascensii, suppeditantibus archetypos et coadjuvantibus religiosis... patribus domus Sancti Victoris in Pomoerio Parisino. Finem autem optatum acceperunt ad idus octob. anno 1526...</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:date>1526</dc:date>   <dc:format>3 vol. in-fol., car. rom., à 2 col., titres en r. et noir avec encadr. et marque de Josse Bade gr. s. bois</dc:format>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb306263452</srw:recordIdentifier>
+<srw:recordPosition>85</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20150708</ixm:attr>
+<mn:score>9.307178</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb306263483</dc:identifier>   <dc:title>Hugonis de S. Victore,... Opera omnia, tribus tomis digesta... cum vita ipsius antehac nusquam edita, studio et industria canonicorum regularium regalis abbatiae S. Victoris Parisiensis</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:publisher>sumpt. J. Berthelin (Rothomagi)</dc:publisher>   <dc:date>1648</dc:date>   <dc:format>3 vol. in-fol.</dc:format>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb306263483</srw:recordIdentifier>
+<srw:recordPosition>86</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20150709</ixm:attr>
+<mn:score>9.298281</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb35604942g</dc:identifier>   <dc:title>Inventaire des sculptures / Maison de Victor Hugo ; [réd.], Brigitte de Montclos</dc:title>   <dc:contributor>Montclos, Brigitte de. Rédacteur</dc:contributor>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>Ed. Paris-Musées (Paris)</dc:publisher>   <dc:date>1993</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Dans l'art</dc:subject>   <dc:subject xml:lang="fre">Sculpture -- Thèmes, motifs</dc:subject>   <dc:subject xml:lang="fre">Maison de Victor Hugo (Paris)</dc:subject>   <dc:identifier>ISBN 2879001005</dc:identifier>   <dc:format>62 p. : ill., couv. ill. ; 24 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb35604942g</srw:recordIdentifier>
+<srw:recordPosition>87</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19931026</ixm:attr>
+<ixm:attr name="LastModificationDate">20190916</ixm:attr>
+<mn:score>9.290384</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb30638652v</dc:identifier>   <dc:title>Orthodontia and orthopaedia of the face / by Victor Hugo Jackson,...</dc:title>   <dc:creator>Jackson, Victor Hugo. Auteur du texte</dc:creator>   <dc:publisher>J. B. Lippincott (Philadelphia)</dc:publisher>   <dc:date>1904</dc:date>   <dc:subject xml:lang="fre">Appareil masticateur -- Maladies -- Thérapeutique</dc:subject>   <dc:format>1 vol. (517 p.) : ill. ; in-8</dc:format>   <dc:language>eng</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb30638652v</srw:recordIdentifier>
+<srw:recordPosition>88</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20210113</ixm:attr>
+<mn:score>9.289747</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb38859498q</dc:identifier>   <dc:title>Critique / Victor Hugo ; présentation de Jean-Pierre Reynaud ; [publ. par le Groupe inter-universitaire de travail sur Victor Hugo, Paris VII-Jussieu] ; [sous la dir. de Jacques Seebacher et Guy Rosa]</dc:title>   <dc:creator>Hugo, Victor (1802-1885). Auteur du texte</dc:creator>   <dc:contributor>Seebacher, Jacques (1930-2008). Directeur de publication</dc:contributor>   <dc:contributor>Rosa, Guy (1945-....). Directeur de publication</dc:contributor>   <dc:contributor>Reynaud, Jean-Pierre (1931-....). Préfacier</dc:contributor>   <dc:contributor>Groupe Hugo (Paris). Éditeur scientifique</dc:contributor>   <dc:publisher>R. Laffont (Paris)</dc:publisher>   <dc:date>2002</dc:date>   <dc:description>Collection : Bouquins</dc:description>   <dc:identifier>ISBN 2221096800</dc:identifier>   <dc:format>XIII-756 p. : couv. ill. ; 20 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb38859498q</srw:recordIdentifier>
+<srw:recordPosition>89</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20020726</ixm:attr>
+<ixm:attr name="LastModificationDate">20260320</ixm:attr>
+<mn:score>9.285229</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb313283931</dc:identifier>   <dc:title>De Laude caritatis libellus...</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:contributor>Schöpff, Frid Guil Pistoth. Éditeur scientifique</dc:contributor>   <dc:date>1857</dc:date>   <dc:format>In-8°</dc:format>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb313283931</srw:recordIdentifier>
+<srw:recordPosition>90</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20191219</ixm:attr>
+<mn:score>9.269447</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb30626364b</dc:identifier>   <dc:title>Hugo von St. Victor. "Soliloquium de Arrha animae" und "de Vanitate mundi" / herausgegeben von Karl Müller,...</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:contributor>Müller, Karl (profr de théologie). Éditeur scientifique</dc:contributor>   <dc:publisher>A. Marcus und E. Weber (Bonn)</dc:publisher>   <dc:date>1913</dc:date>   <dc:description>Collection : Kleine Texte für Vorlesungen und Übungen ; 123</dc:description>   <dc:format>52 p. ; in-8</dc:format>   <dc:language>ger</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb30626364b</srw:recordIdentifier>
+<srw:recordPosition>91</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20191220</ixm:attr>
+<mn:score>9.269154</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb31053924r</dc:identifier>   <dc:title>A bibliography of the writings of baron Lahontan / by Victor Hugo Paltsits,...</dc:title>   <dc:creator>Paltsits, Victor Hugo. Auteur du texte</dc:creator>   <dc:publisher>A. C. Mc Clurg (Chicago)</dc:publisher>   <dc:date>1905</dc:date>   <dc:format>P. LI-XCIII ; in-16</dc:format>   <dc:language>eng</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb31053924r</srw:recordIdentifier>
+<srw:recordPosition>92</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19970701</ixm:attr>
+<ixm:attr name="LastModificationDate">20250128</ixm:attr>
+<mn:score>9.268739</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb40374713p</dc:identifier>   <dc:title>Ville de Paris. Maison de Victor Hugo. Victor Hugo homme politique. Juin-octobre 1956 / [Préface par Jean Sergent, Catalogue par Mme Dane]</dc:title>   <dc:creator>Sergent, Jean. Auteur du texte</dc:creator>   <dc:creator>Dane, Mme. Auteur du texte</dc:creator>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>[s.n.] (Paris)</dc:publisher>   <dc:date>1956</dc:date>   <dc:subject xml:lang="fre">Hugo, (Victor), exposition, 1956</dc:subject>   <dc:subject xml:lang="fre">Paris, Maison Victor Hugo, exposition, 1956</dc:subject>   <dc:subject xml:lang="fre">France, histoire, 1820-1885</dc:subject>   <dc:description>[Exposition. Hugo, Victor. 1956]</dc:description>   <dc:description>[Exposition. Paris, Maison Victor Hugo. 1956]</dc:description>   <dc:format>In-12, 112 p.</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb40374713p</srw:recordIdentifier>
+<srw:recordPosition>93</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20000211</ixm:attr>
+<ixm:attr name="LastModificationDate">20000401</ixm:attr>
+<mn:score>9.26785</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb42755498v</dc:identifier>   <dc:title xml:lang="lat">Didascalicon : de studio legendi / Ugo di San Vittore ; a cura di Massimo Sannelli</dc:title>   <dc:title xml:lang="ita">Dell'arte di leggere</dc:title>   <dc:creator>Hugues de Saint-Victor (1096?-1141). Auteur du texte</dc:creator>   <dc:publisher>La Finestra (Lavis)</dc:publisher>   <dc:date>2011</dc:date>   <dc:description>Collection : Archivio medievale</dc:description>   <dc:identifier>ISBN 8895925270</dc:identifier>   <dc:format>1 vol. (XX-223-XXXII p.) : ill. ; 22 cm</dc:format>   <dc:language>ita</dc:language>   <dc:language>lat</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb42755498v</srw:recordIdentifier>
+<srw:recordPosition>94</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20120927</ixm:attr>
+<ixm:attr name="LastModificationDate">20130709</ixm:attr>
+<mn:score>9.267663</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb348401848</dc:identifier>   <dc:title>Dessins de Victor Hugo / Maison de Victor Hugo</dc:title>   <dc:creator>Hugo, Victor (1802-1885). Auteur du texte</dc:creator>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>Maison de Victor Hugo (Paris)</dc:publisher>   <dc:date>1985</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Dessin</dc:subject>   <dc:description>[Exposition. Paris, Maison de Victor Hugo. 1985]</dc:description>   <dc:description>[Exposition. Hugo. 1985]</dc:description>   <dc:description>Comprend : [Dessins]</dc:description>   <dc:identifier>ISBN 2901780016</dc:identifier>   <dc:format>Non paginé</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb348401848</srw:recordIdentifier>
+<srw:recordPosition>95</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19860720</ixm:attr>
+<ixm:attr name="LastModificationDate">20100930</ixm:attr>
+<mn:score>9.266358</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb38859506h</dc:identifier>   <dc:title>Chantiers / Victor Hugo ; présentation de René Journet ; [publ. par le Groupe inter-universitaire de travail sur Victor Hugo, Paris VII-Jussieu] ; [sous la dir. de Jacques Seebacher et Guy Rosa]</dc:title>   <dc:creator>Hugo, Victor (1802-1885). Auteur du texte</dc:creator>   <dc:contributor>Journet, René (1909-1990). Préfacier</dc:contributor>   <dc:contributor>Seebacher, Jacques (1930-2008). Directeur de publication</dc:contributor>   <dc:contributor>Rosa, Guy (1945-....). Directeur de publication</dc:contributor>   <dc:contributor>Groupe Hugo (Paris). Éditeur scientifique</dc:contributor>   <dc:publisher>R. Laffont (Paris)</dc:publisher>   <dc:date>2002</dc:date>   <dc:description>Collection : Bouquins</dc:description>   <dc:identifier>ISBN 2221096835</dc:identifier>   <dc:format>XIV-1138 p. : couv. ill. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb38859506h</srw:recordIdentifier>
+<srw:recordPosition>96</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20020726</ixm:attr>
+<ixm:attr name="LastModificationDate">20260320</ixm:attr>
+<mn:score>9.265318</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb38859500f</dc:identifier>   <dc:title>Océan / Victor Hugo ; texte établi par René Journet ; [publ. par le Groupe inter-universitaire de travail sur Victor Hugo, ParisVII-Jussieu] ; [sous la dir. de Jacques Seebacher et Guy Rosa]</dc:title>   <dc:creator>Hugo, Victor (1802-1885). Auteur du texte</dc:creator>   <dc:contributor>Journet, René (1909-1990). Éditeur scientifique</dc:contributor>   <dc:contributor>Seebacher, Jacques (1930-2008). Directeur de publication</dc:contributor>   <dc:contributor>Rosa, Guy (1945-....). Directeur de publication</dc:contributor>   <dc:contributor>Groupe Hugo (Paris). Éditeur scientifique</dc:contributor>   <dc:publisher>R. Laffont (Paris)</dc:publisher>   <dc:date>2002</dc:date>   <dc:description>Collection : Bouquins</dc:description>   <dc:identifier>ISBN 2221096843</dc:identifier>   <dc:format>XI-556 p. : couv. ill. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb38859500f</srw:recordIdentifier>
+<srw:recordPosition>97</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20020726</ixm:attr>
+<ixm:attr name="LastModificationDate">20260320</ixm:attr>
+<mn:score>9.2650175</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb377321289</dc:identifier>   <dc:title>Decoupling : from dependence to independence : randomly stopped processes, U-statistics and processes, martingales and beyond / Víctor H. de la Peña, Evarist Giné</dc:title>   <dc:creator>De la Peña Díaz Infante, Víctor Hugo. Auteur du texte</dc:creator>   <dc:creator>Giné, Evarist (1944-2015). Auteur du texte</dc:creator>   <dc:publisher>Springer (New York)</dc:publisher>   <dc:date>1999</dc:date>   <dc:description>Collection : Probability and its applications</dc:description>   <dc:subject xml:lang="fre">Découplage (mathématiques)</dc:subject>   <dc:identifier>ISBN 0387986162</dc:identifier>   <dc:format>XV-392 p. : ill. ; 24 cm</dc:format>   <dc:language>eng</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb377321289</srw:recordIdentifier>
+<srw:recordPosition>98</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20000821</ixm:attr>
+<ixm:attr name="LastModificationDate">20130221</ixm:attr>
+<mn:score>9.258099</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb38973828s</dc:identifier>   <dc:title>Les séjours de Victor Hugo : catalogue, 17 mai -14 juillet 1935 : [cinquantenaire de la mort de Victor Hugo] / Maison de Victor Hugo ; [préf. de Paul Souchon]</dc:title>   <dc:contributor>Souchon, Paul (1879-1951). Préfacier</dc:contributor>   <dc:creator>Maison de Victor Hugo (Paris). Auteur du texte</dc:creator>   <dc:publisher>Maison de Victor Hugo (Paris)</dc:publisher>   <dc:date>1935</dc:date>   <dc:subject xml:lang="fre">Hugo, Victor (1802-1885) -- Résidences et lieux familiers</dc:subject>   <dc:description>[Exposition. Paris, Maison de Victor Hugo. 1935]</dc:description>   <dc:format>1 vol. (101 p.-[4] f. de pl.) : ill. ; 21 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb38973828s</srw:recordIdentifier>
+<srw:recordPosition>99</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">20030320</ixm:attr>
+<ixm:attr name="LastModificationDate">20190913</ixm:attr>
+<mn:score>9.252414</mn:score>
+</srw:extraRecordData>
+</srw:record>
+<srw:record>
+<srw:recordSchema>dc</srw:recordSchema>
+<srw:recordPacking>xml</srw:recordPacking>
+<srw:recordData>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">   <dc:identifier>http://catalogue.bnf.fr/ark:/12148/cb34648369h</dc:identifier>   <dc:title>Châtiments : 1853 / Victor Hugo ; introduction etdossier par Jacques Seebacher,... ; [publié avec la collaboration du Groupe interuniversitaire de travail sur Victor Hugo, Université de Paris VII]</dc:title>   <dc:creator>Hugo, Victor (1802-1885). Auteur du texte</dc:creator>   <dc:contributor>Seebacher, Jacques (1930-2008). Éditeur scientifique</dc:contributor>   <dc:contributor>Groupe Hugo (Paris). Éditeur scientifique</dc:contributor>   <dc:publisher>Garnier (Paris)</dc:publisher>   <dc:publisher>Flammarion (Paris)</dc:publisher>   <dc:date>1979</dc:date>   <dc:description>Collection : Garnier-Flammarion ; 301</dc:description>   <dc:format>1 vol. (505 p.) : couv. ill. en coul. ; 18 cm</dc:format>   <dc:language>fre</dc:language>   <dc:type xml:lang="fre">texte imprimé</dc:type>   <dc:type xml:lang="eng">printed text</dc:type>   <dc:type xml:lang="eng">text</dc:type>   <dc:rights xml:lang="fre">Catalogue en ligne de la Bibliothèque nationale de France</dc:rights>   <dc:rights xml:lang="eng">French National Library online Catalog</dc:rights>
+</oai_dc:dc>      </srw:recordData>
+<srw:recordIdentifier>ark:/12148/cb34648369h</srw:recordIdentifier>
+<srw:recordPosition>100</srw:recordPosition>
+<srw:extraRecordData>
+<ixm:attr name="CreationDate">19860717</ixm:attr>
+<ixm:attr name="LastModificationDate">20160128</ixm:attr>
+<mn:score>9.252089</mn:score>
+</srw:extraRecordData>
+</srw:record>
+</srw:records>
+<srw:nextRecordPosition>101</srw:nextRecordPosition>
+</srw:searchRetrieveResponse>

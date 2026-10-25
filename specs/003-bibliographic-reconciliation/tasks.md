@@ -214,20 +214,20 @@ un titre inventé jamais confirmé, un catalogue en panne n'empêche pas l'affic
 
 ### Règle d'appariement (`libs/bibliography/domain/src/lib/`)
 
-- [ ] T022 [P] [US1] `title-forms.ts` (+ spec) : formes comparables d'un titre (research §5.1–5.2) —
+- [X] T022 [P] [US1] `title-forms.ts` (+ spec) : formes comparables d'un titre (research §5.1–5.2) —
       `normalizeText` de `@pick-a-book/shared-text-match`, article initial retiré ; côté notice,
       titre propre, titre avec complément, formes coupées avant ` : ` ou ` / ` ;
       `titleScore(segment, record)` = maximum de `similarity` sur ces formes. **Rouge** :
       « La Peste » vs « La peste / Albert Camus » = 1 ; « La Pest » ≥ 0,85 ; « Cuisine évasion » vs
       « La Cuisine évasion » = 1 ; deux titres différents < 0,85
-- [ ] T023 [P] [US1] `author-forms.ts` (+ spec) : `authorScore(name, record, rejectedForms?)`
+- [X] T023 [P] [US1] `author-forms.ts` (+ spec) : `authorScore(name, record, rejectedForms?)`
       (research §5.2–5.4) — tous les auteurs, principaux et secondaires, dans les deux ordres du nom ;
       dates entre parenthèses retirées ; nom de famille seul et forme abrégée compatible
       (« A. Camus ») correspondent ; formes rejetées de l'autorité comparées au même seuil.
       **Rouge** : chacun de ces cas ; « J. Ferrandez » contre un illustrateur ; « Alaa El Aswany »
       contre « Aswānī, ʿAlāʾ al- » sans puis avec la forme rejetée « Aswany, Alaa el- » ; un auteur
       franchement différent < 0,85
-- [ ] T024 [US1] `match-book.ts` (+ spec) : `MatchingSettings` validé à la construction, valeurs de
+- [X] T024 [US1] `match-book.ts` (+ spec) : `MatchingSettings` validé à la construction, valeurs de
       l'étude (data-model.md) ; `matchBook(read, records, settings, rejectedForms?)` (research
       §5.3–5.7). **Rouge**, une table de cas : lecture exacte → confirmé ; une lettre en moins →
       confirmé (FR-003) ; auteur lu contradictoire → notice écartée et listée dans
@@ -241,19 +241,19 @@ un titre inventé jamais confirmé, un catalogue en panne n'empêche pas l'affic
       est la notice représentative (FR-020) ; une œuvre hors marge n'est pas candidate ; au plus 5
       candidats, rangs 1..n sans trou ; score combiné = titre seul sans auteur lu,
       0,7 × titre + 0,3 × auteur sinon
-- [ ] T025 [US1] `reconciliation-score.ts` (+ spec) : `reconciliationScore(outcome, step, authorRead)`
+- [X] T025 [US1] `reconciliation-score.ts` (+ spec) : `reconciliationScore(outcome, step, authorRead)`
       (research §5.8). **Rouge** : dans [0, 1] ; une confirmation sans auteur lu note moins que la
       même avec l'auteur ; l'étape « titre et auteur » note plus que « segment » ; aucun paramètre
       ne reçoit la confiance de lecture (FR-021)
 
 ### Réconciliation (`libs/bibliography/application/src/lib/`)
 
-- [ ] T026 [US1] `run-with-limits.ts` (+ spec, faux timers de Vitest) : exécute des requêtes avec
+- [X] T026 [US1] `run-with-limits.ts` (+ spec, faux timers de Vitest) : exécute des requêtes avec
       **4** en parallèle au plus, un `AbortSignal` par requête déclenché à **8 s**, **une nouvelle
       tentative** sur `Err` `unavailable` s'il reste du budget, et une **échéance globale de 18 s**
       au-delà de laquelle rien n'est plus lancé ; rend, par requête, `ok`, `failed` (avec la cause)
       ou `timed_out`. Sans dépendance (research §7)
-- [ ] T027 [US1] `reconcile-detected-books.use-case.ts` (+ spec avec T019) :
+- [X] T027 [US1] `reconcile-detected-books.use-case.ts` (+ spec avec T019) :
       `ReconcileDetectedBooksUseCase(catalog, authorities, repository, settings, limits)`.
       **Rouge** : cascade — titre et auteur (20, `full`), auteur seul (100, `light`), titre seul
       (20, `full`), segments — les deux premières étapes seulement si un auteur est lu, arrêt à la
@@ -269,27 +269,27 @@ un titre inventé jamais confirmé, un catalogue en panne n'empêche pas l'affic
       relit l'état et le rend ; **SC-003** — 30 livres, catalogue factice à 1,5 s par requête et
       1,3 requête par livre, faux timers : tous les livres ont un statut définitif en ≤ 18 s
       simulées, aucun en `timeout`. Exporter depuis `src/index.ts`
-- [ ] T028 [US1] `get-shelf-reconciliation.use-case.ts` (+ spec) : rend l'état conservé de chaque
+- [X] T028 [US1] `get-shelf-reconciliation.use-case.ts` (+ spec) : rend l'état conservé de chaque
       livre fourni, `pending` pour un livre jamais tenté ; **aucun** appel au catalogue ni aux
       autorités (compteurs à zéro, SC-005)
 
 ### Adapters (`libs/bibliography/infrastructure/src/lib/`)
 
-- [ ] T029 [P] [US1] `stub-bibliographic-catalog.adapter.ts`, `stub-authority.adapter.ts` (+ specs) :
+- [X] T029 [P] [US1] `stub-bibliographic-catalog.adapter.ts`, `stub-authority.adapter.ts` (+ specs) :
       `name` = `stub`, catalogue en mémoire qui, avec `matchBook`, confirme les livres du scanner
       stub — « L'Amant » (Duras, **deux éditions**), « Les Choses » (Perec), « La Place » (Ernaux,
       **plus** une autre œuvre « La Place » d'un autre auteur, écartée par l'auteur lu) — et ne
       connaît rien d'approchant « Titre peu lisible » ; filtre par titre et auteur normalisés,
       respecte `maxRecords` ; une autorité stub rend une forme rejetée
-- [ ] T030 [P] [US1] `offline-bibliographic-catalog.adapter.ts` (+ spec) : `name` = `offline`, rend
+- [X] T030 [P] [US1] `offline-bibliographic-catalog.adapter.ts` (+ spec) : `name` = `offline`, rend
       toujours `Err(CatalogUnavailable('unavailable'))`, pour la recherche comme pour les autorités
-- [ ] T031 [US1] Enregistrer les réponses SRU de la BnF dans `bnf/fixtures/` pour les cas de
+- [X] T031 [US1] Enregistrer les réponses SRU de la BnF dans `bnf/fixtures/` pour les cas de
       l'ADR 0014 (« Percy Jackson - La Mer des Monstres », « 17 lunes », « 18 lunes », « Éternels
       (tome 3) », « Alaa El Aswany » et sa notice d'autorité, « Le Mystère des pavots blancs »,
       « D. Pennac - J. Ferrandez », « Exercices de style », un titre fauté, un témoin permuté, un
       témoin fabriqué), en UNIMARC et, pour une requête « auteur seul », en Dublin Core ; chaque
       fixture avec sa provenance (URL de la requête, date) — `adapters.md`
-- [ ] T032 [US1] `bnf/sru-response.ts` et `bnf/bnf-sru-catalog.adapter.ts` (+ spec sur T031) :
+- [X] T032 [US1] `bnf/sru-response.ts` et `bnf/bnf-sru-catalog.adapter.ts` (+ spec sur T031) :
       `fetch` injecté ; requête CQL sur `catalogue.bnf.fr/api/SRU`, filtrée `bib.doctype any "a"`,
       par titre et/ou auteur, `maximumRecords` et `recordSchema` (`unimarcXchange` ou `dublincore`)
       selon `CatalogQuery` ; `User-Agent` qui identifie le projet ; `signal` transmis à `fetch` ;
@@ -297,18 +297,18 @@ un titre inventé jamais confirmé, un catalogue en panne n'empêche pas l'affic
       réseau ou 5xx → `Err('unavailable')` ; UNIMARC lu en `CatalogRecord` (200 titre, 700–702
       auteurs avec rôle et identifiant d'autorité, 225/410 collection et numéro, 461 série, 210/214
       éditeur), `raw` et `format` gardés. **Rouge** : chaque fixture lue en notices attendues
-- [ ] T033 [US1] `bnf/bnf-authority.adapter.ts` (+ spec sur T031) : formes rejetées (4xx UNIMARC
+- [X] T033 [US1] `bnf/bnf-authority.adapter.ts` (+ spec sur T031) : formes rejetées (4xx UNIMARC
       d'autorité) d'une `AuthorityId`, `zod`, mêmes erreurs que T032 ; cache en mémoire par
       instance — **rouge** : un second appel pour la même autorité ne rappelle pas `fetch`
-- [ ] T034 [US1] `bnf/bnf-matching.spec.ts` : de bout en bout sur les fixtures de T031, adapter puis
+- [X] T034 [US1] `bnf/bnf-matching.spec.ts` : de bout en bout sur les fixtures de T031, adapter puis
       `matchBook` avec les réglages par défaut — chaque cas de l'ADR 0014 rend le verdict attendu,
       et aucun témoin n'est confirmé. Protège les réglages de research §5
 
 ### Composition root et orchestration (`apps/api/src/`)
 
-- [ ] T035 [US1] `bibliography/bibliographic-catalog.factory.ts` (+ spec) : `bnf` → adapters BnF
+- [X] T035 [US1] `bibliography/bibliographic-catalog.factory.ts` (+ spec) : `bnf` → adapters BnF
       (`fetch` global), `stub` → stubs, `offline` → offline
-- [ ] T036 [US1] `bibliography/bibliography.module.ts` (+ spec) : lie
+- [X] T036 [US1] `bibliography/bibliography.module.ts` (+ spec) : lie
       `BOOK_RECONCILIATION_REPOSITORY_PORT` à l'adapter Drizzle sur le pool de `DatabaseModule`,
       `BIBLIOGRAPHIC_CATALOG_PORT` et `AUTHORITY_PORT` à la fabrique, construit
       `ReconcileDetectedBooksUseCase` et `GetShelfReconciliationUseCase` avec les réglages et
@@ -317,9 +317,9 @@ un titre inventé jamais confirmé, un catalogue en panne n'empêche pas l'affic
       stables de `contracts/reconciliation-api.md` §Correspondance ; ajouter
       `@pick-a-book/bibliography-domain`, `-application`, `-infrastructure` (`workspace:*`) et `zod`
       à `apps/api/package.json`
-- [ ] T037 [US1] `recognition/recognition.module.ts` : **exporter** `GetShelfScanUseCase` s'il ne
+- [X] T037 [US1] `recognition/recognition.module.ts` : **exporter** `GetShelfScanUseCase` s'il ne
       l'est pas (spec du module)
-- [ ] T038 [US1] `orchestration/shelf-scan-not-completed.error.ts`,
+- [X] T038 [US1] `orchestration/shelf-scan-not-completed.error.ts`,
       `orchestration/reconcile-shelf-photo.use-case.ts` et
       `orchestration/get-shelf-photo-reconciliation.use-case.ts` (+ specs avec doubles des use
       cases) : lisent le détail par `GetShelfScanUseCase` ; `Err(ShelfScanNotFound)` passé tel quel
@@ -327,7 +327,7 @@ un titre inventé jamais confirmé, un catalogue en panne n'empêche pas l'affic
       `Err(ShelfScanNotCompleted)` ; livres traduits en `DetectedBookInput` (`position` = index,
       `title`, `author` seulement s'il est présent, **jamais** la confiance) ; DTO de `bibliography`
       rendu tel quel. **N'importent aucun `*-domain`** : DTO seulement (ADR 0003)
-- [ ] T039 [US1] `orchestration/orchestration-http-error.ts` (+ spec) : `switch` exhaustif —
+- [X] T039 [US1] `orchestration/orchestration-http-error.ts` (+ spec) : `switch` exhaustif —
       `shelf-scan-not-found` → 404, `shelf-scan-not-completed` → 409 `SCAN_NOT_COMPLETED` ;
       `orchestration/shelf-photo-reconciliation.controller.ts` (+ spec) :
       `POST /shelf-photos/:id/reconciliation` (`@HttpCode(200)`) et
@@ -335,7 +335,7 @@ un titre inventé jamais confirmé, un catalogue en panne n'empêche pas l'affic
       `RecognitionModule` et `BibliographyModule` ; `app/app.module.ts` importe `DatabaseModule`,
       `BibliographyModule`, `OrchestrationModule` ; journaliser par le `Logger` de Nest, jamais
       `console.*`
-- [ ] T040 [US1] `orchestration/reconciliation.http.spec.ts` (de bout en bout sur l'app Nest, scanner
+- [X] T040 [US1] `orchestration/reconciliation.http.spec.ts` (de bout en bout sur l'app Nest, scanner
       et catalogue stub, Postgres du compose, comme `shelf-photos.http.spec.ts`) : envoi → analyse
       → `POST …/reconciliation` rend un élément par livre, trié, aux statuts attendus, `read` intact ;
       `GET` rend le même état sans appel au catalogue ; `GET` avant tout `POST` rend des `pending` ;

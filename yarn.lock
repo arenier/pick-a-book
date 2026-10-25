@@ -4173,6 +4173,9 @@ __metadata:
     "@nestjs/platform-express": "npm:^11.0.0"
     "@nestjs/testing": "npm:^11.0.0"
     "@nestjs/throttler": "npm:^6.7.1"
+    "@pick-a-book/bibliography-application": "workspace:*"
+    "@pick-a-book/bibliography-domain": "workspace:*"
+    "@pick-a-book/bibliography-infrastructure": "workspace:*"
     "@pick-a-book/recognition-application": "workspace:*"
     "@pick-a-book/recognition-domain": "workspace:*"
     "@pick-a-book/recognition-infrastructure": "workspace:*"
@@ -4204,7 +4207,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@pick-a-book/bibliography-application@workspace:libs/bibliography/application":
+"@pick-a-book/bibliography-application@workspace:*, @pick-a-book/bibliography-application@workspace:libs/bibliography/application":
   version: 0.0.0-use.local
   resolution: "@pick-a-book/bibliography-application@workspace:libs/bibliography/application"
   dependencies:
@@ -4224,13 +4227,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@pick-a-book/bibliography-infrastructure@workspace:libs/bibliography/infrastructure":
+"@pick-a-book/bibliography-infrastructure@workspace:*, @pick-a-book/bibliography-infrastructure@workspace:libs/bibliography/infrastructure":
   version: 0.0.0-use.local
   resolution: "@pick-a-book/bibliography-infrastructure@workspace:libs/bibliography/infrastructure"
   dependencies:
     "@pick-a-book/bibliography-domain": "workspace:*"
     "@pick-a-book/shared-result": "workspace:*"
+    "@pick-a-book/shared-text-match": "workspace:*"
     drizzle-orm: "npm:^0.45.3"
+    fast-xml-parser: "npm:^5.3.4"
     pg: "npm:^8.23.0"
     tslib: "npm:^2.3.0"
     zod: "npm:^4.5.4"

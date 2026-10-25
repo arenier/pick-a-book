@@ -25,7 +25,9 @@
   "dependencies": {
     "@pick-a-book/bibliography-domain": "workspace:*",
     "@pick-a-book/shared-result": "workspace:*",
+    "@pick-a-book/shared-text-match": "workspace:*",
     "drizzle-orm": "^0.45.3",
+    "fast-xml-parser": "^5.3.4",
     "pg": "^8.23.0",
     "tslib": "^2.3.0",
     "zod": "^4.5.4"

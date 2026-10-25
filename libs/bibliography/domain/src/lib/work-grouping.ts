@@ -77,7 +77,8 @@ export function groupIntoWorks(
 }
 
 /**
- * The same work: titles alike (with the same numbers), main authors that overlap, and the same
+ * The same work: titles alike (with the same numbers), authors that overlap — any role, so that
+ * a novel and its adaptation by another hand are one work (FR-020) — and the same
  * volume. Never the catalogue's own work identifier — it fabricated false ambiguities (§5.6).
  */
 function sameWork(left: CatalogRecord, right: CatalogRecord, settings: MatchingSettings): boolean {
@@ -88,22 +89,26 @@ function sameWork(left: CatalogRecord, right: CatalogRecord, settings: MatchingS
   return (
     titlesAlike &&
     left.context.volume === right.context.volume &&
-    mainAuthorsOverlap(left, right, settings)
+    authorsOverlap(left, right, settings)
   );
 }
 
-function mainAuthorsOverlap(
+function authorsOverlap(
   left: CatalogRecord,
   right: CatalogRecord,
   settings: MatchingSettings,
 ): boolean {
-  const a = mainAuthors(left);
-  const b = mainAuthors(right);
+  const a = authorNames(left);
+  const b = authorNames(right);
   if (a.length === 0 || b.length === 0) {
     return true;
   }
 
   return a.some((x) => b.some((y) => nameSimilarity(x, y) >= settings.authorThreshold));
+}
+
+function authorNames(record: CatalogRecord): readonly string[] {
+  return record.authors.map((author) => author.name);
 }
 
 function mainAuthors(record: CatalogRecord): readonly string[] {
