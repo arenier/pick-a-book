@@ -1,5 +1,5 @@
 import { useMessages } from '@pick-a-book/shared-i18n';
-import { Alert, AlertDescription } from '@pick-a-book/shared-ui';
+import { Alert, AlertDescription, Button } from '@pick-a-book/shared-ui';
 
 import type { ReconciledBook } from '../model/reconciled-book';
 import type { ReconciliationFailure } from '../model/reconciliation-failure';
@@ -39,7 +39,12 @@ export function ReconciledBookList({
   mode,
   api = realApi,
 }: ReconciledBookListProps) {
-  const { state, refusal, choose } = useReconciliation(scanId, mode, api);
+  const { state, refusal, choose, retry, retrying, retryFailure } = useReconciliation(
+    scanId,
+    mode,
+    api,
+  );
+  const { t } = useMessages('reconciliation');
   const shown = booksShown(state, books);
 
   return (
@@ -61,8 +66,28 @@ export function ReconciledBookList({
         ))}
       </ul>
       {state.status === 'failed' && <FailureMessage failure={state.failure} />}
+      {retryFailure !== undefined && <FailureMessage failure={retryFailure} />}
+      {canRetry(state) && (
+        <Button
+          variant="outline"
+          disabled={retrying}
+          onClick={() => {
+            void retry();
+          }}
+        >
+          {t('retry.label')}
+        </Button>
+      )}
       <Source books={shown} />
     </div>
+  );
+}
+
+/** A new check is worth asking for when a book is not verified, or the whole call failed. */
+function canRetry(state: ReconciliationState): boolean {
+  return (
+    state.status === 'failed' ||
+    (state.status === 'ready' && state.books.some((book) => book.status === 'not_verified'))
   );
 }
 

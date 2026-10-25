@@ -52,6 +52,7 @@ export function aRunningReconciliationApi(options: ReconciliationApiOptions = {}
     uploadedPhoto: upload,
     reconcile: async (id: string) => call('POST', `/shelf-photos/${id}/reconciliation`),
     read: async (id: string) => call('GET', `/shelf-photos/${id}/reconciliation`),
+    get: async (path: string) => call('GET', path),
     post: async (path: string, body?: unknown) => call('POST', path, body),
   };
 }

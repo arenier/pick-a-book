@@ -3,9 +3,11 @@ import type {
   DecideAmbiguityUseCase,
 } from '@pick-a-book/bibliography-application';
 import type { GetShelfScanUseCase, ShelfScanDetailDto } from '@pick-a-book/recognition-application';
+import { BookNotAmbiguous } from '@pick-a-book/bibliography-domain';
 import { err, ok, unwrap } from '@pick-a-book/shared-result';
 import { describe, expect, it, vi } from 'vitest';
 
+import { aBookRef } from './testing/book-ref';
 import { DecideShelfBookAmbiguityUseCase } from './decide-shelf-book-ambiguity.use-case';
 
 const ID = '1f9c2e3a-4b5d-4e6f-8a7b-9c0d1e2f3a4b';
@@ -60,11 +62,7 @@ describe('DecideShelfBookAmbiguityUseCase', () => {
 
   it('passes on what bibliography refuses', async () => {
     const { useCase, decide } = aDecider(ok(detail));
-    decide.execute.mockResolvedValue(
-      err(
-        Object.assign(new Error('x'), { kind: 'book-not-ambiguous' as const, bookRef: undefined }),
-      ),
-    );
+    decide.execute.mockResolvedValue(err(new BookNotAmbiguous(aBookRef())));
 
     const result = await useCase.execute({ id: ID, position: 2, decision: { choice: 'none' } });
 

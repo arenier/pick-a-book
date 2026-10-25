@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { aBibliographyError } from './testing/book-ref';
 import { toHttpException } from './orchestration-http-error';
 import { ShelfScanNotCompleted } from './shelf-scan-not-completed.error';
 
@@ -46,7 +47,7 @@ describe('toHttpException, orchestration', () => {
     ['book-not-ambiguous', 409],
     ['unknown-candidate', 400],
   ] as const)('passes %s on to the translator of bibliography', (kind, status) => {
-    const http = toHttpException(Object.assign(new Error(kind), { kind }));
+    const http = toHttpException(aBibliographyError(kind));
 
     expect(http.getStatus()).toBe(status);
   });
@@ -54,9 +55,7 @@ describe('toHttpException, orchestration', () => {
 
 describe('toHttpException, orchestration, part 2', () => {
   it('keeps the stable codes of the translator of bibliography', () => {
-    const conflict = toHttpException(
-      Object.assign(new Error('x'), { kind: 'book-not-ambiguous' as const }),
-    );
+    const conflict = toHttpException(aBibliographyError('book-not-ambiguous'));
 
     expect(conflict.getResponse()).toMatchObject({ code: 'BOOK_NOT_AMBIGUOUS' });
   });

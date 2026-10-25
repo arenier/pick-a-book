@@ -24,5 +24,8 @@
   "pick": {
     "label": "Choisir l’œuvre",
     "none": "Aucun ne correspond"
+  },
+  "retry": {
+    "label": "Relancer la vérification"
   }
 }

@@ -40,6 +40,19 @@ describe('POST /shelf-photos/{id}/books/{position}/decision, lifting an ambiguit
     });
   });
 
+  it('carries no score, no catalogue, no step, no cause and no confidence either (FR-018)', async () => {
+    const { id, candidates } = await reconciled();
+
+    const response = await api.post(decisionPath(id, AMBIGUOUS), {
+      choice: 'candidate',
+      recordId: candidates[0].recordId,
+    });
+
+    expect(JSON.stringify(await response.json())).not.toMatch(
+      /"(score|titleScore|authorScore|reconciliationScore|catalog|step|cause|confidence)"/u,
+    );
+  });
+
   it('is kept: the state read afterwards shows the decision', async () => {
     const { id, candidates } = await reconciled();
     await api.post(decisionPath(id, AMBIGUOUS), {

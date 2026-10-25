@@ -24,5 +24,8 @@
   "pick": {
     "label": "Choose the work",
     "none": "None of them"
+  },
+  "retry": {
+    "label": "Retry the check"
   }
 }

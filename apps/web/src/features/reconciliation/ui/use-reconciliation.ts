@@ -38,6 +38,11 @@ export interface Reconciliation {
     | { readonly position: number; readonly failure: ReconciliationFailure }
     | undefined;
   readonly choose: (position: number, choice: AmbiguityChoice) => Promise<void>;
+  /** Asks again for the books not verified; `retrying` while the answer is awaited. */
+  readonly retry: () => Promise<void>;
+  readonly retrying: boolean;
+  /** Why the last retry failed, the books of the previous state staying on screen. */
+  readonly retryFailure: ReconciliationFailure | undefined;
 }
 
 /**
@@ -84,6 +89,26 @@ export function useReconciliation(
     });
   }, [scanId, mode, api]);
 
+  const [retrying, setRetrying] = useState(false);
+  const [retryFailure, setRetryFailure] = useState<ReconciliationFailure | undefined>(undefined);
+
+  const retry = async (): Promise<void> => {
+    setRetrying(true);
+    setRetryFailure(undefined);
+    const answer = await api.reconcile(scanId);
+    if (!mounted.current) {
+      return;
+    }
+    setRetrying(false);
+    if (answer.status === 'books') {
+      setState({ status: 'ready', books: answer.books });
+    } else if (state.status === 'ready') {
+      setRetryFailure(answer.failure);
+    } else {
+      setState({ status: 'failed', failure: answer.failure });
+    }
+  };
+
   const choose = async (position: number, choice: AmbiguityChoice): Promise<void> => {
     setRefusal(undefined);
     const answer = await api.decide(scanId, position, choice);
@@ -103,7 +128,7 @@ export function useReconciliation(
     }
   };
 
-  return { state, refusal, choose };
+  return { state, refusal, choose, retry, retrying, retryFailure };
 }
 
 function replaced(state: ReconciliationState, book: ReconciledBook): ReconciliationState {

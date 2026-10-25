@@ -1,11 +1,18 @@
 import {
+  CatalogUnavailable,
   type BibliographicCatalogPort,
   type CatalogPage,
   type CatalogQuery,
-  type CatalogUnavailable,
 } from '@pick-a-book/bibliography-domain';
 import { StubBibliographicCatalogAdapter } from '@pick-a-book/bibliography-infrastructure';
-import type { Result } from '@pick-a-book/shared-result';
+import type {
+  DetectedBook,
+  ShelfPhoto,
+  ShelfScanFailed,
+  ShelfScannerPort,
+} from '@pick-a-book/recognition-domain';
+import { StubShelfScannerAdapter } from '@pick-a-book/recognition-infrastructure';
+import { err, type Result } from '@pick-a-book/shared-result';
 import { describe, expect, it } from 'vitest';
 
 import { reconciliationOf } from './testing/reconciliation-body';
@@ -26,6 +33,33 @@ class CountingCatalog implements BibliographicCatalogPort {
   }
 }
 
+/** The stub scanner, counting the photos it is given. */
+class CountingScanner implements ShelfScannerPort {
+  private readonly inner = new StubShelfScannerAdapter();
+  scans = 0;
+
+  async scan(photo: ShelfPhoto): Promise<Result<DetectedBook[], ShelfScanFailed>> {
+    this.scans += 1;
+    return this.inner.scan(photo);
+  }
+}
+
+/** The stub catalogue, down until it is restored. */
+class RestorableCatalog implements BibliographicCatalogPort {
+  private readonly inner = new StubBibliographicCatalogAdapter();
+  readonly name = this.inner.name;
+  down = true;
+
+  async search(
+    query: CatalogQuery,
+    signal: AbortSignal,
+  ): Promise<Result<CatalogPage, CatalogUnavailable>> {
+    return this.down
+      ? err(new CatalogUnavailable('unavailable'))
+      : this.inner.search(query, signal);
+  }
+}
+
 describe('the reconciliation with a catalogue that is down (FR-008, SC-004)', () => {
   const api = aRunningReconciliationApi({ catalogProvider: 'offline' });
 
@@ -40,6 +74,31 @@ describe('the reconciliation with a catalogue that is down (FR-008, SC-004)', ()
       Array.from({ length: 5 }, () => 'not_verified'),
     );
     expect(body.books[0].read).toStrictEqual({ title: "L'Amant", author: 'Marguerite Duras' });
+  });
+});
+
+describe('trying again once the catalogue is back (FR-014, US4)', () => {
+  const catalog = new RestorableCatalog();
+  const scanner = new CountingScanner();
+  const api = aRunningReconciliationApi({ catalog, scanner });
+
+  it('gives the books not verified a final status, without scanning the photo again', async () => {
+    const id = await api.completedScan();
+    const down = await reconciliationOf(await api.reconcile(id));
+    const scansBefore = scanner.scans;
+    catalog.down = false;
+
+    const back = await reconciliationOf(await api.reconcile(id));
+
+    expect(scanner.scans).toBe(scansBefore);
+    expect(down.books.every((book) => book.status === 'not_verified')).toBe(true);
+    expect(back.books.map((book) => book.status)).toStrictEqual([
+      'confirmed',
+      'confirmed',
+      'confirmed',
+      'not_found',
+      'ambiguous',
+    ]);
   });
 });
 

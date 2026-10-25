@@ -10,7 +10,7 @@ import {
   type Assessment,
   type RejectedForms,
 } from './assessment.js';
-import { compareWorks, dropSeriesOutranked, groupIntoWorks } from './work-grouping.js';
+import { compareWorks, dropSeriesOutranked, groupIntoWorks, type Work } from './work-grouping.js';
 
 export type { RejectedForms } from './assessment.js';
 
@@ -50,11 +50,12 @@ export function matchBook(
     scoredRecord(work.representative, index + 1, settings, read),
   );
   const first = works.at(0);
+  const examined = examinedOf(assessments, works, scored.length, settings, read);
 
   if (first === undefined) {
     return {
       verdict: 'not_found',
-      examined: [],
+      examined,
       needsAuthorityCheck: authorityChecks(authorFailures, rejectedForms),
     };
   }
@@ -62,7 +63,7 @@ export function matchBook(
     return {
       verdict: 'confirmed',
       retained: scored[0],
-      examined: [],
+      examined,
       needsAuthorityCheck: [],
     };
   }
@@ -72,7 +73,7 @@ export function matchBook(
     candidates: scored,
     // The doubt comes from the title, not from a rival work: one work, one unexplained segment.
     partial: works.length === 1,
-    examined: [],
+    examined,
     needsAuthorityCheck: authorityChecks(authorFailures, rejectedForms),
   };
 }
@@ -104,11 +105,36 @@ function authorityChecks(
   return checks;
 }
 
+/**
+ * The records set aside — a title too far, an author contradicted, a volume refused, a work
+ * outside the margin —, the best few, ranked after the retained ones (research §9). The other
+ * records of a retained work are not set aside: they describe a book already shown.
+ */
+function examinedOf(
+  assessments: readonly Assessment[],
+  works: readonly Work[],
+  retainedCount: number,
+  settings: MatchingSettings,
+  read: ReadBook,
+): readonly ScoredRecord[] {
+  const shown = new Set(works.flatMap((work) => work.members));
+
+  return assessments
+    .filter((assessment) => !shown.has(assessment))
+    .map((assessment) => ({ assessment, value: combinedScore(assessment, settings, read) }))
+    .toSorted((left, right) => right.value - left.value)
+    .slice(0, settings.maxExamined)
+    .map(({ assessment }, index) =>
+      scoredRecord(assessment, retainedCount + index + 1, settings, read, false),
+    );
+}
+
 function scoredRecord(
   assessment: Assessment,
   rank: number,
   settings: MatchingSettings,
   read: ReadBook,
+  retained = true,
 ): ScoredRecord {
   return {
     record: assessment.record,
@@ -119,6 +145,6 @@ function scoredRecord(
         : MatchScore.fromComputed(assessment.authorScore),
     score: MatchScore.fromComputed(combinedScore(assessment, settings, read)),
     rank,
-    retained: true,
+    retained,
   };
 }

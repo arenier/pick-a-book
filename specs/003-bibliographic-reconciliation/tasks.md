@@ -449,14 +449,14 @@ et la lecture de la reconnaissance reste intacte.
 **Independent Test** : après une analyse, lire la base (quickstart scénario 4, colonnes de statut et
 de notice) sans passer par l'écran.
 
-- [ ] T055 [US3] Étendre `apps/api/src/orchestration/reconciliation.http.spec.ts` : après
+- [X] T055 [US3] Étendre `apps/api/src/orchestration/reconciliation.http.spec.ts` : après
       réconciliation, `BookReconciliationRepositoryPort.findByScan` (résolu depuis l'app) rend pour
       chaque livre son statut, et pour un confirmé l'ARK, la forme de référence et la notice telle
       que reçue (FR-012) ; `attempted_at` renseigné ; les livres de l'analyse dans `recognition`
       identiques avant et après (FR-013) ; un second `POST` et un `GET` ne créent **aucune**
       tentative et ne rappellent pas le catalogue (compteur du catalogue factice injecté par
       surcharge du module de test, SC-005)
-- [ ] T056 [US3] `reconcile-detected-books.use-case.spec.ts` : cas « livre non vérifié » — la lecture
+- [X] T056 [US3] `reconcile-detected-books.use-case.spec.ts` : cas « livre non vérifié » — la lecture
       (`query_title`, `query_author`) est conservée telle que reçue, auteur absent compris (US3
       scénario 2)
 
@@ -472,22 +472,22 @@ retenues et écartées, cause d'un « non vérifié », et résultat automatique
 
 **Independent Test** : quickstart scénario 4 ; SC-007 prouvé par T059.
 
-- [ ] T057 [US5] `libs/bibliography/domain/src/lib/match-book.ts` : `examined` — les notices
+- [X] T057 [US5] `libs/bibliography/domain/src/lib/match-book.ts` : `examined` — les notices
       examinées **non retenues**, « 3 au plus, les mieux notées », avec leurs scores. **Rouge**
       dans `match-book.spec.ts` : présent pour les trois verdicts, jamais une notice retenue, trié
       par score
-- [ ] T058 [US5] `drizzle-book-reconciliation-repository.adapter.ts` : écrire `examined` avec
+- [X] T058 [US5] `drizzle-book-reconciliation-repository.adapter.ts` : écrire `examined` avec
       `retained = false` et des rangs qui suivent les retenues ; relire `title_score`,
       `author_score` (nul sans auteur lu), `score`, `catalog`, `cascade_step`,
       `reconciliation_score`, `not_verified_cause`. **Rouge** (contre Postgres) : aller-retour exact
       de ces valeurs pour chaque verdict ; après une décision, la tentative ambiguë et ses candidats
       sont inchangés (FR-016)
-- [ ] T059 [US5] `libs/bibliography/infrastructure/src/lib/error-categories.spec.ts` (contre
+- [X] T059 [US5] `libs/bibliography/infrastructure/src/lib/error-categories.spec.ts` (contre
       Postgres) : enregistrer via l'adapter un lot couvrant chaque catégorie de `data-model.md`
       §Catégories d'écart, puis prouver par une requête SQL écrite dans la spec que chaque livre se
       range dans exactement sa catégorie, rang du candidat choisi et étape compris (SC-007) — sans
       code de production d'analyse (FR-018)
-- [ ] T060 [US5] `apps/api/src/orchestration/reconciliation.http.spec.ts` : les réponses des trois
+- [X] T060 [US5] `apps/api/src/orchestration/reconciliation.http.spec.ts` : les réponses des trois
       endpoints ne contiennent **aucune** clé `score`, `titleScore`, `authorScore`,
       `reconciliationScore`, `catalog`, `step`, `cause`, `confidence` (FR-018, FR-021)
 
@@ -502,17 +502,17 @@ retenues et écartées, cause d'un « non vérifié », et résultat automatique
 
 **Independent Test** : quickstart scénario 3 complet.
 
-- [ ] T061 [US4] `reconcile-detected-books.use-case.spec.ts` : relance — après un premier appel où
+- [X] T061 [US4] `reconcile-detected-books.use-case.spec.ts` : relance — après un premier appel où
       le catalogue factice échoue pour certains livres, un second appel ne cherche **que** ces
       livres, laisse les définitifs intacts, et ajoute une tentative sans effacer la
       `not_verified` précédente (FR-014, US5)
-- [ ] T062 [US4] `reconciliation.http.spec.ts` : relance pendant une réconciliation encore en
+- [X] T062 [US4] `reconciliation.http.spec.ts` : relance pendant une réconciliation encore en
       cours (double appui sur « relancer ») — les deux réponses sont 200 et décrivent le même état,
       une seule tentative définitive par livre en base (la règle elle-même est posée en US1, T027)
-- [ ] T063 [US4] `reconciliation.http.spec.ts` : avec un catalogue factice injecté (surcharge du
+- [X] T063 [US4] `reconciliation.http.spec.ts` : avec un catalogue factice injecté (surcharge du
       port dans le module de test), indisponible puis rétabli — second `POST …/reconciliation` →
       les `not_verified` reçoivent un statut définitif, sans nouvel appel au scanner
-- [ ] T064 [US4] `apps/web/src/features/reconciliation/ui/reconciled-book-list.tsx` et
+- [X] T064 [US4] `apps/web/src/features/reconciliation/ui/reconciled-book-list.tsx` et
       `use-reconciliation.ts` (+ specs) : un bouton « relancer la vérification » s'affiche quand au
       moins un livre est non vérifié ou que l'appel a échoué, désactivé pendant la relance ; il
       rappelle `reconcile` et remplace l'état ; absent quand tous les statuts sont définitifs (US4
