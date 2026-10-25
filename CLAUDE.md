@@ -59,6 +59,7 @@ Tranchées — ne pas les remettre en question sans nouvel ADR. Le *pourquoi* es
 | **ADR** | `docs/adr/` | *Pourquoi* une décision transverse, et à quelles conditions on en changerait. Figé une fois accepté. |
 | **Note de décision** | `docs/decisions/` | Un choix de niveau inférieur, sans impact architectural. |
 | **Dette technique** | `docs/tech-debt/` | Un défaut connu et accepté, laissé hors d'une PR : le constat, pourquoi on a reporté, quand la reprendre. Disparaît quand elle est payée. |
+| **Parking** | `docs/parking.md` | Une idée ou un hors-scope qu'une spec, un plan ou un ADR reporte sans issue ni ADR pour le porter. Ajouté dans le commit qui reporte ; en sort pour devenir une issue, puis une spec ou un ADR. |
 | **Rule** | `.claude/rules/` | *Quoi faire* en écrivant le code. Vivante, courte, impérative ; renvoie à son ADR sans le recopier. |
 | **Spec** | `specs/NNN-*/` | Le comportement et le scope d'une feature (Spec Kit). |
 | **Constitution** | `.specify/memory/constitution.md` | Les principes, relus par `/speckit-plan` et `/speckit-implement`. |
@@ -170,6 +171,7 @@ tools/db-backup/                 # pg_dump hebdomadaire vers le bucket (Cloud Ru
 docker/                          # Dockerfile des apps et du job de sauvegarde — contexte de build : la racine
 docs/adr/                        # décisions d'architecture : le pourquoi
 docs/decisions/                  # notes de décision de niveau inférieur (pas des ADR)
+docs/parking.md                  # idées et hors-scope en attente, sans issue ni ADR pour les porter
 docs/tech-debt/                  # dette connue et acceptée, une fiche par sujet
 infra/                           # infrastructure GCP en Terraform — voir infra/README.md
 .claude/rules/                   # règles d'écriture du code : le quoi (voir « Rules » plus haut)
