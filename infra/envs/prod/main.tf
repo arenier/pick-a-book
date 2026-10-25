@@ -113,6 +113,10 @@ locals {
     # FR-017), as strings like every Cloud Run variable.
     DAILY_SCAN_LIMIT   = tostring(var.daily_scan_limit)
     DAILY_UPLOAD_LIMIT = tostring(var.daily_upload_limit)
+    # The catalogue that judges the detected books (specs/003-bibliographic-reconciliation, ADR
+    # 0014): the general catalogue of the BnF. Not a secret — the BnF asks for no key. Left out,
+    # the API falls back on the in-memory stub, which is for development.
+    BIBLIOGRAPHIC_CATALOG_PROVIDER = "bnf"
   }
 }
 

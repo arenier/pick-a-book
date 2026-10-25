@@ -525,7 +525,7 @@ retenues et écartées, cause d'un « non vérifié », et résultat automatique
 
 ## Phase 8: Production et mesure
 
-- [ ] T065 `infra/envs/prod` : **rouge** d'abord dans `tests/*.tftest.hcl` (`command = plan`,
+- [X] T065 `infra/envs/prod` : **rouge** d'abord dans `tests/*.tftest.hcl` (`command = plan`,
       `mock_provider`) — `api_env` porte `BIBLIOGRAPHIC_CATALOG_PROVIDER = "bnf"`, avec un
       `error_message` qui dit pourquoi (sans lui, la prod réconcilie contre le stub) ; puis
       l'ajouter à `api_env` dans `main.tf`. Aucun secret : la BnF n'a pas de clé. `infra-checker`

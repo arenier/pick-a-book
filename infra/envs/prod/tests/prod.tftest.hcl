@@ -340,3 +340,12 @@ run "the_api_env_keeps_node_env_production" {
   }
 }
 
+
+run "the_api_reconciles_against_the_bnf" {
+  command = plan
+
+  assert {
+    condition     = local.api_env["BIBLIOGRAPHIC_CATALOG_PROVIDER"] == "bnf"
+    error_message = "The API must reconcile the detected books against the BnF in production: without BIBLIOGRAPHIC_CATALOG_PROVIDER=bnf it defaults to the in-memory stub, which confirms five books and knows nothing of the others (ADR 0014, specs/003)"
+  }
+}
